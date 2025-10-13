@@ -1,0 +1,4 @@
+[submodule "Submodules/BaseArchitecture"]
+	path = Submodules/BaseArchitecture
+	url = git@github.com:TheodorMihail/BaseArchitecture.git
+	branch = main
