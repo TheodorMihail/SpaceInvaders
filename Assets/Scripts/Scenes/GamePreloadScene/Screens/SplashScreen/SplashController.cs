@@ -1,13 +1,9 @@
 using Base.Systems;
-using Cysharp.Threading.Tasks;
-using System.Threading;
 
 namespace SpaceInvaders.Scenes.GamePreload
 {
     public class SplashController : Controller<SplashScreen, SplashModel, SplashView>
     {
-        private CancellationTokenSource _cancellationTokenSource;
-
         public SplashController(SplashScreen splashScreen, SplashModel model, SplashView view)
             : base(splashScreen, model, view)
         {
@@ -16,20 +12,8 @@ namespace SpaceInvaders.Scenes.GamePreload
         public override async void Initialize()
         {
             base.Initialize();
-            _cancellationTokenSource = new CancellationTokenSource();
-            await SimulateSplashAnimation();
+            await _view.PlayLogoAnimation(_model.AnimationSimulationTimerSeconds);
             CloseScreen();
-        }
-
-        public override void Dispose()
-        {
-            base.Dispose();
-            _cancellationTokenSource.Dispose();
-        }
-
-        private async UniTask SimulateSplashAnimation()
-        {
-            await UniTask.Delay(_model.AnimationSimulationTimerMilliseconds, cancellationToken: _cancellationTokenSource.Token);
         }
     }
 }
