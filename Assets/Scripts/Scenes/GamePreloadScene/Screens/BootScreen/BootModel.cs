@@ -4,6 +4,7 @@ namespace SpaceInvaders.Scenes.GamePreload
 {
     public class BootModel : Model
     {
-        public int DelayTimerSeconds = 3;
+        public float AnimationSimulationTimerSeconds { get; } = 3f;
+        public float AnimationEndDelayTimerSeconds { get; } = 1f;
     }
 }

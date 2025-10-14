@@ -11,8 +11,8 @@ namespace SpaceInvaders.Scenes.GamePreload
     public class BootView : View
     {
         [SerializeField] private TextMeshProUGUI _loadingText;
-        private string _loadingString = "{0}%";
-        private string _loadingFinishedString = "Complete!";
+        [SerializeField] private string _loadingString = "{0}%";
+        [SerializeField] private string _loadingFinishedString = "Complete!";
 
         private CancellationTokenSource _cancellationTokenSource;
 
@@ -21,7 +21,7 @@ namespace SpaceInvaders.Scenes.GamePreload
             _cancellationTokenSource = new CancellationTokenSource();
         }
 
-        public async UniTask PlayLoadingAnimation(float duration)
+        public async UniTask PlayLoadingAnimation(float duration, float endDelay)
         {
             float loadingPercentage = 0;
             var tween = DOTween.To(() => loadingPercentage, x => loadingPercentage = x, 100, duration)
@@ -33,13 +33,13 @@ namespace SpaceInvaders.Scenes.GamePreload
             await tween.ToUniTask(cancellationToken: _cancellationTokenSource.Token);
             _loadingText.text = _loadingFinishedString;
 
-            //Adding another second of delay to see the loading finished text 
-            await UniTask.Delay(1000, cancellationToken: _cancellationTokenSource.Token);
+            //Adding another delay to see the loading finished text
+            await UniTask.Delay((int)endDelay * 1000, cancellationToken: _cancellationTokenSource.Token);
         }
 
         private void OnDestroy()
         {
-            _cancellationTokenSource.Dispose();
+            _cancellationTokenSource?.CancelAndDispose();
         }
     }
 }

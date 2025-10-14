@@ -27,6 +27,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Screen
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d232e89ed9ce8a84d950d87121879148
+    m_Address: Screens/ErrorDialogView
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Screen
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ebcb015deefa090449f0baf0c7986b64
     m_Address: Screens/MenuView
     m_ReadOnly: 0

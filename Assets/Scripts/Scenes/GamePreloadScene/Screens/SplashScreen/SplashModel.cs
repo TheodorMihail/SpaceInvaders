@@ -4,6 +4,8 @@ namespace SpaceInvaders.Scenes.GamePreload
 {
     public class SplashModel : Model
     {
-        public int AnimationSimulationTimerSeconds = 2;
+        public float AnimationSimulationTimerSeconds { get; } = 2f;
+        public float AnimationStartDelayTimerSeconds { get; } = 0.5f;
+        public float AnimationEndDelayTimerSeconds { get; } = 1f;
     }
 }

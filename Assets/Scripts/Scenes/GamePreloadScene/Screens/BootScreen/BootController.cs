@@ -13,7 +13,7 @@ namespace SpaceInvaders.Scenes.GamePreload
         {
             base.Initialize();
             //Simulating a server data, addressables or any other kind of initialization loading 
-            await _view.PlayLoadingAnimation(_model.DelayTimerSeconds);
+            await _view.PlayLoadingAnimation(_model.AnimationSimulationTimerSeconds, _model.AnimationEndDelayTimerSeconds);
             CloseScreen();
         }
     }

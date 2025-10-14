@@ -17,29 +17,21 @@ namespace SpaceInvaders.Scenes.GamePreload
             _cancellationTokenSource = new CancellationTokenSource();
         }
 
-        public async UniTask PlayLogoAnimation(float duration)
+        public async UniTask PlayLogoAnimation(float duration, float startDelay, float endDelay)
         {
-            float loadingPercentage = 0;
             _logoCanvasGroup.alpha = 0;
-
-            await UniTask.Delay(1000, cancellationToken: _cancellationTokenSource.Token);
-            
-            var tween = DOTween.To(() => loadingPercentage, x => loadingPercentage = x, 100, duration)
-                .OnUpdate(() =>
-                {
-                    _logoCanvasGroup.alpha = loadingPercentage / 100;
-                });
-
+            await UniTask.Delay((int)startDelay * 1000, cancellationToken: _cancellationTokenSource.Token);
+            var tween = DOTween.To(() => _logoCanvasGroup.alpha, x => _logoCanvasGroup.alpha = x, 1f, duration);
             await tween.ToUniTask(cancellationToken: _cancellationTokenSource.Token);
             _logoCanvasGroup.alpha = 1;
 
-            //Adding another second of delay to see the logo fully visible
-            await UniTask.Delay(1000, cancellationToken: _cancellationTokenSource.Token);
+            //Adding another delay to see the logo fully visible
+            await UniTask.Delay((int)endDelay * 1000, cancellationToken: _cancellationTokenSource.Token);
         }
         
         private void OnDestroy()
         {
-            _cancellationTokenSource.Dispose();
+            _cancellationTokenSource?.CancelAndDispose();
         }
     }
 }

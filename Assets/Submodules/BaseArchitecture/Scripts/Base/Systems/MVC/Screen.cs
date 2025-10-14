@@ -122,7 +122,7 @@ namespace Base.Systems
             }
             catch (Exception ex)
             {
-                _errorManager.LogError($"Error creating screen {GetType().Name}", ex);
+                _errorManager.LogError<Screen<M, V, C>>($"Error creating screen {GetType().Name}", ex);
                 await _errorManager.ShowErrorDialog("An error occurred while loading the screen.");
                 CloseScreen();
             }
