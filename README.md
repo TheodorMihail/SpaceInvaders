@@ -28,6 +28,6 @@ This project uses the **[BaseArchitecture](https://github.com/TheodorMihail/Base
 
 ### Project Structure
 - `/Assets/Scripts/` - Game-specific code
-- `/Assets/Submodules/BaseArchitecture/` - Symlinked core framework (Scripts, UI, Resources)
+- `/Assets/Submodules/BaseArchitecture/` - Symlinked core framework (Scripts, UI)
 - `/Submodules/BaseArchitecture/` - Git submodule
 - Assembly definitions for optimized compile times
