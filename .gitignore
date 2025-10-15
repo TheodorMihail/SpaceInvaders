@@ -73,3 +73,8 @@ Assets/AddressableAssetsData/OSX.meta
 
  # Jetbrains IDEA
 .idea/
+
+# Ignore junction points to BaseArchitecture submodule
+# These folders are tracked in the submodule, not the main repo
+/Assets/Submodules/BaseArchitecture/Scripts/
+/Assets/Submodules/BaseArchitecture/UI/
