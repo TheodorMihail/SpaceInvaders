@@ -1,4 +1,4 @@
-using Base.Systems;
+using BaseArchitecture.Core;
 
 namespace SpaceInvaders.Scenes.MainMenu
 {

@@ -1,6 +1,6 @@
-using Base.Systems;
+using BaseArchitecture.Core;
 
-namespace SpaceInvaders.Scenes.GamePreload
+namespace SpaceInvaders.Scenes.Preload
 {
     public class BootScreen : Screen<BootModel, BootView, BootController>
     {

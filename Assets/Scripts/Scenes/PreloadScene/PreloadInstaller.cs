@@ -1,14 +1,14 @@
-using Base.Systems;
+using BaseArchitecture.Core;
 using UnityEngine;
 using Zenject;
 
-namespace SpaceInvaders.Scenes.GamePreload
+namespace SpaceInvaders.Scenes.Preload
 {
     /// <summary>
     /// Scene-level Zenject installer. Binds screen containers and state machine components.
     /// Must call UpdateDIContainer() to enable UIManager screen instantiation in scene context.
     /// </summary>
-    public class GamePreloadInstaller : MonoInstaller
+    public class PreloadInstaller : MonoInstaller
     {
         public Transform ScreensContainer;
 
@@ -30,7 +30,7 @@ namespace SpaceInvaders.Scenes.GamePreload
         {
             Container.BindInterfacesTo<BootState>().AsSingle();
             Container.BindInterfacesTo<SplashState>().AsSingle();
-            Container.BindInterfacesTo<GamePreloadStateMachine>().AsSingle();
+            Container.BindInterfacesTo<PreloadStateMachine>().AsSingle();
         }
     }
 }

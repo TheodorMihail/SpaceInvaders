@@ -1,6 +1,6 @@
-using Base.Systems;
+using BaseArchitecture.Core;
 
-namespace SpaceInvaders.Scenes.GamePreload
+namespace SpaceInvaders.Scenes.Preload
 {
     public class SplashController : Controller<SplashScreen, SplashModel, SplashView>
     {

@@ -1,11 +1,11 @@
-using Base.Systems;
+using BaseArchitecture.Core;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System.Threading;
 using TMPro;
 using UnityEngine;
 
-namespace SpaceInvaders.Scenes.GamePreload
+namespace SpaceInvaders.Scenes.Preload
 {
     [AddressablePath("Screens/BootView")]
     public class BootView : View

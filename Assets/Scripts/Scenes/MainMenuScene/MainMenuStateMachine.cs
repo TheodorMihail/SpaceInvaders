@@ -1,4 +1,5 @@
-using Base.Systems;
+using BaseArchitecture.Core;
+using SpaceInvaders.Project;
 using System.Collections.Generic;
 using UnityEngine;
 using static SpaceInvaders.Scenes.MainMenu.MainMenuStateMachine;
@@ -37,7 +38,7 @@ namespace SpaceInvaders.Scenes.MainMenu
                         switch (result.State)
                         {
                             case ResultType.PlayGame:
-                                _scenesManager.LoadScene(ScenesManager.SceneType.Game.ToString());
+                                _scenesManager.LoadScene(SceneNames.Game);
                                 break;
                             case ResultType.QuitGame:
                                 Application.Quit();

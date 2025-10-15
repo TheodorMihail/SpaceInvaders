@@ -1,11 +1,11 @@
-using Base.Systems;
-using static SpaceInvaders.Scenes.GamePreload.GamePreloadStateMachine;
+using BaseArchitecture.Core;
+using static SpaceInvaders.Scenes.Preload.PreloadStateMachine;
 
-namespace SpaceInvaders.Scenes.GamePreload
+namespace SpaceInvaders.Scenes.Preload
 {
-    public class SplashState : BaseState<GamePreloadStateIds>
+    public class SplashState : BaseState<PreloadStateIds>
     {
-        public override GamePreloadStateIds Id => GamePreloadStateIds.SplashState;
+        public override PreloadStateIds Id => PreloadStateIds.SplashState;
 
         private readonly IUIManager _uiManager;
 
