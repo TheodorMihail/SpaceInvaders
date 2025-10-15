@@ -35,7 +35,7 @@ namespace SpaceInvaders.Scenes.Preload
                         SetState(PreloadStateIds.BootState);
                         break;
                     case PreloadStateIds.BootState:
-                        _scenesManager.LoadScene(SceneNames.MainMenu);
+                        _scenesManager.LoadScene(SceneType.MainMenu.ToString());
                         break;
                 }
             }

@@ -38,10 +38,15 @@ namespace SpaceInvaders.Scenes.MainMenu
                         switch (result.State)
                         {
                             case ResultType.PlayGame:
-                                _scenesManager.LoadScene(SceneNames.Game);
+                                _scenesManager.LoadScene(SceneType.Game.ToString());
                                 break;
                             case ResultType.QuitGame:
+#if UNITY_EDITOR
+                                UnityEditor.EditorApplication.isPlaying = false;
+#else
                                 Application.Quit();
+#endif
+                                
                                 break;
                         }
                         
