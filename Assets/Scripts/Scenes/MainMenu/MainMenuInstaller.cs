@@ -19,7 +19,7 @@ namespace SpaceInvaders.Scenes.MainMenu
             Container.Bind<Transform>().WithId(IScreen.ScreensContainerID)
                 .FromInstance(_screensContainer).AsCached();
 
-            Container.Resolve<IUIManager>().UpdateDIContainer(Container);
+            Container.TryResolve<IUIManager>().UpdateDIContainer(Container);
         }
 
         private void StateMachineInstall()
