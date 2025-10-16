@@ -25,7 +25,7 @@ namespace SpaceInvaders.Scenes.Game
         {
             _view.OnStartButtonClicked -= HandleStartButtonClicked;
             await _view.StartCountdownAnimation(_model.CountdownSeconds);
-            CloseScreen();
+            Close();
         }
     }
 }

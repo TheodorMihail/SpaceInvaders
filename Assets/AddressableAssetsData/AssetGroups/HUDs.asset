@@ -10,14 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: Default Local Group
+  m_Name: HUDs
   m_EditorClassIdentifier: 
-  m_GroupName: Default Local Group
-  m_GUID: 9e1e6afe3ff39294898675449c1e4de8
-  m_SerializeEntries: []
+  m_GroupName: HUDs
+  m_GUID: 29d7ad349a4d5be49bbad41f6d07dad0
+  m_SerializeEntries:
+  - m_GUID: a902def3893cc264c9cffd6b00b67c3a
+    m_Address: HUD/GameplayHUDView
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - HUD
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 79686f5543778ad49834ada422f73fc5, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: 5cdb7f1dd545ef04080532580d1dfa61, type: 2}
-    - {fileID: 11400000, guid: 679ff487713c7454293a7e766b4d9212, type: 2}
+    - {fileID: 11400000, guid: 22f051ad1b80e954ea557338717d6edf, type: 2}
+    - {fileID: 11400000, guid: de46b306fb01dc8459fbf0dd6f853a78, type: 2}

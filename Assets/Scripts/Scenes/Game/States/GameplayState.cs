@@ -22,6 +22,7 @@ namespace SpaceInvaders.Scenes.Game
 
         private async void ShowGameStartMenu()
         {
+            _uiManager.ShowHUD<GameplayHUD>();
             await _uiManager.ShowScreen<GameStartScreen>();
         }
     }
