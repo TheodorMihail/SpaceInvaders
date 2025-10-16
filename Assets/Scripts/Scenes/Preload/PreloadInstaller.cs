@@ -21,9 +21,9 @@ namespace SpaceInvaders.Scenes.Preload
         private void ContainersInstall()
         {
             Container.Bind<Transform>().WithId(IScreen.ScreensContainerID)
-                .FromInstance(_screensContainer).AsSingle();
+                .FromInstance(_screensContainer).AsCached();
 
-            Container.Resolve<IUIManager>().UpdateDIContainer(Container);
+            Container.TryResolve<IUIManager>().UpdateDIContainer(Container);
         }
 
         private void StateMachineInstall()

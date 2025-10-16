@@ -1,5 +1,6 @@
 using BaseArchitecture.Core;
 using System.Collections.Generic;
+using Zenject;
 using static SpaceInvaders.Scenes.Game.GameStateMachine;
 
 namespace SpaceInvaders.Scenes.Game
@@ -14,14 +15,11 @@ namespace SpaceInvaders.Scenes.Game
 
         protected override GameStateIds DefaultStateId => GameStateIds.Playing;
 
-        private IScenesManager _scenesManager;
-        private IErrorManager _errorManager;
+        [Inject] private IScenesManager _scenesManager;
+        [Inject] private IErrorManager _errorManager;
 
-        public GameStateMachine(IList<IState<GameStateIds>> gameStates,
-            IScenesManager scenesManager, IErrorManager errorManager) : base(gameStates)
+        public GameStateMachine(IList<IState<GameStateIds>> gameStates) : base(gameStates)
         {
-            _scenesManager = scenesManager;
-            _errorManager = errorManager;
         }
 
         

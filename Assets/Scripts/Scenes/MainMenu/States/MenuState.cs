@@ -1,4 +1,5 @@
 using BaseArchitecture.Core;
+using Zenject;
 using static SpaceInvaders.Scenes.MainMenu.MainMenuStateMachine;
 
 namespace SpaceInvaders.Scenes.MainMenu
@@ -7,12 +8,7 @@ namespace SpaceInvaders.Scenes.MainMenu
     {
         public override MainMenuStateIds Id => MainMenuStateIds.Menu;
 
-        private readonly IUIManager _uiManager;
-
-        public MenuState(IUIManager uiManager)
-        {
-            _uiManager = uiManager;
-        }
+        [Inject] private readonly IUIManager _uiManager;
 
         public override void OnEnter()
         {

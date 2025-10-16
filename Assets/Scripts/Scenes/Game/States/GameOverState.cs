@@ -1,4 +1,5 @@
 using BaseArchitecture.Core;
+using Zenject;
 using static SpaceInvaders.Scenes.Game.GameStateMachine;
 
 namespace SpaceInvaders.Scenes.Game
@@ -7,12 +8,7 @@ namespace SpaceInvaders.Scenes.Game
     {
         public override GameStateIds Id => GameStateIds.GameOver;
 
-        private readonly IUIManager _uiManager;
-
-        public GameOverState(IUIManager uiManager)
-        {
-            _uiManager = uiManager;
-        }
+        [Inject] private readonly IUIManager _uiManager;
 
         public override void OnEnter()
         {

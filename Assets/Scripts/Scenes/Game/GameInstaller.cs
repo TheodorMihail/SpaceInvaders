@@ -12,6 +12,7 @@ namespace SpaceInvaders.Scenes.Game
         public override void InstallBindings()
         {
             ContainersInstall();
+            ManagersInstall();
             StateMachineInstall();
         }
 
@@ -22,7 +23,12 @@ namespace SpaceInvaders.Scenes.Game
             Container.Bind<Transform>().WithId(IHUD.HUDContainerID)
                 .FromInstance(_hudContainer).AsCached();
 
-            Container.Resolve<IUIManager>().UpdateDIContainer(Container);
+            Container.TryResolve<IUIManager>().UpdateDIContainer(Container);
+        }
+
+        private void ManagersInstall()
+        {
+            Container.BindInterfacesTo<GameplayManager>().AsSingle();
         }
 
         private void StateMachineInstall()
