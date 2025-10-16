@@ -24,7 +24,7 @@ namespace SpaceInvaders.Scenes.MainMenu
 
         private void HandlePlayGameButtonClicked()
         {
-            this.CloseScreenWithResult(_screen, new MenuScreen.MenuScreenResult
+            CloseScreenWithResult(new MenuScreen.MenuScreenResult
             {
                 State = MenuScreen.ResultType.PlayGame
             });
@@ -32,7 +32,7 @@ namespace SpaceInvaders.Scenes.MainMenu
 
         private void HandleQuitGameButtonClicked()
         {
-            this.CloseScreenWithResult(_screen, new MenuScreen.MenuScreenResult
+            CloseScreenWithResult(new MenuScreen.MenuScreenResult
             {
                 State = MenuScreen.ResultType.QuitGame
             });

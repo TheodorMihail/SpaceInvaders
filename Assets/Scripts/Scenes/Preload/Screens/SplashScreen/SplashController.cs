@@ -15,7 +15,7 @@ namespace SpaceInvaders.Scenes.Preload
             await _view.PlayLogoAnimation(_model.AnimationSimulationTimerSeconds,
                 _model.AnimationStartDelayTimerSeconds, _model.AnimationEndDelayTimerSeconds);
                 
-            CloseScreen();
+            Close();
         }
     }
 }

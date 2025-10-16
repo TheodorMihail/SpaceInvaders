@@ -17,6 +17,13 @@ namespace SpaceInvaders.Scenes.Game
         public override void OnEnter()
         {
             base.OnEnter();
+            ShowGameStartMenu();
+        }
+
+        private async void ShowGameStartMenu()
+        {
+            _uiManager.ShowHUD<GameplayHUD>();
+            await _uiManager.ShowScreen<GameStartScreen>();
         }
     }
 }

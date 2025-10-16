@@ -6,7 +6,7 @@ namespace SpaceInvaders.Scenes.MainMenu
 {
     public class MainMenuInstaller : MonoInstaller
     {
-        public Transform ScreensContainer;
+        [SerializeField] private Transform _screensContainer;
 
         public override void InstallBindings()
         {
@@ -17,7 +17,7 @@ namespace SpaceInvaders.Scenes.MainMenu
         private void ContainersInstall()
         {
             Container.Bind<Transform>().WithId(IScreen.ScreensContainerID)
-                .FromInstance(ScreensContainer).AsSingle();
+                .FromInstance(_screensContainer).AsCached();
 
             Container.Resolve<IUIManager>().UpdateDIContainer(Container);
         }

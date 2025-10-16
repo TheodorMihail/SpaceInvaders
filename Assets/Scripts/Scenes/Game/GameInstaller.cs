@@ -6,7 +6,8 @@ namespace SpaceInvaders.Scenes.Game
 {
     public class GameInstaller : MonoInstaller
     {
-        public Transform ScreensContainer;
+        [SerializeField] private Transform _screensContainer;
+        [SerializeField] private Transform _hudContainer;
 
         public override void InstallBindings()
         {
@@ -17,7 +18,9 @@ namespace SpaceInvaders.Scenes.Game
         private void ContainersInstall()
         {
             Container.Bind<Transform>().WithId(IScreen.ScreensContainerID)
-                .FromInstance(ScreensContainer).AsSingle();
+                .FromInstance(_screensContainer).AsCached();
+            Container.Bind<Transform>().WithId(IHUD.HUDContainerID)
+                .FromInstance(_hudContainer).AsCached();
 
             Container.Resolve<IUIManager>().UpdateDIContainer(Container);
         }

@@ -10,7 +10,7 @@ namespace SpaceInvaders.Scenes.Preload
     /// </summary>
     public class PreloadInstaller : MonoInstaller
     {
-        public Transform ScreensContainer;
+        [SerializeField] private Transform _screensContainer;
 
         public override void InstallBindings()
         {
@@ -21,7 +21,7 @@ namespace SpaceInvaders.Scenes.Preload
         private void ContainersInstall()
         {
             Container.Bind<Transform>().WithId(IScreen.ScreensContainerID)
-                .FromInstance(ScreensContainer).AsSingle();
+                .FromInstance(_screensContainer).AsSingle();
 
             Container.Resolve<IUIManager>().UpdateDIContainer(Container);
         }
