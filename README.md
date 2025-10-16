@@ -35,10 +35,16 @@ This project uses BaseArchitecture as a git submodule, providing the core framew
 ## 🛠️ Using as Reference
 
 ### Junction Points Setup (Windows)
-The project uses Windows Junction Points to link the submodule:
+The project uses Windows Junction Points to link the submodule. Run these commands from the project root directory:
 ```powershell
-New-Item -ItemType Junction -Path "Assets\Submodules\BaseArchitecture\Scripts" -Target "..\..\Submodules\BaseArchitecture\Assets\Scripts\Core"
-New-Item -ItemType Junction -Path "Assets\Submodules\BaseArchitecture\UI" -Target "..\..\Submodules\BaseArchitecture\Assets\UI"
+New-Item -ItemType Junction -Path "Assets\Submodules\BaseArchitecture\Scripts" -Target "$PWD\Submodules\BaseArchitecture\Assets\Scripts\Core"
+New-Item -ItemType Junction -Path "Assets\Submodules\BaseArchitecture\UI" -Target "$PWD\Submodules\BaseArchitecture\Assets\UI"
+```
+
+Or use absolute paths:
+```powershell
+New-Item -ItemType Junction -Path "D:\YourPath\SpaceInvaders\Assets\Submodules\BaseArchitecture\Scripts" -Target "D:\YourPath\SpaceInvaders\Submodules\BaseArchitecture\Assets\Scripts\Core"
+New-Item -ItemType Junction -Path "D:\YourPath\SpaceInvaders\Assets\Submodules\BaseArchitecture\UI" -Target "D:\YourPath\SpaceInvaders\Submodules\BaseArchitecture\Assets\UI"
 ```
 
 ### Assembly Definitions

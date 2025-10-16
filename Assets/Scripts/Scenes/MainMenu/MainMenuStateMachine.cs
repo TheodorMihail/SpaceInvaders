@@ -2,6 +2,7 @@ using BaseArchitecture.Core;
 using SpaceInvaders.Project;
 using System.Collections.Generic;
 using UnityEngine;
+using Zenject;
 using static SpaceInvaders.Scenes.MainMenu.MainMenuStateMachine;
 using static SpaceInvaders.Scenes.MainMenu.MenuScreen;
 
@@ -16,14 +17,11 @@ namespace SpaceInvaders.Scenes.MainMenu
 
         protected override MainMenuStateIds DefaultStateId => MainMenuStateIds.Menu;
 
-        private IScenesManager _scenesManager;
-        private IErrorManager _errorManager;
+        [Inject] private IScenesManager _scenesManager;
+        [Inject] private IErrorManager _errorManager;
 
-        public MainMenuStateMachine(IList<IState<MainMenuStateIds>> mainMenuStates,
-            IScenesManager scenesManager, IErrorManager errorManager) : base(mainMenuStates)
+        public MainMenuStateMachine(IList<IState<MainMenuStateIds>> mainMenuStates) : base(mainMenuStates)
         {
-            _scenesManager = scenesManager;
-            _errorManager = errorManager;
         }
 
         protected override void OnStateFinished((MainMenuStateIds stateId, object[] paramsList) finishedState)

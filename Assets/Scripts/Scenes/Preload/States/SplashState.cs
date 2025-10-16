@@ -1,4 +1,5 @@
 using BaseArchitecture.Core;
+using Zenject;
 using static SpaceInvaders.Scenes.Preload.PreloadStateMachine;
 
 namespace SpaceInvaders.Scenes.Preload
@@ -7,12 +8,7 @@ namespace SpaceInvaders.Scenes.Preload
     {
         public override PreloadStateIds Id => PreloadStateIds.SplashState;
 
-        private readonly IUIManager _uiManager;
-
-        public SplashState(IUIManager uiManager)
-        {
-            _uiManager = uiManager;
-        }
+        [Inject] private readonly IUIManager _uiManager;
 
         public override async void OnEnter()
         {

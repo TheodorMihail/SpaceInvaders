@@ -1,5 +1,4 @@
 using BaseArchitecture.Core;
-using BaseArchitecture.Core;
 using Zenject;
 
 namespace SpaceInvaders.Project

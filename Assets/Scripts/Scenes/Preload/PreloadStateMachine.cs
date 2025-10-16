@@ -1,6 +1,7 @@
 using BaseArchitecture.Core;
 using SpaceInvaders.Project;
 using System.Collections.Generic;
+using Zenject;
 using static SpaceInvaders.Scenes.Preload.PreloadStateMachine;
 
 namespace SpaceInvaders.Scenes.Preload
@@ -15,14 +16,11 @@ namespace SpaceInvaders.Scenes.Preload
 
         protected override PreloadStateIds DefaultStateId => PreloadStateIds.SplashState;
 
-        private IScenesManager _scenesManager;
-        private IErrorManager _errorManager;
+        [Inject] private IScenesManager _scenesManager;
+        [Inject] private IErrorManager _errorManager;
 
-        public PreloadStateMachine(IList<IState<PreloadStateIds>> preloadStates,
-            IScenesManager scenesManager, IErrorManager errorManager) : base(preloadStates)
+        public PreloadStateMachine(IList<IState<PreloadStateIds>> preloadStates) : base(preloadStates)
         {
-            _scenesManager = scenesManager;
-            _errorManager = errorManager;
         }
 
         protected override void OnStateFinished((PreloadStateIds stateId, object[] paramsList) finishedState)
