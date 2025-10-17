@@ -5,7 +5,6 @@ namespace SpaceInvaders.Scenes.Game
 {
     public interface IGameplayManager : IInitializable, IDisposable
     {
-        void StartGame();
     }
 
     public class GameplayManager : IGameplayManager
@@ -15,10 +14,6 @@ namespace SpaceInvaders.Scenes.Game
         }
 
         public void Dispose()
-        {
-        }
-
-        public void StartGame()
         {
         }
     }
