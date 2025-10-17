@@ -8,10 +8,13 @@ namespace SpaceInvaders.Scenes.Game
     {
         [SerializeField] private Transform _screensContainer;
         [SerializeField] private Transform _hudContainer;
+        [SerializeField] private Transform _gameContainer;
+        [SerializeField] private GameObject _playerPrefab;
 
         public override void InstallBindings()
         {
             ContainersInstall();
+            ServicesInstall();
             ManagersInstall();
             StateMachineInstall();
         }
@@ -22,13 +25,23 @@ namespace SpaceInvaders.Scenes.Game
                 .FromInstance(_screensContainer).AsCached();
             Container.Bind<Transform>().WithId(IHUD.HUDContainerID)
                 .FromInstance(_hudContainer).AsCached();
+            Container.Bind<Transform>().WithId(GameplayState.GameplayContainerID)
+                .FromInstance(_gameContainer).AsCached();
 
+            Container.TryResolve<ICustomFactory>().UpdateDIContainer(Container);
             Container.TryResolve<IUIManager>().UpdateDIContainer(Container);
+        }
+
+        private void ServicesInstall()
+        {
+            Container.BindInterfacesTo<InputService>().AsSingle();
+            Container.BindInterfacesTo<SpawnService>().AsSingle();
         }
 
         private void ManagersInstall()
         {
             Container.BindInterfacesTo<GameplayManager>().AsSingle();
+            Container.BindInterfacesTo<PlayerManager>().AsSingle().WithArguments(_playerPrefab);
         }
 
         private void StateMachineInstall()

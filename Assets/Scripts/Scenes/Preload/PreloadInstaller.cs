@@ -23,6 +23,7 @@ namespace SpaceInvaders.Scenes.Preload
             Container.Bind<Transform>().WithId(IScreen.ScreensContainerID)
                 .FromInstance(_screensContainer).AsCached();
 
+            Container.TryResolve<ICustomFactory>().UpdateDIContainer(Container);
             Container.TryResolve<IUIManager>().UpdateDIContainer(Container);
         }
 
