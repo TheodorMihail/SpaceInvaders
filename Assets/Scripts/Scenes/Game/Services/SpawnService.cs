@@ -5,38 +5,32 @@ using Zenject;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public interface ISpawnService : IInitializable, IDisposable
+    public interface ISpawnService : IDisposable
     {
-        GameObject Spawn(GameObject prefab, Vector3 position, Quaternion rotation);
-        void Despawn(GameObject obj);
+        T Spawn<T>(T prefab, Vector3 position, Quaternion rotation) where T : MonoBehaviour, IPoolableObject;
+        void Despawn<T>(T instance) where T : MonoBehaviour, IPoolableObject;
     }
 
     public class SpawnService : ISpawnService
     {
-        [Inject] private readonly ICustomFactory _factory;
-        [Inject] private readonly DiContainer _diContainer;
-
-        private Transform _container;
-
-        public void Initialize()
-        {
-            _container = _diContainer.TryResolveId<Transform>(GameplayState.GameplayContainerID);
-        }
+        [Inject] private readonly IObjectPooling _objectPooling;
+        [Inject] private readonly Transform _container;
 
         public void Dispose()
         {
+            _objectPooling.ClearAll();
         }
 
-        public GameObject Spawn(GameObject prefab, Vector3 position, Quaternion rotation)
+        public T Spawn<T>(T prefab, Vector3 position, Quaternion rotation) where T : MonoBehaviour, IPoolableObject
         {
-            GameObject obj = _factory.CreateFromPrefab(prefab, _container);
-            obj.transform.SetLocalPositionAndRotation(position, rotation);
-            return obj;
+            var instance = _objectPooling.Get(prefab, _container);
+            instance.transform.SetLocalPositionAndRotation(position, rotation);
+            return instance;
         }
 
-        public void Despawn(GameObject obj)
+        public void Despawn<T>(T instance) where T : MonoBehaviour, IPoolableObject
         {
-            // TODO: Return to pool
+            _objectPooling.Return(instance);
         }
     }
 }

@@ -4,7 +4,7 @@ using Zenject;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public interface IInputService : IGameplayStateHandler, ITickable
+    public interface IInputService :  ITickable
     {
         event Action OnShoot;
         event Action<Vector3> OnMove;
@@ -13,31 +13,13 @@ namespace SpaceInvaders.Scenes.Game
 
     public class InputService : IInputService
     {
-        private bool _gameStarted = false;
-
         public event Action OnShoot;
         public event Action<Vector3> OnMove;
         public event Action OnAnyKeyPress;
 
-        public void OnGameStarted()
-        {
-            _gameStarted = true;
-        }   
-
-        public void OnGameEnded()
-        {
-            _gameStarted = false;
-        }
-
         public void Tick()
         {
             HandleAnyKeyPress();
-
-            if (!_gameStarted)
-            {
-                return;
-            }
-
             HandleMovementInput();
             HandleShootInput();
         }

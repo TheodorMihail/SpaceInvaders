@@ -515,7 +515,7 @@ MonoBehaviour:
   _screensContainer: {fileID: 1452220017}
   _hudContainer: {fileID: 378160808}
   _gameContainer: {fileID: 1578690923}
-  _playerPrefab: {fileID: 2996160477665614555, guid: 8b18bb4f15ab12e468b1ba0fcbd47d1d, type: 3}
+  _playerPrefab: {fileID: 4857897351694877359, guid: 8b18bb4f15ab12e468b1ba0fcbd47d1d, type: 3}
 --- !u!1 &1578690922
 GameObject:
   m_ObjectHideFlags: 0

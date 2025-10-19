@@ -1,51 +1,33 @@
 using System;
-using UnityEngine;
 using Zenject;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public interface IPlayerManager : IInitializable, IDisposable, IGameplayStateHandler
+    public interface IPlayerManager : IInitializable, IDisposable
     {
     }
 
-    public class PlayerManager : IPlayerManager
+    public class PlayerManager : IPlayerManager, IGameStartedListener
     {
-        [Inject] private readonly IInputService _inputService;
         [Inject] private readonly ISpawnService _spawnService;
-        [Inject] private readonly GameObject _playerPrefab;
+        [Inject] private readonly ShipBehaviourComponent _playerPrefab;
 
-        private Transform _playerInstance;
+        private ShipBehaviourComponent _playerInstance;
+
 
         public void Initialize()
         {
-            _playerInstance = _spawnService.Spawn(_playerPrefab, _playerPrefab.transform.localPosition, _playerPrefab.transform.localRotation).transform;
-        }
-
-        public void OnGameStarted()
-        {
-            _inputService.OnShoot += OnPlayerShoot;
-            _inputService.OnMove += OnPlayerMove;
-        }
-
-        public void OnGameEnded()
-        {
-            _inputService.OnShoot -= OnPlayerShoot;
-            _inputService.OnMove -= OnPlayerMove;
+            _playerInstance = _spawnService.Spawn(_playerPrefab, _playerPrefab.transform.localPosition, _playerPrefab.transform.localRotation);
         }
 
         public void Dispose()
         {
             DespawnPlayer();
         }
-        
-        private void OnPlayerShoot()
-        {
-            // Handle player shoot logic
-        }
 
-        private void OnPlayerMove(Vector3 direction)
+        public void OnGameStarted()
         {
-            _playerInstance.Translate(direction);
+            _playerInstance.Initialize();
         }
 
         private void DespawnPlayer()
@@ -55,7 +37,7 @@ namespace SpaceInvaders.Scenes.Game
                 return;
             }
 
-            _spawnService.Despawn(_playerInstance.gameObject);
+            _spawnService.Despawn(_playerInstance);
             _playerInstance = null;
         }
     }

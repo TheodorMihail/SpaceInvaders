@@ -9,7 +9,8 @@ namespace SpaceInvaders.Scenes.Game
         [SerializeField] private Transform _screensContainer;
         [SerializeField] private Transform _hudContainer;
         [SerializeField] private Transform _gameContainer;
-        [SerializeField] private GameObject _playerPrefab;
+        [SerializeField] private Transform _objectPoolingContainer;
+        [SerializeField] private ShipBehaviourComponent _playerPrefab;
 
         public override void InstallBindings()
         {
@@ -25,8 +26,6 @@ namespace SpaceInvaders.Scenes.Game
                 .FromInstance(_screensContainer).AsCached();
             Container.Bind<Transform>().WithId(IHUD.HUDContainerID)
                 .FromInstance(_hudContainer).AsCached();
-            Container.Bind<Transform>().WithId(GameplayState.GameplayContainerID)
-                .FromInstance(_gameContainer).AsCached();
 
             Container.TryResolve<ICustomFactory>().UpdateDIContainer(Container);
             Container.TryResolve<IUIManager>().UpdateDIContainer(Container);
@@ -35,13 +34,14 @@ namespace SpaceInvaders.Scenes.Game
         private void ServicesInstall()
         {
             Container.BindInterfacesTo<InputService>().AsSingle();
-            Container.BindInterfacesTo<SpawnService>().AsSingle();
+            Container.BindInterfacesTo<SpawnService>().AsSingle().WithArguments(_gameContainer);
         }
 
         private void ManagersInstall()
         {
             Container.BindInterfacesTo<GameplayManager>().AsSingle();
             Container.BindInterfacesTo<PlayerManager>().AsSingle().WithArguments(_playerPrefab);
+            Container.BindInterfacesTo<ObjectPooling>().AsSingle().WithArguments(_objectPoolingContainer);
         }
 
         private void StateMachineInstall()

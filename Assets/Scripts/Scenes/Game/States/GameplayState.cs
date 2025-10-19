@@ -6,19 +6,17 @@ using static SpaceInvaders.Scenes.Game.GameStateMachine;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public interface IGameplayStateHandler
+    public interface IGameStartedListener
     {
         void OnGameStarted();
-        void OnGameEnded();
     }
 
     public class GameplayState : BaseState<GameStateIds>
     {
-        public const string GameplayContainerID = "GameplayContainer";
         public override GameStateIds Id => GameStateIds.Playing;
 
         [Inject] private readonly IUIManager _uiManager;
-        [Inject] private readonly IList<IGameplayStateHandler> _gameplayStateHandlers;
+        [Inject] private readonly IList<IGameStartedListener> _gameStartedListeners;
 
         public override void OnEnter()
         {
@@ -42,7 +40,7 @@ namespace SpaceInvaders.Scenes.Game
 
         private void TriggerStartGame()
         {
-            foreach (var handler in _gameplayStateHandlers)
+            foreach (var handler in _gameStartedListeners)
             {
                 handler.OnGameStarted();
             }
@@ -54,10 +52,6 @@ namespace SpaceInvaders.Scenes.Game
 
         private void TriggerEndGame()
         {
-            foreach (var handler in _gameplayStateHandlers)
-            {
-                handler.OnGameEnded();
-            }
         }
         
         #endregion
