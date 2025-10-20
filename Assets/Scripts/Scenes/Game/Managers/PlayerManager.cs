@@ -3,42 +3,34 @@ using Zenject;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public interface IPlayerManager : IInitializable, IDisposable
+    public interface IPlayerManager : IInitializable
     {
+        event Action OnPlayerDestroyed;
     }
 
     public class PlayerManager : IPlayerManager, IGameStartedListener
     {
         [Inject] private readonly ISpawnService _spawnService;
-        [Inject] private readonly ShipBehaviourComponent _playerPrefab;
+        [Inject] private readonly PlayerSpaceshipBehaviourComponent _playerPrefab;
 
-        private ShipBehaviourComponent _playerInstance;
+        private PlayerSpaceshipBehaviourComponent _playerInstance;
 
+        public event Action OnPlayerDestroyed;
 
         public void Initialize()
         {
             _playerInstance = _spawnService.Spawn(_playerPrefab, _playerPrefab.transform.localPosition, _playerPrefab.transform.localRotation);
-        }
-
-        public void Dispose()
-        {
-            DespawnPlayer();
+            _playerInstance.OnDestroyed += OnDestroyedCallback;
         }
 
         public void OnGameStarted()
         {
-            _playerInstance.Initialize();
+            _playerInstance.EnableControls();
         }
-
-        private void DespawnPlayer()
+        
+        private void OnDestroyedCallback(SpaceshipBehaviourComponent component)
         {
-            if (_playerInstance == null)
-            {
-                return;
-            }
-
-            _spawnService.Despawn(_playerInstance);
-            _playerInstance = null;
+            OnPlayerDestroyed?.Invoke();
         }
     }
 }

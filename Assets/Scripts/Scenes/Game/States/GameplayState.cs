@@ -16,6 +16,8 @@ namespace SpaceInvaders.Scenes.Game
         public override GameStateIds Id => GameStateIds.Playing;
 
         [Inject] private readonly IUIManager _uiManager;
+        [Inject] private ILevelManager _levelManager;
+        [Inject] private IPlayerManager _playerManager; 
         [Inject] private readonly IList<IGameStartedListener> _gameStartedListeners;
 
         public override void OnEnter()
@@ -40,6 +42,9 @@ namespace SpaceInvaders.Scenes.Game
 
         private void TriggerStartGame()
         {
+            _levelManager.OnLevelCompleted += OnLevelCompletedCallback;
+            _playerManager.OnPlayerDestroyed += OnPlayerDestroyedCallback;
+
             foreach (var handler in _gameStartedListeners)
             {
                 handler.OnGameStarted();
@@ -50,8 +55,21 @@ namespace SpaceInvaders.Scenes.Game
 
         #region EndGameplay
 
+        private void OnPlayerDestroyedCallback()
+        {
+            TriggerEndGame();
+        }
+
+        private void OnLevelCompletedCallback(int levelNumber)
+        {
+            TriggerEndGame();
+        }
+
         private void TriggerEndGame()
         {
+            _levelManager.OnLevelCompleted -= OnLevelCompletedCallback;
+            _playerManager.OnPlayerDestroyed -= OnPlayerDestroyedCallback;
+            FinishState();
         }
         
         #endregion

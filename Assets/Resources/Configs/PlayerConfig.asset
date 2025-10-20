@@ -9,11 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dea69d41f90c6ea4fa55c27c1d60c145, type: 3}
-  m_Name: AddressableAssetGroupSortSettings
+  m_Script: {fileID: 11500000, guid: b7773d9b35997e54bb5da05bdf36c495, type: 3}
+  m_Name: PlayerConfig
   m_EditorClassIdentifier: 
-  sortOrder:
-  - a17f6ea565c249c40b9772b9de2de651
-  - 29d7ad349a4d5be49bbad41f6d07dad0
-  - 9e1e6afe3ff39294898675449c1e4de8
-  - f21c6ee93f5b08f41bda8a900b9a5c0d
+  _health: 100
+  _moveSpeed: 175
+  _fireRate: 0.5

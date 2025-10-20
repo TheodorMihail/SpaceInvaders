@@ -10,7 +10,9 @@ namespace SpaceInvaders.Scenes.Game
         [SerializeField] private Transform _hudContainer;
         [SerializeField] private Transform _gameContainer;
         [SerializeField] private Transform _objectPoolingContainer;
-        [SerializeField] private ShipBehaviourComponent _playerPrefab;
+
+        [SerializeField] private PlayerSpaceshipBehaviourComponent _playerPrefab;
+        [SerializeField] private LevelConfigSO _levelConfigSO;
 
         public override void InstallBindings()
         {
@@ -39,8 +41,9 @@ namespace SpaceInvaders.Scenes.Game
 
         private void ManagersInstall()
         {
-            Container.BindInterfacesTo<GameplayManager>().AsSingle();
+            Container.BindInterfacesTo<LevelManager>().AsSingle().WithArguments(_levelConfigSO);
             Container.BindInterfacesTo<PlayerManager>().AsSingle().WithArguments(_playerPrefab);
+            Container.BindInterfacesTo<EnemiesManager>().AsSingle();
             Container.BindInterfacesTo<ObjectPooling>().AsSingle().WithArguments(_objectPoolingContainer);
         }
 

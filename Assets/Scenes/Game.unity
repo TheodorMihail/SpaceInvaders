@@ -517,7 +517,8 @@ MonoBehaviour:
   _hudContainer: {fileID: 378160808}
   _gameContainer: {fileID: 1578690923}
   _objectPoolingContainer: {fileID: 1626955413}
-  _playerPrefab: {fileID: 4857897351694877359, guid: 8b18bb4f15ab12e468b1ba0fcbd47d1d, type: 3}
+  _playerPrefab: {fileID: 4866125439753665609, guid: 8b18bb4f15ab12e468b1ba0fcbd47d1d, type: 3}
+  _levelConfigSO: {fileID: 11400000, guid: dfbc3dee90d866c449223693c16750c8, type: 2}
 --- !u!1 &1578690922
 GameObject:
   m_ObjectHideFlags: 0

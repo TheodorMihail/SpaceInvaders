@@ -9,11 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dea69d41f90c6ea4fa55c27c1d60c145, type: 3}
-  m_Name: AddressableAssetGroupSortSettings
+  m_Script: {fileID: 11500000, guid: 01a7b35da76fa034da9811e74b84d3f9, type: 3}
+  m_Name: LevelConfig_1
   m_EditorClassIdentifier: 
-  sortOrder:
-  - a17f6ea565c249c40b9772b9de2de651
-  - 29d7ad349a4d5be49bbad41f6d07dad0
-  - 9e1e6afe3ff39294898675449c1e4de8
-  - f21c6ee93f5b08f41bda8a900b9a5c0d
+  _levelNumber: 1
+  _wavesConfigs:
+  - _wavesFormation:
+    - Position: {x: 0, y: 0}
+      EnemyType: Enemy1
+    _timeBetweenSpawns: 0
+    _entrySpeed: 0

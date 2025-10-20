@@ -15,7 +15,7 @@ MonoBehaviour:
   m_DefaultGroup: 9e1e6afe3ff39294898675449c1e4de8
   m_currentHash:
     serializedVersion: 2
-    Hash: cef751a56793772086eac339e7ef923b
+    Hash: 66fcdedd102060d70037ff5ee266b5e0
   m_OptimizeCatalogSize: 0
   m_BuildRemoteCatalog: 0
   m_CatalogRequestsTimeout: 0
@@ -53,7 +53,7 @@ MonoBehaviour:
     m_Id: 
   m_RemoteCatalogLoadPath:
     m_Id: 
-  m_ContentStateBuildPathProfileVariableName: 
+  m_ContentStateBuildPathProfileVariableName: <default settings path>
   m_CustomContentStateBuildPath: 
   m_ContentStateBuildPath: 
   m_BuildAddressablesWithPlayerBuild: 0
@@ -61,6 +61,7 @@ MonoBehaviour:
   m_GroupAssets:
   - {fileID: 11400000, guid: 23b48aa6111ec6540af301fe5d018a71, type: 2}
   - {fileID: 11400000, guid: b9b3cfcb0f465684187640fd2af1c1a0, type: 2}
+  - {fileID: 11400000, guid: a3769d769d44a9a469f7a72724219831, type: 2}
   - {fileID: 11400000, guid: 80f7ae924cba7ec4bb92e0830e3323b3, type: 2}
   m_BuildSettings:
     m_LogResourceManagerExceptions: 1
@@ -103,6 +104,7 @@ MonoBehaviour:
     - default
     - Screen
     - HUD
+    - Spaceships
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: c110712253539534cb403f2fb553b27d, type: 2}
