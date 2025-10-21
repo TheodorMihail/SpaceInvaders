@@ -7,6 +7,7 @@ namespace SpaceInvaders.Scenes.Game
     public class SpaceshipBehaviourComponent : MonoBehaviour, IPoolableObject
     {
         [SerializeField] private SpaceshipConfigSO _shipConfig;
+        [SerializeField] protected Renderer _renderer;
         protected int _currentHealth;
 
         public event Action<SpaceshipBehaviourComponent> OnDestroyed;

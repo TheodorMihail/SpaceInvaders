@@ -17,5 +17,9 @@ MonoBehaviour:
   - _wavesFormation:
     - Position: {x: 0, y: 0}
       EnemyType: Enemy1
-    _timeBetweenSpawns: 0
-    _entrySpeed: 0
+    - Position: {x: 50, y: 0}
+      EnemyType: Enemy1
+    - Position: {x: -50, y: 0}
+      EnemyType: Enemy1
+    _timeBetweenSpawns: 1
+    _entrySpeed: 100

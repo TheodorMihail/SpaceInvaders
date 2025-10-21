@@ -48,12 +48,7 @@ namespace SpaceInvaders.Scenes.Game
             if (mainCamera == null)
                 return;
 
-            Renderer renderer = GetComponent<Renderer>();
-            if (renderer != null)
-            {
-                _extents = renderer.bounds.extents;
-            }
-
+            _extents = _renderer.bounds.extents;
             Vector3 screenBottomLeft = mainCamera.ViewportToWorldPoint(new Vector3(0, 0, transform.position.y));
             Vector3 screenTopRight = mainCamera.ViewportToWorldPoint(new Vector3(1, 1, transform.position.y));
             Vector3 screenCenter = mainCamera.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, transform.position.y));

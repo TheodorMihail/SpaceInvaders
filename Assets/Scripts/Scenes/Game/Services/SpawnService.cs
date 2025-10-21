@@ -48,7 +48,6 @@ namespace SpaceInvaders.Scenes.Game
 
             foreach (var formation in waveConfig.WavesFormation)
             {
-                var position = new Vector3(formation.Position.x, 0, formation.Position.y);
                 var prefab = await _addressablesManager.LoadPrefab(PrefabsPath(formation.EnemyType));
 
                 if (prefab == null || !prefab.TryGetComponent<T>(out var enemyPrefab))
@@ -56,7 +55,8 @@ namespace SpaceInvaders.Scenes.Game
                     continue;
                 }
 
-                T spawnedEnemy = Spawn(enemyPrefab, position, Quaternion.identity);
+                var wavePosition = new Vector3(formation.Position.x, 0, formation.Position.y);
+                T spawnedEnemy = Spawn(enemyPrefab, prefab.transform.localPosition + wavePosition, prefab.transform.localRotation);
 
                 if (spawnedEnemy == null)
                 {
