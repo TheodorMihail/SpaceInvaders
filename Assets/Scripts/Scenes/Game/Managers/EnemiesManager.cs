@@ -37,7 +37,7 @@ namespace SpaceInvaders.Scenes.Game
         {
             await UniTask.Delay((int)(waveConfig.TimeBetweenSpawns * 1000));
 
-            _spawnedEnemies = await _spawnService.Spawn<EnemySpaceshipBehaviourComponent>(waveConfig);
+            _spawnedEnemies = await _spawnService.SpawnEnemies<EnemySpaceshipBehaviourComponent>(waveConfig);
             foreach(var enemy in _spawnedEnemies)
             {
                 enemy.OnDestroyed += OnEnemyDestroyedCallback;

@@ -13,5 +13,8 @@ MonoBehaviour:
   m_Name: PlayerConfig
   m_EditorClassIdentifier: 
   _health: 100
-  _moveSpeed: 175
+  _moveSpeed: 150
   _fireRate: 0.5
+  _projectilePrefab: {fileID: 5265903246518343602, guid: 2fb40c2b32a60434ba0a83df772c108e, type: 3}
+  _projectileDamage: 25
+  _projectileSpeed: 200

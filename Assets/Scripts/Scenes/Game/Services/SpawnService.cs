@@ -10,8 +10,9 @@ namespace SpaceInvaders.Scenes.Game
     public interface ISpawnService : IDisposable
     {
         T Spawn<T>(T prefab, Vector3 position, Quaternion rotation) where T : MonoBehaviour, IPoolableObject;
-        UniTask<List<T>> Spawn<T>(WaveConfigDTO waveConfig) where T : MonoBehaviour, IPoolableObject;
+        UniTask<List<T>> SpawnEnemies<T>(WaveConfigDTO waveConfig) where T : MonoBehaviour, IPoolableObject;
         void Despawn<T>(T instance) where T : MonoBehaviour, IPoolableObject;
+        ProjectileBehaviourComponent SpawnProjectile(ProjectileBehaviourComponent prefab, Vector3 position, Vector3 direction, int damage, float speed);
     }
 
     public class SpawnService : ISpawnService
@@ -42,7 +43,7 @@ namespace SpaceInvaders.Scenes.Game
             return instance;
         }
 
-        public async UniTask<List<T>> Spawn<T>(WaveConfigDTO waveConfig) where T : MonoBehaviour, IPoolableObject
+        public async UniTask<List<T>> SpawnEnemies<T>(WaveConfigDTO waveConfig) where T : MonoBehaviour, IPoolableObject
         {
             var spawnedEnemies = new List<T>();
 
@@ -52,6 +53,7 @@ namespace SpaceInvaders.Scenes.Game
 
                 if (prefab == null || !prefab.TryGetComponent<T>(out var enemyPrefab))
                 {
+                    _errorManager.LogError<SpawnService>($"Exception instantiating enemy: {prefab.name}");
                     continue;
                 }
 
@@ -60,6 +62,7 @@ namespace SpaceInvaders.Scenes.Game
 
                 if (spawnedEnemy == null)
                 {
+                    _errorManager.LogError<SpawnService>($"Exception instantiating enemy: {prefab.name}");
                     continue;
                 }
 
@@ -73,6 +76,25 @@ namespace SpaceInvaders.Scenes.Game
         public void Despawn<T>(T instance) where T : MonoBehaviour, IPoolableObject
         {
             _objectPooling.Return(instance);
+        }
+
+        public ProjectileBehaviourComponent SpawnProjectile(
+            ProjectileBehaviourComponent prefab,
+            Vector3 position,
+            Vector3 direction,
+            int damage,
+            float speed)
+        {
+            var projectile = Spawn(prefab, position, Quaternion.identity);
+
+            if (projectile == null)
+            {
+                return null;
+            }
+
+            projectile.Initialize(damage, speed, direction);
+
+            return projectile;
         }
     }
 }

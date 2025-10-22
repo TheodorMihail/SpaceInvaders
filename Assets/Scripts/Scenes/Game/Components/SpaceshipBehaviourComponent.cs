@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using BaseArchitecture.Core;
 using UnityEngine;
+using Zenject;
 
 namespace SpaceInvaders.Scenes.Game
 {
@@ -8,25 +10,80 @@ namespace SpaceInvaders.Scenes.Game
     {
         [SerializeField] private SpaceshipConfigSO _shipConfig;
         [SerializeField] protected Renderer _renderer;
+        [SerializeField] protected Vector3 _projectileOffset;
+
+        [Inject] protected ISpawnService _spawnService;
+
         protected int _currentHealth;
+        private float _lastShotTime;
+        private readonly List<ProjectileBehaviourComponent> _activeProjectiles = new();
 
         public event Action<SpaceshipBehaviourComponent> OnDestroyed;
 
         public virtual void OnSpawned()
         {
             _currentHealth = _shipConfig.Health;
+            _lastShotTime = 0f;
         }
 
         public virtual void OnDespawned()
         {
+            // Despawn all active projectiles
+            foreach (var projectile in _activeProjectiles)
+            {
+                if (projectile != null)
+                {
+                    projectile.OnProjectileDestroyed -= OnProjectileDestroyed;
+                    _spawnService.Despawn(projectile);
+                }
+            }
+            _activeProjectiles.Clear();
         }
 
         public virtual void Shoot()
         {
-            // Implement shooting logic here
+            // Check fire rate cooldown
+            if (Time.time - _lastShotTime < _shipConfig.FireRate)
+            {
+                return;
+            }
+
+            _lastShotTime = Time.time;
+
+            // Calculate spawn position and direction
+            Vector3 spawnPosition = transform.localPosition + _projectileOffset;
+            Vector3 direction = GetProjectileDirection();
+
+            // Spawn projectile
+            var projectile = _spawnService.SpawnProjectile(
+                _shipConfig.ProjectilePrefab,
+                spawnPosition,
+                direction,
+                _shipConfig.ProjectileDamage,
+                _shipConfig.ProjectileSpeed
+            );
+
+            if (projectile != null)
+            {
+                // Track projectile
+                _activeProjectiles.Add(projectile);
+                projectile.OnProjectileDestroyed += OnProjectileDestroyed;
+            }
         }
 
-        private void TakeDamage(int damage)
+        protected virtual Vector3 GetProjectileDirection()
+        {
+            return Vector3.forward;
+        }
+
+        private void OnProjectileDestroyed(ProjectileBehaviourComponent projectile)
+        {
+            projectile.OnProjectileDestroyed -= OnProjectileDestroyed;
+            _activeProjectiles.Remove(projectile);
+            _spawnService.Despawn(projectile);
+        }
+
+        public void TakeDamage(int damage)
         {
             _currentHealth = Math.Clamp(_currentHealth - damage, 0, Int32.MaxValue);
             if(_currentHealth == 0)

@@ -65,7 +65,13 @@ namespace SpaceInvaders.Scenes.Game
             if (_currentState == EnemyState.Bouncing)
             {
                 UpdateBouncingMovement();
+                Shoot(); // Continuously attempt to shoot (fire rate cooldown handled in base)
             }
+        }
+
+        protected override Vector3 GetProjectileDirection()
+        {
+            return Vector3.back; // Enemies shoot downward (toward player)
         }
 
         private void UpdateBouncingMovement()

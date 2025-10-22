@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: -5278631151162415134}
   m_Layer: 0
   m_Name: Enemy1
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -47,6 +47,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _shipConfig: {fileID: 11400000, guid: 3a751f134bc82234996b5252746849d4, type: 2}
   _renderer: {fileID: 8966762787482018882}
+  _projectileOffset: {x: 0, y: 0.5, z: -17}
+  _bounceAngleVariation: 30
 --- !u!1001 &7768763409124123076
 PrefabInstance:
   m_ObjectHideFlags: 0
