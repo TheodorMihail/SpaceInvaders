@@ -41,6 +41,7 @@ namespace SpaceInvaders.Scenes.Game
 
         private void ManagersInstall()
         {
+            Container.BindInterfacesTo<CameraManager>().AsSingle();
             Container.BindInterfacesTo<LevelManager>().AsSingle().WithArguments(_levelConfigSO);
             Container.BindInterfacesTo<PlayerManager>().AsSingle().WithArguments(_playerPrefab);
             Container.BindInterfacesTo<EnemiesManager>().AsSingle();

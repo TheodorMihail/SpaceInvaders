@@ -8,11 +8,11 @@ namespace SpaceInvaders.Scenes.Game
 {
     public class SpaceshipBehaviourComponent : MonoBehaviour, IPoolableObject
     {
+        [Inject] protected ISpawnService _spawnService;
+
         [SerializeField] private SpaceshipConfigSO _shipConfig;
         [SerializeField] protected Renderer _renderer;
         [SerializeField] protected Vector3 _projectileOffset;
-
-        [Inject] protected ISpawnService _spawnService;
 
         protected int _currentHealth;
         private float _lastShotTime;

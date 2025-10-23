@@ -1,5 +1,6 @@
 using DG.Tweening;
 using UnityEngine;
+using Zenject;
 
 namespace SpaceInvaders.Scenes.Game
 {
@@ -7,18 +8,20 @@ namespace SpaceInvaders.Scenes.Game
     {
         private enum EnemyState { Entering, Bouncing }
 
+        [Inject] private readonly ICameraManager _cameraManager;
+
         [SerializeField] private float _bounceAngleVariation = 30;
+
         private EnemyState _currentState = EnemyState.Entering;
         private Vector3 _currentDirection;
         private Vector3 _minBounds;
         private Vector3 _maxBounds;
-        private Vector3 _extents;
         private Tween _entryTween;
 
         public override void OnSpawned()
         {
             base.OnSpawned();
-            CalculateMovementBounds();
+            (_minBounds, _maxBounds) = _cameraManager.GetScreenBounds(_renderer, ScreenRegionType.TopHalf);
         }
 
         public override void OnDespawned()
@@ -34,18 +37,17 @@ namespace SpaceInvaders.Scenes.Game
 
         public void StartEntryAnimation(float entrySpeed)
         {
-            Camera mainCamera = Camera.main;
-            Vector3 screenTop = mainCamera.ViewportToWorldPoint(new Vector3(0.5f, 1f, transform.position.y));
-            float screenHeight = mainCamera.ViewportToWorldPoint(new Vector3(0.5f, 1f, 0)).z -
-                                 mainCamera.ViewportToWorldPoint(new Vector3(0.5f, 0f, 0)).z;
+            // Get screen positions
+            float yPos = transform.position.y;
+            Vector3 screenTop = _cameraManager.GetViewportWorldPoint(0.5f, 1f, yPos);
+            Vector3 screenBottom = _cameraManager.GetViewportWorldPoint(0.5f, 0f, yPos);
+            float screenHeight = screenTop.z - screenBottom.z;
 
-            Vector3 targetPosition = new Vector3(
-                transform.position.x,
-                transform.position.y,
-                screenTop.z - (screenHeight * 0.1f)
-            );
+            // Calculate target position: current X/Y, but Z at 10% below screen top
+            Vector3 targetPosition = transform.position;
+            targetPosition.z = screenTop.z - (screenHeight * 0.1f);
 
-            float distance = Vector3.Distance(targetPosition, transform.position);
+            float distance = Vector3.Distance(transform.position, targetPosition);
             float duration = distance / entrySpeed;
 
             _currentState = EnemyState.Entering;
@@ -146,34 +148,5 @@ namespace SpaceInvaders.Scenes.Game
             _currentDirection.z = newZ;
         }
 
-        private void CalculateMovementBounds()
-        {
-            Camera mainCamera = Camera.main;
-            if (mainCamera == null)
-            {
-                return;
-            }
-
-            _extents = _renderer.bounds.extents;
-
-            // Calculate screen bounds
-            Vector3 screenBottomLeft = mainCamera.ViewportToWorldPoint(new Vector3(0, 0, transform.position.y));
-            Vector3 screenTopRight = mainCamera.ViewportToWorldPoint(new Vector3(1, 1, transform.position.y));
-            Vector3 screenCenter = mainCamera.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, transform.position.y));
-
-            // Upper half of screen bounds (opposite of player)
-            // Min Z is the center, Max Z is the top
-            _minBounds = new Vector3(
-                screenBottomLeft.x + _extents.x,
-                transform.position.y,
-                screenCenter.z + _extents.z 
-            );
-
-            _maxBounds = new Vector3(
-                screenTopRight.x - _extents.x,
-                transform.position.y,
-                screenTopRight.z - _extents.z 
-            );
-        }
     }
 }
