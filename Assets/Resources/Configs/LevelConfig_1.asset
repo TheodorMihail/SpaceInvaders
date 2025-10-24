@@ -23,3 +23,16 @@ MonoBehaviour:
       EnemyType: Enemy1
     _timeBetweenSpawns: 1
     _entrySpeed: 100
+  - _wavesFormation:
+    - Position: {x: 0, y: 0}
+      EnemyType: Enemy1
+    - Position: {x: 100, y: 0}
+      EnemyType: Enemy1
+    - Position: {x: -100, y: 0}
+      EnemyType: Enemy1
+    - Position: {x: 200, y: 0}
+      EnemyType: Enemy1
+    - Position: {x: -200, y: 0}
+      EnemyType: Enemy1
+    _timeBetweenSpawns: 1
+    _entrySpeed: 100

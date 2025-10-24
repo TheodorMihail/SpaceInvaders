@@ -34,7 +34,6 @@ namespace SpaceInvaders.Scenes.Game
                 if (projectile != null)
                 {
                     projectile.OnProjectileDestroyed -= OnProjectileDestroyed;
-                    _spawnService.Despawn(projectile);
                 }
             }
             _activeProjectiles.Clear();

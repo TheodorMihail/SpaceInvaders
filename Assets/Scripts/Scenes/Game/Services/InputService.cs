@@ -64,7 +64,7 @@ namespace SpaceInvaders.Scenes.Game
 
         private void HandleShootInput()
         {
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetKey(KeyCode.Space))
             {
                 OnShoot?.Invoke();
             }
