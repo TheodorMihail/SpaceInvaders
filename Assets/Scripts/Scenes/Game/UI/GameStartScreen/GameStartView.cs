@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    [AddressablePath("Screens/GameStartView")]
+    [AddressablePath("Screens/GameStartScreenView")]
     public class GameStartView : View
     {
         [SerializeField] private TextMeshProUGUI _countdownText;
