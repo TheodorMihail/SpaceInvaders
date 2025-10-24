@@ -26,7 +26,7 @@ namespace SpaceInvaders.Scenes.MainMenu
         {
             CloseScreenWithResult(new MenuScreen.MenuScreenResult
             {
-                State = MenuScreen.ResultType.PlayGame
+                Result = MenuScreen.ResultType.PlayGame
             });
         }
 
@@ -34,7 +34,7 @@ namespace SpaceInvaders.Scenes.MainMenu
         {
             CloseScreenWithResult(new MenuScreen.MenuScreenResult
             {
-                State = MenuScreen.ResultType.QuitGame
+                Result = MenuScreen.ResultType.QuitGame
             });
         }
     }

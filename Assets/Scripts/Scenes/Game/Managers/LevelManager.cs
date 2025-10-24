@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using BaseArchitecture.Core;
 using UnityEngine;
 using Zenject;
 
@@ -40,12 +41,12 @@ namespace SpaceInvaders.Scenes.Game
         public void Initialize()
         {
             _currentWaveIndex = 0;
-            _enemiesManager.OnAllEnemiesDestroyed += OnEnemyDestroyedCallback;
+            _enemiesManager.OnAllEnemiesDestroyed += OnAllEnemiesDestroyedCallback;
         }
 
         public void Dispose()
         {
-            _enemiesManager.OnAllEnemiesDestroyed -= OnEnemyDestroyedCallback;
+            _enemiesManager.OnAllEnemiesDestroyed -= OnAllEnemiesDestroyedCallback;
         }
         
         public void OnGameStarted()
@@ -53,7 +54,7 @@ namespace SpaceInvaders.Scenes.Game
             StartNextWave();
         }
 
-        private void OnEnemyDestroyedCallback()
+        private void OnAllEnemiesDestroyedCallback()
         {
             StartNextWave();
         }
@@ -65,9 +66,10 @@ namespace SpaceInvaders.Scenes.Game
                 OnLevelCompleted?.Invoke(_levelConfig.LevelNumber);
                 return;
             }
-
+            
             _enemiesManager.SpawnEnemies(_levelConfig.WavesConfigs[_currentWaveIndex]);
             _currentWaveIndex++;
+            this.Log($"Wave {_currentWaveIndex} started!");
         }
     }
 }

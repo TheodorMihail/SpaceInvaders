@@ -1,4 +1,5 @@
 using System;
+using BaseArchitecture.Core;
 using Zenject;
 
 namespace SpaceInvaders.Scenes.Game
@@ -30,6 +31,9 @@ namespace SpaceInvaders.Scenes.Game
         
         private void OnDestroyedCallback(SpaceshipBehaviourComponent component)
         {
+            this.Log($"Player destroyed!");
+            _playerInstance.OnDestroyed -= OnDestroyedCallback;
+            _spawnService.Despawn(_playerInstance);
             OnPlayerDestroyed?.Invoke();
         }
     }

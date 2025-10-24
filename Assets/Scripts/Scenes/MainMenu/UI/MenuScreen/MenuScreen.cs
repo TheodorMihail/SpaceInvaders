@@ -13,7 +13,7 @@ namespace SpaceInvaders.Scenes.MainMenu
 
         public struct MenuScreenResult : IScreenResult
         {
-            public ResultType State { get; set; }
+            public ResultType Result { get; set; }
         }
         
         private MenuScreenResult _result;

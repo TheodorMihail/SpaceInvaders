@@ -33,7 +33,7 @@ namespace SpaceInvaders.Scenes.MainMenu
                     case MainMenuStateIds.Menu:
 
                         MenuScreenResult result = (MenuScreenResult)finishedState.paramsList[0];
-                        switch (result.State)
+                        switch (result.Result)
                         {
                             case ResultType.PlayGame:
                                 _scenesManager.LoadScene(SceneType.Game.ToString());

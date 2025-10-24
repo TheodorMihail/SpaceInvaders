@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using BaseArchitecture.Core;
 using Cysharp.Threading.Tasks;
 using Zenject;
 
@@ -51,6 +52,7 @@ namespace SpaceInvaders.Scenes.Game
             _spawnedEnemies.Remove((EnemySpaceshipBehaviourComponent)enemy);
             _spawnService.Despawn(enemy);
 
+            this.Log($"Enemy destroyed, remaining: {_spawnedEnemies.Count}");
             if(_spawnedEnemies.Count == 0)
             {
                 OnAllEnemiesDestroyed?.Invoke();
