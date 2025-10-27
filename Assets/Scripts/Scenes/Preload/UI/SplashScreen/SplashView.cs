@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace SpaceInvaders.Scenes.Preload
 {
-    [AddressablePath("Screens/SplashView")]
+    [AddressablePath("Screens/SplashScreenView")]
     public class SplashView : View
     {
         [SerializeField] private CanvasGroup _logoCanvasGroup;

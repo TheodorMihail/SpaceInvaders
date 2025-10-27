@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Spaceships
+  m_EditorClassIdentifier: 
+  m_GroupName: Spaceships
+  m_GUID: a17f6ea565c249c40b9772b9de2de651
+  m_SerializeEntries:
+  - m_GUID: 8b18bb4f15ab12e468b1ba0fcbd47d1d
+    m_Address: Prefabs/Player
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Spaceships
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8e6dd44e305b1224e893af10d6fbc624
+    m_Address: Prefabs/Enemy1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Spaceships
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 79686f5543778ad49834ada422f73fc5, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: c606fef3b38c4f34bb2960f3c30be821, type: 2}
+    - {fileID: 11400000, guid: 7981211a6dfc04b4fac24a956bb8d64b, type: 2}

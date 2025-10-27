@@ -1,6 +1,7 @@
 using BaseArchitecture.Core;
 using System.Collections.Generic;
 using Zenject;
+using static SpaceInvaders.Scenes.Game.GameplayState;
 using static SpaceInvaders.Scenes.Game.GameStateMachine;
 
 namespace SpaceInvaders.Scenes.Game
@@ -30,8 +31,12 @@ namespace SpaceInvaders.Scenes.Game
                 switch (finishedState.stateId)
                 {
                     case GameStateIds.Playing:
+                        FinishStateResult result = (FinishStateResult)finishedState.paramsList[0];
+                        SetState(GameStateIds.GameOver, result);
                         break;
+
                     case GameStateIds.GameOver:
+                    
                         break;
                 }
             }

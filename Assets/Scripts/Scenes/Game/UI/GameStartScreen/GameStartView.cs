@@ -1,33 +1,26 @@
-using System;
 using System.Threading;
 using BaseArchitecture.Core;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    [AddressablePath("Screens/GameStartView")]
+    [AddressablePath("Screens/GameStartScreenView")]
     public class GameStartView : View
     {
         [SerializeField] private TextMeshProUGUI _countdownText;
         [SerializeField] private TextMeshProUGUI _pressAnyKeyText;
-        [SerializeField] private Button _startButton;
         [SerializeField] private string _startString = "START!";
 
         private CancellationTokenSource _cancellationTokenSource;
-
-        public event Action OnStartButtonClicked;
 
         private void Awake()
         {
             _cancellationTokenSource = new CancellationTokenSource();
             _countdownText.gameObject.SetActive(false);
             _pressAnyKeyText.gameObject.SetActive(true);
-
-            _startButton.onClick.AddListener(() => OnStartButtonClicked?.Invoke());
         }
 
         public async UniTask StartCountdownAnimation(int countdownValue)

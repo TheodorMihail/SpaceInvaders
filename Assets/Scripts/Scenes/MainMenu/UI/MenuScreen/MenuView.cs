@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace SpaceInvaders.Scenes.MainMenu
 {
-    [AddressablePath("Screens/MenuView")]
+    [AddressablePath("Screens/MenuScreenView")]
     public class MenuView : View
     {
         [SerializeField] private Button _playGameButton;

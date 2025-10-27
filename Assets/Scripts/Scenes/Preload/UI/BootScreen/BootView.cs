@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace SpaceInvaders.Scenes.Preload
 {
-    [AddressablePath("Screens/BootView")]
+    [AddressablePath("Screens/BootScreenView")]
     public class BootView : View
     {
         [SerializeField] private TextMeshProUGUI _loadingText;

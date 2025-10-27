@@ -16,25 +16,43 @@ MonoBehaviour:
   m_GUID: f21c6ee93f5b08f41bda8a900b9a5c0d
   m_SerializeEntries:
   - m_GUID: 0cdb28206d16cba4fbfee760b4261cde
-    m_Address: Screens/BootView
+    m_Address: Screens/BootScreenView
     m_ReadOnly: 0
     m_SerializedLabels:
     - Screen
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 77a40495b69721c4dad04db18bd9b915
-    m_Address: Screens/SplashView
+    m_Address: Screens/SplashScreenView
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Screen
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9398fd69385a2744fb1584a3a86ce506
+    m_Address: Screens/GameFinishedScreenView
     m_ReadOnly: 0
     m_SerializedLabels:
     - Screen
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ba97ce10952ee3c40b6029b957214cd5
-    m_Address: Screens/GameStartView
+    m_Address: Screens/GameStartScreenView
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Screen
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d232e89ed9ce8a84d950d87121879148
+    m_Address: Screens/ErrorDialogScreenView
     m_ReadOnly: 0
     m_SerializedLabels:
     - Screen
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ebcb015deefa090449f0baf0c7986b64
-    m_Address: Screens/MenuView
+    m_Address: Screens/MenuScreenView
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Screen
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f3db63a9ebe4b0f4684e42b2ff6add96
+    m_Address: Screens/GameOverScreenView
     m_ReadOnly: 0
     m_SerializedLabels:
     - Screen
