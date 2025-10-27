@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using BaseArchitecture.Core;
 using UnityEngine;
 using Zenject;
+using static SpaceInvaders.Scenes.Game.WaveStartScreen;
 
 namespace SpaceInvaders.Scenes.Game
 {
@@ -34,6 +35,7 @@ namespace SpaceInvaders.Scenes.Game
     {
         [Inject] private LevelConfigSO _levelConfig;
         [Inject] private IEnemiesManager _enemiesManager;
+        [Inject] private IUIManager _uiManager;
         private int _currentWaveIndex = 0;
 
         public event Action<int> OnLevelCompleted;
@@ -69,6 +71,7 @@ namespace SpaceInvaders.Scenes.Game
             
             _enemiesManager.SpawnEnemies(_levelConfig.WavesConfigs[_currentWaveIndex]);
             _currentWaveIndex++;
+            _uiManager.ShowScreen<WaveStartScreen, WaveStartScreenParams>(new WaveStartScreenParams() { WaveNumber = _currentWaveIndex });
             this.Log($"Wave {_currentWaveIndex} started!");
         }
     }
