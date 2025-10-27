@@ -1,7 +1,6 @@
 using System.Threading;
 using BaseArchitecture.Core;
 using Cysharp.Threading.Tasks;
-using DG.Tweening;
 using TMPro;
 using UnityEngine;
 
@@ -30,10 +29,8 @@ namespace SpaceInvaders.Scenes.Game
         public async UniTask PlayAnimation(float animationDuration)
         {
             _waveCanvasGroup.alpha = 0f;
-            var tween = DOTween.To(() => _waveCanvasGroup.alpha, x => _waveCanvasGroup.alpha = x, 1f, animationDuration);
-            await tween.ToUniTask(cancellationToken: _cancellationTokenSource.Token);
-            tween = DOTween.To(() => _waveCanvasGroup.alpha, x => _waveCanvasGroup.alpha = x, 0f, animationDuration);
-            await tween.ToUniTask(cancellationToken: _cancellationTokenSource.Token);
+            await _waveCanvasGroup.FadeToAsync(1f, animationDuration, _cancellationTokenSource);
+            await _waveCanvasGroup.FadeToAsync(0f, animationDuration, _cancellationTokenSource);
         }
 
         private void OnDestroy()

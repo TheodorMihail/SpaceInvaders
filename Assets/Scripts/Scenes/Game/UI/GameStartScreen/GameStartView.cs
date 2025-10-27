@@ -29,20 +29,14 @@ namespace SpaceInvaders.Scenes.Game
             _pressAnyKeyText.gameObject.SetActive(false);
             _countdownText.text = countdownValue.ToString();
 
-            var tween = DOTween.To(() => countdownValue, x => countdownValue = x, 0, countdownValue)
-                .OnUpdate(() =>
+            await _countdownText.CountdownAsync(countdownValue, 0, countdownValue + 1, (val) =>
+            {
+                if(val == 0)
                 {
-                    if (Mathf.RoundToInt(countdownValue) > 0)
-                    {
-                        _countdownText.text = Mathf.RoundToInt(countdownValue).ToString();
-                    }
-                    else
-                    {
-                        _countdownText.text = _startString;
-                    }
-                });
-
-            await tween.ToUniTask(cancellationToken: _cancellationTokenSource.Token);
+                    _countdownText.text = _startString;
+                }
+                
+            }, _cancellationTokenSource);
         }
         
         private void OnDestroy()
