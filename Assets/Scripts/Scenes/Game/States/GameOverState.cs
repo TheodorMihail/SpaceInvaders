@@ -13,7 +13,7 @@ namespace SpaceInvaders.Scenes.Game
 
         [Inject] private readonly IUIManager _uiManager;
 
-        public override async void OnEnter(params object[] paramsList)
+        public override void OnEnter(params object[] paramsList)
         {
             base.OnEnter();
 

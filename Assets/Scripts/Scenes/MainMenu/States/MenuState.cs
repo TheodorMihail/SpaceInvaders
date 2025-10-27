@@ -10,7 +10,7 @@ namespace SpaceInvaders.Scenes.MainMenu
 
         [Inject] private readonly IUIManager _uiManager;
 
-        public override async void OnEnter(params object[] paramsList)
+        public override void OnEnter(params object[] paramsList)
         {
             base.OnEnter();
             ShowMenuScreen();

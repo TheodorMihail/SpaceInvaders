@@ -26,7 +26,7 @@ namespace SpaceInvaders.Scenes.Game
         [Inject] private IPlayerManager _playerManager; 
         [Inject] private readonly IList<IGameStartedListener> _gameStartedListeners;
 
-        public override async void OnEnter(params object[] paramsList)
+        public override void OnEnter(params object[] paramsList)
         {
             base.OnEnter();
             StartGameplay();
