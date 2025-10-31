@@ -28,7 +28,6 @@ namespace SpaceInvaders.Scenes.Game
 
         public virtual void OnDespawned()
         {
-            // Despawn all active projectiles
             foreach (var projectile in _activeProjectiles)
             {
                 if (projectile != null)
@@ -84,6 +83,11 @@ namespace SpaceInvaders.Scenes.Game
 
         public void TakeDamage(int damage)
         {
+            if(_currentHealth <= 0)
+            {
+                return;
+            }
+
             _currentHealth = Math.Clamp(_currentHealth - damage, 0, Int32.MaxValue);
             if(_currentHealth == 0)
             {

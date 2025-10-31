@@ -19,15 +19,20 @@ namespace SpaceInvaders.Scenes.Game
 
         public override void OnDespawned()
         {
+            DisableControls();
             base.OnDespawned();
-            _inputService.OnShoot -= OnPlayerShoot;
-            _inputService.OnMove -= OnPlayerMove;
         }
 
         public void EnableControls()
         {
             _inputService.OnShoot += OnPlayerShoot;
             _inputService.OnMove += OnPlayerMove;
+        }
+
+        public void DisableControls()
+        {
+            _inputService.OnShoot -= OnPlayerShoot;
+            _inputService.OnMove -= OnPlayerMove;
         }
 
         private void OnPlayerShoot()

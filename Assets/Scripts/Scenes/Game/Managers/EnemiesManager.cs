@@ -6,7 +6,7 @@ using Zenject;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public interface IEnemiesManager : IInitializable, IDisposable
+    public interface IEnemiesManager : IInitializable, IDisposable, IGameEndedListener
     {
         event Action OnAllEnemiesDestroyed;
         public void SpawnEnemies(WaveConfigDTO wave);
@@ -33,6 +33,14 @@ namespace SpaceInvaders.Scenes.Game
                 OnEnemyDestroyedCallback(_spawnedEnemies[i]);
             }
         }
+
+        public void OnGameEnded()
+        {
+            for(int i = _spawnedEnemies.Count - 1; i >= 0; i--)
+            {
+                DespawnEnemy(_spawnedEnemies[i]);
+            }
+        }
         
         public async void SpawnEnemies(WaveConfigDTO waveConfig)
         {
@@ -48,15 +56,20 @@ namespace SpaceInvaders.Scenes.Game
 
         private void OnEnemyDestroyedCallback(SpaceshipBehaviourComponent enemy)
         {
-            enemy.OnDestroyed -= OnEnemyDestroyedCallback;
-            _spawnedEnemies.Remove((EnemySpaceshipBehaviourComponent)enemy);
-            _spawnService.Despawn(enemy);
-
             this.Log($"Enemy destroyed, remaining: {_spawnedEnemies.Count}");
-            if(_spawnedEnemies.Count == 0)
+            DespawnEnemy(enemy);
+
+            if (_spawnedEnemies.Count == 0)
             {
                 OnAllEnemiesDestroyed?.Invoke();
             }
+        }
+        
+        private void DespawnEnemy(SpaceshipBehaviourComponent enemy)
+        {
+            enemy.OnDestroyed -= OnEnemyDestroyedCallback;
+            _spawnedEnemies.Remove((EnemySpaceshipBehaviourComponent)enemy);
+            _spawnService.Despawn(enemy);
         }
     }
 }
