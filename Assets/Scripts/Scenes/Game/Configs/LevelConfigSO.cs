@@ -7,10 +7,10 @@ namespace SpaceInvaders.Scenes.Game
     public class LevelConfigSO : ScriptableObject
     {
         [Header("Level Settings")]
-        [SerializeField] private int _levelNumber = 1;
+        [SerializeField] private string _levelName;
         [SerializeField] private List<WaveConfigDTO> _wavesConfigs;
 
-        public int LevelNumber => _levelNumber;
+        public string LevelName => _levelName;
         public List<WaveConfigDTO> WavesConfigs => _wavesConfigs;
     }
 }
