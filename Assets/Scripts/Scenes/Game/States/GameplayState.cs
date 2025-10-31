@@ -10,12 +10,17 @@ namespace SpaceInvaders.Scenes.Game
     {
         void OnGameStarted();
     }
+    
+    public interface IGameEndedListener
+    {
+        void OnGameEnded();
+    }
 
     public class GameplayState : BaseState<GameStateIds>
     {
-        public enum FinishStateResult
+        public enum GameplayStateResult
         {
-            GameFinished,
+            LevelFinished,
             GameOver
         }
 
@@ -25,6 +30,7 @@ namespace SpaceInvaders.Scenes.Game
         [Inject] private ILevelManager _levelManager;
         [Inject] private IPlayerManager _playerManager; 
         [Inject] private readonly IList<IGameStartedListener> _gameStartedListeners;
+        [Inject] private readonly IList<IGameEndedListener> _gameEndedListeners;
 
         public override void OnEnter(params object[] paramsList)
         {
@@ -63,18 +69,24 @@ namespace SpaceInvaders.Scenes.Game
 
         private void OnPlayerDestroyedCallback()
         {
-            TriggerEndGame(FinishStateResult.GameOver);
+            TriggerEndGame(GameplayStateResult.GameOver);
         }
 
         private void OnLevelCompletedCallback(int levelNumber)
         {
-            TriggerEndGame(FinishStateResult.GameFinished);
+            TriggerEndGame(GameplayStateResult.LevelFinished);
         }
 
-        private void TriggerEndGame(FinishStateResult result)
+        private void TriggerEndGame(GameplayStateResult result)
         {
             _levelManager.OnLevelCompleted -= OnLevelCompletedCallback;
             _playerManager.OnPlayerDestroyed -= OnPlayerDestroyedCallback;
+
+            foreach (var handler in _gameEndedListeners)
+            {
+                handler.OnGameEnded();
+            }
+            
             FinishState(result);
         }
         

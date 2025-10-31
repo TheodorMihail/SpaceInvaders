@@ -31,7 +31,7 @@ namespace SpaceInvaders.Scenes.Game
                 switch (finishedState.stateId)
                 {
                     case GameStateIds.Playing:
-                        FinishStateResult result = (FinishStateResult)finishedState.paramsList[0];
+                        GameplayStateResult result = (GameplayStateResult)finishedState.paramsList[0];
                         SetState(GameStateIds.GameOver, result);
                         break;
 
