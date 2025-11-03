@@ -1,15 +1,16 @@
 using System;
 using BaseArchitecture.Core;
+using UnityEngine;
 using Zenject;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public interface IPlayerManager : IInitializable
+    public interface IPlayerManager : IDisposable, IGameStartedListener, IGameEndedListener, IGameInitializeListener
     {
         event Action OnPlayerDestroyed;
     }
 
-    public class PlayerManager : IPlayerManager, IGameStartedListener
+    public class PlayerManager : IPlayerManager, ITickable
     {
         [Inject] private readonly ISpawnService _spawnService;
         [Inject] private readonly PlayerSpaceshipBehaviourComponent _playerPrefab;
@@ -18,7 +19,8 @@ namespace SpaceInvaders.Scenes.Game
 
         public event Action OnPlayerDestroyed;
 
-        public void Initialize()
+        
+        public void OnGameInitialized()
         {
             _playerInstance = _spawnService.Spawn(_playerPrefab, _playerPrefab.transform.localPosition, _playerPrefab.transform.localRotation);
             _playerInstance.OnDestroyed += OnDestroyedCallback;
@@ -28,13 +30,41 @@ namespace SpaceInvaders.Scenes.Game
         {
             _playerInstance.EnableControls();
         }
+
+        public void OnGameEnded()
+        {
+            DespawnPlayer();
+        }
         
+        public void Dispose()
+        {
+            DespawnPlayer();
+        }
+
         private void OnDestroyedCallback(SpaceshipBehaviourComponent component)
         {
             this.Log($"Player destroyed!");
-            _playerInstance.OnDestroyed -= OnDestroyedCallback;
-            _spawnService.Despawn(_playerInstance);
+            DespawnPlayer();
             OnPlayerDestroyed?.Invoke();
         }
+
+        private void DespawnPlayer()
+        {
+            _playerInstance.OnDestroyed -= OnDestroyedCallback;
+            _spawnService.Despawn(_playerInstance);
+        }
+
+        #region  Debugging
+
+        public void Tick()
+        {
+            if (Input.GetKeyDown(KeyCode.F2))
+            {
+                this.LogWarning("Debug: Destroying player");
+                _playerInstance.TakeDamage(_playerInstance.CurrentHealth);
+            }
+        }
+        
+        #endregion
     }
 }

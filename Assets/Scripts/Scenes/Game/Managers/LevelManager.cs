@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using BaseArchitecture.Core;
 using UnityEngine;
 using Zenject;
+using static SpaceInvaders.Scenes.Game.AnnouncerScreen;
 
 namespace SpaceInvaders.Scenes.Game
 {
@@ -27,20 +28,35 @@ namespace SpaceInvaders.Scenes.Game
 
     public interface ILevelManager : IInitializable, IDisposable, IGameStartedListener
     {
+        public int CurrentLevelNumber { get; }
+        public int MaxLevelNumber { get; }
+
+        public int CurrentWaveNumber { get; }
+        public int MaxWaveNumber { get; }
+        
+
         event Action<int> OnLevelCompleted;
     }
 
     public class LevelManager : ILevelManager
     {
-        [Inject] private LevelConfigSO _levelConfig;
         [Inject] private IEnemiesManager _enemiesManager;
-        private int _currentWaveIndex = 0;
+        [Inject] private IUIManager _uiManager;
+        [Inject] private readonly List<LevelConfigSO> _levelsConfigsSO;
+        
+        public int CurrentLevelNumber { get; private set; }
+        public int MaxLevelNumber { get; private set; }
+        public int CurrentWaveNumber { get; private set; }
+        public int MaxWaveNumber { get; private set; }
+
+        private LevelConfigSO _currentLevelConfigSo;
 
         public event Action<int> OnLevelCompleted;
 
         public void Initialize()
         {
-            _currentWaveIndex = 0;
+            CurrentLevelNumber = 0;
+            MaxLevelNumber = _levelsConfigsSO.Count;
             _enemiesManager.OnAllEnemiesDestroyed += OnAllEnemiesDestroyedCallback;
         }
 
@@ -51,25 +67,45 @@ namespace SpaceInvaders.Scenes.Game
         
         public void OnGameStarted()
         {
-            StartNextWave();
+            StartLevel(_levelsConfigsSO[CurrentLevelNumber]);
         }
 
         private void OnAllEnemiesDestroyedCallback()
         {
             StartNextWave();
         }
+        
+        private async void StartLevel(LevelConfigSO levelConfig)
+        {
+            if (CurrentLevelNumber >= MaxLevelNumber)
+            {
+                this.LogError($"Level {CurrentLevelNumber} is out of range! Max levels: {MaxLevelNumber}");
+                return;
+            }
+    
+            _currentLevelConfigSo = levelConfig;
+            CurrentWaveNumber = 0;
+            MaxWaveNumber = _currentLevelConfigSo.WavesConfigs.Count;
+            
+            CurrentLevelNumber++;
+            await _uiManager.ShowScreen<AnnouncerScreen, AnnouncerScreenParams>(new AnnouncerScreenParams() { DisplayText = _currentLevelConfigSo.LevelName });
+
+            StartNextWave();
+        }
 
         private void StartNextWave()
         {
-            if (_currentWaveIndex >= _levelConfig.WavesConfigs.Count)
+            if (CurrentWaveNumber >= _currentLevelConfigSo.WavesConfigs.Count)
             {
-                OnLevelCompleted?.Invoke(_levelConfig.LevelNumber);
+                OnLevelCompleted?.Invoke(CurrentLevelNumber);
                 return;
             }
-            
-            _enemiesManager.SpawnEnemies(_levelConfig.WavesConfigs[_currentWaveIndex]);
-            _currentWaveIndex++;
-            this.Log($"Wave {_currentWaveIndex} started!");
+           
+            _enemiesManager.SpawnEnemies(_currentLevelConfigSo.WavesConfigs[CurrentWaveNumber]);
+            CurrentWaveNumber++;
+
+            _uiManager.ShowScreen<AnnouncerScreen, AnnouncerScreenParams>(new AnnouncerScreenParams() { DisplayText = $"Wave {CurrentWaveNumber}" });
+            this.Log($"Wave {CurrentWaveNumber} started!");
         }
     }
 }

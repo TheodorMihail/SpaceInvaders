@@ -221,7 +221,7 @@ GameObject:
   - component: {fileID: 802698915899287170}
   - component: {fileID: 15751105212261875}
   m_Layer: 5
-  m_Name: GameFinishedScreenView
+  m_Name: LevelFinishedScreenView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

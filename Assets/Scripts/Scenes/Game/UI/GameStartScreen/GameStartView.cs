@@ -1,7 +1,6 @@
 using System.Threading;
 using BaseArchitecture.Core;
 using Cysharp.Threading.Tasks;
-using DG.Tweening;
 using TMPro;
 using UnityEngine;
 
@@ -23,26 +22,16 @@ namespace SpaceInvaders.Scenes.Game
             _pressAnyKeyText.gameObject.SetActive(true);
         }
 
-        public async UniTask StartCountdownAnimation(int countdownValue)
+        public async UniTask StartCountdownAnimation(int countdownValue, float endDelay)
         {
             _countdownText.gameObject.SetActive(true);
             _pressAnyKeyText.gameObject.SetActive(false);
             _countdownText.text = countdownValue.ToString();
 
-            var tween = DOTween.To(() => countdownValue, x => countdownValue = x, 0, countdownValue)
-                .OnUpdate(() =>
-                {
-                    if (Mathf.RoundToInt(countdownValue) > 0)
-                    {
-                        _countdownText.text = Mathf.RoundToInt(countdownValue).ToString();
-                    }
-                    else
-                    {
-                        _countdownText.text = _startString;
-                    }
-                });
+            await _countdownText.CountdownAsync(countdownValue, 1, countdownValue, null, _cancellationTokenSource);
 
-            await tween.ToUniTask(cancellationToken: _cancellationTokenSource.Token);
+            _countdownText.text = _startString;
+            await UniTask.Delay((int)endDelay * 1000, cancellationToken: _cancellationTokenSource.Token);
         }
         
         private void OnDestroy()

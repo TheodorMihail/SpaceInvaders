@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using BaseArchitecture.Core;
 using UnityEngine;
 using Zenject;
@@ -12,7 +13,7 @@ namespace SpaceInvaders.Scenes.Game
         [SerializeField] private Transform _objectPoolingContainer;
 
         [SerializeField] private PlayerSpaceshipBehaviourComponent _playerPrefab;
-        [SerializeField] private LevelConfigSO _levelConfigSO;
+        [SerializeField] private List<LevelConfigSO> _levelsConfigsSO;
 
         public override void InstallBindings()
         {
@@ -42,7 +43,7 @@ namespace SpaceInvaders.Scenes.Game
         private void ManagersInstall()
         {
             Container.BindInterfacesTo<CameraManager>().AsSingle();
-            Container.BindInterfacesTo<LevelManager>().AsSingle().WithArguments(_levelConfigSO);
+            Container.BindInterfacesTo<LevelManager>().AsSingle().WithArguments(_levelsConfigsSO);
             Container.BindInterfacesTo<PlayerManager>().AsSingle().WithArguments(_playerPrefab);
             Container.BindInterfacesTo<EnemiesManager>().AsSingle();
             Container.BindInterfacesTo<ObjectPooling>().AsSingle().WithArguments(_objectPoolingContainer);

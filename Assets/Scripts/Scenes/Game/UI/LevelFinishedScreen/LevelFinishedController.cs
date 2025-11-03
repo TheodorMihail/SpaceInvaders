@@ -2,15 +2,16 @@ using BaseArchitecture.Core;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public class GameFinishedController : Controller<GameFinishedScreen, GameFinishedModel, GameFinishedView>
+    public class LevelFinishedController : Controller<LevelFinishedScreen, LevelFinishedModel, LevelFinishedView>
     {
-        public GameFinishedController(GameFinishedScreen screen, GameFinishedModel model, GameFinishedView view) : base(screen, model, view)
+        public LevelFinishedController(LevelFinishedScreen screen, LevelFinishedModel model, LevelFinishedView view) : base(screen, model, view)
         {
         }
 
         public override void Initialize()
         {
             base.Initialize();
+            _view.Initialize(_model.AllLevelsComplete);
             _view.OnNextLevelButtonClicked += HandleNextLevelButtonClicked;
             _view.OnMainMenuButtonClicked += HandleMainMenuButtonClicked;
         }
@@ -24,17 +25,17 @@ namespace SpaceInvaders.Scenes.Game
 
         private void HandleNextLevelButtonClicked()
         {
-            CloseScreenWithResult(new GameFinishedScreen.GameFinishedScreenResult
+            CloseScreenWithResult(new LevelFinishedScreen.LevelFinishedScreenResult
             {
-                Result = GameFinishedScreen.ResultType.NextLevel
+                Result = LevelFinishedScreen.ResultType.NextLevel
             });
         }
 
         private void HandleMainMenuButtonClicked()
         {
-            CloseScreenWithResult(new GameFinishedScreen.GameFinishedScreenResult
+            CloseScreenWithResult(new LevelFinishedScreen.LevelFinishedScreenResult
             {
-                Result = GameFinishedScreen.ResultType.MainMenu
+                Result = LevelFinishedScreen.ResultType.MainMenu
             });
         }
     }
