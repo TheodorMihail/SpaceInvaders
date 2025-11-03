@@ -77,6 +77,12 @@ namespace SpaceInvaders.Scenes.Game
         
         private async void StartLevel(LevelConfigSO levelConfig)
         {
+            if (CurrentLevelNumber >= MaxLevelNumber)
+            {
+                this.LogError($"Level {CurrentLevelNumber} is out of range! Max levels: {MaxLevelNumber}");
+                return;
+            }
+    
             _currentLevelConfigSo = levelConfig;
             CurrentWaveNumber = 0;
             MaxWaveNumber = _currentLevelConfigSo.WavesConfigs.Count;

@@ -14,15 +14,15 @@ namespace SpaceInvaders.Scenes.Game
         [SerializeField] protected Renderer _renderer;
         [SerializeField] protected Vector3 _projectileOffset;
 
-        protected int _currentHealth;
         private float _lastShotTime;
         private readonly List<ProjectileBehaviourComponent> _activeProjectiles = new();
 
+        public int CurrentHealth { get;  protected set; }
         public event Action<SpaceshipBehaviourComponent> OnDestroyed;
 
         public virtual void OnSpawned()
         {
-            _currentHealth = _shipConfig.Health;
+            CurrentHealth = _shipConfig.Health;
             _lastShotTime = 0f;
         }
 
@@ -83,13 +83,13 @@ namespace SpaceInvaders.Scenes.Game
 
         public void TakeDamage(int damage)
         {
-            if(_currentHealth <= 0)
+            if(CurrentHealth <= 0)
             {
                 return;
             }
 
-            _currentHealth = Math.Clamp(_currentHealth - damage, 0, Int32.MaxValue);
-            if(_currentHealth == 0)
+            CurrentHealth = Math.Clamp(CurrentHealth - damage, 0, Int32.MaxValue);
+            if(CurrentHealth == 0)
             {
                 OnDestroyed?.Invoke(this);
             }

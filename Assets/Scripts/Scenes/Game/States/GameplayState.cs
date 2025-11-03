@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using BaseArchitecture.Core;
 using Cysharp.Threading.Tasks;
@@ -6,6 +7,11 @@ using static SpaceInvaders.Scenes.Game.GameStateMachine;
 
 namespace SpaceInvaders.Scenes.Game
 {
+    public interface IGameInitializeListener
+    {
+        void OnGameInitialized();
+    }
+
     public interface IGameStartedListener
     {
         void OnGameStarted();
@@ -31,6 +37,8 @@ namespace SpaceInvaders.Scenes.Game
         [Inject] private IPlayerManager _playerManager; 
         [Inject] private readonly IList<IGameStartedListener> _gameStartedListeners;
         [Inject] private readonly IList<IGameEndedListener> _gameEndedListeners;
+        [Inject] private readonly IList<IGameInitializeListener> _gameInitializeListeners;
+
 
         public override void OnEnter(params object[] paramsList)
         {
@@ -42,8 +50,17 @@ namespace SpaceInvaders.Scenes.Game
 
         private async void StartGameplay()
         {
+            TriggerInitializeGame();
             await SetupUI();
             TriggerStartGame();
+        }
+
+        private void TriggerInitializeGame()
+        {
+            foreach (var handler in _gameInitializeListeners)
+            {
+                handler.OnGameInitialized();
+            }
         }
 
         private async UniTask SetupUI()

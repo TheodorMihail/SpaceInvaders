@@ -1,6 +1,8 @@
 using BaseArchitecture.Core;
+using SpaceInvaders.Project;
 using System.Collections.Generic;
 using Zenject;
+using static SpaceInvaders.Scenes.Game.GameOverState;
 using static SpaceInvaders.Scenes.Game.GameplayState;
 using static SpaceInvaders.Scenes.Game.GameStateMachine;
 
@@ -36,6 +38,19 @@ namespace SpaceInvaders.Scenes.Game
                         break;
 
                     case GameStateIds.GameOver:
+                        GameOverStateResult gameOverResult = (GameOverStateResult)finishedState.paramsList[0];
+                        switch (gameOverResult) 
+                        {
+                            case GameOverStateResult.MainMenu:
+                                _scenesManager.LoadScene(SceneType.MainMenu.ToString());
+                                break;
+                            case GameOverStateResult.Restart:
+                                _scenesManager.LoadScene(SceneType.Game.ToString());
+                                break;
+                            case GameOverStateResult.NextLevel:
+                                SetState(GameStateIds.Playing); 
+                                break;
+                        }
                     
                         break;
                 }
