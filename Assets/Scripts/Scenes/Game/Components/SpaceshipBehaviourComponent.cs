@@ -13,6 +13,7 @@ namespace SpaceInvaders.Scenes.Game
         [SerializeField] private SpaceshipConfigSO _shipConfig;
         [SerializeField] protected Renderer _renderer;
         [SerializeField] protected Vector3 _projectileOffset;
+        [SerializeField] protected HealthBarComponent _healthBar;
 
         private float _lastShotTime;
         private readonly List<ProjectileBehaviourComponent> _activeProjectiles = new();
@@ -24,6 +25,7 @@ namespace SpaceInvaders.Scenes.Game
         {
             CurrentHealth = _shipConfig.Health;
             _lastShotTime = 0f;
+            _healthBar.Initialize(CurrentHealth, CurrentHealth);
         }
 
         public virtual void OnDespawned()
@@ -89,6 +91,8 @@ namespace SpaceInvaders.Scenes.Game
             }
 
             CurrentHealth = Math.Clamp(CurrentHealth - damage, 0, Int32.MaxValue);
+            _healthBar.UpdateHealth(CurrentHealth);
+            
             if(CurrentHealth == 0)
             {
                 OnDestroyed?.Invoke(this);
