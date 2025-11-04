@@ -521,6 +521,10 @@ MonoBehaviour:
   _levelsConfigsSO:
   - {fileID: 11400000, guid: dfbc3dee90d866c449223693c16750c8, type: 2}
   - {fileID: 11400000, guid: e77dcc4ad00fb844db9dab7cb37faad5, type: 2}
+  _playerConfigsSO:
+  - {fileID: 11400000, guid: 971cbea4a332bc448aab30c972fdf87c, type: 2}
+  _enemyConfigsSO:
+  - {fileID: 11400000, guid: 116dad5eec8a4a743919133197feab8f, type: 2}
 --- !u!1 &1578690922
 GameObject:
   m_ObjectHideFlags: 0

@@ -13,7 +13,11 @@ namespace SpaceInvaders.Scenes.Game
         [SerializeField] private Transform _objectPoolingContainer;
 
         [SerializeField] private PlayerSpaceshipBehaviourComponent _playerPrefab;
+        
+        [Header("Configs")]
         [SerializeField] private List<LevelConfigSO> _levelsConfigsSO;
+        [SerializeField] private List<PlayerSpaceshipConfigSO> _playerConfigsSO;
+        [SerializeField] private List<EnemySpaceshipConfigSO> _enemyConfigsSO;
 
         public override void InstallBindings()
         {
@@ -42,11 +46,14 @@ namespace SpaceInvaders.Scenes.Game
 
         private void ManagersInstall()
         {
+            Container.BindInterfacesTo<ObjectPooling>().AsSingle().WithArguments(_objectPoolingContainer);
+            Container.BindInterfacesTo<RepositoryManager>().AsSingle().WithArguments(
+                _levelsConfigsSO, _playerConfigsSO, _enemyConfigsSO);
+                
             Container.BindInterfacesTo<CameraManager>().AsSingle();
             Container.BindInterfacesTo<LevelManager>().AsSingle().WithArguments(_levelsConfigsSO);
             Container.BindInterfacesTo<PlayerManager>().AsSingle().WithArguments(_playerPrefab);
             Container.BindInterfacesTo<EnemiesManager>().AsSingle();
-            Container.BindInterfacesTo<ObjectPooling>().AsSingle().WithArguments(_objectPoolingContainer);
         }
 
         private void StateMachineInstall()

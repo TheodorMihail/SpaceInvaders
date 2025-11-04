@@ -1,8 +1,9 @@
+using BaseArchitecture.Core;
 using UnityEngine;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public abstract class SpaceshipConfigSO : ScriptableObject
+    public abstract class SpaceshipConfigSO : ScriptableObject, IRepositoryObject
     {
         [Header("Health Settings")]
         [SerializeField] private int _health = 100;
@@ -24,5 +25,7 @@ namespace SpaceInvaders.Scenes.Game
         public ProjectileBehaviourComponent ProjectilePrefab => _projectilePrefab;
         public int ProjectileDamage => _projectileDamage;
         public float ProjectileSpeed => _projectileSpeed;
+
+        public string ObjectID => SpaceshipID;
     }
 }
