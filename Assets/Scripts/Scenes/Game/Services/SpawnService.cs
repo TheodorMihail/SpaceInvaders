@@ -11,8 +11,8 @@ namespace SpaceInvaders.Scenes.Game
     {
         T Spawn<T>(T prefab, Vector3 position, Quaternion rotation) where T : MonoBehaviour, IPoolableObject;
         UniTask<List<T>> SpawnEnemies<T>(WaveConfigDTO waveConfig) where T : MonoBehaviour, IPoolableObject;
-        void Despawn<T>(T instance) where T : MonoBehaviour, IPoolableObject;
         ProjectileBehaviourComponent SpawnProjectile(ProjectileBehaviourComponent prefab, Vector3 position, Vector3 direction, int damage, float speed);
+        void Despawn<T>(T instance) where T : MonoBehaviour, IPoolableObject;
     }
 
     public class SpawnService : ISpawnService
