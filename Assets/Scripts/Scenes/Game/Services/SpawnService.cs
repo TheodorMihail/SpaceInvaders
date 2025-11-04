@@ -49,7 +49,7 @@ namespace SpaceInvaders.Scenes.Game
 
             foreach (var formation in waveConfig.WavesFormation)
             {
-                var prefab = await _addressablesManager.LoadPrefab(PrefabsPath(formation.EnemyType));
+                var prefab = await _addressablesManager.LoadPrefab(PrefabsPath(formation.EnemyType.ToString()));
 
                 if (prefab == null || !prefab.TryGetComponent<T>(out var enemyPrefab))
                 {

@@ -4,7 +4,7 @@ using Zenject;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public class EnemySpaceshipBehaviourComponent : SpaceshipBehaviourComponent
+    public class EnemySpaceshipBehaviourComponent : BaseSpaceshipBehaviourComponent<EnemySpaceshipBehaviourComponent, EnemySpaceshipConfigSO>
     {
         private enum EnemyState { Entering, Bouncing }
 

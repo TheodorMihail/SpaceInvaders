@@ -22,7 +22,7 @@ namespace SpaceInvaders.Scenes.Game
         public struct WaveFormationDTO
         {
             public Vector2Int Position;
-            public string EnemyType;
+            public EnemyTypes EnemyType;
         }
     }
 

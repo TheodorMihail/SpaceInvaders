@@ -3,7 +3,7 @@ using Zenject;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public class PlayerSpaceshipBehaviourComponent : SpaceshipBehaviourComponent
+    public class PlayerSpaceshipBehaviourComponent : BaseSpaceshipBehaviourComponent<PlayerSpaceshipBehaviourComponent, PlayerSpaceshipConfigSO>
     {
         [Inject] private readonly IInputService _inputService;
         [Inject] private readonly ICameraManager _cameraManager;

@@ -18,12 +18,12 @@ PrefabInstance:
       objectReference: {fileID: 638523861631414334, guid: 7caaf0ba83e07254dbdff1638edd18d1, type: 3}
     - target: {fileID: 6151178132014656250, guid: f806ef99d4d454442bb14f47f6bff2b6, type: 3}
       propertyPath: m_Name
-      value: Enemy1 Variant
+      value: Enemy1
       objectReference: {fileID: 0}
     - target: {fileID: 6729188189913805335, guid: f806ef99d4d454442bb14f47f6bff2b6, type: 3}
       propertyPath: _shipConfig
       value: 
-      objectReference: {fileID: 11400000, guid: 3a751f134bc82234996b5252746849d4, type: 2}
+      objectReference: {fileID: 11400000, guid: 116dad5eec8a4a743919133197feab8f, type: 2}
     - target: {fileID: 6779763824935448640, guid: f806ef99d4d454442bb14f47f6bff2b6, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

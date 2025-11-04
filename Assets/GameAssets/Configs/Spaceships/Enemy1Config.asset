@@ -9,12 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b7773d9b35997e54bb5da05bdf36c495, type: 3}
+  m_Script: {fileID: 11500000, guid: fa262a0e7758f754084075b3bd01506f, type: 3}
   m_Name: Enemy1Config
   m_EditorClassIdentifier: 
+  _spaceshipType: 1
   _health: 100
-  _moveSpeed: 50
+  _moveSpeed: 5
   _fireRate: 1
   _projectilePrefab: {fileID: 5265903246518343602, guid: 63d46c87fa8df9c41b02a10e4b06814b, type: 3}
   _projectileDamage: 10
   _projectileSpeed: 125
+  _scoreReward: 10
