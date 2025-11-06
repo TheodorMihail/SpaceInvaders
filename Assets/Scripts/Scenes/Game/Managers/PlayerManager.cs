@@ -18,16 +18,15 @@ namespace SpaceInvaders.Scenes.Game
     public class PlayerManager : IPlayerManager, ITickable
     {
         [Inject] private readonly ISpawnService _spawnService;
-        [Inject] private readonly PlayerSpaceshipBehaviourComponent _playerPrefab;
 
         private PlayerSpaceshipBehaviourComponent _playerInstance;
 
         public event Action OnPlayerDestroyed;
 
         
-        public void OnGameInitialized()
+        public async void OnGameInitialized()
         {
-            _playerInstance = _spawnService.Spawn(_playerPrefab, _playerPrefab.transform.localPosition, _playerPrefab.transform.localRotation);
+            _playerInstance = await _spawnService.SpawnPlayer();
             _playerInstance.OnDestroyed += OnDestroyedCallback;
         }
 

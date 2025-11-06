@@ -15,14 +15,14 @@ MonoBehaviour:
   m_GroupName: Spaceships
   m_GUID: a17f6ea565c249c40b9772b9de2de651
   m_SerializeEntries:
-  - m_GUID: 3113088b49ca1af478449e04df8079c6
-    m_Address: Prefabs/BasePlayer
+  - m_GUID: 3834ca5eed27fe24dac3f829b3daf5d8
+    m_Address: Spaceships/Enemy1
     m_ReadOnly: 0
     m_SerializedLabels:
     - Spaceships
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 3834ca5eed27fe24dac3f829b3daf5d8
-    m_Address: Prefabs/Enemy1
+  - m_GUID: a57a8c0f0aa5ae1439d398580b6c1871
+    m_Address: Spaceships/Player1
     m_ReadOnly: 0
     m_SerializedLabels:
     - Spaceships

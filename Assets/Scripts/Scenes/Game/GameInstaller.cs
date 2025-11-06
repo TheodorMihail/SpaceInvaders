@@ -11,8 +11,6 @@ namespace SpaceInvaders.Scenes.Game
         [SerializeField] private Transform _hudContainer;
         [SerializeField] private Transform _gameContainer;
         [SerializeField] private Transform _objectPoolingContainer;
-
-        [SerializeField] private PlayerSpaceshipBehaviourComponent _playerPrefab;
         
         [Header("Configs")]
         [SerializeField] private List<LevelConfigSO> _levelsConfigsSO;
@@ -51,8 +49,8 @@ namespace SpaceInvaders.Scenes.Game
                 _levelsConfigsSO, _playerConfigsSO, _enemyConfigsSO);
                 
             Container.BindInterfacesTo<CameraManager>().AsSingle();
-            Container.BindInterfacesTo<LevelManager>().AsSingle().WithArguments(_levelsConfigsSO);
-            Container.BindInterfacesTo<PlayerManager>().AsSingle().WithArguments(_playerPrefab);
+            Container.BindInterfacesTo<LevelManager>().AsSingle();
+            Container.BindInterfacesTo<PlayerManager>().AsSingle();
             Container.BindInterfacesTo<EnemiesManager>().AsSingle();
         }
 

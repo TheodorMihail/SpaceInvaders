@@ -9,11 +9,13 @@ namespace SpaceInvaders.Scenes.Game
     {
         [Header("Level Settings")]
         [SerializeField] private string _levelName;
+        [SerializeField] private LevelTypes _levelType;
         [SerializeField] private List<WaveConfigDTO> _wavesConfigs;
 
         public string LevelName => _levelName;
+        public LevelTypes LevelType => _levelType;
         public List<WaveConfigDTO> WavesConfigs => _wavesConfigs;
 
-        public string ObjectID => _levelName;
+        public string ObjectID => _levelType.ToString();
     }
 }

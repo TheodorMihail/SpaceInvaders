@@ -1,44 +1,50 @@
 using System.Collections.Generic;
 using BaseArchitecture.Core;
-using Zenject;
 
 namespace SpaceInvaders.Scenes.Game
 {
     public interface IRepositoryManager
     {
-        LevelConfigSO GetLevelConfig(int levelNumber);
-        PlayerSpaceshipConfigSO GetPlayerConfig(string playerID);
-        EnemySpaceshipConfigSO GetEnemyConfig(string enemyID);
+        LevelConfigSO GetLevelConfig(LevelTypes levelType);
+        PlayerSpaceshipConfigSO GetPlayerConfig(PlayerTypes playerType);
+        EnemySpaceshipConfigSO GetEnemyConfig(EnemyTypes enemyType);
+        int GetLevelsCount();
     }
 
-    public class RepositoryManager : IRepositoryManager
+    public class RepositoryManager : Repository, IRepositoryManager
     {
-        [Inject] private readonly IRepository _repository;
+        private int _levelsCount;
 
         public RepositoryManager(
-            List<IRepositoryObject> levelsConfigs,
-            List<IRepositoryObject> playersConfigs,
-            List<IRepositoryObject> enemiesConfigs)
+            List<LevelConfigSO> levelsConfigs,
+            List<PlayerSpaceshipConfigSO> playersConfigs,
+            List<EnemySpaceshipConfigSO> enemiesConfigs)
         {
-            _repository.AddObjects(levelsConfigs);
-            _repository.AddObjects(playersConfigs);
-            _repository.AddObjects(enemiesConfigs);
+            AddObjects(levelsConfigs);
+            AddObjects(playersConfigs);
+            AddObjects(enemiesConfigs);
+            _levelsCount = levelsConfigs.Count;
         }
 
 
-        public LevelConfigSO GetLevelConfig(int levelNumber)
+        public LevelConfigSO GetLevelConfig(LevelTypes levelType)
         {
-            return _repository.GetObject($"Level {levelNumber}") as LevelConfigSO;
+            return GetObject(levelType.ToString()) as LevelConfigSO;
         }
 
-        public PlayerSpaceshipConfigSO GetPlayerConfig(string playerID)
+        public PlayerSpaceshipConfigSO GetPlayerConfig(PlayerTypes playerType)
         {
-            return _repository.GetObject(playerID) as PlayerSpaceshipConfigSO;
+            return GetObject(playerType.ToString()) as PlayerSpaceshipConfigSO;
         }
 
-        public EnemySpaceshipConfigSO GetEnemyConfig(string enemyID)
+        public EnemySpaceshipConfigSO GetEnemyConfig(EnemyTypes enemyType)
         {
-            return _repository.GetObject(enemyID) as EnemySpaceshipConfigSO;
+            return GetObject(enemyType.ToString()) as EnemySpaceshipConfigSO;
+        }
+
+        public int GetLevelsCount()
+        {
+            return _levelsCount;
         }
     }
 }

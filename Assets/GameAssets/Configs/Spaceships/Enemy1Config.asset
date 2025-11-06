@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa262a0e7758f754084075b3bd01506f, type: 3}
   m_Name: Enemy1Config
   m_EditorClassIdentifier: 
+  _spaceshipPrefabPath: Spaceships/Enemy1
   _health: 100
   _moveSpeed: 50
   _fireRate: 1

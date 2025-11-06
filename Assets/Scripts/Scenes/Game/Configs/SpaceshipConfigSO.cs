@@ -5,10 +5,9 @@ namespace SpaceInvaders.Scenes.Game
 {
     public abstract class SpaceshipConfigSO : ScriptableObject, IRepositoryObject
     {
-        [Header("Health Settings")]
+        [Header("Spaceship Settings")]
+        [SerializeField] private string _spaceshipPrefabPath;
         [SerializeField] private int _health = 100;
-
-        [Header("Movement Settings")]
         [SerializeField] private float _moveSpeed = 5f;
 
         [Header("Combat Settings")]
@@ -18,14 +17,15 @@ namespace SpaceInvaders.Scenes.Game
         [SerializeField] private float _projectileSpeed = 15f;
 
 
-        public abstract string SpaceshipID { get; }
+        public string SpaceshipPrefabAddress => _spaceshipPrefabPath;
         public int Health => _health;
         public float MoveSpeed => _moveSpeed;
         public float FireRate => _fireRate;
         public ProjectileBehaviourComponent ProjectilePrefab => _projectilePrefab;
         public int ProjectileDamage => _projectileDamage;
         public float ProjectileSpeed => _projectileSpeed;
-
         public string ObjectID => SpaceshipID;
+
+        public abstract string SpaceshipID { get; }
     }
 }
