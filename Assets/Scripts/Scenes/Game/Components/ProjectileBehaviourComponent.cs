@@ -59,7 +59,7 @@ namespace SpaceInvaders.Scenes.Game
             }
 
             // Try to get spaceship component and apply damage
-            if (other.TryGetComponent<SpaceshipBehaviourComponent>(out var target))
+            if (other.TryGetComponent<BaseSpaceshipBehaviourComponent>(out var target))
             {
                 target.TakeDamage(_damage);
             }

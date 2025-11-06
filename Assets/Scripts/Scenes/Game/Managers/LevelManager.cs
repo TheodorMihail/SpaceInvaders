@@ -7,6 +7,12 @@ using static SpaceInvaders.Scenes.Game.AnnouncerScreen;
 
 namespace SpaceInvaders.Scenes.Game
 {
+    public enum LevelTypes
+    {
+        Level1,
+        Level2
+    }
+
     [Serializable]
     public struct WaveConfigDTO
     {
@@ -22,7 +28,7 @@ namespace SpaceInvaders.Scenes.Game
         public struct WaveFormationDTO
         {
             public Vector2Int Position;
-            public string EnemyType;
+            public EnemyTypes EnemyType;
         }
     }
 
@@ -34,16 +40,15 @@ namespace SpaceInvaders.Scenes.Game
         public int CurrentWaveNumber { get; }
         public int MaxWaveNumber { get; }
         
-
         event Action<int> OnLevelCompleted;
     }
 
     public class LevelManager : ILevelManager
     {
+        [Inject] private IRepositoryManager _repositoryManager;
         [Inject] private IEnemiesManager _enemiesManager;
         [Inject] private IUIManager _uiManager;
-        [Inject] private readonly List<LevelConfigSO> _levelsConfigsSO;
-        
+
         public int CurrentLevelNumber { get; private set; }
         public int MaxLevelNumber { get; private set; }
         public int CurrentWaveNumber { get; private set; }
@@ -56,7 +61,7 @@ namespace SpaceInvaders.Scenes.Game
         public void Initialize()
         {
             CurrentLevelNumber = 0;
-            MaxLevelNumber = _levelsConfigsSO.Count;
+            MaxLevelNumber = _repositoryManager.GetLevelsCount();
             _enemiesManager.OnAllEnemiesDestroyed += OnAllEnemiesDestroyedCallback;
         }
 
@@ -67,7 +72,8 @@ namespace SpaceInvaders.Scenes.Game
         
         public void OnGameStarted()
         {
-            StartLevel(_levelsConfigsSO[CurrentLevelNumber]);
+            LevelConfigSO levelConfig = GetLevelConfig(CurrentLevelNumber);
+            StartLevel(levelConfig);
         }
 
         private void OnAllEnemiesDestroyedCallback()
@@ -100,12 +106,17 @@ namespace SpaceInvaders.Scenes.Game
                 OnLevelCompleted?.Invoke(CurrentLevelNumber);
                 return;
             }
-           
+
             _enemiesManager.SpawnEnemies(_currentLevelConfigSo.WavesConfigs[CurrentWaveNumber]);
             CurrentWaveNumber++;
 
             _uiManager.ShowScreen<AnnouncerScreen, AnnouncerScreenParams>(new AnnouncerScreenParams() { DisplayText = $"Wave {CurrentWaveNumber}" });
             this.Log($"Wave {CurrentWaveNumber} started!");
+        }
+        
+        private LevelConfigSO GetLevelConfig(int levelNumber)
+        {
+            return _repositoryManager.GetLevelConfig((LevelTypes)levelNumber);
         }
     }
 }

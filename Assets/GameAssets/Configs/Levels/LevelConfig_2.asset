@@ -13,36 +13,37 @@ MonoBehaviour:
   m_Name: LevelConfig_2
   m_EditorClassIdentifier: 
   _levelName: Level 2
+  _levelType: 1
   _wavesConfigs:
   - _wavesFormation:
     - Position: {x: 0, y: 0}
-      EnemyType: Enemy1
+      EnemyType: 0
     - Position: {x: 50, y: 20}
-      EnemyType: Enemy1
+      EnemyType: 0
     - Position: {x: -50, y: 20}
-      EnemyType: Enemy1
+      EnemyType: 0
     - Position: {x: 100, y: -20}
-      EnemyType: Enemy1
+      EnemyType: 0
     - Position: {x: -100, y: -20}
-      EnemyType: Enemy1
+      EnemyType: 0
     _timeBetweenSpawns: 1
     _entrySpeed: 100
   - _wavesFormation:
     - Position: {x: 0, y: 0}
-      EnemyType: Enemy1
+      EnemyType: 0
     - Position: {x: 100, y: 0}
-      EnemyType: Enemy1
+      EnemyType: 0
     - Position: {x: -100, y: 0}
-      EnemyType: Enemy1
+      EnemyType: 0
     - Position: {x: 200, y: 0}
-      EnemyType: Enemy1
+      EnemyType: 0
     - Position: {x: -200, y: 0}
-      EnemyType: Enemy1
+      EnemyType: 0
     - Position: {x: 0, y: 100}
-      EnemyType: Enemy1
+      EnemyType: 0
     - Position: {x: 100, y: 100}
-      EnemyType: Enemy1
+      EnemyType: 0
     - Position: {x: -100, y: 100}
-      EnemyType: Enemy1
+      EnemyType: 0
     _timeBetweenSpawns: 1
     _entrySpeed: 100

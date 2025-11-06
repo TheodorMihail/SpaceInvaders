@@ -7,8 +7,14 @@ using Zenject;
 
 namespace SpaceInvaders.Scenes.Game
 {
+    public enum EnemyTypes
+    {
+        Enemy1
+    }
+    
     public interface IEnemiesManager : IDisposable, IGameInitializeListener, IGameEndedListener
     {
+        event Action<string> EnemyDestroyed;
         event Action OnAllEnemiesDestroyed;
         public void SpawnEnemies(WaveConfigDTO wave);
     }
@@ -19,6 +25,7 @@ namespace SpaceInvaders.Scenes.Game
 
         private List<EnemySpaceshipBehaviourComponent> _spawnedEnemies;
 
+        public event Action<string> EnemyDestroyed;
         public event Action OnAllEnemiesDestroyed;
 
 
@@ -41,7 +48,7 @@ namespace SpaceInvaders.Scenes.Game
         {
             await UniTask.Delay((int)(waveConfig.TimeBetweenSpawns * 1000));
 
-            _spawnedEnemies = await _spawnService.SpawnEnemies<EnemySpaceshipBehaviourComponent>(waveConfig);
+            _spawnedEnemies = await _spawnService.SpawnEnemies(waveConfig);
             foreach(var enemy in _spawnedEnemies)
             {
                 enemy.OnDestroyed += OnEnemyDestroyedCallback;
@@ -49,21 +56,22 @@ namespace SpaceInvaders.Scenes.Game
             }
         }
 
-        private void OnEnemyDestroyedCallback(SpaceshipBehaviourComponent enemy)
+        private void OnEnemyDestroyedCallback(EnemySpaceshipBehaviourComponent enemy)
         {
-            this.Log($"Enemy destroyed, remaining: {_spawnedEnemies.Count}");
+            EnemyDestroyed?.Invoke(enemy.SpaceshipID);
             DespawnEnemy(enemy);
 
+            this.Log($"Enemy destroyed, remaining: {_spawnedEnemies.Count}");
             if (_spawnedEnemies.Count == 0)
             {
                 OnAllEnemiesDestroyed?.Invoke();
             }
         }
 
-        private void DespawnEnemy(SpaceshipBehaviourComponent enemy)
+        private void DespawnEnemy(EnemySpaceshipBehaviourComponent enemy)
         {
             enemy.OnDestroyed -= OnEnemyDestroyedCallback;
-            _spawnedEnemies.Remove((EnemySpaceshipBehaviourComponent)enemy);
+            _spawnedEnemies.Remove(enemy);
             _spawnService.Despawn(enemy);
         }
 

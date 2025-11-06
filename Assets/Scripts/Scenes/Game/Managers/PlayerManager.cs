@@ -5,6 +5,11 @@ using Zenject;
 
 namespace SpaceInvaders.Scenes.Game
 {
+    public enum PlayerTypes
+    {
+        Player1
+    }
+    
     public interface IPlayerManager : IDisposable, IGameStartedListener, IGameEndedListener, IGameInitializeListener
     {
         event Action OnPlayerDestroyed;
@@ -13,16 +18,15 @@ namespace SpaceInvaders.Scenes.Game
     public class PlayerManager : IPlayerManager, ITickable
     {
         [Inject] private readonly ISpawnService _spawnService;
-        [Inject] private readonly PlayerSpaceshipBehaviourComponent _playerPrefab;
 
         private PlayerSpaceshipBehaviourComponent _playerInstance;
 
         public event Action OnPlayerDestroyed;
 
         
-        public void OnGameInitialized()
+        public async void OnGameInitialized()
         {
-            _playerInstance = _spawnService.Spawn(_playerPrefab, _playerPrefab.transform.localPosition, _playerPrefab.transform.localRotation);
+            _playerInstance = await _spawnService.SpawnPlayer();
             _playerInstance.OnDestroyed += OnDestroyedCallback;
         }
 
@@ -41,7 +45,7 @@ namespace SpaceInvaders.Scenes.Game
             DespawnPlayer();
         }
 
-        private void OnDestroyedCallback(SpaceshipBehaviourComponent component)
+        private void OnDestroyedCallback(PlayerSpaceshipBehaviourComponent component)
         {
             this.Log($"Player destroyed!");
             DespawnPlayer();
