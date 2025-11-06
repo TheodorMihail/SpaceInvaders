@@ -1,13 +1,12 @@
 using BaseArchitecture.Core;
 using Cysharp.Threading.Tasks;
-using DG.Tweening;
 using System.Threading;
 using TMPro;
 using UnityEngine;
 
 namespace SpaceInvaders.Scenes.Preload
 {
-    [AddressablePath("Screens/BootView")]
+    [AddressablePath("Screens/BootScreenView")]
     public class BootView : View
     {
         [SerializeField] private TextMeshProUGUI _loadingText;
@@ -23,14 +22,12 @@ namespace SpaceInvaders.Scenes.Preload
 
         public async UniTask PlayLoadingAnimation(float duration, float endDelay)
         {
-            float loadingPercentage = 0;
-            var tween = DOTween.To(() => loadingPercentage, x => loadingPercentage = x, 100, duration)
-                .OnUpdate(() =>
-                {
-                    _loadingText.text = string.Format(_loadingString, Mathf.RoundToInt(loadingPercentage));
-                });
+            await _loadingText.CountdownAsync(0, 100, duration, (val) =>
+            {
+                _loadingText.text = string.Format(_loadingString, val);
 
-            await tween.ToUniTask(cancellationToken: _cancellationTokenSource.Token);
+            }, _cancellationTokenSource);
+            
             _loadingText.text = _loadingFinishedString;
 
             //Adding another delay to see the loading finished text

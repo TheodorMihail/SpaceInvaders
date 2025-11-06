@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using BaseArchitecture.Core;
 using UnityEngine;
 using Zenject;
@@ -8,10 +9,18 @@ namespace SpaceInvaders.Scenes.Game
     {
         [SerializeField] private Transform _screensContainer;
         [SerializeField] private Transform _hudContainer;
+        [SerializeField] private Transform _gameContainer;
+        [SerializeField] private Transform _objectPoolingContainer;
+        
+        [Header("Configs")]
+        [SerializeField] private List<LevelConfigSO> _levelsConfigsSO;
+        [SerializeField] private List<PlayerSpaceshipConfigSO> _playerConfigsSO;
+        [SerializeField] private List<EnemySpaceshipConfigSO> _enemyConfigsSO;
 
         public override void InstallBindings()
         {
             ContainersInstall();
+            ServicesInstall();
             ManagersInstall();
             StateMachineInstall();
         }
@@ -23,12 +32,26 @@ namespace SpaceInvaders.Scenes.Game
             Container.Bind<Transform>().WithId(IHUD.HUDContainerID)
                 .FromInstance(_hudContainer).AsCached();
 
+            Container.TryResolve<ICustomFactory>().UpdateDIContainer(Container);
             Container.TryResolve<IUIManager>().UpdateDIContainer(Container);
+        }
+
+        private void ServicesInstall()
+        {
+            Container.BindInterfacesTo<InputService>().AsSingle();
+            Container.BindInterfacesTo<SpawnService>().AsSingle().WithArguments(_gameContainer);
         }
 
         private void ManagersInstall()
         {
-            Container.BindInterfacesTo<GameplayManager>().AsSingle();
+            Container.BindInterfacesTo<ObjectPooling>().AsSingle().WithArguments(_objectPoolingContainer);
+            Container.BindInterfacesTo<RepositoryManager>().AsSingle().WithArguments(
+                _levelsConfigsSO, _playerConfigsSO, _enemyConfigsSO);
+                
+            Container.BindInterfacesTo<CameraManager>().AsSingle();
+            Container.BindInterfacesTo<LevelManager>().AsSingle();
+            Container.BindInterfacesTo<PlayerManager>().AsSingle();
+            Container.BindInterfacesTo<EnemiesManager>().AsSingle();
         }
 
         private void StateMachineInstall()

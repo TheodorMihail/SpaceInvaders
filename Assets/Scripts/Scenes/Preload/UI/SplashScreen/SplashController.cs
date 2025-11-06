@@ -12,8 +12,7 @@ namespace SpaceInvaders.Scenes.Preload
         public override async void Initialize()
         {
             base.Initialize();
-            await _view.PlayLogoAnimation(_model.AnimationSimulationTimerSeconds,
-                _model.AnimationStartDelayTimerSeconds, _model.AnimationEndDelayTimerSeconds);
+            await _view.PlayLogoAnimation(_model.AnimationSimulationTimerSeconds, _model.AnimationStartDelayTimerSeconds);
                 
             Close();
         }

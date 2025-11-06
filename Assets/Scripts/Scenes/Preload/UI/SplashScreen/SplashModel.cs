@@ -6,6 +6,5 @@ namespace SpaceInvaders.Scenes.Preload
     {
         public float AnimationSimulationTimerSeconds { get; } = 2f;
         public float AnimationStartDelayTimerSeconds { get; } = 0.5f;
-        public float AnimationEndDelayTimerSeconds { get; } = 1f;
     }
 }
