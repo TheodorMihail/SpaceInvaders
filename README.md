@@ -30,6 +30,24 @@ Space Invaders serves as a **reference implementation** of the BaseArchitecture 
 
 This project uses BaseArchitecture as a git submodule, providing the core framework while keeping game-specific code separate.
 
+### 🎮 Game-Specific Implementation
+
+**Architectural Patterns**
+- **Repository Pattern** — `RepositoryManager` centralizes access to ScriptableObject configurations
+- **Object Pooling** — Enemies and projectiles reuse pooled instances for performance
+- **State Machine** — `GameplayState` and `GameOverState` control game flow
+- **Component-Based Design** — Reusable components with inheritance-based behavior
+
+**Session Lifecycle**
+- Custom lifecycle system (`IGameInitializeListener`, `IGameStartedListener`, `IGameEndedListener`)
+- Enables gameplay restarts without scene reloads
+- Separates DI container setup from game session management
+
+**Key Systems**
+- **Managers** — LevelManager, PlayerManager, EnemiesManager, CameraManager
+- **Services** — SpawnService (factory), InputService
+- **Components** — SpaceshipBehaviourComponent hierarchy, ProjectileBehaviourComponent, CollisionDetectionComponent
+
 ---
 
 ## 🛠️ Using as Reference
