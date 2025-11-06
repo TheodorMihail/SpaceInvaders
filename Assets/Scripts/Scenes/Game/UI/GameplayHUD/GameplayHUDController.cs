@@ -1,9 +1,14 @@
+using System;
 using BaseArchitecture.Core;
+using Zenject;
 
 namespace SpaceInvaders.Scenes.Game
 {
     public class GameplayHUDController : Controller<GameplayHUD, GameplayHUDModel, GameplayHUDView>
     {
+        [Inject] private readonly IEnemiesManager _enemiesManager;
+        [Inject] private readonly IRepositoryManager _repositoryManager;
+
         public GameplayHUDController(GameplayHUD hud, GameplayHUDModel model, GameplayHUDView view)
             : base(hud, model, view)
         {
@@ -12,24 +17,32 @@ namespace SpaceInvaders.Scenes.Game
         public override void Initialize()
         {
             base.Initialize();
+            _enemiesManager.EnemyDestroyed += OnEnemyDestroyedCallback;
             RefreshUI();
         }
 
-        public void UpdateLives(int lives)
+        public override void Dispose()
         {
-            _model.Lives = lives;
-            _view.UpdateLives(lives);
+            base.Dispose();
+            _enemiesManager.EnemyDestroyed -= OnEnemyDestroyedCallback;
         }
 
-        public void UpdateScore(int score)
+        private void OnEnemyDestroyedCallback(string enemyID)
         {
+            var enemyType = Enum.Parse<EnemyTypes>(enemyID);
+            var enemyConfig = _repositoryManager.GetEnemyConfig(enemyType);
+            UpdateScore(enemyConfig.ScoreReward);
+        }
+
+        private void UpdateScore(int score)
+        {
+            score += _model.Score;
             _model.Score = score;
             _view.UpdateScore(score);
         }
 
         private void RefreshUI()
         {
-            _view.UpdateLives(_model.Lives);
             _view.UpdateScore(_model.Score);
         }
     }
