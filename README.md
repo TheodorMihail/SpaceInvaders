@@ -36,6 +36,7 @@ This project uses BaseArchitecture as a git submodule, providing the core framew
 - **Repository Pattern** — `RepositoryManager` centralizes access to ScriptableObject configurations
 - **Object Pooling** — Enemies and projectiles reuse pooled instances for performance
 - **State Machine** — `GameplayState` and `GameOverState` control game flow
+- **Message Bus** — Decoupled pub/sub communication for game events
 - **Component-Based Design** — Reusable components with inheritance-based behavior
 
 **Session Lifecycle**

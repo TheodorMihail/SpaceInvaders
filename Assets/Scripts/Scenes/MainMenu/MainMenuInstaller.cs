@@ -19,8 +19,8 @@ namespace SpaceInvaders.Scenes.MainMenu
             Container.Bind<Transform>().WithId(IScreen.ScreensContainerID)
                 .FromInstance(_screensContainer).AsCached();
 
-            Container.TryResolve<ICustomFactory>().UpdateDIContainer(Container);
-            Container.TryResolve<IUIManager>().UpdateDIContainer(Container);
+            Container.Resolve<ICustomFactory>().UpdateDIContainer(Container);
+            Container.Resolve<IUIManager>().UpdateDIContainer(Container);
         }
 
         private void StateMachineInstall()

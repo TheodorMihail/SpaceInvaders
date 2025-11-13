@@ -32,6 +32,7 @@ namespace SpaceInvaders.Scenes.Game
 
         public override GameStateIds Id => GameStateIds.Playing;
 
+        [Inject] private readonly IMessageBus _messageBus;
         [Inject] private readonly IUIManager _uiManager;
         [Inject] private ILevelManager _levelManager;
         [Inject] private IPlayerManager _playerManager; 
@@ -96,6 +97,7 @@ namespace SpaceInvaders.Scenes.Game
 
         private void TriggerEndGame(GameplayStateResult result)
         {
+            _messageBus.Publish(new GameEndedMessage());
             _levelManager.OnLevelCompleted -= OnLevelCompletedCallback;
             _playerManager.OnPlayerDestroyed -= OnPlayerDestroyedCallback;
 
