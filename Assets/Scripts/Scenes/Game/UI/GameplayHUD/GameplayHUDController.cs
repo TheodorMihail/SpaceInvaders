@@ -6,6 +6,7 @@ namespace SpaceInvaders.Scenes.Game
 {
     public class GameplayHUDController : Controller<GameplayHUD, GameplayHUDModel, GameplayHUDView>
     {
+        [Inject] private readonly IMessageBus _messageBus;
         [Inject] private readonly IEnemiesManager _enemiesManager;
         [Inject] private readonly IRepositoryManager _repositoryManager;
 
@@ -18,6 +19,7 @@ namespace SpaceInvaders.Scenes.Game
         {
             base.Initialize();
             _enemiesManager.EnemyDestroyed += OnEnemyDestroyedCallback;
+            _messageBus.Subscribe<GameEndedMessage>(OnGameEnded);
             RefreshUI();
         }
 
@@ -25,6 +27,7 @@ namespace SpaceInvaders.Scenes.Game
         {
             base.Dispose();
             _enemiesManager.EnemyDestroyed -= OnEnemyDestroyedCallback;
+            _messageBus.Unsubscribe<GameEndedMessage>(OnGameEnded);
         }
 
         private void OnEnemyDestroyedCallback(string enemyID)
@@ -44,6 +47,11 @@ namespace SpaceInvaders.Scenes.Game
         private void RefreshUI()
         {
             _view.UpdateScore(_model.Score);
+        }
+
+        private void OnGameEnded(GameEndedMessage message)
+        {
+            Close();
         }
     }
 }

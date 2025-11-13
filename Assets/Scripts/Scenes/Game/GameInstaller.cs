@@ -32,8 +32,8 @@ namespace SpaceInvaders.Scenes.Game
             Container.Bind<Transform>().WithId(IHUD.HUDContainerID)
                 .FromInstance(_hudContainer).AsCached();
 
-            Container.TryResolve<ICustomFactory>().UpdateDIContainer(Container);
-            Container.TryResolve<IUIManager>().UpdateDIContainer(Container);
+            Container.Resolve<ICustomFactory>().UpdateDIContainer(Container);
+            Container.Resolve<IUIManager>().UpdateDIContainer(Container);
         }
 
         private void ServicesInstall()
@@ -44,6 +44,7 @@ namespace SpaceInvaders.Scenes.Game
 
         private void ManagersInstall()
         {
+            Container.BindInterfacesTo<MessageBus>().AsSingle();
             Container.BindInterfacesTo<ObjectPooling>().AsSingle().WithArguments(_objectPoolingContainer);
             Container.BindInterfacesTo<RepositoryManager>().AsSingle().WithArguments(
                 _levelsConfigsSO, _playerConfigsSO, _enemyConfigsSO);
