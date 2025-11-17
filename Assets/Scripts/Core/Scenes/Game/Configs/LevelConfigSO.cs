@@ -12,10 +12,10 @@ namespace SpaceInvaders.Scenes.Game
         [SerializeField] private LevelTypes _levelType;
         [SerializeField] private List<WaveConfigDTO> _wavesConfigs;
 
-        public string LevelName => _levelName;
-        public LevelTypes LevelType => _levelType;
-        public List<WaveConfigDTO> WavesConfigs => _wavesConfigs;
+        public virtual string LevelName => _levelName;
+        public virtual LevelTypes LevelType => _levelType;
+        public virtual List<WaveConfigDTO> WavesConfigs => _wavesConfigs;
 
-        public string ObjectID => _levelType.ToString();
+        public virtual string ObjectID => _levelType.ToString();
     }
 }

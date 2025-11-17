@@ -28,12 +28,11 @@ namespace SpaceInvaders.Scenes.Game
         where T : BaseSpaceshipBehaviourComponent<T, Config>
         where Config : SpaceshipConfigSO
     {
-
         [SerializeField] private Config _shipConfig;
 
-        public int CurrentHealth { get; protected set; }
-        public string SpaceshipID => _shipConfig.SpaceshipID;
-        public event Action<T> OnDestroyed;
+        public virtual int CurrentHealth { get; protected set; }
+        public virtual string SpaceshipID => _shipConfig.SpaceshipID;
+        public virtual event Action<T> OnDestroyed;
 
         public override void OnSpawned()
         {
