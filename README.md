@@ -6,15 +6,19 @@
 
 ## 🧱 Overview
 
-This project demonstrates clean Unity architecture using the **[BaseArchitecture](https://github.com/TheodorMihail/BaseArchitecture)** framework:
+This project demonstrates clean Unity architecture using the **[BaseArchitecture](https://github.com/TheodorMihail/BaseArchitecture)** framework. It brings together:
 
-- ✅ **SOLID principles** for maintainable code
-- 🎮 **MVC pattern** with Screens and HUDs
-- 🔁 **State Machines** for game flow
-- 🧠 **Zenject (Dependency Injection)** for decoupling
-- 🔄 **UniTask** for async operations
-- 📦 **Addressables** for asset management
-- ⚡ **Assembly Definitions** for fast compilation
+- ✅ **SOLID principles** — to ensure clear responsibilities and maintainable code
+- 🎮 **MVC pattern** — with Screens and HUDs for flexible UI management
+- 🔁 **State Machines** — for predictable, extensible gameplay flow
+- 🧠 **Zenject (Dependency Injection)** — for decoupled, testable systems
+- 🔄 **UniTask** — for clean async/await operations
+- 📦 **Addressables** — for efficient asset management
+- ♻️ **Object Pooling** — for optimized enemy and projectile reuse
+- 🗂️ **Repository Pattern** — for centralized configuration and data management
+- 📬 **Message Bus** — for decoupled pub/sub communication between systems
+- ⚡ **Assembly Definitions** — for faster compile times
+- 🧪 **Comprehensive test coverage** — with EditMode and PlayMode tests
 
 ---
 
@@ -32,22 +36,27 @@ This project uses BaseArchitecture as a git submodule, providing the core framew
 
 ### 🎮 Game-Specific Implementation
 
-**Architectural Patterns**
-- **Repository Pattern** — `RepositoryManager` centralizes access to ScriptableObject configurations
-- **Object Pooling** — Enemies and projectiles reuse pooled instances for performance
-- **State Machine** — `GameplayState` and `GameOverState` control game flow
-- **Message Bus** — Decoupled pub/sub communication for game events
-- **Component-Based Design** — Reusable components with inheritance-based behavior
+**State Management**
+- Game flow controlled through `GameplayState` and `GameOverState`
+- Custom session lifecycle system for gameplay restarts without scene reloads
 
-**Session Lifecycle**
-- Custom lifecycle system (`IGameInitializeListener`, `IGameStartedListener`, `IGameEndedListener`)
-- Enables gameplay restarts without scene reloads
-- Separates DI container setup from game session management
+**Core Systems**
+- **Managers** — Level progression, player/enemy lifecycle, camera setup
+- **Services** — Spawn service (factory), input handling
+- **Components** — Interface-driven spaceship hierarchy, projectiles, collision detection
 
-**Key Systems**
-- **Managers** — LevelManager, PlayerManager, EnemiesManager, CameraManager
-- **Services** — SpawnService (factory), InputService
-- **Components** — SpaceshipBehaviourComponent hierarchy, ProjectileBehaviourComponent, CollisionDetectionComponent
+**Data Management**
+- ScriptableObject-based configurations accessed via Repository Pattern
+- Object pooling for enemies and projectiles
+
+### 🧪 Testing
+
+Comprehensive test coverage using Unity Test Framework with NSubstitute and Zenject:
+
+- **EditMode** — LevelManager, GameStateMachine
+- **PlayMode** — EnemiesManager, PlayerManager (async/UniTask operations)
+
+Interface-based design enables full testability of all game systems.
 
 ---
 
