@@ -1,0 +1,112 @@
+using NUnit.Framework;
+using SpaceInvaders.Scenes.Game;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.TestTools;
+
+namespace SpaceInvaders.Tests
+{
+    [TestFixture]
+    public class RepositoryManagerTests
+    {
+        private RepositoryManager _repositoryManager;
+        private List<LevelConfigSO> _levelConfigs;
+        private List<PlayerSpaceshipConfigSO> _playerConfigs;
+        private List<EnemySpaceshipConfigSO> _enemyConfigs;
+
+        [SetUp]
+        public void Setup()
+        {
+            _levelConfigs = new List<LevelConfigSO>
+            {
+                ScriptableObject.CreateInstance<LevelConfigSO>(),
+                ScriptableObject.CreateInstance<LevelConfigSO>()
+            };
+
+            _playerConfigs = new List<PlayerSpaceshipConfigSO>
+            {
+                ScriptableObject.CreateInstance<PlayerSpaceshipConfigSO>()
+            };
+
+            _enemyConfigs = new List<EnemySpaceshipConfigSO>
+            {
+                ScriptableObject.CreateInstance<EnemySpaceshipConfigSO>(),
+                ScriptableObject.CreateInstance<EnemySpaceshipConfigSO>()
+            };
+
+            _repositoryManager = new RepositoryManager(_levelConfigs, _playerConfigs, _enemyConfigs);
+        }
+
+        [TearDown]
+        public void Teardown()
+        {
+            foreach (var config in _levelConfigs)
+                Object.DestroyImmediate(config);
+
+            foreach (var config in _playerConfigs)
+                Object.DestroyImmediate(config);
+
+            foreach (var config in _enemyConfigs)
+                Object.DestroyImmediate(config);
+        }
+
+        [Test]
+        public void GetLevelsCount_ReturnsCorrectCount()
+        {
+            var count = _repositoryManager.GetLevelsCount();
+
+            Assert.AreEqual(2, count);
+        }
+
+        [Test]
+        public void GetLevelConfig_WithValidTypeAndWrongID_ReturnsDefaultAndLogsError()
+        {
+            var config = _repositoryManager.GetLevelConfig(LevelTypes.Level2);
+            Assert.IsNull(config);
+            LogAssert.Expect(LogType.Error, "[Repository] [Error] Object with ID 'Level2' not found.");
+        }
+
+        [Test]
+        public void GetLevelConfig_WithValidType_ReturnsConfig()
+        {
+            var config = _repositoryManager.GetLevelConfig(LevelTypes.Level1);
+            Assert.IsNotNull(config);
+        }
+
+        [Test]
+        public void GetPlayerConfig_WithValidType_ReturnsConfig()
+        {
+            var config = _repositoryManager.GetPlayerConfig(PlayerTypes.Player1);
+            Assert.IsNotNull(config);
+        }
+
+        [Test]
+        public void GetEnemyConfig_WithValidType_ReturnsConfig()
+        {
+            var config = _repositoryManager.GetEnemyConfig(EnemyTypes.Enemy1);
+            Assert.IsNotNull(config);
+        }
+
+        [Test]
+        public void Constructor_WithEmptyLevels_SetsCountToZero()
+        {
+            var emptyLevels = new List<LevelConfigSO>();
+            var emptyPlayers = new List<PlayerSpaceshipConfigSO>();
+            var emptyEnemies = new List<EnemySpaceshipConfigSO>();
+
+            var manager = new RepositoryManager(emptyLevels, emptyPlayers, emptyEnemies);
+
+            Assert.AreEqual(0, manager.GetLevelsCount());
+        }
+
+        [Test]
+        public void Constructor_AddsAllConfigsToRepository()
+        {
+            Assert.DoesNotThrow(() => {
+                _repositoryManager.GetLevelConfig(LevelTypes.Level1);
+                _repositoryManager.GetPlayerConfig(PlayerTypes.Player1);
+                _repositoryManager.GetEnemyConfig(EnemyTypes.Enemy1);
+            });
+        }
+    }
+}

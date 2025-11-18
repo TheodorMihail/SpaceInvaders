@@ -1,10 +1,18 @@
+using System;
 using DG.Tweening;
 using UnityEngine;
 using Zenject;
+using Random = UnityEngine.Random;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public class EnemySpaceshipBehaviourComponent : BaseSpaceshipBehaviourComponent<EnemySpaceshipBehaviourComponent, EnemySpaceshipConfigSO>
+    public interface IEnemySpaceship : ISpaceship
+    {
+        new event Action<IEnemySpaceship> OnDestroyed;
+        void StartEntryAnimation(float entrySpeed);
+    }
+
+    public class EnemySpaceshipBehaviourComponent : BaseSpaceshipBehaviourComponent<EnemySpaceshipBehaviourComponent, EnemySpaceshipConfigSO>, IEnemySpaceship
     {
         private enum EnemyState { Entering, Bouncing }
 
@@ -17,6 +25,8 @@ namespace SpaceInvaders.Scenes.Game
         private Vector3 _minBounds;
         private Vector3 _maxBounds;
         private Tween _entryTween;
+
+        public new event Action<IEnemySpaceship> OnDestroyed;
 
         public override void OnSpawned()
         {
@@ -134,7 +144,7 @@ namespace SpaceInvaders.Scenes.Game
 
         private void ApplyRandomBounce()
         {
-            float randomAngleVariation = Random.Range(-_bounceAngleVariation, _bounceAngleVariation);
+            float randomAngleVariation = UnityEngine.Random.Range(-_bounceAngleVariation, _bounceAngleVariation);
             float angleInRadians = randomAngleVariation * Mathf.Deg2Rad;
 
             // Rotate the direction vector by the random angle around Y axis

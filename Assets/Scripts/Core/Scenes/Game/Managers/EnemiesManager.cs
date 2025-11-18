@@ -16,22 +16,23 @@ namespace SpaceInvaders.Scenes.Game
     {
         event Action<string> EnemyDestroyed;
         event Action OnAllEnemiesDestroyed;
-        public void SpawnEnemies(WaveConfigDTO wave);
+        int EnemiesAlive { get; }
+        public UniTask SpawnEnemies(WaveConfigDTO wave);
     }
 
     public class EnemiesManager : IEnemiesManager, ITickable
     {
         [Inject] private ISpawnService _spawnService;
 
-        private List<EnemySpaceshipBehaviourComponent> _spawnedEnemies;
+        private List<IEnemySpaceship> _spawnedEnemies;
 
+        public int EnemiesAlive => _spawnedEnemies.Count;
         public event Action<string> EnemyDestroyed;
         public event Action OnAllEnemiesDestroyed;
 
-
         public void OnGameInitialized()
         {
-            _spawnedEnemies = new List<EnemySpaceshipBehaviourComponent>();
+            _spawnedEnemies = new List<IEnemySpaceship>();
         }
 
         public void OnGameEnded()
@@ -44,7 +45,7 @@ namespace SpaceInvaders.Scenes.Game
             ClearEnemies();
         }
         
-        public async void SpawnEnemies(WaveConfigDTO waveConfig)
+        public async UniTask SpawnEnemies(WaveConfigDTO waveConfig)
         {
             await UniTask.Delay((int)(waveConfig.TimeBetweenSpawns * 1000));
 
@@ -56,7 +57,7 @@ namespace SpaceInvaders.Scenes.Game
             }
         }
 
-        private void OnEnemyDestroyedCallback(EnemySpaceshipBehaviourComponent enemy)
+        private void OnEnemyDestroyedCallback(IEnemySpaceship enemy)
         {
             EnemyDestroyed?.Invoke(enemy.SpaceshipID);
             DespawnEnemy(enemy);
@@ -68,11 +69,11 @@ namespace SpaceInvaders.Scenes.Game
             }
         }
 
-        private void DespawnEnemy(EnemySpaceshipBehaviourComponent enemy)
+        private void DespawnEnemy(IEnemySpaceship enemy)
         {
             enemy.OnDestroyed -= OnEnemyDestroyedCallback;
             _spawnedEnemies.Remove(enemy);
-            _spawnService.Despawn(enemy);
+            _spawnService.Despawn(enemy as EnemySpaceshipBehaviourComponent);
         }
 
         private void ClearEnemies()
