@@ -19,7 +19,7 @@ namespace SpaceInvaders.Scenes.Game
     {
         [Inject] private readonly ISpawnService _spawnService;
 
-        private PlayerSpaceshipBehaviourComponent _playerInstance;
+        private IPlayerSpaceship _playerInstance;
 
         public event Action OnPlayerDestroyed;
 
@@ -45,7 +45,7 @@ namespace SpaceInvaders.Scenes.Game
             DespawnPlayer();
         }
 
-        private void OnDestroyedCallback(PlayerSpaceshipBehaviourComponent component)
+        private void OnDestroyedCallback(IPlayerSpaceship component)
         {
             this.Log($"Player destroyed!");
             DespawnPlayer();
@@ -55,7 +55,7 @@ namespace SpaceInvaders.Scenes.Game
         private void DespawnPlayer()
         {
             _playerInstance.OnDestroyed -= OnDestroyedCallback;
-            _spawnService.Despawn(_playerInstance);
+            _spawnService.Despawn(_playerInstance as PlayerSpaceshipBehaviourComponent);
         }
 
         #region  Debugging

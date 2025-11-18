@@ -9,8 +9,8 @@ namespace SpaceInvaders.Scenes.Game
 {
     public interface ISpawnService : IDisposable
     {
-        UniTask<PlayerSpaceshipBehaviourComponent> SpawnPlayer();
-        UniTask<List<EnemySpaceshipBehaviourComponent>> SpawnEnemies(WaveConfigDTO waveConfig);
+        UniTask<IPlayerSpaceship> SpawnPlayer();
+        UniTask<List<IEnemySpaceship>> SpawnEnemies(WaveConfigDTO waveConfig);
         ProjectileBehaviourComponent SpawnProjectile(ProjectileBehaviourComponent prefab, Vector3 position, Vector3 direction, int damage, float speed);
         void Despawn<T>(T instance) where T : MonoBehaviour, IPoolableObject;
     }
@@ -28,7 +28,7 @@ namespace SpaceInvaders.Scenes.Game
             _objectPooling.ClearAll();
         }
 
-        public async UniTask<PlayerSpaceshipBehaviourComponent> SpawnPlayer()
+        public async UniTask<IPlayerSpaceship> SpawnPlayer()
         {
             var playerConfig = _repositoryManager.GetPlayerConfig(PlayerTypes.Player1);
             var prefabPath = playerConfig.SpaceshipPrefabAddress;
@@ -38,9 +38,9 @@ namespace SpaceInvaders.Scenes.Game
             return spawnedPlayer;
         }
 
-        public async UniTask<List<EnemySpaceshipBehaviourComponent>> SpawnEnemies(WaveConfigDTO waveConfig)
+        public async UniTask<List<IEnemySpaceship>> SpawnEnemies(WaveConfigDTO waveConfig)
         {
-            var spawnedEnemies = new List<EnemySpaceshipBehaviourComponent>();
+            var spawnedEnemies = new List<IEnemySpaceship>();
 
             foreach (var formation in waveConfig.WavesFormation)
             {
