@@ -75,11 +75,6 @@ New-Item -ItemType Junction -Path "D:\YourPath\SpaceInvaders\Assets\Submodules\B
 New-Item -ItemType Junction -Path "D:\YourPath\SpaceInvaders\Assets\Submodules\BaseArchitecture\UI" -Target "D:\YourPath\SpaceInvaders\Submodules\BaseArchitecture\Assets\UI"
 ```
 
-### Assembly Definitions
-- `SpaceInvaders.asmdef` references:
-  - `BaseArchitecture.Core.asmdef`
-  - `Zenject`, `UniTask`, `DOTween`, `TextMeshPro`
-
 ---
 
 ## 🚀 Getting Started
@@ -93,11 +88,13 @@ New-Item -ItemType Junction -Path "D:\YourPath\SpaceInvaders\Assets\Submodules\B
 
 3. **Open in Unity** (2022.3+ recommended)
 
-4. **Install dependencies**:
-   - Zenject
-   - UniTask
-   - DOTween
-   - Addressables
-   - TextMeshPro
+4. **Install dependencies** via Unity Package Manager:
+   - **Zenject** — Dependency injection framework
+   - **UniTask** — Async/await support for Unity
+   - **DOTween (HOTween v2)** — Animation and tweening
+   - **Addressables** — Asset management system
+   - **TextMeshPro** — Advanced text rendering
+   - **NUnit** — Testing framework (included with Unity Test Framework)
+   - **Test Framework** — Unity's built-in test runner
 
 5. **Open the Preload scene** and press Play
