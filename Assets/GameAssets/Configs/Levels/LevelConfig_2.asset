@@ -17,11 +17,11 @@ MonoBehaviour:
   _wavesConfigs:
   - _wavesFormation:
     - Position: {x: 0, y: 0}
-      EnemyType: 0
+      EnemyType: 1
     - Position: {x: 50, y: 20}
-      EnemyType: 0
+      EnemyType: 1
     - Position: {x: -50, y: 20}
-      EnemyType: 0
+      EnemyType: 1
     - Position: {x: 100, y: -20}
       EnemyType: 0
     - Position: {x: -100, y: -20}
@@ -30,20 +30,20 @@ MonoBehaviour:
     _entrySpeed: 100
   - _wavesFormation:
     - Position: {x: 0, y: 0}
-      EnemyType: 0
+      EnemyType: 1
     - Position: {x: 100, y: 0}
       EnemyType: 0
     - Position: {x: -100, y: 0}
       EnemyType: 0
     - Position: {x: 200, y: 0}
-      EnemyType: 0
+      EnemyType: 1
     - Position: {x: -200, y: 0}
-      EnemyType: 0
+      EnemyType: 1
     - Position: {x: 0, y: 100}
       EnemyType: 0
     - Position: {x: 100, y: 100}
       EnemyType: 0
     - Position: {x: -100, y: 100}
-      EnemyType: 0
+      EnemyType: 1
     _timeBetweenSpawns: 1
     _entrySpeed: 100
