@@ -8,12 +8,13 @@ namespace SpaceInvaders.Scenes.Game
 {
     public interface ISpaceship : IPoolableObject
     {
-        void Move(Vector3 direction, Vector3 minBounds, Vector3 maxBounds);
-        void Shoot();
-        void TakeDamage(int damage);
         int CurrentHealth { get;}
         string SpaceshipID { get; }
         event Action<ISpaceship> OnDestroyed;
+        
+        void Move(Vector3 direction, Vector3 minBounds, Vector3 maxBounds);
+        void Shoot();
+        void TakeDamage(int damage);
     }
     
     public abstract class BaseSpaceshipBehaviourComponent : MonoBehaviour, ISpaceship
@@ -36,7 +37,7 @@ namespace SpaceInvaders.Scenes.Game
         public abstract void Shoot();
         public abstract void TakeDamage(int damage);
         
-        protected void Destroy()
+        protected virtual void Destroy()
         {
             OnDestroyed?.Invoke(this);
         }

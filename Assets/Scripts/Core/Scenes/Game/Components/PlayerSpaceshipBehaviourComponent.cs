@@ -21,6 +21,11 @@ namespace SpaceInvaders.Scenes.Game
         
         public new event Action<IPlayerSpaceship> OnDestroyed;
 
+        protected override void Destroy()
+        {
+            OnDestroyed?.Invoke(this);
+        }
+
         public override void OnSpawned()
         {
             base.OnSpawned();
