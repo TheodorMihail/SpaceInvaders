@@ -32,7 +32,7 @@ Space Invaders serves as a **reference implementation** of the BaseArchitecture 
 
 > **For detailed architecture documentation**, see the **[BaseArchitecture README](https://github.com/TheodorMihail/BaseArchitecture#-architecture-guide)**.
 
-This project uses BaseArchitecture as a git submodule, providing the core framework while keeping game-specific code separate.
+This project consumes BaseArchitecture as a **UPM package** (via Git URL), providing the core framework while keeping game-specific code cleanly separated.
 
 ### 🎮 Game-Specific Implementation
 
@@ -60,41 +60,30 @@ Interface-based design enables full testability of all game systems.
 
 ---
 
-## 🛠️ Using as Reference
+## 📦 Installing BaseArchitecture
 
-### Junction Points Setup (Windows)
-The project uses Windows Junction Points to link the submodule. Run these commands from the project root directory:
-```powershell
-New-Item -ItemType Junction -Path "Assets\Submodules\BaseArchitecture\Scripts" -Target "$PWD\Submodules\BaseArchitecture\Assets\Scripts\Core"
-New-Item -ItemType Junction -Path "Assets\Submodules\BaseArchitecture\UI" -Target "$PWD\Submodules\BaseArchitecture\Assets\UI"
+To use BaseArchitecture in your own project, add to `Packages/manifest.json`:
+
+```json
+{
+  "scopedRegistries": [
+    {
+      "name": "OpenUPM",
+      "url": "https://package.openupm.com",
+      "scopes": [
+        "com.svermeulen.extenject",
+        "com.cysharp.unitask",
+        "com.neuecc.unirx"
+      ]
+    }
+  ],
+  "dependencies": {
+    "com.theodormihail.basearchitecture": "https://github.com/TheodorMihail/BaseArchitecture.git?path=Assets/Package"
+  },
+  "testables": [ "com.svermeulen.extenject" ]
+}
 ```
 
-Or use absolute paths:
-```powershell
-New-Item -ItemType Junction -Path "D:\YourPath\SpaceInvaders\Assets\Submodules\BaseArchitecture\Scripts" -Target "D:\YourPath\SpaceInvaders\Submodules\BaseArchitecture\Assets\Scripts\Core"
-New-Item -ItemType Junction -Path "D:\YourPath\SpaceInvaders\Assets\Submodules\BaseArchitecture\UI" -Target "D:\YourPath\SpaceInvaders\Submodules\BaseArchitecture\Assets\UI"
-```
+The scoped registry resolves the package's dependencies (Zenject, UniTask, UniRx) from OpenUPM. `testables` enables Zenject's test fixtures. **DOTween** must be imported manually from the [Asset Store](http://dotween.demigiant.com/).
 
 ---
-
-## 🚀 Getting Started
-
-1. **Clone the repository with submodules**:
-   ```bash
-   git clone --recurse-submodules https://github.com/TheodorMihail/SpaceInvaders.git
-   ```
-
-2. **Set up junction points** (Windows only - see above)
-
-3. **Open in Unity** (2022.3+ recommended)
-
-4. **Install dependencies** via Unity Package Manager:
-   - **Zenject** — Dependency injection framework
-   - **UniTask** — Async/await support for Unity
-   - **DOTween (HOTween v2)** — Animation and tweening
-   - **Addressables** — Asset management system
-   - **TextMeshPro** — Advanced text rendering
-   - **NUnit** — Testing framework (included with Unity Test Framework)
-   - **Test Framework** — Unity's built-in test runner
-
-5. **Open the Preload scene** and press Play
