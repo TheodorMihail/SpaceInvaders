@@ -13,9 +13,7 @@ namespace SpaceInvaders.Scenes.Game
         [SerializeField] private Transform _objectPoolingContainer;
         
         [Header("Configs")]
-        [SerializeField] private List<LevelConfigSO> _levelsConfigsSO;
-        [SerializeField] private List<PlayerSpaceshipConfigSO> _playerConfigsSO;
-        [SerializeField] private List<EnemySpaceshipConfigSO> _enemyConfigsSO;
+        [SerializeField] private ConfigsContainerSO _configsContainerSO;
 
         public override void InstallBindings()
         {
@@ -47,7 +45,7 @@ namespace SpaceInvaders.Scenes.Game
             Container.BindInterfacesTo<MessageBus>().AsSingle();
             Container.BindInterfacesTo<ObjectPooling>().AsSingle().WithArguments(_objectPoolingContainer);
             Container.BindInterfacesTo<RepositoryManager>().AsSingle().WithArguments(
-                _levelsConfigsSO, _playerConfigsSO, _enemyConfigsSO);
+                _configsContainerSO.LevelsConfigsSO, _configsContainerSO.PlayerConfigsSO, _configsContainerSO.EnemyConfigsSO);
                 
             Container.BindInterfacesTo<CameraManager>().AsSingle();
             Container.BindInterfacesTo<LevelManager>().AsSingle();

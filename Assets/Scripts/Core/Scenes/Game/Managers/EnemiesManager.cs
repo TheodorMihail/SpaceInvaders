@@ -9,7 +9,8 @@ namespace SpaceInvaders.Scenes.Game
 {
     public enum EnemyTypes
     {
-        Enemy1
+        Enemy1,
+        Enemy2
     }
     
     public interface IEnemiesManager : IDisposable, IGameInitializeListener, IGameEndedListener
