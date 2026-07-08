@@ -31,14 +31,16 @@ namespace SpaceInvaders.Scenes.Game
         public event Action<string> EnemyDestroyed;
         public event Action OnAllEnemiesDestroyed;
 
-        public void OnGameInitialized()
+        public UniTask OnGameInitialized()
         {
             _spawnedEnemies = new List<IEnemySpaceship>();
+            return UniTask.CompletedTask;
         }
 
-        public void OnGameEnded()
+        public UniTask OnGameEnded()
         {
             ClearEnemies();
+            return UniTask.CompletedTask;
         }
 
         public void Dispose()
@@ -50,9 +52,10 @@ namespace SpaceInvaders.Scenes.Game
         {
             await UniTask.Delay((int)(waveConfig.TimeBetweenSpawns * 1000));
 
-            _spawnedEnemies = await _spawnService.SpawnEnemies(waveConfig);
-            foreach(var enemy in _spawnedEnemies)
+            var newEnemies = await _spawnService.SpawnEnemies(waveConfig);
+            foreach (var enemy in newEnemies)
             {
+                _spawnedEnemies.Add(enemy);
                 enemy.OnDestroyed += OnEnemyDestroyedCallback;
                 enemy.StartEntryAnimation(waveConfig.EntrySpeed);
             }
@@ -86,18 +89,20 @@ namespace SpaceInvaders.Scenes.Game
         }
 
         #region Debugging
-        
+
         public void Tick()
         {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
             if (Input.GetKeyDown(KeyCode.F1))
             {
                 this.LogWarning("Debug: Destroying all enemies");
-                
+
                 for (int i = _spawnedEnemies.Count - 1; i >= 0; i--)
                 {
                     OnEnemyDestroyedCallback(_spawnedEnemies[i]);
                 }
             }
+#endif
         }
 
         #endregion

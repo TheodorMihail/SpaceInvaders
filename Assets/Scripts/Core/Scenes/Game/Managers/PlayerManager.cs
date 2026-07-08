@@ -1,5 +1,6 @@
 using System;
 using BaseArchitecture.Core;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using Zenject;
 
@@ -24,20 +25,22 @@ namespace SpaceInvaders.Scenes.Game
         public event Action OnPlayerDestroyed;
 
         
-        public async void OnGameInitialized()
+        public async UniTask OnGameInitialized()
         {
             _playerInstance = await _spawnService.SpawnPlayer();
             _playerInstance.OnDestroyed += OnDestroyedCallback;
         }
 
-        public void OnGameStarted()
+        public UniTask OnGameStarted()
         {
             _playerInstance.EnableControls();
+            return UniTask.CompletedTask;
         }
 
-        public void OnGameEnded()
+        public UniTask OnGameEnded()
         {
             DespawnPlayer();
+            return UniTask.CompletedTask;
         }
         
         public void Dispose()
@@ -54,21 +57,27 @@ namespace SpaceInvaders.Scenes.Game
 
         private void DespawnPlayer()
         {
+            if (_playerInstance == null) 
+                return;
+
             _playerInstance.OnDestroyed -= OnDestroyedCallback;
             _spawnService.Despawn(_playerInstance as PlayerSpaceshipBehaviourComponent);
+            _playerInstance = null;
         }
 
-        #region  Debugging
+        #region Debugging
 
         public void Tick()
         {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
             if (Input.GetKeyDown(KeyCode.F2))
             {
                 this.LogWarning("Debug: Destroying player");
                 _playerInstance.TakeDamage(_playerInstance.CurrentHealth);
             }
+#endif
         }
-        
+
         #endregion
     }
 }

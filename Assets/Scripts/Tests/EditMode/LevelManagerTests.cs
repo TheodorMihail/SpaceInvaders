@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using NSubstitute;
 using Zenject;
 using BaseArchitecture.Core;
+using Cysharp.Threading.Tasks;
 
 namespace SpaceInvaders.Tests
 {
@@ -90,7 +91,7 @@ namespace SpaceInvaders.Tests
             _mockRepositoryManager.GetLevelsCount().Returns(3);
 
             _levelManager.Initialize();
-            _levelManager.OnGameStarted();
+            _levelManager.OnGameStarted().Forget();
 
             Assert.AreEqual(1, _levelManager.CurrentLevelNumber);
         }
@@ -102,7 +103,7 @@ namespace SpaceInvaders.Tests
             _mockRepositoryManager.GetLevelsCount().Returns(3);
 
             _levelManager.Initialize();
-            _levelManager.OnGameStarted();
+            _levelManager.OnGameStarted().Forget();
 
             Assert.AreEqual(1, _levelManager.CurrentWaveNumber);
             Assert.AreEqual(3, _levelManager.MaxWaveNumber);
@@ -115,7 +116,7 @@ namespace SpaceInvaders.Tests
             _mockRepositoryManager.GetLevelsCount().Returns(3);
 
             _levelManager.Initialize();
-            _levelManager.OnGameStarted();
+            _levelManager.OnGameStarted().Forget();
 
             _mockEnemiesManager.Received(1).SpawnEnemies(Arg.Any<WaveConfigDTO>());
         }
@@ -127,7 +128,7 @@ namespace SpaceInvaders.Tests
             _mockRepositoryManager.GetLevelsCount().Returns(3);
 
             _levelManager.Initialize();
-            _levelManager.OnGameStarted();
+            _levelManager.OnGameStarted().Forget();
 
             _mockEnemiesManager.OnAllEnemiesDestroyed += Raise.Event<Action>();
 
@@ -145,7 +146,7 @@ namespace SpaceInvaders.Tests
             _levelManager.OnLevelCompleted += (levelNumber) => levelCompletedInvoked = true;
 
             _levelManager.Initialize();
-            _levelManager.OnGameStarted();
+            _levelManager.OnGameStarted().Forget();
 
             _mockEnemiesManager.OnAllEnemiesDestroyed += Raise.Event<Action>();
 
@@ -162,7 +163,7 @@ namespace SpaceInvaders.Tests
             _levelManager.OnLevelCompleted += (levelNumber) => completedLevelNumber = levelNumber;
 
             _levelManager.Initialize();
-            _levelManager.OnGameStarted();
+            _levelManager.OnGameStarted().Forget();
 
             _mockEnemiesManager.OnAllEnemiesDestroyed += Raise.Event<Action>();
 

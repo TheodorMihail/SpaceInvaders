@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using BaseArchitecture.Core;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using Zenject;
 using static SpaceInvaders.Scenes.Game.AnnouncerScreen;
@@ -70,10 +71,10 @@ namespace SpaceInvaders.Scenes.Game
             _enemiesManager.OnAllEnemiesDestroyed -= OnAllEnemiesDestroyedCallback;
         }
         
-        public void OnGameStarted()
+        public UniTask OnGameStarted()
         {
             LevelConfigSO levelConfig = GetLevelConfig(CurrentLevelNumber);
-            StartLevel(levelConfig);
+            return StartLevel(levelConfig);
         }
 
         private void OnAllEnemiesDestroyedCallback()
@@ -81,7 +82,7 @@ namespace SpaceInvaders.Scenes.Game
             StartNextWave();
         }
         
-        private async void StartLevel(LevelConfigSO levelConfig)
+        private async UniTask StartLevel(LevelConfigSO levelConfig)
         {
             if (CurrentLevelNumber >= MaxLevelNumber)
             {
@@ -107,7 +108,7 @@ namespace SpaceInvaders.Scenes.Game
                 return;
             }
 
-            _enemiesManager.SpawnEnemies(_currentLevelConfigSo.WavesConfigs[CurrentWaveNumber]);
+            _enemiesManager.SpawnEnemies(_currentLevelConfigSo.WavesConfigs[CurrentWaveNumber]).Forget();
             CurrentWaveNumber++;
 
             _uiManager.ShowScreen<AnnouncerScreen, AnnouncerScreenParams>(new AnnouncerScreenParams() { DisplayText = $"Wave {CurrentWaveNumber}" });
