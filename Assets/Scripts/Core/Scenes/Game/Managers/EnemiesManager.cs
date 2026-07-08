@@ -31,14 +31,16 @@ namespace SpaceInvaders.Scenes.Game
         public event Action<string> EnemyDestroyed;
         public event Action OnAllEnemiesDestroyed;
 
-        public void OnGameInitialized()
+        public UniTask OnGameInitialized()
         {
             _spawnedEnemies = new List<IEnemySpaceship>();
+            return UniTask.CompletedTask;
         }
 
-        public void OnGameEnded()
+        public UniTask OnGameEnded()
         {
             ClearEnemies();
+            return UniTask.CompletedTask;
         }
 
         public void Dispose()
