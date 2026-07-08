@@ -57,21 +57,27 @@ namespace SpaceInvaders.Scenes.Game
 
         private void DespawnPlayer()
         {
+            if (_playerInstance == null) 
+                return;
+
             _playerInstance.OnDestroyed -= OnDestroyedCallback;
             _spawnService.Despawn(_playerInstance as PlayerSpaceshipBehaviourComponent);
+            _playerInstance = null;
         }
 
-        #region  Debugging
+        #region Debugging
 
         public void Tick()
         {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
             if (Input.GetKeyDown(KeyCode.F2))
             {
                 this.LogWarning("Debug: Destroying player");
                 _playerInstance.TakeDamage(_playerInstance.CurrentHealth);
             }
+#endif
         }
-        
+
         #endregion
     }
 }

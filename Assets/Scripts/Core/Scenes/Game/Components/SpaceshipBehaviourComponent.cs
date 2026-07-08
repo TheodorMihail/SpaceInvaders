@@ -108,7 +108,7 @@ namespace SpaceInvaders.Scenes.Game
                 return;
             }
 
-            CurrentHealth = Math.Clamp(CurrentHealth - damage, 0, Int32.MaxValue);
+            CurrentHealth = Math.Max(CurrentHealth - damage, 0);
             _healthBar.UpdateHealth(CurrentHealth);
 
             if (CurrentHealth == 0)

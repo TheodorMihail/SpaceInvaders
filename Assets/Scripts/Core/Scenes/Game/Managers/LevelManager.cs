@@ -108,7 +108,7 @@ namespace SpaceInvaders.Scenes.Game
                 return;
             }
 
-            _enemiesManager.SpawnEnemies(_currentLevelConfigSo.WavesConfigs[CurrentWaveNumber]);
+            _enemiesManager.SpawnEnemies(_currentLevelConfigSo.WavesConfigs[CurrentWaveNumber]).Forget();
             CurrentWaveNumber++;
 
             _uiManager.ShowScreen<AnnouncerScreen, AnnouncerScreenParams>(new AnnouncerScreenParams() { DisplayText = $"Wave {CurrentWaveNumber}" });
