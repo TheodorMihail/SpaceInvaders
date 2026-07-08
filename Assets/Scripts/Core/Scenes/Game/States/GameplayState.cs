@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using BaseArchitecture.Core;
 using Cysharp.Threading.Tasks;
 using Zenject;
@@ -9,17 +10,17 @@ namespace SpaceInvaders.Scenes.Game
 {
     public interface IGameInitializeListener
     {
-        void OnGameInitialized();
+        UniTask OnGameInitialized();
     }
 
     public interface IGameStartedListener
     {
-        void OnGameStarted();
+        UniTask OnGameStarted();
     }
-    
+
     public interface IGameEndedListener
     {
-        void OnGameEnded();
+        UniTask OnGameEnded();
     }
 
     public class GameplayState : BaseState<GameStateIds>
@@ -51,17 +52,14 @@ namespace SpaceInvaders.Scenes.Game
 
         private async void StartGameplay()
         {
-            TriggerInitializeGame();
+            await TriggerInitializeGame();
             await SetupUI();
-            TriggerStartGame();
+            await TriggerStartGame();
         }
 
-        private void TriggerInitializeGame()
+        private UniTask TriggerInitializeGame()
         {
-            foreach (var handler in _gameInitializeListeners)
-            {
-                handler.OnGameInitialized();
-            }
+            return UniTask.WhenAll(_gameInitializeListeners.Select(handler => handler.OnGameInitialized()));
         }
 
         private async UniTask SetupUI()
@@ -70,15 +68,12 @@ namespace SpaceInvaders.Scenes.Game
             await _uiManager.ShowScreen<GameStartScreen>();
         }
 
-        private void TriggerStartGame()
+        private UniTask TriggerStartGame()
         {
             _levelManager.OnLevelCompleted += OnLevelCompletedCallback;
             _playerManager.OnPlayerDestroyed += OnPlayerDestroyedCallback;
 
-            foreach (var handler in _gameStartedListeners)
-            {
-                handler.OnGameStarted();
-            }
+            return UniTask.WhenAll(_gameStartedListeners.Select(handler => handler.OnGameStarted()));
         }
 
         #endregion
@@ -87,25 +82,22 @@ namespace SpaceInvaders.Scenes.Game
 
         private void OnPlayerDestroyedCallback()
         {
-            TriggerEndGame(GameplayStateResult.GameOver);
+            TriggerEndGame(GameplayStateResult.GameOver).Forget();
         }
 
         private void OnLevelCompletedCallback(int levelNumber)
         {
-            TriggerEndGame(GameplayStateResult.LevelFinished);
+            TriggerEndGame(GameplayStateResult.LevelFinished).Forget();
         }
 
-        private void TriggerEndGame(GameplayStateResult result)
+        private async UniTask TriggerEndGame(GameplayStateResult result)
         {
             _messageBus.Publish(new GameEndedMessage());
             _levelManager.OnLevelCompleted -= OnLevelCompletedCallback;
             _playerManager.OnPlayerDestroyed -= OnPlayerDestroyedCallback;
 
-            foreach (var handler in _gameEndedListeners)
-            {
-                handler.OnGameEnded();
-            }
-            
+            await UniTask.WhenAll(_gameEndedListeners.Select(handler => handler.OnGameEnded()));
+
             FinishState(result);
         }
         

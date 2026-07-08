@@ -6,7 +6,6 @@ using NSubstitute;
 using Zenject;
 using Cysharp.Threading.Tasks;
 using UnityEngine.TestTools;
-using System.Linq;
 
 namespace SpaceInvaders.Tests
 {
@@ -19,8 +18,7 @@ namespace SpaceInvaders.Tests
 
         private IEnumerator InitializeAndSpawnPlayer()
         {
-            _playerManager.OnGameInitialized();
-            yield return UniTask.WaitUntil(() => _mockPlayer.ReceivedCalls().Any()).ToCoroutine();
+            yield return _playerManager.OnGameInitialized().ToCoroutine();
         }
 
         [SetUp]
@@ -64,7 +62,7 @@ namespace SpaceInvaders.Tests
         public IEnumerator OnGameStarted_EnablesPlayerControls()
         {
             yield return InitializeAndSpawnPlayer();
-            _playerManager.OnGameStarted();
+            _playerManager.OnGameStarted().Forget();
 
             _mockPlayer.Received(1).EnableControls();
         }
@@ -95,7 +93,7 @@ namespace SpaceInvaders.Tests
         {
             yield return InitializeAndSpawnPlayer();
 
-            _playerManager.OnGameEnded();
+            _playerManager.OnGameEnded().Forget();
 
             _mockPlayer.Received(1).OnDestroyed -= Arg.Any<Action<IPlayerSpaceship>>();
         }
