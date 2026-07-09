@@ -19,7 +19,6 @@ namespace SpaceInvaders.Scenes.Game
         protected override GameStateIds DefaultStateId => GameStateIds.Playing;
 
         [Inject] private IScenesManager _scenesManager;
-        [Inject] private IErrorManager _errorManager;
 
         public GameStateMachine(IList<IState<GameStateIds>> gameStates) : base(gameStates)
         {
@@ -57,8 +56,7 @@ namespace SpaceInvaders.Scenes.Game
             }
             catch (System.Exception ex)
             {
-                _errorManager.ShowErrorDialog($"Failed to transition from {finishedState.stateId}. Please restart the game.");
-                _errorManager.LogError<GameStateMachine>($"State transition failed from {finishedState.stateId}", ex);
+                this.LogError($"State transition failed from {finishedState.stateId}", ex);
             }
         }
     }

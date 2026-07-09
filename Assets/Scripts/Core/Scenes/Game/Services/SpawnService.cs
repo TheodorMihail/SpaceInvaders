@@ -19,7 +19,6 @@ namespace SpaceInvaders.Scenes.Game
     {
         [Inject] private readonly IRepositoryManager _repositoryManager;
         [Inject] private readonly IAddressablesManager _addressablesManager;
-        [Inject] private readonly IErrorManager _errorManager;
         [Inject] private readonly IObjectPooling _objectPooling;
         [Inject] private readonly Transform _container;
 
@@ -92,7 +91,7 @@ namespace SpaceInvaders.Scenes.Game
 
             if (instance == null)
             {
-                _errorManager.LogError<AddressablesManager>($"Exception instanciating prefab: {prefab.name}");
+                this.LogError($"Exception instanciating prefab: {prefab.name}");
                 return null;
             }
 
@@ -105,7 +104,7 @@ namespace SpaceInvaders.Scenes.Game
             var prefab = await _addressablesManager.LoadPrefab(prefabPath);
             if (prefab == default || !prefab.TryGetComponent<T>(out var component))
             {
-                _errorManager.LogError<SpawnService>($"Exception instantiating prefab: {prefab.name}");
+                this.LogError($"Exception instantiating prefab: {prefab.name}");
                 return default;
             }
 

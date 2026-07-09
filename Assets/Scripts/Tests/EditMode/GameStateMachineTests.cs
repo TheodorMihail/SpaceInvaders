@@ -26,7 +26,6 @@ namespace SpaceInvaders.Tests
             base.Setup();
 
             _mockScenesManager = Substitute.For<IScenesManager>();
-            var mockErrorManager = Substitute.For<IErrorManager>();
 
             _mockPlayingState = Substitute.For<IState<GameStateIds>>();
             _mockPlayingState.Id.Returns(GameStateIds.Playing);
@@ -35,7 +34,6 @@ namespace SpaceInvaders.Tests
             _mockGameOverState.Id.Returns(GameStateIds.GameOver);
 
             Container.Bind<IScenesManager>().FromInstance(_mockScenesManager);
-            Container.Bind<IErrorManager>().FromInstance(mockErrorManager);
 
             var mockStates = new List<IState<GameStateIds>> { _mockPlayingState, _mockGameOverState };
             _gameStateMachine = new GameStateMachine(mockStates);
