@@ -1,7 +1,6 @@
 using BaseArchitecture.Core;
 using SpaceInvaders.Project;
 using System.Collections.Generic;
-using UnityEngine;
 using Zenject;
 using static SpaceInvaders.Scenes.MainMenu.MainMenuStateMachine;
 using static SpaceInvaders.Scenes.MainMenu.MenuScreen;
@@ -18,7 +17,6 @@ namespace SpaceInvaders.Scenes.MainMenu
         protected override MainMenuStateIds DefaultStateId => MainMenuStateIds.Menu;
 
         [Inject] private IScenesManager _scenesManager;
-        [Inject] private IErrorManager _errorManager;
 
         public MainMenuStateMachine(IList<IState<MainMenuStateIds>> mainMenuStates) : base(mainMenuStates)
         {
@@ -53,8 +51,7 @@ namespace SpaceInvaders.Scenes.MainMenu
             }
             catch (System.Exception ex)
             {
-                _errorManager.ShowErrorDialog($"Failed to transition from {finishedState.stateId}. Please restart the game.");
-                _errorManager.LogError<MainMenuStateMachine>($"State transition failed from {finishedState.stateId}", ex);
+                this.LogError($"State transition failed from {finishedState.stateId}", ex);
             }
         }
     }

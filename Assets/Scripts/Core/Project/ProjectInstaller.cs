@@ -16,7 +16,6 @@ namespace SpaceInvaders.Project
             Container.BindInterfacesTo<ScenesManager>().AsSingle();
             Container.BindInterfacesTo<UIManager>().AsSingle();
             Container.BindInterfacesTo<AddressablesManager>().AsSingle();
-            Container.BindInterfacesTo<ErrorManager>().AsSingle();
         }
     }
 }
