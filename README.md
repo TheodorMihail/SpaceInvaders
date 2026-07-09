@@ -72,18 +72,17 @@ To use BaseArchitecture in your own project, add to `Packages/manifest.json`:
       "url": "https://package.openupm.com",
       "scopes": [
         "com.svermeulen.extenject",
-        "com.cysharp.unitask",
-        "com.neuecc.unirx"
+        "com.cysharp.unitask"
       ]
     }
   ],
   "dependencies": {
-    "com.theodormihail.basearchitecture": "https://github.com/TheodorMihail/BaseArchitecture.git?path=Assets/Package"
+    "com.theodormihail.basearchitecture": "https://github.com/TheodorMihail/BaseArchitecture.git?path=Assets/UnityPackages/BaseArchitecture#v1.0.0"
   },
   "testables": [ "com.svermeulen.extenject" ]
 }
 ```
 
-The scoped registry resolves the package's dependencies (Zenject, UniTask, UniRx) from OpenUPM. `testables` enables Zenject's test fixtures. **DOTween** must be imported manually from the [Asset Store](http://dotween.demigiant.com/).
+The `#v1.0.0` pins the version — bump it to pull a newer [release tag](https://github.com/TheodorMihail/BaseArchitecture/tags). The scoped registry resolves the package's dependencies (Zenject, UniTask) from OpenUPM. `testables` enables Zenject's test fixtures. **DOTween** must be imported manually from the [Asset Store](http://dotween.demigiant.com/).
 
 ---

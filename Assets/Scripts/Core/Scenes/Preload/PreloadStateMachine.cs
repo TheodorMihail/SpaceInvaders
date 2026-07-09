@@ -17,7 +17,6 @@ namespace SpaceInvaders.Scenes.Preload
         protected override PreloadStateIds DefaultStateId => PreloadStateIds.SplashState;
 
         [Inject] private IScenesManager _scenesManager;
-        [Inject] private IErrorManager _errorManager;
 
         public PreloadStateMachine(IList<IState<PreloadStateIds>> preloadStates) : base(preloadStates)
         {
@@ -39,8 +38,7 @@ namespace SpaceInvaders.Scenes.Preload
             }
             catch (System.Exception ex)
             {
-                _errorManager.ShowErrorDialog($"Failed to transition from {finishedState.stateId}. Please restart the game.");
-                _errorManager.LogError<PreloadStateMachine>($"State transition failed from {finishedState.stateId}", ex);
+                this.LogError($"State transition failed from {finishedState.stateId}", ex);
             }
         }
     }
