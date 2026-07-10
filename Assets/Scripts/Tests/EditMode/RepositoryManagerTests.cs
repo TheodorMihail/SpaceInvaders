@@ -61,7 +61,7 @@ namespace SpaceInvaders.Tests
         [Test]
         public void GetLevelConfig_WithValidTypeAndWrongID_ReturnsDefaultAndLogsError()
         {
-            var config = _repositoryManager.GetLevelConfig(LevelTypes.Level2);
+            var config = _repositoryManager.GetLevelConfig(2);
             Assert.IsNull(config);
             LogAssert.Expect(LogType.Error, "[Repository] [Error] Object with ID 'Level2' not found.");
         }
@@ -69,7 +69,7 @@ namespace SpaceInvaders.Tests
         [Test]
         public void GetLevelConfig_WithValidType_ReturnsConfig()
         {
-            var config = _repositoryManager.GetLevelConfig(LevelTypes.Level1);
+            var config = _repositoryManager.GetLevelConfig(1);
             Assert.IsNotNull(config);
         }
 
@@ -103,7 +103,7 @@ namespace SpaceInvaders.Tests
         public void Constructor_AddsAllConfigsToRepository()
         {
             Assert.DoesNotThrow(() => {
-                _repositoryManager.GetLevelConfig(LevelTypes.Level1);
+                _repositoryManager.GetLevelConfig(1);
                 _repositoryManager.GetPlayerConfig(PlayerTypes.Player1);
                 _repositoryManager.GetEnemyConfig(EnemyTypes.Enemy1);
             });

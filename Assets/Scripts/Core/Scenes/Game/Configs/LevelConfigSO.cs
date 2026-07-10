@@ -8,14 +8,15 @@ namespace SpaceInvaders.Scenes.Game
     public class LevelConfigSO : ScriptableObject, IRepositoryObject
     {
         [Header("Level Settings")]
-        [SerializeField] private string _levelName;
+        [SerializeField] private int _levelIndex;
         [SerializeField] private LevelTypes _levelType;
         [SerializeField] private List<WaveConfigDTO> _wavesConfigs;
 
-        public virtual string LevelName => _levelName;
+        public virtual int Index => _levelIndex;
+        public virtual string LevelName => $"Level {_levelIndex}";
         public virtual LevelTypes LevelType => _levelType;
         public virtual List<WaveConfigDTO> WavesConfigs => _wavesConfigs;
 
-        public virtual string ObjectID => _levelType.ToString();
+        public virtual string ObjectID => LevelName;
     }
 }

@@ -10,8 +10,8 @@ namespace SpaceInvaders.Scenes.Game
 {
     public enum LevelTypes
     {
-        Level1,
-        Level2
+        Normal,
+        Boss
     }
 
     [Serializable]
@@ -117,7 +117,7 @@ namespace SpaceInvaders.Scenes.Game
         
         private LevelConfigSO GetLevelConfig(int levelNumber)
         {
-            return _repositoryManager.GetLevelConfig((LevelTypes)levelNumber);
+            return _repositoryManager.GetLevelConfig(levelNumber);
         }
     }
 }

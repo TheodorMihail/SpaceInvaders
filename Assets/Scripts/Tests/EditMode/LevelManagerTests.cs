@@ -16,7 +16,7 @@ namespace SpaceInvaders.Tests
         private IRepositoryManager _mockRepositoryManager;
         private IEnemiesManager _mockEnemiesManager;
 
-        private void CreateMockLevelConfig(LevelTypes levelType, int waveCount)
+        private void CreateMockLevelConfig(int level, int waveCount)
         {
             var mockLevelConfig = Substitute.For<LevelConfigSO>();
             var waveConfigs = new List<WaveConfigDTO>();
@@ -26,7 +26,7 @@ namespace SpaceInvaders.Tests
             }
 
             mockLevelConfig.WavesConfigs.Returns(waveConfigs);
-            _mockRepositoryManager.GetLevelConfig(levelType).Returns(mockLevelConfig);
+            _mockRepositoryManager.GetLevelConfig(level).Returns(mockLevelConfig);
         }
 
         [SetUp]
@@ -87,7 +87,7 @@ namespace SpaceInvaders.Tests
         [Test]
         public void OnGameStarted_IncrementsCurrentLevelNumber()
         {
-            CreateMockLevelConfig(LevelTypes.Level1, 3);
+            CreateMockLevelConfig(1, 3);
             _mockRepositoryManager.GetLevelsCount().Returns(3);
 
             _levelManager.Initialize();
@@ -99,7 +99,7 @@ namespace SpaceInvaders.Tests
         [Test]
         public void OnGameStarted_SetsWaveNumbers()
         {
-            CreateMockLevelConfig(LevelTypes.Level1, 3);
+            CreateMockLevelConfig(1, 3);
             _mockRepositoryManager.GetLevelsCount().Returns(3);
 
             _levelManager.Initialize();
@@ -112,7 +112,7 @@ namespace SpaceInvaders.Tests
         [Test]
         public void OnGameStarted_SpawnsFirstWave()
         {
-            CreateMockLevelConfig(LevelTypes.Level1, 3);
+            CreateMockLevelConfig(1, 3);
             _mockRepositoryManager.GetLevelsCount().Returns(3);
 
             _levelManager.Initialize();
@@ -124,7 +124,7 @@ namespace SpaceInvaders.Tests
         [Test]
         public void OnAllEnemiesDestroyed_StartsNextWave()
         {
-            CreateMockLevelConfig(LevelTypes.Level1, 3);
+            CreateMockLevelConfig(1, 3);
             _mockRepositoryManager.GetLevelsCount().Returns(3);
 
             _levelManager.Initialize();
@@ -139,7 +139,7 @@ namespace SpaceInvaders.Tests
         [Test]
         public void OnAllEnemiesDestroyed_LastWave_InvokesLevelCompleted()
         {
-            CreateMockLevelConfig(LevelTypes.Level1, 1);
+            CreateMockLevelConfig(1, 1);
             _mockRepositoryManager.GetLevelsCount().Returns(3);
 
             var levelCompletedInvoked = false;
@@ -156,7 +156,7 @@ namespace SpaceInvaders.Tests
         [Test]
         public void OnAllEnemiesDestroyed_LastWave_PassesCorrectLevelNumber()
         {
-            CreateMockLevelConfig(LevelTypes.Level1, 1);
+            CreateMockLevelConfig(1, 1);
             _mockRepositoryManager.GetLevelsCount().Returns(3);
 
             var completedLevelNumber = -1;

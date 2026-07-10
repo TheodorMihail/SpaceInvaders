@@ -1,4 +1,5 @@
 using System;
+using SpaceInvaders.Scenes.Game;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,10 +21,10 @@ namespace SpaceInvaders.Scenes.MainMenu
             _button.onClick.AddListener(() => OnLevelButtonClicked?.Invoke(_levelNumber));
         }
 
-        public void Setup(int levelNumber, bool isLocked)
+        public void Setup(LevelConfigSO level, bool isLocked)
         {
-            _levelNumber = levelNumber;
-            _levelNumberText.text = string.Format(_levelNumberText.text, levelNumber);
+            _levelNumber = level.Index;
+            _levelNumberText.text = level.Index.ToString();
             _levelLockedImage.SetActive(isLocked);
             _button.interactable = !isLocked;
         }
