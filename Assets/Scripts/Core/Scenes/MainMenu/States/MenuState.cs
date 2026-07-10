@@ -19,6 +19,16 @@ namespace SpaceInvaders.Scenes.MainMenu
         private async void ShowMenuScreen()
         {
             var result = await _uiManager.ShowScreen<MenuScreen, MenuScreen.MenuScreenResult>();
+        
+            if(result.Result == MenuScreen.ResultType.QuitGame)
+                FinishState(result);
+            else 
+                ShowLevelSelectionScreen();  
+        }
+
+        private async void ShowLevelSelectionScreen()
+        {
+            var result = await _uiManager.ShowScreen<LevelSelectionScreen, LevelSelectionScreen.LevelSelectionScreenResult>();
             FinishState(result);
         }
     }

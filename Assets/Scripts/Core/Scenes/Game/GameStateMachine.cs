@@ -3,7 +3,6 @@ using SpaceInvaders.Project;
 using System.Collections.Generic;
 using Zenject;
 using static SpaceInvaders.Scenes.Game.GameOverState;
-using static SpaceInvaders.Scenes.Game.GameplayState;
 using static SpaceInvaders.Scenes.Game.GameStateMachine;
 
 namespace SpaceInvaders.Scenes.Game
@@ -20,11 +19,18 @@ namespace SpaceInvaders.Scenes.Game
 
         [Inject] private IScenesManager _scenesManager;
 
+        private int _currentLevelNumber;
+
         public GameStateMachine(IList<IState<GameStateIds>> gameStates) : base(gameStates)
         {
         }
-
         
+        public override void Initialize()
+        {
+            _scenesManager.PendingSceneParams.TryGetParam(out _currentLevelNumber, 1);
+            SetState(DefaultStateId, _currentLevelNumber);
+        }
+
         protected override void OnStateFinished((GameStateIds stateId, object[] paramsList) finishedState)
         {
             try
@@ -44,10 +50,10 @@ namespace SpaceInvaders.Scenes.Game
                                 _scenesManager.LoadScene(SceneType.MainMenu.ToString());
                                 break;
                             case GameOverStateResult.Restart:
-                                _scenesManager.LoadScene(SceneType.Game.ToString());
+                                _scenesManager.ReloadCurrentScene();
                                 break;
                             case GameOverStateResult.NextLevel:
-                                SetState(GameStateIds.Playing); 
+                                SetState(GameStateIds.Playing, _currentLevelNumber + 1); 
                                 break;
                         }
                     

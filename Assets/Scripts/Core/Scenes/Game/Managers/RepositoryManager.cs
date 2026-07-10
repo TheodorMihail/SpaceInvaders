@@ -1,11 +1,13 @@
 using System.Collections.Generic;
+using System.Linq;
 using BaseArchitecture.Core;
 
 namespace SpaceInvaders.Scenes.Game
 {
     public interface IRepositoryManager
     {
-        LevelConfigSO GetLevelConfig(LevelTypes levelType);
+        LevelConfigSO GetLevelConfig(int level);
+        IReadOnlyList<LevelConfigSO> GetLevelConfigs();
         PlayerSpaceshipConfigSO GetPlayerConfig(PlayerTypes playerType);
         EnemySpaceshipConfigSO GetEnemyConfig(EnemyTypes enemyType);
         int GetLevelsCount();
@@ -13,8 +15,6 @@ namespace SpaceInvaders.Scenes.Game
 
     public class RepositoryManager : Repository, IRepositoryManager
     {
-        private int _levelsCount;
-
         public RepositoryManager(
             List<LevelConfigSO> levelsConfigs,
             List<PlayerSpaceshipConfigSO> playersConfigs,
@@ -23,28 +23,18 @@ namespace SpaceInvaders.Scenes.Game
             AddObjects(levelsConfigs);
             AddObjects(playersConfigs);
             AddObjects(enemiesConfigs);
-            _levelsCount = levelsConfigs.Count;
         }
 
+        public LevelConfigSO GetLevelConfig(int level) => Get<LevelConfigSO>($"Level {level}");
 
-        public LevelConfigSO GetLevelConfig(LevelTypes levelType)
-        {
-            return GetObject(levelType.ToString()) as LevelConfigSO;
-        }
+        public IReadOnlyList<LevelConfigSO> GetLevelConfigs() => GetAll<LevelConfigSO>().ToArray();
 
-        public PlayerSpaceshipConfigSO GetPlayerConfig(PlayerTypes playerType)
-        {
-            return GetObject(playerType.ToString()) as PlayerSpaceshipConfigSO;
-        }
+        public PlayerSpaceshipConfigSO GetPlayerConfig(PlayerTypes playerType) =>
+            Get<PlayerSpaceshipConfigSO>(playerType.ToString());
 
-        public EnemySpaceshipConfigSO GetEnemyConfig(EnemyTypes enemyType)
-        {
-            return GetObject(enemyType.ToString()) as EnemySpaceshipConfigSO;
-        }
+        public EnemySpaceshipConfigSO GetEnemyConfig(EnemyTypes enemyType) =>
+            Get<EnemySpaceshipConfigSO>(enemyType.ToString());
 
-        public int GetLevelsCount()
-        {
-            return _levelsCount;
-        }
+        public int GetLevelsCount() => GetAll<LevelConfigSO>().Count();
     }
 }

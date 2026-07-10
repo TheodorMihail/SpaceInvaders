@@ -11,9 +11,6 @@ namespace SpaceInvaders.Scenes.Game
         [SerializeField] private Transform _hudContainer;
         [SerializeField] private Transform _gameContainer;
         [SerializeField] private Transform _objectPoolingContainer;
-        
-        [Header("Configs")]
-        [SerializeField] private ConfigsContainerSO _configsContainerSO;
 
         public override void InstallBindings()
         {
@@ -44,13 +41,12 @@ namespace SpaceInvaders.Scenes.Game
         {
             Container.BindInterfacesTo<MessageBus>().AsSingle();
             Container.BindInterfacesTo<ObjectPooling>().AsSingle().WithArguments(_objectPoolingContainer);
-            Container.BindInterfacesTo<RepositoryManager>().AsSingle().WithArguments(
-                _configsContainerSO.LevelsConfigsSO, _configsContainerSO.PlayerConfigsSO, _configsContainerSO.EnemyConfigsSO);
-                
             Container.BindInterfacesTo<CameraManager>().AsSingle();
             Container.BindInterfacesTo<LevelManager>().AsSingle();
             Container.BindInterfacesTo<PlayerManager>().AsSingle();
             Container.BindInterfacesTo<EnemiesManager>().AsSingle();
+            Container.BindInterfacesTo<LevelCompletedCondition>().AsSingle();
+            Container.BindInterfacesTo<PlayerDestroyedCondition>().AsSingle();
         }
 
         private void StateMachineInstall()

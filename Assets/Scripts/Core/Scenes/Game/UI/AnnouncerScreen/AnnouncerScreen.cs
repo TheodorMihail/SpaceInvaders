@@ -1,11 +1,10 @@
 using BaseArchitecture.Core;
-using static SpaceInvaders.Scenes.Game.AnnouncerScreen;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public class AnnouncerScreen : ScreenWithParams<AnnouncerModel, AnnouncerView, AnnouncerController, AnnouncerScreenParams>
+    public class AnnouncerScreen : Screen<AnnouncerModel, AnnouncerView, AnnouncerController>
     {
-        public struct AnnouncerScreenParams : IScreenParam
+        public struct AnnouncerScreenParams
         {
             public string DisplayText { get; set; }
         }

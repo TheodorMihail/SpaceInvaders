@@ -10,8 +10,8 @@ namespace SpaceInvaders.Scenes.Game
 {
     public enum LevelTypes
     {
-        Level1,
-        Level2
+        Normal,
+        Boss
     }
 
     [Serializable]
@@ -33,7 +33,7 @@ namespace SpaceInvaders.Scenes.Game
         }
     }
 
-    public interface ILevelManager : IInitializable, IDisposable, IGameStartedListener
+    public interface ILevelManager : IInitializable, IDisposable, IGameStartListener
     {
         public int CurrentLevelNumber { get; }
         public int MaxLevelNumber { get; }
@@ -52,6 +52,7 @@ namespace SpaceInvaders.Scenes.Game
 
         public int CurrentLevelNumber { get; private set; }
         public int MaxLevelNumber { get; private set; }
+        
         public int CurrentWaveNumber { get; private set; }
         public int MaxWaveNumber { get; private set; }
 
@@ -61,7 +62,6 @@ namespace SpaceInvaders.Scenes.Game
 
         public void Initialize()
         {
-            CurrentLevelNumber = 0;
             MaxLevelNumber = _repositoryManager.GetLevelsCount();
             _enemiesManager.OnAllEnemiesDestroyed += OnAllEnemiesDestroyedCallback;
         }
@@ -71,9 +71,10 @@ namespace SpaceInvaders.Scenes.Game
             _enemiesManager.OnAllEnemiesDestroyed -= OnAllEnemiesDestroyedCallback;
         }
         
-        public UniTask OnGameStarted()
+        public UniTask GameStart(int levelNumber)
         {
-            LevelConfigSO levelConfig = GetLevelConfig(CurrentLevelNumber);
+            CurrentLevelNumber = levelNumber;
+            LevelConfigSO levelConfig = GetLevelConfig(levelNumber);
             return StartLevel(levelConfig);
         }
 
@@ -84,7 +85,7 @@ namespace SpaceInvaders.Scenes.Game
         
         private async UniTask StartLevel(LevelConfigSO levelConfig)
         {
-            if (CurrentLevelNumber >= MaxLevelNumber)
+            if (CurrentLevelNumber > MaxLevelNumber)
             {
                 this.LogError($"Level {CurrentLevelNumber} is out of range! Max levels: {MaxLevelNumber}");
                 return;
@@ -94,8 +95,8 @@ namespace SpaceInvaders.Scenes.Game
             CurrentWaveNumber = 0;
             MaxWaveNumber = _currentLevelConfigSo.WavesConfigs.Count;
             
-            CurrentLevelNumber++;
-            await _uiManager.ShowScreen<AnnouncerScreen, AnnouncerScreenParams>(new AnnouncerScreenParams() { DisplayText = _currentLevelConfigSo.LevelName });
+            await _uiManager.ShowScreen<AnnouncerScreen, AnnouncerScreenParams>(
+                new AnnouncerScreenParams() { DisplayText = _currentLevelConfigSo.LevelName });
 
             StartNextWave();
         }
@@ -111,13 +112,15 @@ namespace SpaceInvaders.Scenes.Game
             _enemiesManager.SpawnEnemies(_currentLevelConfigSo.WavesConfigs[CurrentWaveNumber]).Forget();
             CurrentWaveNumber++;
 
-            _uiManager.ShowScreen<AnnouncerScreen, AnnouncerScreenParams>(new AnnouncerScreenParams() { DisplayText = $"Wave {CurrentWaveNumber}" });
+            _uiManager.ShowScreen<AnnouncerScreen, AnnouncerScreenParams>(
+                new AnnouncerScreenParams() { DisplayText = $"Wave {CurrentWaveNumber}" });
+
             this.Log($"Wave {CurrentWaveNumber} started!");
         }
         
         private LevelConfigSO GetLevelConfig(int levelNumber)
         {
-            return _repositoryManager.GetLevelConfig((LevelTypes)levelNumber);
+            return _repositoryManager.GetLevelConfig(levelNumber);
         }
     }
 }

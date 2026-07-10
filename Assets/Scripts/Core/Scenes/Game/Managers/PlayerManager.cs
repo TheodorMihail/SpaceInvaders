@@ -11,7 +11,7 @@ namespace SpaceInvaders.Scenes.Game
         Player1
     }
     
-    public interface IPlayerManager : IDisposable, IGameStartedListener, IGameEndedListener, IGameInitializeListener
+    public interface IPlayerManager : IDisposable, IGameStartListener, IGameEndListener, IGameInitializeListener
     {
         event Action OnPlayerDestroyed;
     }
@@ -25,19 +25,19 @@ namespace SpaceInvaders.Scenes.Game
         public event Action OnPlayerDestroyed;
 
         
-        public async UniTask OnGameInitialized()
+        public async UniTask GameInitialize()
         {
             _playerInstance = await _spawnService.SpawnPlayer();
             _playerInstance.OnDestroyed += OnDestroyedCallback;
         }
 
-        public UniTask OnGameStarted()
+        public UniTask GameStart(int levelNumber)
         {
             _playerInstance.EnableControls();
             return UniTask.CompletedTask;
         }
 
-        public UniTask OnGameEnded()
+        public UniTask GameEnd()
         {
             DespawnPlayer();
             return UniTask.CompletedTask;
