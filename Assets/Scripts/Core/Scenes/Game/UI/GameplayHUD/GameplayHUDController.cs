@@ -20,7 +20,7 @@ namespace SpaceInvaders.Scenes.Game
             base.Initialize();
             _enemiesManager.EnemyDestroyed += OnEnemyDestroyedCallback;
             _messageBus.Subscribe<GameEndedMessage>(OnGameEnded);
-            RefreshUI();
+            _view.Setup(_model.LevelNumber);
         }
 
         public override void Dispose()
@@ -42,11 +42,6 @@ namespace SpaceInvaders.Scenes.Game
             score += _model.Score;
             _model.Score = score;
             _view.UpdateScore(score);
-        }
-
-        private void RefreshUI()
-        {
-            _view.UpdateScore(_model.Score);
         }
 
         private void OnGameEnded(GameEndedMessage message)

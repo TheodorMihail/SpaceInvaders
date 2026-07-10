@@ -9,11 +9,19 @@ namespace SpaceInvaders.Scenes.Game
     public class GameplayHUDView : View
     {
         [SerializeField] private TextMeshProUGUI _scoreText;
+        [SerializeField] private TextMeshProUGUI _levelText;
 
         [SerializeField] private string _scoreString = "Score: {0}";
+        [SerializeField] private string _levelString = "Level: {0}";
 
         private CancellationTokenSource _scoreCancellationTokenSource;
         private int _currentScore = 0;
+
+        public void Setup(int levelNumber)
+        {
+            _levelText.text = string.Format(_levelString, levelNumber);
+            FormatScore(0);
+        }
 
         public async void UpdateScore(int score)
         {

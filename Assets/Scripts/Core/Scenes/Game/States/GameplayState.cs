@@ -41,19 +41,24 @@ namespace SpaceInvaders.Scenes.Game
         [Inject] private readonly IList<IGameEndedListener> _gameEndedListeners;
         [Inject] private readonly IList<IGameInitializeListener> _gameInitializeListeners;
 
-
         public override void OnEnter(params object[] paramsList)
         {
             base.OnEnter();
-            StartGameplay();
+
+            if (!paramsList.TryGetParam(out int levelNumber))
+                levelNumber = 1;
+
+            StartGameplay(levelNumber);
         }
 
         #region StartGameplay
 
-        private async void StartGameplay()
+        private async void StartGameplay(int levelNumber)
         {
+            this.Log($"Start level: {levelNumber}");
+
             await TriggerInitializeGame();
-            await SetupUI();
+            await SetupUI(levelNumber);
             await TriggerStartGame();
         }
 
@@ -62,9 +67,9 @@ namespace SpaceInvaders.Scenes.Game
             return UniTask.WhenAll(_gameInitializeListeners.Select(handler => handler.OnGameInitialized()));
         }
 
-        private async UniTask SetupUI()
+        private async UniTask SetupUI(int levelNumber)
         {
-            _uiManager.ShowHUD<GameplayHUD>();
+            _uiManager.ShowHUD<GameplayHUD, GameplayHUD.GameplayHUDParams>(new GameplayHUD.GameplayHUDParams { LevelNumber = levelNumber });
             await _uiManager.ShowScreen<GameStartScreen>();
         }
 
