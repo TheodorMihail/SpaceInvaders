@@ -21,9 +21,10 @@
       "dependencies": {
         "com.svermeulen.extenject": "9.1.0",
         "com.cysharp.unitask": "2.5.10",
-        "com.unity.addressables": "2.7.4"
-      },
       "hash": "20b2e89130f04a37cb77d8702c7d8d73c1abe84b"
+        "com.unity.addressables": "2.7.4",
+        "com.unity.nuget.newtonsoft-json": "3.2.1"
+      }
     },
     "com.unity.2d.sprite": {
       "version": "1.0.0",
@@ -137,6 +138,13 @@
     "com.unity.nuget.mono-cecil": {
       "version": "1.11.5",
       "depth": 3,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.nuget.newtonsoft-json": {
+      "version": "3.2.1",
+      "depth": 0,
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.com"
