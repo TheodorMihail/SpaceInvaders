@@ -56,7 +56,7 @@ namespace SpaceInvaders.Tests
         [UnityTest]
         public IEnumerator OnGameInitialized_InitializesEnemiesList()
         {
-            _enemiesManager.OnGameInitialized().Forget();
+            _enemiesManager.GameInitialize().Forget();
 
             Assert.AreEqual(0, _enemiesManager.EnemiesAlive);
             yield return null;
@@ -68,7 +68,7 @@ namespace SpaceInvaders.Tests
             var enemyList = CreateMockEnemies(new List<EnemyTypes> { EnemyTypes.Enemy1, EnemyTypes.Enemy1 });
             _mockSpawnService.SpawnEnemies(Arg.Any<WaveConfigDTO>()).Returns(UniTask.FromResult(enemyList));
 
-            _enemiesManager.OnGameInitialized().Forget();
+            _enemiesManager.GameInitialize().Forget();
             yield return _enemiesManager.SpawnEnemies(new WaveConfigDTO()).ToCoroutine();
 
             Assert.AreEqual(2, _enemiesManager.EnemiesAlive);
@@ -81,7 +81,7 @@ namespace SpaceInvaders.Tests
             _mockSpawnService.SpawnEnemies(Arg.Any<WaveConfigDTO>()).Returns(UniTask.FromResult(enemyList));
 
             var waveConfig = new WaveConfigDTO();
-            _enemiesManager.OnGameInitialized().Forget();
+            _enemiesManager.GameInitialize().Forget();
             yield return _enemiesManager.SpawnEnemies(waveConfig).ToCoroutine();
 
             enemyList[0].Received(1).StartEntryAnimation(waveConfig.EntrySpeed);
@@ -94,7 +94,7 @@ namespace SpaceInvaders.Tests
             var enemyList = CreateMockEnemies(new List<EnemyTypes> { EnemyTypes.Enemy1, EnemyTypes.Enemy1 });
             _mockSpawnService.SpawnEnemies(Arg.Any<WaveConfigDTO>()).Returns(UniTask.FromResult(enemyList));
 
-            _enemiesManager.OnGameInitialized().Forget();
+            _enemiesManager.GameInitialize().Forget();
             yield return _enemiesManager.SpawnEnemies(new WaveConfigDTO()).ToCoroutine();
 
             enemyList[0].Received(1).OnDestroyed += Arg.Any<Action<IEnemySpaceship>>();
@@ -110,7 +110,7 @@ namespace SpaceInvaders.Tests
             var destroyedEnemyId = string.Empty;
             _enemiesManager.EnemyDestroyed += (id) => destroyedEnemyId = id;
 
-            _enemiesManager.OnGameInitialized().Forget();
+            _enemiesManager.GameInitialize().Forget();
             yield return _enemiesManager.SpawnEnemies(new WaveConfigDTO()).ToCoroutine();
 
             enemyList[0].OnDestroyed += Raise.Event<Action<IEnemySpaceship>>(enemyList[0]);
@@ -124,7 +124,7 @@ namespace SpaceInvaders.Tests
             var enemyList = new List<IEnemySpaceship> { enemy1 };
             _mockSpawnService.SpawnEnemies(Arg.Any<WaveConfigDTO>()).Returns(UniTask.FromResult(enemyList));
 
-            _enemiesManager.OnGameInitialized().Forget();
+            _enemiesManager.GameInitialize().Forget();
             yield return _enemiesManager.SpawnEnemies(new WaveConfigDTO()).ToCoroutine();
 
             enemy1.OnDestroyed += Raise.Event<Action<IEnemySpaceship>>(enemy1);
@@ -140,7 +140,7 @@ namespace SpaceInvaders.Tests
             var allEnemiesDestroyedInvoked = false;
             _enemiesManager.OnAllEnemiesDestroyed += () => allEnemiesDestroyedInvoked = true;
 
-            _enemiesManager.OnGameInitialized().Forget();
+            _enemiesManager.GameInitialize().Forget();
             yield return _enemiesManager.SpawnEnemies(new WaveConfigDTO()).ToCoroutine();
 
             enemyList[0].OnDestroyed += Raise.Event<Action<IEnemySpaceship>>(enemyList[0]);
@@ -156,7 +156,7 @@ namespace SpaceInvaders.Tests
             var allEnemiesDestroyedInvoked = false;
             _enemiesManager.OnAllEnemiesDestroyed += () => allEnemiesDestroyedInvoked = true;
 
-            _enemiesManager.OnGameInitialized().Forget();
+            _enemiesManager.GameInitialize().Forget();
             yield return _enemiesManager.SpawnEnemies(new WaveConfigDTO()).ToCoroutine();
 
             enemyList[0].OnDestroyed += Raise.Event<Action<IEnemySpaceship>>(enemyList[0]);
@@ -171,10 +171,10 @@ namespace SpaceInvaders.Tests
             var enemyList = new List<IEnemySpaceship> { enemy1, enemy2 };
             _mockSpawnService.SpawnEnemies(Arg.Any<WaveConfigDTO>()).Returns(UniTask.FromResult(enemyList));
 
-            _enemiesManager.OnGameInitialized().Forget();
+            _enemiesManager.GameInitialize().Forget();
             yield return _enemiesManager.SpawnEnemies(new WaveConfigDTO()).ToCoroutine();
 
-            _enemiesManager.OnGameEnded().Forget();
+            _enemiesManager.GameEnd().Forget();
 
             enemy1.Received(1).OnDestroyed -= Arg.Any<Action<IEnemySpaceship>>();
             enemy2.Received(1).OnDestroyed -= Arg.Any<Action<IEnemySpaceship>>();
@@ -189,7 +189,7 @@ namespace SpaceInvaders.Tests
             var enemyList = new List<IEnemySpaceship> { enemy1, enemy2 };
             _mockSpawnService.SpawnEnemies(Arg.Any<WaveConfigDTO>()).Returns(UniTask.FromResult(enemyList));
 
-            _enemiesManager.OnGameInitialized().Forget();
+            _enemiesManager.GameInitialize().Forget();
             yield return _enemiesManager.SpawnEnemies(new WaveConfigDTO()).ToCoroutine();
 
             _enemiesManager.Dispose();

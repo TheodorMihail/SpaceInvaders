@@ -18,7 +18,7 @@ namespace SpaceInvaders.Tests
 
         private IEnumerator InitializeAndSpawnPlayer()
         {
-            yield return _playerManager.OnGameInitialized().ToCoroutine();
+            yield return _playerManager.GameInitialize().ToCoroutine();
         }
 
         [SetUp]
@@ -62,7 +62,7 @@ namespace SpaceInvaders.Tests
         public IEnumerator OnGameStarted_EnablesPlayerControls()
         {
             yield return InitializeAndSpawnPlayer();
-            _playerManager.OnGameStarted().Forget();
+            _playerManager.GameStart(1).Forget();
 
             _mockPlayer.Received(1).EnableControls();
         }
@@ -93,7 +93,7 @@ namespace SpaceInvaders.Tests
         {
             yield return InitializeAndSpawnPlayer();
 
-            _playerManager.OnGameEnded().Forget();
+            _playerManager.GameEnd().Forget();
 
             _mockPlayer.Received(1).OnDestroyed -= Arg.Any<Action<IPlayerSpaceship>>();
         }

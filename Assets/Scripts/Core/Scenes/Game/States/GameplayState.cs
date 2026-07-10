@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using BaseArchitecture.Core;
@@ -8,46 +7,22 @@ using static SpaceInvaders.Scenes.Game.GameStateMachine;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public interface IGameInitializeListener
-    {
-        UniTask OnGameInitialized();
-    }
-
-    public interface IGameStartedListener
-    {
-        UniTask OnGameStarted();
-    }
-
-    public interface IGameEndedListener
-    {
-        UniTask OnGameEnded();
-    }
-
     public class GameplayState : BaseState<GameStateIds>
     {
-        public enum GameplayStateResult
-        {
-            LevelFinished,
-            GameOver
-        }
-
         public override GameStateIds Id => GameStateIds.Playing;
 
         [Inject] private readonly IMessageBus _messageBus;
         [Inject] private readonly IUIManager _uiManager;
-        [Inject] private ILevelManager _levelManager;
-        [Inject] private IPlayerManager _playerManager; 
-        [Inject] private readonly IList<IGameStartedListener> _gameStartedListeners;
-        [Inject] private readonly IList<IGameEndedListener> _gameEndedListeners;
+        [Inject] private readonly IList<IGameStartListener> _gameStartListeners;
+        [Inject] private readonly IList<IGameEndListener> _gameEndListeners;
         [Inject] private readonly IList<IGameInitializeListener> _gameInitializeListeners;
+        [Inject] private readonly IList<IGameEndCondition> _gameEndConditions;
 
         public override void OnEnter(params object[] paramsList)
         {
             base.OnEnter();
 
-            if (!paramsList.TryGetParam(out int levelNumber))
-                levelNumber = 1;
-
+            paramsList.TryGetParam(out int levelNumber, 1);
             StartGameplay(levelNumber);
         }
 
@@ -57,14 +32,9 @@ namespace SpaceInvaders.Scenes.Game
         {
             this.Log($"Start level: {levelNumber}");
 
-            await TriggerInitializeGame();
+            await TriggerGameInitialize();
             await SetupUI(levelNumber);
-            await TriggerStartGame();
-        }
-
-        private UniTask TriggerInitializeGame()
-        {
-            return UniTask.WhenAll(_gameInitializeListeners.Select(handler => handler.OnGameInitialized()));
+            await TriggerGameStart(levelNumber);
         }
 
         private async UniTask SetupUI(int levelNumber)
@@ -73,39 +43,40 @@ namespace SpaceInvaders.Scenes.Game
             await _uiManager.ShowScreen<GameStartScreen>();
         }
 
-        private UniTask TriggerStartGame()
+        private UniTask TriggerGameInitialize()
         {
-            _levelManager.OnLevelCompleted += OnLevelCompletedCallback;
-            _playerManager.OnPlayerDestroyed += OnPlayerDestroyedCallback;
+            return UniTask.WhenAll(_gameInitializeListeners.Select(handler => handler.GameInitialize()));
+        }
 
-            return UniTask.WhenAll(_gameStartedListeners.Select(handler => handler.OnGameStarted()));
+        private UniTask TriggerGameStart(int levelNumber)
+        {
+            foreach (var condition in _gameEndConditions)
+                condition.ConditionMet += OnGameEndConditionMet;
+
+            return UniTask.WhenAll(_gameStartListeners.Select(handler => handler.GameStart(levelNumber)));
         }
 
         #endregion
 
         #region EndGameplay
 
-        private void OnPlayerDestroyedCallback()
+        private void OnGameEndConditionMet(GameplayStateResult result)
         {
-            TriggerEndGame(GameplayStateResult.GameOver).Forget();
-        }
-
-        private void OnLevelCompletedCallback(int levelNumber)
-        {
-            TriggerEndGame(GameplayStateResult.LevelFinished).Forget();
+            TriggerEndGame(result).Forget();
         }
 
         private async UniTask TriggerEndGame(GameplayStateResult result)
         {
             _messageBus.Publish(new GameEndedMessage());
-            _levelManager.OnLevelCompleted -= OnLevelCompletedCallback;
-            _playerManager.OnPlayerDestroyed -= OnPlayerDestroyedCallback;
 
-            await UniTask.WhenAll(_gameEndedListeners.Select(handler => handler.OnGameEnded()));
+            foreach (var condition in _gameEndConditions)
+                condition.ConditionMet -= OnGameEndConditionMet;
+
+            await UniTask.WhenAll(_gameEndListeners.Select(handler => handler.GameEnd()));
 
             FinishState(result);
         }
-        
+
         #endregion
     }
 }

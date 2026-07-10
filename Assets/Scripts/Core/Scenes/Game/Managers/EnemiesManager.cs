@@ -13,7 +13,7 @@ namespace SpaceInvaders.Scenes.Game
         Enemy2
     }
     
-    public interface IEnemiesManager : IDisposable, IGameInitializeListener, IGameEndedListener
+    public interface IEnemiesManager : IDisposable, IGameInitializeListener, IGameEndListener
     {
         event Action<string> EnemyDestroyed;
         event Action OnAllEnemiesDestroyed;
@@ -31,13 +31,13 @@ namespace SpaceInvaders.Scenes.Game
         public event Action<string> EnemyDestroyed;
         public event Action OnAllEnemiesDestroyed;
 
-        public UniTask OnGameInitialized()
+        public UniTask GameInitialize()
         {
             _spawnedEnemies = new List<IEnemySpaceship>();
             return UniTask.CompletedTask;
         }
 
-        public UniTask OnGameEnded()
+        public UniTask GameEnd()
         {
             ClearEnemies();
             return UniTask.CompletedTask;
