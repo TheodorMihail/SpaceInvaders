@@ -1,3 +1,4 @@
+using NSubstitute;
 using NUnit.Framework;
 using SpaceInvaders.Scenes.Game;
 using System.Collections.Generic;
@@ -14,13 +15,24 @@ namespace SpaceInvaders.Tests
         private List<PlayerSpaceshipConfigSO> _playerConfigs;
         private List<EnemySpaceshipConfigSO> _enemyConfigs;
 
+        private static LevelConfigSO CreateMockLevelConfig(int levelIndex)
+        {
+            var config = Substitute.For<LevelConfigSO>();
+
+            config.Index.Returns(levelIndex);
+            config.LevelName.Returns($"Level {levelIndex}");
+            config.ObjectID.Returns($"Level {levelIndex}");
+
+            return config;
+        }
+
         [SetUp]
         public void Setup()
         {
             _levelConfigs = new List<LevelConfigSO>
             {
-                ScriptableObject.CreateInstance<LevelConfigSO>(),
-                ScriptableObject.CreateInstance<LevelConfigSO>()
+                CreateMockLevelConfig(1),
+                CreateMockLevelConfig(2),
             };
 
             _playerConfigs = new List<PlayerSpaceshipConfigSO>
@@ -61,9 +73,9 @@ namespace SpaceInvaders.Tests
         [Test]
         public void GetLevelConfig_WithValidTypeAndWrongID_ReturnsDefaultAndLogsError()
         {
-            var config = _repositoryManager.GetLevelConfig(2);
+            var config = _repositoryManager.GetLevelConfig(3);
             Assert.IsNull(config);
-            LogAssert.Expect(LogType.Error, "[Repository] [Error] Object with ID 'Level2' not found.");
+            LogAssert.Expect(LogType.Error, "[RepositoryManager] [Error] Object with ID 'Level 3' not found in bucket LevelConfigSO.");
         }
 
         [Test]
