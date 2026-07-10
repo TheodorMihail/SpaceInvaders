@@ -3,7 +3,6 @@ using SpaceInvaders.Project;
 using System.Collections.Generic;
 using Zenject;
 using static SpaceInvaders.Scenes.MainMenu.MainMenuStateMachine;
-using static SpaceInvaders.Scenes.MainMenu.MenuScreen;
 
 namespace SpaceInvaders.Scenes.MainMenu
 {
@@ -29,23 +28,23 @@ namespace SpaceInvaders.Scenes.MainMenu
                 switch (finishedState.stateId)
                 {
                     case MainMenuStateIds.Menu:
-
-                        MenuScreenResult result = (MenuScreenResult)finishedState.paramsList[0];
-                        switch (result.Result)
+                    
+                        if (finishedState.paramsList.TryGetParam<MenuScreen.ResultType>(out var menuResult))
                         {
-                            case ResultType.PlayGame:
-                                _scenesManager.LoadScene(SceneType.Game.ToString());
-                                break;
-                            case ResultType.QuitGame:
+                            if(menuResult == MenuScreen.ResultType.QuitGame)
+                            {
 #if UNITY_EDITOR
                                 UnityEditor.EditorApplication.isPlaying = false;
 #else
                                 Application.Quit();
 #endif
-                                
-                                break;
+                            }
                         }
-                        
+                        else if (finishedState.paramsList.TryGetParam<LevelSelectionScreen.LevelSelectionScreenResult>(out var levelResult))
+                        {
+                            _scenesManager.LoadScene(SceneType.Game.ToString(), levelResult);
+                        }
+                            
                     break;
                 }
             }
