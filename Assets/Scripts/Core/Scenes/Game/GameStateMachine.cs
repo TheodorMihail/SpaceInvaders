@@ -23,8 +23,12 @@ namespace SpaceInvaders.Scenes.Game
         public GameStateMachine(IList<IState<GameStateIds>> gameStates) : base(gameStates)
         {
         }
-
         
+        public override void Initialize()
+        {
+            SetState(DefaultStateId, _scenesManager.PendingSceneParams);
+        }
+
         protected override void OnStateFinished((GameStateIds stateId, object[] paramsList) finishedState)
         {
             try

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01a7b35da76fa034da9811e74b84d3f9, type: 3}
   m_Name: LevelConfig_2
   m_EditorClassIdentifier: 
-  _levelName: Level 2
+  _levelIndex: 2
   _levelType: 1
   _wavesConfigs:
   - _wavesFormation:

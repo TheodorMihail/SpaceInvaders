@@ -42,7 +42,7 @@ namespace SpaceInvaders.Scenes.MainMenu
                         }
                         else if (finishedState.paramsList.TryGetParam<LevelSelectionScreen.LevelSelectionScreenResult>(out var levelResult))
                         {
-                            _scenesManager.LoadScene(SceneType.Game.ToString(), levelResult);
+                            _scenesManager.LoadScene(SceneType.Game.ToString(), levelResult.LevelSelected);
                         }
                             
                     break;

@@ -12,27 +12,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01a7b35da76fa034da9811e74b84d3f9, type: 3}
   m_Name: LevelConfig_1
   m_EditorClassIdentifier: 
-  _levelName: Level 1
+  _levelIndex: 1
+  _levelType: 0
   _wavesConfigs:
   - _wavesFormation:
     - Position: {x: 0, y: 0}
-      EnemyType: Enemy1
+      EnemyType: 0
     - Position: {x: 50, y: 0}
-      EnemyType: Enemy1
+      EnemyType: 0
     - Position: {x: -50, y: 0}
-      EnemyType: Enemy1
+      EnemyType: 0
     _timeBetweenSpawns: 1
     _entrySpeed: 100
   - _wavesFormation:
     - Position: {x: 0, y: 0}
-      EnemyType: Enemy1
+      EnemyType: 0
     - Position: {x: 100, y: 0}
-      EnemyType: Enemy1
+      EnemyType: 0
     - Position: {x: -100, y: 0}
-      EnemyType: Enemy1
+      EnemyType: 0
     - Position: {x: 200, y: 0}
-      EnemyType: Enemy1
+      EnemyType: 0
     - Position: {x: -200, y: 0}
-      EnemyType: Enemy1
+      EnemyType: 0
     _timeBetweenSpawns: 1
     _entrySpeed: 100
