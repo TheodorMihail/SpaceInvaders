@@ -8,7 +8,8 @@ namespace SpaceInvaders.Scenes.Game
     {
         [Inject] private readonly IPlayerManager _playerManager;
 
-        [SerializeField] private float _spreadAngleDegrees = 20f;
+        [SerializeField] private float _spreadBulletsAngleDegrees = 20f;
+        [SerializeField] private int _spreadBulletCount = 3;
 
         private int _shotCounter;
 
@@ -28,9 +29,26 @@ namespace SpaceInvaders.Scenes.Game
             }
             else
             {
-                yield return RotateAroundY(Vector3.back, -_spreadAngleDegrees);
+                foreach (Vector3 direction in GetSpreadDirections())
+                {
+                    yield return direction;
+                }
+            }
+        }
+
+        private IEnumerable<Vector3> GetSpreadDirections()
+        {
+            if (_spreadBulletCount <= 1)
+            {
                 yield return Vector3.back;
-                yield return RotateAroundY(Vector3.back, _spreadAngleDegrees);
+                yield break;
+            }
+
+            float step = (_spreadBulletsAngleDegrees * 2f) / (_spreadBulletCount - 1);
+            for (int i = 0; i < _spreadBulletCount; i++)
+            {
+                float angle = -_spreadBulletsAngleDegrees + (step * i);
+                yield return RotateAroundY(Vector3.back, angle);
             }
         }
 
