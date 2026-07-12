@@ -12,6 +12,7 @@ namespace SpaceInvaders.Scenes.Game
 
         [SerializeField] private CollisionDetectionComponent _collisionDetection;
         [SerializeField] private Renderer _renderer;
+        [SerializeField] private Vector3 _restFacingDirection = Vector3.back;
 
         private int _damage;
         private float _speed;
@@ -26,6 +27,7 @@ namespace SpaceInvaders.Scenes.Game
             _damage = damage;
             _speed = speed;
             _direction = direction.normalized;
+            transform.rotation = Quaternion.FromToRotation(_restFacingDirection, _direction);
         }
 
         public void OnSpawned()
