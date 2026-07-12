@@ -10,15 +10,15 @@ namespace SpaceInvaders.Scenes.Game
 
         private int _maxHealth;
 
-        public void Initialize(int currentHealth, int maxHealth)
+        public void Initialize(int currentHealth, int maxHealth, bool autoHide = true)
         {
             _maxHealth = maxHealth;
-            UpdateHealth(currentHealth);
+            UpdateHealth(currentHealth, autoHide);
         }
 
-        public void UpdateHealth(int currentHealth)
+        public void UpdateHealth(int currentHealth, bool autoHide = true)
         {
-            _healthBarCanvasGroup.alpha = currentHealth < _maxHealth ? 1f : 0f;
+            _healthBarCanvasGroup.alpha = autoHide ? (currentHealth < _maxHealth ? 1f : 0f) : 1f;
             float fillAmount = (float)currentHealth / _maxHealth;
             _healthFillImage.fillAmount = fillAmount;
         }
