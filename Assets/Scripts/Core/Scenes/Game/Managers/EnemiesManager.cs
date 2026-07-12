@@ -10,13 +10,22 @@ namespace SpaceInvaders.Scenes.Game
     public enum EnemyTypes
     {
         Enemy1,
-        Enemy2
+        Enemy2,
+        Boss1
     }
-    
+
+    public enum EnemyCategory
+    {
+        Normal,
+        Boss
+    }
+
     public interface IEnemiesManager : IDisposable, IGameInitializeListener, IGameEndListener
     {
         event Action<string> EnemyDestroyed;
         event Action OnAllEnemiesDestroyed;
+        event Action<IEnemySpaceship> OnBossSpawned;
+        event Action<int, int> OnBossHealthChanged;
         int EnemiesAlive { get; }
         public UniTask SpawnEnemies(WaveConfigDTO wave);
     }
@@ -30,6 +39,8 @@ namespace SpaceInvaders.Scenes.Game
         public int EnemiesAlive => _spawnedEnemies.Count;
         public event Action<string> EnemyDestroyed;
         public event Action OnAllEnemiesDestroyed;
+        public event Action<IEnemySpaceship> OnBossSpawned;
+        public event Action<int, int> OnBossHealthChanged;
 
         public UniTask GameInitialize()
         {
@@ -58,7 +69,19 @@ namespace SpaceInvaders.Scenes.Game
                 _spawnedEnemies.Add(enemy);
                 enemy.OnDestroyed += OnEnemyDestroyedCallback;
                 enemy.StartEntryAnimation(waveConfig.EntrySpeed);
+
+                if (enemy.Category == EnemyCategory.Boss)
+                {
+                    enemy.OnHealthChanged += OnBossHealthChangedCallback;
+                    OnBossSpawned?.Invoke(enemy);
+                    OnBossHealthChanged?.Invoke(enemy.CurrentHealth, enemy.CurrentHealth);
+                }
             }
+        }
+
+        private void OnBossHealthChangedCallback(int currentHealth, int maxHealth)
+        {
+            OnBossHealthChanged?.Invoke(currentHealth, maxHealth);
         }
 
         private void OnEnemyDestroyedCallback(IEnemySpaceship enemy)
@@ -76,6 +99,7 @@ namespace SpaceInvaders.Scenes.Game
         private void DespawnEnemy(IEnemySpaceship enemy)
         {
             enemy.OnDestroyed -= OnEnemyDestroyedCallback;
+            enemy.OnHealthChanged -= OnBossHealthChangedCallback;
             _spawnedEnemies.Remove(enemy);
             _spawnService.Despawn(enemy as EnemySpaceshipBehaviourComponent);
         }

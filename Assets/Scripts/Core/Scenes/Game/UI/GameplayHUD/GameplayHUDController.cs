@@ -19,6 +19,7 @@ namespace SpaceInvaders.Scenes.Game
         {
             base.Initialize();
             _enemiesManager.EnemyDestroyed += OnEnemyDestroyedCallback;
+            _enemiesManager.OnBossHealthChanged += OnBossHealthChangedCallback;
             _messageBus.Subscribe<GameEndedMessage>(OnGameEnded);
             _view.Setup(_model.LevelNumber);
         }
@@ -27,6 +28,7 @@ namespace SpaceInvaders.Scenes.Game
         {
             base.Dispose();
             _enemiesManager.EnemyDestroyed -= OnEnemyDestroyedCallback;
+            _enemiesManager.OnBossHealthChanged -= OnBossHealthChangedCallback;
             _messageBus.Unsubscribe<GameEndedMessage>(OnGameEnded);
         }
 
@@ -35,6 +37,11 @@ namespace SpaceInvaders.Scenes.Game
             var enemyType = Enum.Parse<EnemyTypes>(enemyID);
             var enemyConfig = _repositoryManager.GetEnemyConfig(enemyType);
             UpdateScore(enemyConfig.ScoreReward);
+
+            if (enemyConfig.Category == EnemyCategory.Boss)
+            {
+                _view.ShowBossHealthBar(false);
+            }
         }
 
         private void UpdateScore(int score)
@@ -42,6 +49,11 @@ namespace SpaceInvaders.Scenes.Game
             score += _model.Score;
             _model.Score = score;
             _view.UpdateScore(score);
+        }
+
+        private void OnBossHealthChangedCallback(int currentHealth, int maxHealth)
+        {
+            _view.UpdateBossHealth(currentHealth, maxHealth);
         }
 
         private void OnGameEnded(GameEndedMessage message)

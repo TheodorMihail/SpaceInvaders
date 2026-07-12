@@ -9,12 +9,15 @@ namespace SpaceInvaders.Scenes.Game
     public interface IEnemySpaceship : ISpaceship
     {
         new event Action<IEnemySpaceship> OnDestroyed;
+        EnemyCategory Category { get; }
         void StartEntryAnimation(float entrySpeed);
     }
 
     public class EnemySpaceshipBehaviourComponent : BaseSpaceshipBehaviourComponent<EnemySpaceshipBehaviourComponent, EnemySpaceshipConfigSO>, IEnemySpaceship
     {
         private enum EnemyState { Entering, Bouncing }
+
+        public EnemyCategory Category => ShipConfig.Category;
 
         [Inject] private readonly ICameraManager _cameraManager;
 

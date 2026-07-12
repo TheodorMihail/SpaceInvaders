@@ -14,6 +14,7 @@ namespace SpaceInvaders.Scenes.Game
     public interface IPlayerManager : IDisposable, IGameStartListener, IGameEndListener, IGameInitializeListener
     {
         event Action OnPlayerDestroyed;
+        Vector3 PlayerPosition { get; }
     }
 
     public class PlayerManager : IPlayerManager, ITickable
@@ -23,6 +24,7 @@ namespace SpaceInvaders.Scenes.Game
         private IPlayerSpaceship _playerInstance;
 
         public event Action OnPlayerDestroyed;
+        public Vector3 PlayerPosition => _playerInstance != null ? _playerInstance.Position : Vector3.zero;
 
         
         public async UniTask GameInitialize()

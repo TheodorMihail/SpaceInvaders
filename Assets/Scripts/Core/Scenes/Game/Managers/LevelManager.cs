@@ -70,7 +70,7 @@ namespace SpaceInvaders.Scenes.Game
         {
             _enemiesManager.OnAllEnemiesDestroyed -= OnAllEnemiesDestroyedCallback;
         }
-        
+
         public UniTask GameStart(int levelNumber)
         {
             CurrentLevelNumber = levelNumber;
