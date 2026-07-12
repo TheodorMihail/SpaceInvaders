@@ -8,9 +8,11 @@ namespace SpaceInvaders.Scenes.Game
     public class ProjectileBehaviourComponent : MonoBehaviour, IPoolableObject
     {
         [Inject] private ICameraManager _cameraManager;
+        [Inject] private ISpawnService _spawnService;
 
         [SerializeField] private CollisionDetectionComponent _collisionDetection;
         [SerializeField] private Renderer _renderer;
+        [SerializeField] private Vector3 _defaultFacingDirection = Vector3.back;
 
         private int _damage;
         private float _speed;
@@ -25,6 +27,7 @@ namespace SpaceInvaders.Scenes.Game
             _damage = damage;
             _speed = speed;
             _direction = direction.normalized;
+            transform.rotation = Quaternion.FromToRotation(_defaultFacingDirection, _direction);
         }
 
         public void OnSpawned()
@@ -78,6 +81,7 @@ namespace SpaceInvaders.Scenes.Game
         private void TriggerDestroy()
         {
             OnProjectileDestroyed?.Invoke(this);
+            _spawnService.Despawn(this);
         }
     }
 }

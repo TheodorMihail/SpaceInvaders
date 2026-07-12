@@ -35,6 +35,9 @@ namespace SpaceInvaders.Scenes.Game
         {
             Container.BindInterfacesTo<InputService>().AsSingle();
             Container.BindInterfacesTo<SpawnService>().AsSingle().WithArguments(_gameContainer);
+
+            Container.BindInterfacesTo<LevelCompletedCondition>().AsSingle();
+            Container.BindInterfacesTo<PlayerDestroyedCondition>().AsSingle();
         }
 
         private void ManagersInstall()
@@ -45,8 +48,6 @@ namespace SpaceInvaders.Scenes.Game
             Container.BindInterfacesTo<LevelManager>().AsSingle();
             Container.BindInterfacesTo<PlayerManager>().AsSingle();
             Container.BindInterfacesTo<EnemiesManager>().AsSingle();
-            Container.BindInterfacesTo<LevelCompletedCondition>().AsSingle();
-            Container.BindInterfacesTo<PlayerDestroyedCondition>().AsSingle();
         }
 
         private void StateMachineInstall()

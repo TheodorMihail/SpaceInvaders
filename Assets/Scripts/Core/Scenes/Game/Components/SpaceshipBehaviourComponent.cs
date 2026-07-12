@@ -10,13 +10,15 @@ namespace SpaceInvaders.Scenes.Game
     {
         int CurrentHealth { get;}
         string SpaceshipID { get; }
+        Vector3 Position { get; }
         event Action<ISpaceship> OnDestroyed;
-        
+        event Action<int, int> OnHealthChanged;
+
         void Move(Vector3 direction, Vector3 minBounds, Vector3 maxBounds);
         void Shoot();
         void TakeDamage(int damage);
     }
-    
+
     public abstract class BaseSpaceshipBehaviourComponent : MonoBehaviour, ISpaceship
     {
         [Inject] protected ISpawnService _spawnService;
@@ -29,7 +31,9 @@ namespace SpaceInvaders.Scenes.Game
 
         public virtual int CurrentHealth { get; protected set; }
         public virtual string SpaceshipID {get; protected set; }
+        public virtual Vector3 Position => transform.position;
         public virtual event Action<ISpaceship> OnDestroyed;
+        public virtual event Action<int, int> OnHealthChanged;
 
         public abstract void OnSpawned();
         public abstract void OnDespawned();
@@ -41,21 +45,33 @@ namespace SpaceInvaders.Scenes.Game
         {
             OnDestroyed?.Invoke(this);
         }
-    } 
+
+        protected void RaiseHealthChanged(int currentHealth, int maxHealth)
+        {
+            OnHealthChanged?.Invoke(currentHealth, maxHealth);
+        }
+    }
     
 
     public abstract class BaseSpaceshipBehaviourComponent<T, Config> : BaseSpaceshipBehaviourComponent
         where T : BaseSpaceshipBehaviourComponent<T, Config>
         where Config : SpaceshipConfigSO
     {
-        [SerializeField] private Config _shipConfig;
+        [SerializeField] protected Config _shipConfig;
+        protected Config ShipConfig => _shipConfig;
         public override string SpaceshipID => _shipConfig.SpaceshipID;
 
         public override void OnSpawned()
         {
             CurrentHealth = _shipConfig.Health;
             _lastShotTime = 0f;
-            _healthBar.Initialize(CurrentHealth, CurrentHealth);
+
+            if (_healthBar != null)
+            {
+                _healthBar.Initialize(CurrentHealth, CurrentHealth);
+            }
+
+            RaiseHealthChanged(CurrentHealth, CurrentHealth);
         }
 
         public override void OnDespawned()
@@ -80,24 +96,9 @@ namespace SpaceInvaders.Scenes.Game
 
             _lastShotTime = Time.time;
 
-            // Calculate spawn position and direction
-            Vector3 spawnPosition = transform.localPosition + _projectileOffset;
-            Vector3 direction = GetProjectileDirection();
-
-            // Spawn projectile
-            var projectile = _spawnService.SpawnProjectile(
-                _shipConfig.ProjectilePrefab,
-                spawnPosition,
-                direction,
-                _shipConfig.ProjectileDamage,
-                _shipConfig.ProjectileSpeed
-            );
-
-            if (projectile != null)
+            foreach (Vector3 direction in GetShotDirections())
             {
-                // Track projectile
-                _activeProjectiles.Add(projectile);
-                projectile.OnProjectileDestroyed += OnProjectileDestroyed;
+                FireProjectile(direction);
             }
         }
 
@@ -109,7 +110,13 @@ namespace SpaceInvaders.Scenes.Game
             }
 
             CurrentHealth = Math.Max(CurrentHealth - damage, 0);
-            _healthBar.UpdateHealth(CurrentHealth);
+
+            if (_healthBar != null)
+            {
+                _healthBar.UpdateHealth(CurrentHealth);
+            }
+
+            RaiseHealthChanged(CurrentHealth, _shipConfig.Health);
 
             if (CurrentHealth == 0)
             {
@@ -136,11 +143,34 @@ namespace SpaceInvaders.Scenes.Game
             return Vector3.forward;
         }
 
+        protected virtual IEnumerable<Vector3> GetShotDirections()
+        {
+            yield return GetProjectileDirection();
+        }
+
+        protected void FireProjectile(Vector3 direction)
+        {
+            Vector3 spawnPosition = transform.localPosition + _projectileOffset;
+
+            var projectile = _spawnService.SpawnProjectile(
+                _shipConfig.ProjectilePrefab,
+                spawnPosition,
+                direction,
+                _shipConfig.ProjectileDamage,
+                _shipConfig.ProjectileSpeed
+            );
+
+            if (projectile != null)
+            {
+                _activeProjectiles.Add(projectile);
+                projectile.OnProjectileDestroyed += OnProjectileDestroyed;
+            }
+        }
+
         protected void OnProjectileDestroyed(ProjectileBehaviourComponent projectile)
         {
             projectile.OnProjectileDestroyed -= OnProjectileDestroyed;
             _activeProjectiles.Remove(projectile);
-            _spawnService.Despawn(projectile);
         }
     }
 }
