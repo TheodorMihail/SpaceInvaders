@@ -8,6 +8,7 @@ namespace SpaceInvaders.Scenes.Game
     public class ProjectileBehaviourComponent : MonoBehaviour, IPoolableObject
     {
         [Inject] private ICameraManager _cameraManager;
+        [Inject] private ISpawnService _spawnService;
 
         [SerializeField] private CollisionDetectionComponent _collisionDetection;
         [SerializeField] private Renderer _renderer;
@@ -78,6 +79,7 @@ namespace SpaceInvaders.Scenes.Game
         private void TriggerDestroy()
         {
             OnProjectileDestroyed?.Invoke(this);
+            _spawnService.Despawn(this);
         }
     }
 }

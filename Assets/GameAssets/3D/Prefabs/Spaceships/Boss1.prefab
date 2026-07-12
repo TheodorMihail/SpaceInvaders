@@ -26,7 +26,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2512815868768059489, guid: 34751f36bc4bae34cb9e597a9c2277ad, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1
+      value: -3
       objectReference: {fileID: 0}
     - target: {fileID: 2512815868768059489, guid: 34751f36bc4bae34cb9e597a9c2277ad, type: 3}
       propertyPath: m_LocalPosition.z
@@ -72,6 +72,10 @@ PrefabInstance:
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: -1199054636444182176, guid: 97d6ed351e5e066459a2f8bd6bab3c58, type: 3}
+    - target: {fileID: 9049450241546216875, guid: 34751f36bc4bae34cb9e597a9c2277ad, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: -1199054636444182176, guid: 97d6ed351e5e066459a2f8bd6bab3c58, type: 3}
     m_RemovedComponents:
     - {fileID: 5325444654921412459, guid: 34751f36bc4bae34cb9e597a9c2277ad, type: 3}
     m_RemovedGameObjects:
@@ -105,7 +109,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _renderer: {fileID: 4092582681916017803}
-  _projectileOffset: {x: 0, y: 0.5, z: 30}
+  _projectileOffset: {x: 0, y: 4.5, z: -50}
   _healthBar: {fileID: 0}
   _shipConfig: {fileID: 11400000, guid: 1fcc9f6c545818346a663e9ea7bf7548, type: 2}
   _bounceAngleVariation: 30

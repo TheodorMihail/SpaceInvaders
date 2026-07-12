@@ -171,7 +171,6 @@ namespace SpaceInvaders.Scenes.Game
         {
             projectile.OnProjectileDestroyed -= OnProjectileDestroyed;
             _activeProjectiles.Remove(projectile);
-            _spawnService.Despawn(projectile);
         }
     }
 }
