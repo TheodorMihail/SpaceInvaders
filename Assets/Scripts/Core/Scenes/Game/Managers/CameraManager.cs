@@ -100,6 +100,23 @@ namespace SpaceInvaders.Scenes.Game
                     break;
             }
 
+            // If the renderer's own extents are large relative to the region (e.g. a big boss),
+            // insetting by the full extents on both sides can invert min/max, which makes
+            // Mathf.Clamp snap to an edge instead of bouncing smoothly. Collapse to the midpoint instead.
+            if (minBounds.x > maxBounds.x)
+            {
+                float midX = (minBounds.x + maxBounds.x) * 0.5f;
+                minBounds.x = midX;
+                maxBounds.x = midX;
+            }
+
+            if (minBounds.z > maxBounds.z)
+            {
+                float midZ = (minBounds.z + maxBounds.z) * 0.5f;
+                minBounds.z = midZ;
+                maxBounds.z = midZ;
+            }
+
             return (minBounds, maxBounds);
         }
 

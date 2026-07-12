@@ -2,6 +2,7 @@ using System.Threading;
 using BaseArchitecture.Core;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace SpaceInvaders.Scenes.Game
 {
@@ -9,11 +10,39 @@ namespace SpaceInvaders.Scenes.Game
     public class GameplayHUDView : View
     {
         [SerializeField] private TextMeshProUGUI _scoreText;
+        [SerializeField] private TextMeshProUGUI _levelText;
 
         [SerializeField] private string _scoreString = "Score: {0}";
+        [SerializeField] private string _levelString = "Level: {0}";
+
+        [SerializeField] private HealthBarComponent _bossHealthBar;
 
         private CancellationTokenSource _scoreCancellationTokenSource;
         private int _currentScore = 0;
+
+        public void Setup(int levelNumber)
+        {
+            _levelText.text = string.Format(_levelString, levelNumber);
+            FormatScore(0);
+        }
+
+        public void UpdateBossHealth(int currentHealth, int maxHealth)
+        {
+            if (currentHealth == maxHealth)
+            {
+                _bossHealthBar.Initialize(currentHealth, maxHealth);
+                ShowBossHealthBar(true);
+            }
+            else
+            {
+                _bossHealthBar.UpdateHealth(currentHealth);
+            }
+        }
+
+        public void ShowBossHealthBar(bool show)
+        {
+            _bossHealthBar.gameObject.SetActive(show);
+        }
 
         public async void UpdateScore(int score)
         {

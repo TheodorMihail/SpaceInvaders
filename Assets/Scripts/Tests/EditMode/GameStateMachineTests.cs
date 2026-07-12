@@ -111,7 +111,7 @@ namespace SpaceInvaders.Tests
 
             _mockGameOverState.OnStateFinished += Raise.Event<Action<(GameStateIds, object[])>>((GameStateIds.GameOver, new object[] { GameOverStateResult.Restart }));
 
-            _mockScenesManager.Received(1).LoadScene(SceneType.Game.ToString());
+            _mockScenesManager.Received(1).ReloadCurrentScene();
         }
 
         [Test]

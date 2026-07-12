@@ -10,8 +10,8 @@ namespace SpaceInvaders.Scenes.Game
 {
     public enum LevelTypes
     {
-        Level1,
-        Level2
+        Normal,
+        Boss
     }
 
     [Serializable]
@@ -33,7 +33,7 @@ namespace SpaceInvaders.Scenes.Game
         }
     }
 
-    public interface ILevelManager : IInitializable, IDisposable, IGameStartedListener
+    public interface ILevelManager : IInitializable, IDisposable, IGameStartListener
     {
         public int CurrentLevelNumber { get; }
         public int MaxLevelNumber { get; }
@@ -52,16 +52,18 @@ namespace SpaceInvaders.Scenes.Game
 
         public int CurrentLevelNumber { get; private set; }
         public int MaxLevelNumber { get; private set; }
+        
         public int CurrentWaveNumber { get; private set; }
         public int MaxWaveNumber { get; private set; }
 
         private LevelConfigSO _currentLevelConfigSo;
+        private string _normalWaveString(int waveNumber) => $"Wave {CurrentWaveNumber}";
+        private string _bossWaveString() => "BOSS WARNING!";
 
         public event Action<int> OnLevelCompleted;
 
         public void Initialize()
         {
-            CurrentLevelNumber = 0;
             MaxLevelNumber = _repositoryManager.GetLevelsCount();
             _enemiesManager.OnAllEnemiesDestroyed += OnAllEnemiesDestroyedCallback;
         }
@@ -70,10 +72,11 @@ namespace SpaceInvaders.Scenes.Game
         {
             _enemiesManager.OnAllEnemiesDestroyed -= OnAllEnemiesDestroyedCallback;
         }
-        
-        public UniTask OnGameStarted()
+
+        public UniTask GameStart(int levelNumber)
         {
-            LevelConfigSO levelConfig = GetLevelConfig(CurrentLevelNumber);
+            CurrentLevelNumber = levelNumber;
+            LevelConfigSO levelConfig = GetLevelConfig(levelNumber);
             return StartLevel(levelConfig);
         }
 
@@ -84,7 +87,7 @@ namespace SpaceInvaders.Scenes.Game
         
         private async UniTask StartLevel(LevelConfigSO levelConfig)
         {
-            if (CurrentLevelNumber >= MaxLevelNumber)
+            if (CurrentLevelNumber > MaxLevelNumber)
             {
                 this.LogError($"Level {CurrentLevelNumber} is out of range! Max levels: {MaxLevelNumber}");
                 return;
@@ -94,8 +97,8 @@ namespace SpaceInvaders.Scenes.Game
             CurrentWaveNumber = 0;
             MaxWaveNumber = _currentLevelConfigSo.WavesConfigs.Count;
             
-            CurrentLevelNumber++;
-            await _uiManager.ShowScreen<AnnouncerScreen, AnnouncerScreenParams>(new AnnouncerScreenParams() { DisplayText = _currentLevelConfigSo.LevelName });
+            await _uiManager.ShowScreen<AnnouncerScreen, AnnouncerScreenParams>(
+                new AnnouncerScreenParams() { DisplayText = _currentLevelConfigSo.LevelName });
 
             StartNextWave();
         }
@@ -108,16 +111,38 @@ namespace SpaceInvaders.Scenes.Game
                 return;
             }
 
-            _enemiesManager.SpawnEnemies(_currentLevelConfigSo.WavesConfigs[CurrentWaveNumber]).Forget();
+            WaveConfigDTO wave = _currentLevelConfigSo.WavesConfigs[CurrentWaveNumber];
+            _enemiesManager.SpawnEnemies(wave).Forget();
             CurrentWaveNumber++;
 
-            _uiManager.ShowScreen<AnnouncerScreen, AnnouncerScreenParams>(new AnnouncerScreenParams() { DisplayText = $"Wave {CurrentWaveNumber}" });
+            ShowWaveAnnouncerScreen(wave, CurrentWaveNumber);
             this.Log($"Wave {CurrentWaveNumber} started!");
         }
-        
+
+        private void ShowWaveAnnouncerScreen(WaveConfigDTO wave, int waveNumber)
+        {
+            string announcementText = WaveContainsBoss(wave) ? _bossWaveString() : _normalWaveString(waveNumber);
+
+            _uiManager.ShowScreen<AnnouncerScreen, AnnouncerScreenParams>(
+                new AnnouncerScreenParams() { DisplayText = announcementText });
+        }
+
+        private bool WaveContainsBoss(WaveConfigDTO wave)
+        {
+            foreach (WaveConfigDTO.WaveFormationDTO formation in wave.WavesFormation)
+            {
+                if (_repositoryManager.GetEnemyConfig(formation.EnemyType).Category == EnemyCategory.Boss)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         private LevelConfigSO GetLevelConfig(int levelNumber)
         {
-            return _repositoryManager.GetLevelConfig((LevelTypes)levelNumber);
+            return _repositoryManager.GetLevelConfig(levelNumber);
         }
     }
 }

@@ -9,12 +9,15 @@ namespace SpaceInvaders.Scenes.Game
     public interface IEnemySpaceship : ISpaceship
     {
         new event Action<IEnemySpaceship> OnDestroyed;
+        EnemyCategory Category { get; }
         void StartEntryAnimation(float entrySpeed);
     }
 
     public class EnemySpaceshipBehaviourComponent : BaseSpaceshipBehaviourComponent<EnemySpaceshipBehaviourComponent, EnemySpaceshipConfigSO>, IEnemySpaceship
     {
         private enum EnemyState { Entering, Bouncing }
+
+        public EnemyCategory Category => ShipConfig.Category;
 
         [Inject] private readonly ICameraManager _cameraManager;
 
@@ -60,7 +63,9 @@ namespace SpaceInvaders.Scenes.Game
 
             // Calculate target position: current X/Y, but Z at 10% below screen top
             Vector3 targetPosition = transform.position;
-            targetPosition.z = screenTop.z - (screenHeight * 0.1f);
+            float desiredZ = screenTop.z - (screenHeight * 0.1f);
+            float maxZ = screenTop.z - _renderer.bounds.extents.z;
+            targetPosition.z = Mathf.Min(desiredZ, maxZ);
 
             float distance = Vector3.Distance(transform.position, targetPosition);
             float duration = distance / entrySpeed;
