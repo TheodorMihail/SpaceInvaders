@@ -112,5 +112,6 @@ MonoBehaviour:
   _projectileOffset: {x: 0, y: 4.5, z: -50}
   _healthBar: {fileID: 0}
   _shipConfig: {fileID: 11400000, guid: 1fcc9f6c545818346a663e9ea7bf7548, type: 2}
-  _bounceAngleVariation: 30
-  _spreadAngleDegrees: 20
+  _bounceAngleVariation: 50
+  _spreadBulletsAngleDegrees: 30
+  _spreadBulletCount: 4
