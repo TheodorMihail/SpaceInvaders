@@ -57,6 +57,8 @@ namespace SpaceInvaders.Scenes.Game
         public int MaxWaveNumber { get; private set; }
 
         private LevelConfigSO _currentLevelConfigSo;
+        private string _normalWaveString(int waveNumber) => $"Wave {CurrentWaveNumber}";
+        private string _bossWaveString() => "BOSS WARNING!";
 
         public event Action<int> OnLevelCompleted;
 
@@ -109,15 +111,35 @@ namespace SpaceInvaders.Scenes.Game
                 return;
             }
 
-            _enemiesManager.SpawnEnemies(_currentLevelConfigSo.WavesConfigs[CurrentWaveNumber]).Forget();
+            WaveConfigDTO wave = _currentLevelConfigSo.WavesConfigs[CurrentWaveNumber];
+            _enemiesManager.SpawnEnemies(wave).Forget();
             CurrentWaveNumber++;
 
-            _uiManager.ShowScreen<AnnouncerScreen, AnnouncerScreenParams>(
-                new AnnouncerScreenParams() { DisplayText = $"Wave {CurrentWaveNumber}" });
-
+            ShowWaveAnnouncerScreen(wave, CurrentWaveNumber);
             this.Log($"Wave {CurrentWaveNumber} started!");
         }
-        
+
+        private void ShowWaveAnnouncerScreen(WaveConfigDTO wave, int waveNumber)
+        {
+            string announcementText = WaveContainsBoss(wave) ? _bossWaveString() : _normalWaveString(waveNumber);
+
+            _uiManager.ShowScreen<AnnouncerScreen, AnnouncerScreenParams>(
+                new AnnouncerScreenParams() { DisplayText = announcementText });
+        }
+
+        private bool WaveContainsBoss(WaveConfigDTO wave)
+        {
+            foreach (WaveConfigDTO.WaveFormationDTO formation in wave.WavesFormation)
+            {
+                if (_repositoryManager.GetEnemyConfig(formation.EnemyType).Category == EnemyCategory.Boss)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         private LevelConfigSO GetLevelConfig(int levelNumber)
         {
             return _repositoryManager.GetLevelConfig(levelNumber);
