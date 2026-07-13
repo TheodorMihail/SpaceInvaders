@@ -16,7 +16,7 @@ namespace SpaceInvaders.Scenes.Preload
 
         protected override PreloadStateIds DefaultStateId => PreloadStateIds.SplashState;
 
-        [Inject] private IScenesManager _scenesManager;
+        [Inject] private readonly IScenesManager _scenesManager;
 
         public PreloadStateMachine(IList<IState<PreloadStateIds>> preloadStates) : base(preloadStates)
         {

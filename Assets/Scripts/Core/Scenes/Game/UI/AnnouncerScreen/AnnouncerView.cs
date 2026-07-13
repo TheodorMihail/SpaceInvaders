@@ -28,8 +28,12 @@ namespace SpaceInvaders.Scenes.Game
         public async UniTask PlayAnimation(float animationDuration)
         {
             _textCanvasGroup.alpha = 0f;
-            await _textCanvasGroup.FadeToAsync(1f, animationDuration, _cancellationTokenSource);
-            await _textCanvasGroup.FadeToAsync(0f, animationDuration, _cancellationTokenSource);
+            try
+            {
+                await _textCanvasGroup.FadeToAsync(1f, animationDuration, _cancellationTokenSource);
+                await _textCanvasGroup.FadeToAsync(0f, animationDuration, _cancellationTokenSource);
+            }
+            catch {}
         }
 
         private void OnDestroy()

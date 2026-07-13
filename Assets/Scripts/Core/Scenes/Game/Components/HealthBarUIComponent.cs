@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public class HealthBarComponent : MonoBehaviour
+    public class HealthBarUIComponent : MonoBehaviour
     {
         [SerializeField] private CanvasGroup _healthBarCanvasGroup;
         [SerializeField] private Image _healthFillImage;
