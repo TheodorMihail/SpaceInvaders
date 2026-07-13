@@ -24,3 +24,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 116dad5eec8a4a743919133197feab8f, type: 2}
   - {fileID: 11400000, guid: d5d1fd86a7b15e14f829a7858a0d6d04, type: 2}
   - {fileID: 11400000, guid: 1fcc9f6c545818346a663e9ea7bf7548, type: 2}
+  _powerupConfigsSO:
+  - {fileID: 11400000, guid: a9dcd7cdcdfba0d4f9151bd09eef7d93, type: 2}
+  - {fileID: 11400000, guid: 83abfc89a8f639c489fa147fc55ac127, type: 2}
+  - {fileID: 11400000, guid: 01b4f53895bec5e4c8f02eac90a993db, type: 2}
+  - {fileID: 11400000, guid: f92d640a6962f504cb8fbac90266c53a, type: 2}
+  - {fileID: 11400000, guid: 28239ab7bbc3ac14caff711e06363304, type: 2}
+  _globalPowerupDropChance: 0.25

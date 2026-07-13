@@ -7,6 +7,7 @@ using NSubstitute;
 using Zenject;
 using Cysharp.Threading.Tasks;
 using UnityEngine.TestTools;
+using UnityEngine;
 
 namespace SpaceInvaders.Tests
 {
@@ -108,7 +109,7 @@ namespace SpaceInvaders.Tests
             _mockSpawnService.SpawnEnemies(Arg.Any<WaveConfigDTO>()).Returns(UniTask.FromResult(enemyList));
 
             var destroyedEnemyId = string.Empty;
-            _enemiesManager.EnemyDestroyed += (id) => destroyedEnemyId = id;
+            _enemiesManager.EnemyDestroyed += (id, Vector3) => destroyedEnemyId = id;
 
             _enemiesManager.GameInitialize().Forget();
             yield return _enemiesManager.SpawnEnemies(new WaveConfigDTO()).ToCoroutine();
