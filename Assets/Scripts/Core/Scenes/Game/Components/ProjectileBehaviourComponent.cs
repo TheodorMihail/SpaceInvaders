@@ -5,20 +5,12 @@ using Zenject;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public class ProjectileBehaviourComponent : MonoBehaviour, IPoolableObject
+    public class ProjectileBehaviourComponent : ScreenBoundedMovingComponent
     {
-        [Inject] private ICameraManager _cameraManager;
-        [Inject] private ISpawnService _spawnService;
-
         [SerializeField] private CollisionDetectionComponent _collisionDetection;
-        [SerializeField] private Renderer _renderer;
         [SerializeField] private Vector3 _defaultFacingDirection = Vector3.back;
 
         private int _damage;
-        private float _speed;
-        private Vector3 _direction;
-        private Vector3 _minBounds;
-        private Vector3 _maxBounds;
 
         public event Action<ProjectileBehaviourComponent> OnProjectileDestroyed;
 
@@ -30,27 +22,17 @@ namespace SpaceInvaders.Scenes.Game
             transform.rotation = Quaternion.FromToRotation(_defaultFacingDirection, _direction);
         }
 
-        public void OnSpawned()
+        public override void OnSpawned()
         {
+            base.OnSpawned();
             _collisionDetection.OnTriggerEntered += HandleTriggerEnter;
-            (_minBounds, _maxBounds) = _cameraManager.GetScreenBounds(_renderer, ScreenRegionType.Full, buffer: 2f);
         }
 
-        public void OnDespawned()
+        public override void OnDespawned()
         {
+            base.OnDespawned();
             _collisionDetection.OnTriggerEntered -= HandleTriggerEnter;
             OnProjectileDestroyed = null;
-        }
-
-        private void Update()
-        {
-            transform.position += _direction * (_speed * Time.deltaTime);
-
-            // Check if projectile left screen bounds
-            if (IsOutOfBounds())
-            {
-                TriggerDestroy();
-            }
         }
 
         private void HandleTriggerEnter(Collider other)
@@ -71,17 +53,15 @@ namespace SpaceInvaders.Scenes.Game
             TriggerDestroy();
         }
 
-        private bool IsOutOfBounds()
+        protected override void Despawn()
         {
-            Vector3 pos = transform.position;
-            return pos.x < _minBounds.x || pos.x > _maxBounds.x ||
-                   pos.z < _minBounds.z || pos.z > _maxBounds.z;
+            TriggerDestroy();
         }
 
         private void TriggerDestroy()
         {
             OnProjectileDestroyed?.Invoke(this);
-            _spawnService.Despawn(this);
+            base.Despawn();
         }
     }
 }
