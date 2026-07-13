@@ -22,7 +22,8 @@ namespace SpaceInvaders.Project
             Container.BindInterfacesTo<UIManager>().AsSingle();
             Container.BindInterfacesTo<AddressablesManager>().AsSingle();
             Container.BindInterfacesTo<RepositoryManager>().AsSingle().WithArguments(
-                _configsContainerSO.LevelsConfigsSO, _configsContainerSO.PlayerConfigsSO, _configsContainerSO.EnemyConfigsSO);
+                _configsContainerSO.LevelsConfigsSO, _configsContainerSO.PlayerConfigsSO, _configsContainerSO.EnemyConfigsSO,
+                _configsContainerSO.PowerupConfigsSO, _configsContainerSO.GlobalPowerupDropChance);
         }
     }
 }

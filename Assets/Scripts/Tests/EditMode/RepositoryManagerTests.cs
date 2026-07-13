@@ -14,6 +14,7 @@ namespace SpaceInvaders.Tests
         private List<LevelConfigSO> _levelConfigs;
         private List<PlayerSpaceshipConfigSO> _playerConfigs;
         private List<EnemySpaceshipConfigSO> _enemyConfigs;
+        private List<PowerupConfigSO> _powerupConfigs;
 
         private static LevelConfigSO CreateMockLevelConfig(int levelIndex)
         {
@@ -46,7 +47,9 @@ namespace SpaceInvaders.Tests
                 ScriptableObject.CreateInstance<EnemySpaceshipConfigSO>()
             };
 
-            _repositoryManager = new RepositoryManager(_levelConfigs, _playerConfigs, _enemyConfigs);
+            _powerupConfigs = new List<PowerupConfigSO>();
+
+            _repositoryManager = new RepositoryManager(_levelConfigs, _playerConfigs, _enemyConfigs, _powerupConfigs, 0f);
         }
 
         [TearDown]
@@ -105,8 +108,9 @@ namespace SpaceInvaders.Tests
             var emptyLevels = new List<LevelConfigSO>();
             var emptyPlayers = new List<PlayerSpaceshipConfigSO>();
             var emptyEnemies = new List<EnemySpaceshipConfigSO>();
+            var emptyPowerups = new List<PowerupConfigSO>();
 
-            var manager = new RepositoryManager(emptyLevels, emptyPlayers, emptyEnemies);
+            var manager = new RepositoryManager(emptyLevels, emptyPlayers, emptyEnemies, emptyPowerups, 0f);
 
             Assert.AreEqual(0, manager.GetLevelsCount());
         }
