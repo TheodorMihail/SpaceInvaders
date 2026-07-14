@@ -46,9 +46,9 @@ namespace SpaceInvaders.Scenes.Game
 
     public class LevelManager : ILevelManager
     {
-        [Inject] private IRepositoryManager _repositoryManager;
-        [Inject] private IEnemiesManager _enemiesManager;
-        [Inject] private IUIManager _uiManager;
+        [Inject] private readonly IRepositoryManager _repositoryManager;
+        [Inject] private readonly IEnemiesManager _enemiesManager;
+        [Inject] private readonly IUIManager _uiManager;
 
         public int CurrentLevelNumber { get; private set; }
         public int MaxLevelNumber { get; private set; }

@@ -22,7 +22,7 @@ namespace SpaceInvaders.Scenes.Game
 
     public interface IEnemiesManager : IDisposable, IGameInitializeListener, IGameEndListener
     {
-        event Action<string> EnemyDestroyed;
+        event Action<string, Vector3> EnemyDestroyed;
         event Action OnAllEnemiesDestroyed;
         event Action<IEnemySpaceship> OnBossSpawned;
         event Action<int, int> OnBossHealthChanged;
@@ -32,12 +32,12 @@ namespace SpaceInvaders.Scenes.Game
 
     public class EnemiesManager : IEnemiesManager, ITickable
     {
-        [Inject] private ISpawnService _spawnService;
+        [Inject] private readonly ISpawnService _spawnService;
 
         private List<IEnemySpaceship> _spawnedEnemies;
 
         public int EnemiesAlive => _spawnedEnemies.Count;
-        public event Action<string> EnemyDestroyed;
+        public event Action<string, Vector3> EnemyDestroyed;
         public event Action OnAllEnemiesDestroyed;
         public event Action<IEnemySpaceship> OnBossSpawned;
         public event Action<int, int> OnBossHealthChanged;
@@ -74,7 +74,7 @@ namespace SpaceInvaders.Scenes.Game
                 {
                     enemy.OnHealthChanged += OnBossHealthChangedCallback;
                     OnBossSpawned?.Invoke(enemy);
-                    OnBossHealthChanged?.Invoke(enemy.CurrentHealth, enemy.CurrentHealth);
+                    OnBossHealthChanged?.Invoke(enemy.Stats.CurrentHealth, enemy.Stats.CurrentHealth);
                 }
             }
         }
@@ -86,7 +86,7 @@ namespace SpaceInvaders.Scenes.Game
 
         private void OnEnemyDestroyedCallback(IEnemySpaceship enemy)
         {
-            EnemyDestroyed?.Invoke(enemy.SpaceshipID);
+            EnemyDestroyed?.Invoke(enemy.SpaceshipID, enemy.Position);
             DespawnEnemy(enemy);
 
             this.Log($"Enemy destroyed, remaining: {_spawnedEnemies.Count}");

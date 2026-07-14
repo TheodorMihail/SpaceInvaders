@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d737244fcff997647b746610903718e8, type: 3}
+  m_Name: RapidFirePowerupConfig
+  m_EditorClassIdentifier: 
+  _duration: 10
+  _dropWeight: 1
+  _pickupPrefab: {fileID: 5567308644402932595, guid: c826178857df409468e5af7e415146fd, type: 3}
+  _icon: {fileID: 21300000, guid: f0011ceb203fd854a9c8d5e0c92b9984, type: 3}
+  _fireRateMultiplierBonus: -0.5

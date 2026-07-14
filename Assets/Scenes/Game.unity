@@ -517,7 +517,6 @@ MonoBehaviour:
   _hudContainer: {fileID: 378160808}
   _gameContainer: {fileID: 1578690923}
   _objectPoolingContainer: {fileID: 1626955413}
-  _configsContainerSO: {fileID: 11400000, guid: d4bf73eb4e0398e4ea5d212d54ef9d28, type: 2}
 --- !u!1 &1578690922
 GameObject:
   m_ObjectHideFlags: 0
@@ -1005,7 +1004,7 @@ Transform:
   m_GameObject: {fileID: 1906949272212731}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -30, z: 0}
   m_LocalScale: {x: 30, y: 30, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

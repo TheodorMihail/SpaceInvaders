@@ -1,0 +1,45 @@
+using UnityEngine;
+using Zenject;
+
+namespace SpaceInvaders.Scenes.Game
+{
+    public class PowerupBehaviourComponent : ScreenBoundedMovingComponent
+    {
+        [Inject] private readonly IPowerupManager _powerupManager;
+
+        [SerializeField] private CollisionDetectionComponent _collisionDetection;
+        [SerializeField] private float _fallSpeed = 30f;
+
+        private PowerupTypes _powerupType;
+
+        public void Initialize(PowerupTypes powerupType)
+        {
+            _powerupType = powerupType;
+            _direction = Vector3.back;
+            _speed = _fallSpeed;
+        }
+
+        public override void OnSpawned()
+        {
+            base.OnSpawned();
+            _collisionDetection.OnTriggerEntered += HandleTriggerEnter;
+        }
+
+        public override void OnDespawned()
+        {
+            base.OnDespawned();
+            _collisionDetection.OnTriggerEntered -= HandleTriggerEnter;
+        }
+
+        private void HandleTriggerEnter(Collider other)
+        {
+            if (!other.TryGetComponent<IPlayerSpaceship>(out _))
+            {
+                return;
+            }
+
+            _powerupManager.ActivatePowerup(_powerupType);
+            Despawn();
+        }
+    }
+}
