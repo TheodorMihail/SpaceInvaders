@@ -1,5 +1,5 @@
 using BaseArchitecture.Core;
-using SpaceInvaders.Scenes.Game;
+using SpaceInvaders.Project;
 using Zenject;
 
 namespace SpaceInvaders.Scenes.MainMenu

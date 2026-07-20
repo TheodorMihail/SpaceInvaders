@@ -12,6 +12,7 @@ namespace SpaceInvaders.Scenes.MainMenu
         [SerializeField] private TextMeshProUGUI _levelNumberText;
         [SerializeField] private GameObject _levelLockedImage;
         [SerializeField] private Button _button;
+        [SerializeField] private GameObject[] _starIcons;
 
         private int _levelNumber;
         private string _bossLevelName => "BOSS";
@@ -24,12 +25,15 @@ namespace SpaceInvaders.Scenes.MainMenu
             _button.onClick.AddListener(() => OnLevelButtonClicked?.Invoke(_levelNumber));
         }
 
-        public void Setup(LevelConfigSO level, bool isLocked)
+        public void Setup(LevelConfigSO level, bool isLocked, int starsEarned)
         {
             _levelNumber = level.Index;
             _levelNumberText.text = level.LevelType == LevelTypes.Boss ? _bossLevelName : _normalLevelName(level);
             _levelLockedImage.SetActive(isLocked);
             _button.interactable = !isLocked;
+
+            for (int i = 0; i < _starIcons.Length; i++)
+                _starIcons[i].SetActive(i < starsEarned);
         }
     }
 }

@@ -89,7 +89,7 @@ namespace SpaceInvaders.Scenes.Game
             EnemyDestroyed?.Invoke(enemy.SpaceshipID, enemy.Position);
             DespawnEnemy(enemy);
 
-            this.Log($"Enemy destroyed, remaining: {_spawnedEnemies.Count}");
+            //this.Log($"Enemy destroyed, remaining: {_spawnedEnemies.Count}");
             if (_spawnedEnemies.Count == 0)
             {
                 OnAllEnemiesDestroyed?.Invoke();
