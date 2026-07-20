@@ -152,7 +152,8 @@ namespace SpaceInvaders.Scenes.Game
         private void AwardLevelStars()
         {
             ShipStats stats = _playerManager.PlayerStats;
-            int stars = CalculateStars(stats.CumulativeDamageTaken, _currentLevelConfigSo.ThreeStarMaxDamage, _repositoryManager.GetTwoStarDamageMultiplier());
+            int stars = CalculateStars(stats.CumulativeDamageTaken, _currentLevelConfigSo.ThreeStarMaxDamage,
+                    _repositoryManager.GetTwoStarDamageMultiplier());
 
             _progressManager.RecordLevelResult(CurrentLevelNumber, stars);
         }

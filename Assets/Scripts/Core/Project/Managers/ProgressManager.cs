@@ -5,7 +5,8 @@ namespace SpaceInvaders.Project
 {
     public interface IProgressManager : IInitializable
     {
-        int GetStars(int levelIndex);
+        int GetLevelStars(int levelIndex);
+        int LastPlayedLevelStarsEarned { get; }
         bool IsLevelUnlocked(int levelIndex);
         void SetLevelUnlocked(int levelIndex, bool unlocked);
         void RecordLevelResult(int levelIndex, int stars);
@@ -20,6 +21,8 @@ namespace SpaceInvaders.Project
 
         private GameProgressData _data;
 
+        public int LastPlayedLevelStarsEarned { get; private set; }
+
         public void Initialize()
         {
             _data = _persistenceManager.Load<GameProgressData>(SaveKey);
@@ -29,7 +32,7 @@ namespace SpaceInvaders.Project
             SaveProgress();
         }
 
-        public int GetStars(int levelIndex)
+        public int GetLevelStars(int levelIndex)
         {
             return GetLevelProgress(levelIndex)?.Stars ?? 0;
         }
@@ -47,6 +50,8 @@ namespace SpaceInvaders.Project
 
         public void RecordLevelResult(int levelIndex, int stars)
         {
+            LastPlayedLevelStarsEarned = stars;
+
             LevelProgressEntry entry = GetOrCreateLevelProgress(levelIndex);
             if (stars > entry.Stars)
             {

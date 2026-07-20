@@ -23,7 +23,7 @@ namespace SpaceInvaders.Scenes.MainMenu
             foreach(var level in levels)
             {
                 var button = Instantiate(_levelButtonPrefab, _levelButtonsContainer);
-                button.Setup(level, !_progressManager.IsLevelUnlocked(level.Index), _progressManager.GetStars(level.Index));
+                button.Setup(level, !_progressManager.IsLevelUnlocked(level.Index), _progressManager.GetLevelStars(level.Index));
                 button.OnLevelButtonClicked += OnLevelSelectedClicked;
             }
         }

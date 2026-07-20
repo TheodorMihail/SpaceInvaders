@@ -55,6 +55,7 @@ namespace SpaceInvaders.Scenes.Game
 
         public void ApplyDamage(int amount)
         {
+            CumulativeDamageTaken += amount;
             CurrentHealth = Mathf.Max(CurrentHealth - amount, 0);
             HealthChanged?.Invoke(CurrentHealth, BaseHealth);
         }
