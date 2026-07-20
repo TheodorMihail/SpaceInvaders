@@ -86,3 +86,9 @@ To use BaseArchitecture in your own project, add to `Packages/manifest.json`:
 The `#v1.0.0` pins the version — bump it to pull a newer [release tag](https://github.com/TheodorMihail/BaseArchitecture/tags). The scoped registry resolves the package's dependencies (Zenject, UniTask) from OpenUPM. `testables` enables Zenject's test fixtures. **DOTween** must be imported manually from the [Asset Store](http://dotween.demigiant.com/).
 
 ---
+
+## 📄 License
+
+All rights reserved — see [LICENSE](LICENSE). This repository is public for portfolio/viewing purposes only; no reuse or redistribution is permitted without written permission.
+
+---

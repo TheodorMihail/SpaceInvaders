@@ -51,7 +51,9 @@ namespace SpaceInvaders.Scenes.Game
         private UniTask TriggerGameStart(int levelNumber)
         {
             foreach (var condition in _gameEndConditions)
+            {
                 condition.ConditionMet += OnGameEndConditionMet;
+            }
 
             return UniTask.WhenAll(_gameStartListeners.Select(handler => handler.GameStart(levelNumber)));
         }
@@ -70,7 +72,9 @@ namespace SpaceInvaders.Scenes.Game
             _messageBus.Publish(new GameEndedMessage());
 
             foreach (var condition in _gameEndConditions)
+            {
                 condition.ConditionMet -= OnGameEndConditionMet;
+            }
 
             await UniTask.WhenAll(_gameEndListeners.Select(handler => handler.GameEnd()));
 

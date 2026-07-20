@@ -32,6 +32,7 @@ namespace SpaceInvaders.Scenes.Game
         public float BaseProjectileSpeed => _baseStats.BaseProjectileSpeed;
 
         public int CurrentHealth { get; private set; }
+        public int CumulativeDamageTaken { get; private set; }
         public bool IsInvincible { get; private set; }
         public int ExtraShotCount { get; private set; }
         public float SpreadAngleDegrees { get; private set; }
@@ -54,6 +55,7 @@ namespace SpaceInvaders.Scenes.Game
 
         public void ApplyDamage(int amount)
         {
+            CumulativeDamageTaken += amount;
             CurrentHealth = Mathf.Max(CurrentHealth - amount, 0);
             HealthChanged?.Invoke(CurrentHealth, BaseHealth);
         }
@@ -64,11 +66,30 @@ namespace SpaceInvaders.Scenes.Game
             HealthChanged?.Invoke(CurrentHealth, BaseHealth);
         }
 
-        public void SetInvincible(bool value) => IsInvincible = value;
-        public void UpdateDamageMultiplier(float delta) => _damageMultiplierBonus += delta;
-        public void UpdateFireRateMultiplier(float delta) => _fireRateMultiplierBonus += delta;
-        public void UpdateMoveSpeedMultiplier(float delta) => _moveSpeedMultiplierBonus += delta;
-        public void UpdateProjectileSpeedMultiplier(float delta) => _projectileSpeedMultiplierBonus += delta;
+        public void SetInvincible(bool value)
+        {
+            IsInvincible = value;
+        }
+
+        public void UpdateDamageMultiplier(float delta)
+        {
+            _damageMultiplierBonus += delta;
+        }
+
+        public void UpdateFireRateMultiplier(float delta)
+        {
+            _fireRateMultiplierBonus += delta;
+        }
+
+        public void UpdateMoveSpeedMultiplier(float delta)
+        {
+            _moveSpeedMultiplierBonus += delta;
+        }
+
+        public void UpdateProjectileSpeedMultiplier(float delta)
+        {
+            _projectileSpeedMultiplierBonus += delta;
+        }
 
         public void UpdateShotSpread(int deltaCount, float angleDegrees)
         {

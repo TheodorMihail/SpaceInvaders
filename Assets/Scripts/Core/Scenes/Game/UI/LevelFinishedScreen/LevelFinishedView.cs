@@ -10,6 +10,7 @@ namespace SpaceInvaders.Scenes.Game
     {
         [SerializeField] private Button _nextLevelButton;
         [SerializeField] private Button _mainMenuButton;
+        [SerializeField] private GameObject[] _starIcons;
 
         public event Action OnNextLevelButtonClicked;
         public event Action OnMainMenuButtonClicked;
@@ -20,9 +21,14 @@ namespace SpaceInvaders.Scenes.Game
             _mainMenuButton.onClick.AddListener(() => OnMainMenuButtonClicked?.Invoke());
         }
 
-        public void Initialize(bool allLevelsComplete)
+        public void Initialize(bool allLevelsComplete, int starsEarned)
         {
             _nextLevelButton.gameObject.SetActive(!allLevelsComplete);
+
+            for (int i = 0; i < _starIcons.Length; i++)
+            {
+                _starIcons[i].SetActive(i < starsEarned);
+            }
         }
     }
 }

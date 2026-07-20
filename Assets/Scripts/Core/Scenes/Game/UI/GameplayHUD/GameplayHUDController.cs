@@ -1,5 +1,6 @@
 using System;
 using BaseArchitecture.Core;
+using SpaceInvaders.Project;
 using UnityEngine;
 using Zenject;
 
@@ -70,8 +71,10 @@ namespace SpaceInvaders.Scenes.Game
         {
             var config = _repositoryManager.GetPowerupConfig(type);
             
-            if(duration > 0)
+            if (duration > 0)
+            {
                 _view.ShowPowerupActivated(type, config.Icon, duration);
+            }
         }
 
         private void OnPowerupExpiredCallback(PowerupTypes type)

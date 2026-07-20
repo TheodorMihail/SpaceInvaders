@@ -11,23 +11,8 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cf8a6489e66d8e646bfcbb71dc7059e4, type: 3}
   m_Name: ConfigsContainer
-  m_EditorClassIdentifier: 
-  _levelsConfigsSO:
-  - {fileID: 11400000, guid: dfbc3dee90d866c449223693c16750c8, type: 2}
-  - {fileID: 11400000, guid: e77dcc4ad00fb844db9dab7cb37faad5, type: 2}
-  - {fileID: 11400000, guid: f355646393bbbc1418cb47de71c6f063, type: 2}
-  - {fileID: 11400000, guid: 1db6cc57140b83d47aa5b473df5122b2, type: 2}
-  - {fileID: 11400000, guid: 4aaded0c37bb30e4f99008f40c89fa73, type: 2}
-  _playerConfigsSO:
-  - {fileID: 11400000, guid: 971cbea4a332bc448aab30c972fdf87c, type: 2}
-  _enemyConfigsSO:
-  - {fileID: 11400000, guid: 116dad5eec8a4a743919133197feab8f, type: 2}
-  - {fileID: 11400000, guid: d5d1fd86a7b15e14f829a7858a0d6d04, type: 2}
-  - {fileID: 11400000, guid: 1fcc9f6c545818346a663e9ea7bf7548, type: 2}
-  _powerupConfigsSO:
-  - {fileID: 11400000, guid: a9dcd7cdcdfba0d4f9151bd09eef7d93, type: 2}
-  - {fileID: 11400000, guid: 83abfc89a8f639c489fa147fc55ac127, type: 2}
-  - {fileID: 11400000, guid: 01b4f53895bec5e4c8f02eac90a993db, type: 2}
-  - {fileID: 11400000, guid: f92d640a6962f504cb8fbac90266c53a, type: 2}
-  - {fileID: 11400000, guid: 28239ab7bbc3ac14caff711e06363304, type: 2}
-  _globalPowerupDropChance: 0.25
+  m_EditorClassIdentifier:
+  _levelsDataConfigSO: {fileID: 11400000, guid: 9d68b5ea320a39502a3bef1fd9acc0c7, type: 2}
+  _playerDataConfigSO: {fileID: 11400000, guid: ce7776ebdea989b2dfa7f3b4d0a454fe, type: 2}
+  _enemyDataConfigSO: {fileID: 11400000, guid: b84b05afa73d273b73e93d43a709ef90, type: 2}
+  _powerupsDataConfigSO: {fileID: 11400000, guid: 47bfc17fc4f333030c437cf1383a42ab, type: 2}

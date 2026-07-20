@@ -47,3 +47,5 @@ MonoBehaviour:
       EnemyType: 1
     _timeBetweenSpawns: 1
     _entrySpeed: 100
+  _generatorSeed: 0
+  _threeStarMaxDamage: 50

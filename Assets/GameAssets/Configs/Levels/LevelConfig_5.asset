@@ -67,3 +67,4 @@ MonoBehaviour:
     _timeBetweenSpawns: 2
     _entrySpeed: 50
   _generatorSeed: 321095409
+  _threeStarMaxDamage: 50

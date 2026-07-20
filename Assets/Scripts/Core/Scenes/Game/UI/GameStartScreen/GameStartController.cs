@@ -27,7 +27,13 @@ namespace SpaceInvaders.Scenes.Game
         private async void HandleGameStartTrigger()
         {
             _inputService.OnAnyKeyPress -= HandleGameStartTrigger;
-            await _view.StartCountdownAnimation(_model.CountdownSeconds, _model.CountdownEndDelayTimerSeconds);
+            
+            try
+            {
+                await _view.StartCountdownAnimation(_model.CountdownSeconds, _model.CountdownEndDelayTimerSeconds);
+            }
+            catch {}
+
             Close();
         }
     }
