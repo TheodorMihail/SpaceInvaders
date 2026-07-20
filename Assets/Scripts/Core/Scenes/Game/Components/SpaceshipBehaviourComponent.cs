@@ -68,7 +68,9 @@ namespace SpaceInvaders.Scenes.Game
             _lastShotTime = 0f;
 
             if (_healthBar == null)
+            {
                 return;
+            }
 
             _healthBar.Initialize(Stats.CurrentHealth, Stats.BaseHealth);
 

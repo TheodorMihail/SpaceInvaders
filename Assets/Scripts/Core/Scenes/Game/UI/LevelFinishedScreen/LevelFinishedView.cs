@@ -26,7 +26,9 @@ namespace SpaceInvaders.Scenes.Game
             _nextLevelButton.gameObject.SetActive(!allLevelsComplete);
 
             for (int i = 0; i < _starIcons.Length; i++)
+            {
                 _starIcons[i].SetActive(i < starsEarned);
+            }
         }
     }
 }

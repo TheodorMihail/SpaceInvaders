@@ -19,6 +19,9 @@ namespace SpaceInvaders.Scenes.Game
 
         public abstract string SpaceshipID { get; }
 
-        public ShipStats CreateStats() => new ShipStats(_baseStats);
+        public ShipStats CreateStats()
+        {
+            return new ShipStats(_baseStats);
+        }
     }
 }

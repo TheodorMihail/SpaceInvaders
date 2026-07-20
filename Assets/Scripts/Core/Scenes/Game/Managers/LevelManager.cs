@@ -60,10 +60,18 @@ namespace SpaceInvaders.Scenes.Game
         public int MaxWaveNumber { get; private set; }
 
         private LevelConfigSO _currentLevelConfigSo;
-        private string _normalWaveString(int waveNumber) => $"Wave {CurrentWaveNumber}";
-        private string _bossWaveString() => "BOSS WARNING!";
 
         public event Action<int> OnLevelCompleted;
+
+        private string NormalWaveString(int waveNumber)
+        {
+            return $"Wave {CurrentWaveNumber}";
+        }
+
+        private string BossWaveString()
+        {
+            return "BOSS WARNING!";
+        }
 
         public void Initialize()
         {
@@ -125,7 +133,7 @@ namespace SpaceInvaders.Scenes.Game
 
         private void ShowWaveAnnouncerScreen(WaveConfigDTO wave, int waveNumber)
         {
-            string announcementText = WaveContainsBoss(wave) ? _bossWaveString() : _normalWaveString(waveNumber);
+            string announcementText = WaveContainsBoss(wave) ? BossWaveString() : NormalWaveString(waveNumber);
 
             _uiManager.ShowScreen<AnnouncerScreen, AnnouncerScreenParams>(
                 new AnnouncerScreenParams() { DisplayText = announcementText });

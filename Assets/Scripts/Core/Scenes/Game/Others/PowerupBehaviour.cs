@@ -73,14 +73,27 @@ namespace SpaceInvaders.Scenes.Game
     public class InvincibilityPowerup : PowerupBaseBehaviour
     {
         public override PowerupTypes PowerupType => PowerupTypes.Invincibility;
-        protected override void OnApply() => Stats.SetInvincible(true);
-        protected override void OnRemove() => Stats.SetInvincible(false);
+
+        protected override void OnApply()
+        {
+            Stats.SetInvincible(true);
+        }
+
+        protected override void OnRemove()
+        {
+            Stats.SetInvincible(false);
+        }
     }
 
     public class HealPowerup : PowerupBaseBehaviour
     {
         public override PowerupTypes PowerupType => PowerupTypes.Heal;
-        protected override void OnApply() => Stats.Heal(((HealPowerupConfigSO)Config).HealAmount);
+
+        protected override void OnApply()
+        {
+            Stats.Heal(((HealPowerupConfigSO)Config).HealAmount);
+        }
+
         protected override void OnRemove() { } // instant — Duration <= 0 means the timer/Ended path never runs
     }
 
@@ -89,10 +102,14 @@ namespace SpaceInvaders.Scenes.Game
         public override PowerupTypes PowerupType => PowerupTypes.DamageBoost;
 
         protected override void OnApply()
-            => Stats.UpdateDamageMultiplier(((DamageBoostPowerupConfigSO)Config).DamageMultiplierBonus);
+        {
+            Stats.UpdateDamageMultiplier(((DamageBoostPowerupConfigSO)Config).DamageMultiplierBonus);
+        }
 
         protected override void OnRemove()
-            => Stats.UpdateDamageMultiplier(-((DamageBoostPowerupConfigSO)Config).DamageMultiplierBonus);
+        {
+            Stats.UpdateDamageMultiplier(-((DamageBoostPowerupConfigSO)Config).DamageMultiplierBonus);
+        }
     }
 
     public class RapidFirePowerup : PowerupBaseBehaviour
@@ -100,10 +117,14 @@ namespace SpaceInvaders.Scenes.Game
         public override PowerupTypes PowerupType => PowerupTypes.RapidFire;
 
         protected override void OnApply()
-            => Stats.UpdateFireRateMultiplier(((RapidFirePowerupConfigSO)Config).FireRateMultiplierBonus);
+        {
+            Stats.UpdateFireRateMultiplier(((RapidFirePowerupConfigSO)Config).FireRateMultiplierBonus);
+        }
 
         protected override void OnRemove()
-            => Stats.UpdateFireRateMultiplier(-((RapidFirePowerupConfigSO)Config).FireRateMultiplierBonus);
+        {
+            Stats.UpdateFireRateMultiplier(-((RapidFirePowerupConfigSO)Config).FireRateMultiplierBonus);
+        }
     }
 
     public class SpreadShotPowerup : PowerupBaseBehaviour

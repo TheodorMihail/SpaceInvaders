@@ -90,13 +90,19 @@ namespace SpaceInvaders.Tests
         public void Teardown()
         {
             foreach (var config in _levelConfigs)
+            {
                 Object.DestroyImmediate(config);
+            }
 
             foreach (var config in _playerConfigs)
+            {
                 Object.DestroyImmediate(config);
+            }
 
             foreach (var config in _enemyConfigs)
+            {
                 Object.DestroyImmediate(config);
+            }
         }
 
         [Test]

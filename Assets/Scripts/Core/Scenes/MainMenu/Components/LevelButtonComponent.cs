@@ -15,10 +15,17 @@ namespace SpaceInvaders.Scenes.MainMenu
         [SerializeField] private GameObject[] _starIcons;
 
         private int _levelNumber;
-        private string _bossLevelName => "BOSS";
-        private string _normalLevelName(LevelConfigSO level) => level.Index.ToString();
-
         public event Action<int> OnLevelButtonClicked;
+
+        private string BossLevelName()
+        {
+            return "BOSS";
+        }
+
+        private string NormalLevelName(LevelConfigSO level)
+        {
+            return level.Index.ToString();
+        }
 
         private void Awake()
         {
@@ -28,12 +35,14 @@ namespace SpaceInvaders.Scenes.MainMenu
         public void Setup(LevelConfigSO level, bool isLocked, int starsEarned)
         {
             _levelNumber = level.Index;
-            _levelNumberText.text = level.LevelType == LevelTypes.Boss ? _bossLevelName : _normalLevelName(level);
+            _levelNumberText.text = level.LevelType == LevelTypes.Boss ? BossLevelName() : NormalLevelName(level);
             _levelLockedImage.SetActive(isLocked);
             _button.interactable = !isLocked;
 
             for (int i = 0; i < _starIcons.Length; i++)
+            {
                 _starIcons[i].SetActive(i < starsEarned);
+            }
         }
     }
 }

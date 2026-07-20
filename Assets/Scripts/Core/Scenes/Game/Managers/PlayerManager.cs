@@ -61,8 +61,10 @@ namespace SpaceInvaders.Scenes.Game
 
         private void DespawnPlayer()
         {
-            if (_playerInstance == null) 
+            if (_playerInstance == null)
+            {
                 return;
+            }
 
             _playerInstance.OnDestroyed -= OnDestroyedCallback;
             _spawnService.Despawn(_playerInstance as PlayerSpaceshipBehaviourComponent);

@@ -66,11 +66,30 @@ namespace SpaceInvaders.Scenes.Game
             HealthChanged?.Invoke(CurrentHealth, BaseHealth);
         }
 
-        public void SetInvincible(bool value) => IsInvincible = value;
-        public void UpdateDamageMultiplier(float delta) => _damageMultiplierBonus += delta;
-        public void UpdateFireRateMultiplier(float delta) => _fireRateMultiplierBonus += delta;
-        public void UpdateMoveSpeedMultiplier(float delta) => _moveSpeedMultiplierBonus += delta;
-        public void UpdateProjectileSpeedMultiplier(float delta) => _projectileSpeedMultiplierBonus += delta;
+        public void SetInvincible(bool value)
+        {
+            IsInvincible = value;
+        }
+
+        public void UpdateDamageMultiplier(float delta)
+        {
+            _damageMultiplierBonus += delta;
+        }
+
+        public void UpdateFireRateMultiplier(float delta)
+        {
+            _fireRateMultiplierBonus += delta;
+        }
+
+        public void UpdateMoveSpeedMultiplier(float delta)
+        {
+            _moveSpeedMultiplierBonus += delta;
+        }
+
+        public void UpdateProjectileSpeedMultiplier(float delta)
+        {
+            _projectileSpeedMultiplierBonus += delta;
+        }
 
         public void UpdateShotSpread(int deltaCount, float angleDegrees)
         {

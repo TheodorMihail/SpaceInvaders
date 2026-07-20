@@ -11,7 +11,15 @@ namespace SpaceInvaders.Scenes.MainMenu
         }
         
         private LevelSelectionScreenResult _result;
-        public LevelSelectionScreenResult GetResult() => _result;
-        public void SetResult(LevelSelectionScreenResult result) => _result = result;
+
+        public LevelSelectionScreenResult GetResult()
+        {
+            return _result;
+        }
+
+        public void SetResult(LevelSelectionScreenResult result)
+        {
+            _result = result;
+        }
     }
 }
