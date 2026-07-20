@@ -54,7 +54,7 @@ namespace SpaceInvaders.Scenes.Game
 
         private Vector3 GetAimedDirection()
         {
-            Vector3 toPlayer = _playerManager.PlayerPosition - transform.position;
+            Vector3 toPlayer = _playerManager.PlayerPosition - transform.localPosition;
             toPlayer.y = 0f;
 
             return toPlayer.sqrMagnitude > 0.0001f ? toPlayer.normalized : Vector3.back;

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace SpaceInvaders.Scenes.Game
@@ -7,13 +6,14 @@ namespace SpaceInvaders.Scenes.Game
     public class ConfigsContainerSO : ScriptableObject
     {
         [Header("Configs")]
-        [SerializeField] private List<LevelConfigSO> _levelsConfigsSO;
-        [SerializeField] private List<PlayerSpaceshipConfigSO> _playerConfigsSO;
-        [SerializeField] private List<EnemySpaceshipConfigSO> _enemyConfigsSO;
+        [SerializeField] private LevelsDataConfigSO _levelsDataConfigSO;
+        [SerializeField] private PlayerDataConfigSO _playerDataConfigSO;
+        [SerializeField] private EnemyDataConfigSO _enemyDataConfigSO;
+        [SerializeField] private PowerupsDataConfigSO _powerupsDataConfigSO;
 
-        
-        public List<LevelConfigSO> LevelsConfigsSO => _levelsConfigsSO;
-        public List<PlayerSpaceshipConfigSO> PlayerConfigsSO => _playerConfigsSO;
-        public List<EnemySpaceshipConfigSO> EnemyConfigsSO => _enemyConfigsSO;
+        public LevelsDataConfigSO LevelsDataConfigSO => _levelsDataConfigSO;
+        public PlayerDataConfigSO PlayerDataConfigSO => _playerDataConfigSO;
+        public EnemyDataConfigSO EnemyDataConfigSO => _enemyDataConfigSO;
+        public PowerupsDataConfigSO PowerupsDataConfigSO => _powerupsDataConfigSO;
     }
 }

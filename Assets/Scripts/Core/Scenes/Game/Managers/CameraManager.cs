@@ -47,7 +47,7 @@ namespace SpaceInvaders.Scenes.Game
             Vector3 extents = renderer.bounds.extents;
 
             // Calculate screen positions
-            Vector3 screenBottomLeft = _mainCamera.ViewportToWorldPoint(new Vector3(0, 0, position.y));
+            Vector3 screenBottomLeft = _mainCamera.ViewportToWorldPoint(new Vector3(0, 0.03f, position.y));
             Vector3 screenTopRight = _mainCamera.ViewportToWorldPoint(new Vector3(1, 1, position.y));
             Vector3 screenCenter = _mainCamera.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, position.y));
 

@@ -371,13 +371,13 @@ namespace SpaceInvaders.Editor
                 return;
             }
 
-            if (container.LevelsConfigsSO.Contains(asset))
+            if (container.LevelsDataConfigSO.LevelsConfigs.Contains(asset))
             {
                 return;
             }
 
-            container.LevelsConfigsSO.Add(asset);
-            EditorUtility.SetDirty(container);
+            container.LevelsDataConfigSO.LevelsConfigs.Add(asset);
+            EditorUtility.SetDirty(container.LevelsDataConfigSO);
         }
     }
 }

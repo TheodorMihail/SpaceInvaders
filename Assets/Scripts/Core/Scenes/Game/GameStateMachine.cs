@@ -17,7 +17,7 @@ namespace SpaceInvaders.Scenes.Game
 
         protected override GameStateIds DefaultStateId => GameStateIds.Playing;
 
-        [Inject] private IScenesManager _scenesManager;
+        [Inject] private readonly IScenesManager _scenesManager;
 
         private int _currentLevelNumber;
 

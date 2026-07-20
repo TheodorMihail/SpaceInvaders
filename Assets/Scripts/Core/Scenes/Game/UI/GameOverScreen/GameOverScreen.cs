@@ -17,7 +17,15 @@ namespace SpaceInvaders.Scenes.Game
         }
 
         private GameOverScreenResult _result;
-        public GameOverScreenResult GetResult() => _result;
-        public void SetResult(GameOverScreenResult result) => _result = result;
+
+        public GameOverScreenResult GetResult()
+        {
+            return _result;
+        }
+
+        public void SetResult(GameOverScreenResult result)
+        {
+            _result = result;
+        }
     }
 }

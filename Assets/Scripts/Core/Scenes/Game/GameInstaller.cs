@@ -48,6 +48,7 @@ namespace SpaceInvaders.Scenes.Game
             Container.BindInterfacesTo<LevelManager>().AsSingle();
             Container.BindInterfacesTo<PlayerManager>().AsSingle();
             Container.BindInterfacesTo<EnemiesManager>().AsSingle();
+            Container.BindInterfacesTo<PowerupManager>().AsSingle();
         }
 
         private void StateMachineInstall()

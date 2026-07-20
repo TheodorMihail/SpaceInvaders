@@ -13,12 +13,13 @@ MonoBehaviour:
   m_Name: Boss1Config
   m_EditorClassIdentifier: 
   _spaceshipPrefabPath: Spaceships/Boss1
-  _health: 1500
-  _moveSpeed: 30
-  _fireRate: 1
+  _baseStats:
+    _health: 1500
+    _moveSpeed: 30
+    _fireRate: 1
+    _projectileDamage: 15
+    _projectileSpeed: 150
   _projectilePrefab: {fileID: 5265903246518343602, guid: 63d46c87fa8df9c41b02a10e4b06814b, type: 3}
-  _projectileDamage: 15
-  _projectileSpeed: 150
   _scoreReward: 150
   _enemyType: 2
   _category: 1

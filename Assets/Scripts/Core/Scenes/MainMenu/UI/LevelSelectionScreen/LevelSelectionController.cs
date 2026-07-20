@@ -1,12 +1,12 @@
 using BaseArchitecture.Core;
-using SpaceInvaders.Scenes.Game;
+using SpaceInvaders.Project;
 using Zenject;
 
 namespace SpaceInvaders.Scenes.MainMenu
 {
     public class LevelSelectionController : Controller<LevelSelectionScreen, LevelSelectionModel, LevelSelectionView>
     {
-        [Inject] private IRepositoryManager _repository;
+        [Inject] private readonly IRepositoryManager _repository;
 
         public LevelSelectionController(LevelSelectionScreen uiComponent, LevelSelectionModel model, LevelSelectionView view)
             : base(uiComponent, model, view)

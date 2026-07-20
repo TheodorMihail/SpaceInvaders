@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using BaseArchitecture.Core;
 using Cysharp.Threading.Tasks;
+using SpaceInvaders.Project;
 using UnityEngine;
 using Zenject;
 using static SpaceInvaders.Scenes.Game.AnnouncerScreen;
@@ -21,7 +22,7 @@ namespace SpaceInvaders.Scenes.Game
         [SerializeField] private float _timeBetweenSpawns;
         [SerializeField] private float _entrySpeed;
 
-        public List<WaveFormationDTO> WavesFormation => _wavesFormation;
+        public List<WaveFormationDTO> WavesFormation => _wavesFormation ?? new List<WaveFormationDTO>();
         public float TimeBetweenSpawns => _timeBetweenSpawns;
         public float EntrySpeed => _entrySpeed;
 
@@ -46,9 +47,11 @@ namespace SpaceInvaders.Scenes.Game
 
     public class LevelManager : ILevelManager
     {
-        [Inject] private IRepositoryManager _repositoryManager;
-        [Inject] private IEnemiesManager _enemiesManager;
-        [Inject] private IUIManager _uiManager;
+        [Inject] private readonly IRepositoryManager _repositoryManager;
+        [Inject] private readonly IEnemiesManager _enemiesManager;
+        [Inject] private readonly IUIManager _uiManager;
+        [Inject] private readonly IPlayerManager _playerManager;
+        [Inject] private readonly IProgressManager _progressManager;
 
         public int CurrentLevelNumber { get; private set; }
         public int MaxLevelNumber { get; private set; }
@@ -57,10 +60,18 @@ namespace SpaceInvaders.Scenes.Game
         public int MaxWaveNumber { get; private set; }
 
         private LevelConfigSO _currentLevelConfigSo;
-        private string _normalWaveString(int waveNumber) => $"Wave {CurrentWaveNumber}";
-        private string _bossWaveString() => "BOSS WARNING!";
 
         public event Action<int> OnLevelCompleted;
+
+        private string NormalWaveString(int waveNumber)
+        {
+            return $"Wave {CurrentWaveNumber}";
+        }
+
+        private string BossWaveString()
+        {
+            return "BOSS WARNING!";
+        }
 
         public void Initialize()
         {
@@ -107,6 +118,7 @@ namespace SpaceInvaders.Scenes.Game
         {
             if (CurrentWaveNumber >= _currentLevelConfigSo.WavesConfigs.Count)
             {
+                AwardLevelStars();
                 OnLevelCompleted?.Invoke(CurrentLevelNumber);
                 return;
             }
@@ -121,7 +133,7 @@ namespace SpaceInvaders.Scenes.Game
 
         private void ShowWaveAnnouncerScreen(WaveConfigDTO wave, int waveNumber)
         {
-            string announcementText = WaveContainsBoss(wave) ? _bossWaveString() : _normalWaveString(waveNumber);
+            string announcementText = WaveContainsBoss(wave) ? BossWaveString() : NormalWaveString(waveNumber);
 
             _uiManager.ShowScreen<AnnouncerScreen, AnnouncerScreenParams>(
                 new AnnouncerScreenParams() { DisplayText = announcementText });
@@ -143,6 +155,30 @@ namespace SpaceInvaders.Scenes.Game
         private LevelConfigSO GetLevelConfig(int levelNumber)
         {
             return _repositoryManager.GetLevelConfig(levelNumber);
+        }
+
+        private void AwardLevelStars()
+        {
+            ShipStats stats = _playerManager.PlayerStats;
+            int stars = CalculateStars(stats.CumulativeDamageTaken, _currentLevelConfigSo.ThreeStarMaxDamage,
+                    _repositoryManager.GetTwoStarDamageMultiplier());
+
+            _progressManager.RecordLevelResult(CurrentLevelNumber, stars);
+        }
+
+        private static int CalculateStars(int damageTaken, int threeStarMaxDamage, float twoStarDamageMultiplier)
+        {
+            if (damageTaken <= threeStarMaxDamage)
+            {
+                return 3;
+            }
+
+            if (damageTaken <= threeStarMaxDamage * twoStarDamageMultiplier)
+            {
+                return 2;
+            }
+
+            return 1;
         }
     }
 }

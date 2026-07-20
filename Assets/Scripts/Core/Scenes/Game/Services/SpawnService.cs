@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using BaseArchitecture.Core;
 using Cysharp.Threading.Tasks;
+using SpaceInvaders.Project;
 using UnityEngine;
 using Zenject;
 
@@ -12,6 +13,7 @@ namespace SpaceInvaders.Scenes.Game
         UniTask<IPlayerSpaceship> SpawnPlayer();
         UniTask<List<IEnemySpaceship>> SpawnEnemies(WaveConfigDTO waveConfig);
         ProjectileBehaviourComponent SpawnProjectile(ProjectileBehaviourComponent prefab, Vector3 position, Vector3 direction, int damage, float speed);
+        PowerupBehaviourComponent SpawnPowerup(PowerupConfigSO config, Vector3 position);
         void Despawn<T>(T instance) where T : MonoBehaviour, IPoolableObject;
     }
 
@@ -83,6 +85,20 @@ namespace SpaceInvaders.Scenes.Game
             projectile.Initialize(damage, speed, direction);
 
             return projectile;
+        }
+
+        public PowerupBehaviourComponent SpawnPowerup(PowerupConfigSO config, Vector3 position)
+        {
+            var pickup = Spawn(config.PickupPrefab, position, Quaternion.identity);
+
+            if (pickup == null)
+            {
+                return null;
+            }
+
+            pickup.Initialize(config.PowerupType);
+
+            return pickup;
         }
 
         private T Spawn<T>(T prefab, Vector3 position, Quaternion rotation) where T : MonoBehaviour, IPoolableObject

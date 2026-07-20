@@ -17,7 +17,15 @@ namespace SpaceInvaders.Scenes.MainMenu
         }
         
         private MenuScreenResult _result;
-        public MenuScreenResult GetResult() => _result;
-        public void SetResult(MenuScreenResult result) => _result = result;
+
+        public MenuScreenResult GetResult()
+        {
+            return _result;
+        }
+
+        public void SetResult(MenuScreenResult result)
+        {
+            _result = result;
+        }
     }
 }

@@ -1,5 +1,6 @@
 using NSubstitute;
 using NUnit.Framework;
+using SpaceInvaders.Project;
 using SpaceInvaders.Scenes.Game;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,10 +11,11 @@ namespace SpaceInvaders.Tests
     [TestFixture]
     public class RepositoryManagerTests
     {
-        private RepositoryManager _repositoryManager;
+        private IRepositoryManager _repositoryManager;
         private List<LevelConfigSO> _levelConfigs;
         private List<PlayerSpaceshipConfigSO> _playerConfigs;
         private List<EnemySpaceshipConfigSO> _enemyConfigs;
+        private List<PowerupConfigSO> _powerupConfigs;
 
         private static LevelConfigSO CreateMockLevelConfig(int levelIndex)
         {
@@ -46,20 +48,61 @@ namespace SpaceInvaders.Tests
                 ScriptableObject.CreateInstance<EnemySpaceshipConfigSO>()
             };
 
-            _repositoryManager = new RepositoryManager(_levelConfigs, _playerConfigs, _enemyConfigs);
+            _powerupConfigs = new List<PowerupConfigSO>();
+
+            _repositoryManager = new RepositoryManager(
+                CreateLevelsDataConfig(_levelConfigs),
+                CreatePlayerDataConfig(_playerConfigs),
+                CreateEnemyDataConfig(_enemyConfigs),
+                CreatePowerupsDataConfig(_powerupConfigs, 0f));
+        }
+
+        private static LevelsDataConfigSO CreateLevelsDataConfig(List<LevelConfigSO> levelConfigs)
+        {
+            var config = Substitute.For<LevelsDataConfigSO>();
+            config.LevelsConfigs.Returns(levelConfigs);
+            return config;
+        }
+
+        private static PlayerDataConfigSO CreatePlayerDataConfig(List<PlayerSpaceshipConfigSO> playerConfigs)
+        {
+            var config = Substitute.For<PlayerDataConfigSO>();
+            config.PlayerConfigs.Returns(playerConfigs);
+            return config;
+        }
+
+        private static EnemyDataConfigSO CreateEnemyDataConfig(List<EnemySpaceshipConfigSO> enemyConfigs)
+        {
+            var config = Substitute.For<EnemyDataConfigSO>();
+            config.EnemyConfigs.Returns(enemyConfigs);
+            return config;
+        }
+
+        private static PowerupsDataConfigSO CreatePowerupsDataConfig(List<PowerupConfigSO> powerupConfigs, float globalPowerupDropChance)
+        {
+            var config = Substitute.For<PowerupsDataConfigSO>();
+            config.PowerupConfigs.Returns(powerupConfigs);
+            config.GlobalPowerupDropChance.Returns(globalPowerupDropChance);
+            return config;
         }
 
         [TearDown]
         public void Teardown()
         {
             foreach (var config in _levelConfigs)
+            {
                 Object.DestroyImmediate(config);
+            }
 
             foreach (var config in _playerConfigs)
+            {
                 Object.DestroyImmediate(config);
+            }
 
             foreach (var config in _enemyConfigs)
+            {
                 Object.DestroyImmediate(config);
+            }
         }
 
         [Test]
@@ -105,8 +148,13 @@ namespace SpaceInvaders.Tests
             var emptyLevels = new List<LevelConfigSO>();
             var emptyPlayers = new List<PlayerSpaceshipConfigSO>();
             var emptyEnemies = new List<EnemySpaceshipConfigSO>();
+            var emptyPowerups = new List<PowerupConfigSO>();
 
-            var manager = new RepositoryManager(emptyLevels, emptyPlayers, emptyEnemies);
+            var manager = new RepositoryManager(
+                CreateLevelsDataConfig(emptyLevels),
+                CreatePlayerDataConfig(emptyPlayers),
+                CreateEnemyDataConfig(emptyEnemies),
+                CreatePowerupsDataConfig(emptyPowerups, 0f));
 
             Assert.AreEqual(0, manager.GetLevelsCount());
         }
