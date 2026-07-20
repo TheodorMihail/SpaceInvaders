@@ -32,6 +32,7 @@ namespace SpaceInvaders.Scenes.Game
         public float BaseProjectileSpeed => _baseStats.BaseProjectileSpeed;
 
         public int CurrentHealth { get; private set; }
+        public int CumulativeDamageTaken { get; private set; }
         public bool IsInvincible { get; private set; }
         public int ExtraShotCount { get; private set; }
         public float SpreadAngleDegrees { get; private set; }

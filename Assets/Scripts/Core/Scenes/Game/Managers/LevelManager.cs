@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using BaseArchitecture.Core;
 using Cysharp.Threading.Tasks;
+using SpaceInvaders.Project;
 using UnityEngine;
 using Zenject;
 using static SpaceInvaders.Scenes.Game.AnnouncerScreen;
@@ -46,9 +47,13 @@ namespace SpaceInvaders.Scenes.Game
 
     public class LevelManager : ILevelManager
     {
+        private const float TwoStarDamageMultiplier = 1.5f;
+
         [Inject] private readonly IRepositoryManager _repositoryManager;
         [Inject] private readonly IEnemiesManager _enemiesManager;
         [Inject] private readonly IUIManager _uiManager;
+        [Inject] private readonly IPlayerManager _playerManager;
+        [Inject] private readonly IProgressManager _progressManager;
 
         public int CurrentLevelNumber { get; private set; }
         public int MaxLevelNumber { get; private set; }
@@ -107,6 +112,7 @@ namespace SpaceInvaders.Scenes.Game
         {
             if (CurrentWaveNumber >= _currentLevelConfigSo.WavesConfigs.Count)
             {
+                AwardLevelStars();
                 OnLevelCompleted?.Invoke(CurrentLevelNumber);
                 return;
             }
@@ -143,6 +149,29 @@ namespace SpaceInvaders.Scenes.Game
         private LevelConfigSO GetLevelConfig(int levelNumber)
         {
             return _repositoryManager.GetLevelConfig(levelNumber);
+        }
+
+        private void AwardLevelStars()
+        {
+            ShipStats stats = _playerManager.PlayerStats;
+            int stars = CalculateStars(stats.CumulativeDamageTaken, _currentLevelConfigSo.ThreeStarMaxDamage);
+
+            _progressManager.RecordLevelResult(CurrentLevelNumber, stars);
+        }
+
+        private static int CalculateStars(int damageTaken, int threeStarMaxDamage)
+        {
+            if (damageTaken <= threeStarMaxDamage)
+            {
+                return 3;
+            }
+
+            if (damageTaken <= threeStarMaxDamage * TwoStarDamageMultiplier)
+            {
+                return 2;
+            }
+
+            return 1;
         }
     }
 }

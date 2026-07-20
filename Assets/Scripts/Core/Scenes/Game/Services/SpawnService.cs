@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using BaseArchitecture.Core;
 using Cysharp.Threading.Tasks;
+using SpaceInvaders.Project;
 using UnityEngine;
 using Zenject;
 

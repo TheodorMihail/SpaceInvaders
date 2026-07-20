@@ -6,6 +6,7 @@ using NSubstitute;
 using Zenject;
 using BaseArchitecture.Core;
 using Cysharp.Threading.Tasks;
+using SpaceInvaders.Project;
 
 namespace SpaceInvaders.Tests
 {

@@ -1,5 +1,6 @@
 using NSubstitute;
 using NUnit.Framework;
+using SpaceInvaders.Project;
 using SpaceInvaders.Scenes.Game;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,7 +11,7 @@ namespace SpaceInvaders.Tests
     [TestFixture]
     public class RepositoryManagerTests
     {
-        private RepositoryManager _repositoryManager;
+        private IRepositoryManager _repositoryManager;
         private List<LevelConfigSO> _levelConfigs;
         private List<PlayerSpaceshipConfigSO> _playerConfigs;
         private List<EnemySpaceshipConfigSO> _enemyConfigs;

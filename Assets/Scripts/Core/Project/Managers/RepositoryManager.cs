@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using BaseArchitecture.Core;
+using SpaceInvaders.Scenes.Game;
 
-namespace SpaceInvaders.Scenes.Game
+namespace SpaceInvaders.Project
 {
     public interface IRepositoryManager
     {
