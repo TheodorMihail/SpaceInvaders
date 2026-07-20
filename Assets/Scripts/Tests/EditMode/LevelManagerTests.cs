@@ -16,6 +16,8 @@ namespace SpaceInvaders.Tests
         private LevelManager _levelManager;
         private IRepositoryManager _mockRepositoryManager;
         private IEnemiesManager _mockEnemiesManager;
+        private IPlayerManager _mockPlayerManager;
+        private IProgressManager _mockProgressManager;
 
         private void CreateMockLevelConfig(int level, int waveCount)
         {
@@ -38,10 +40,16 @@ namespace SpaceInvaders.Tests
             _mockRepositoryManager = Substitute.For<IRepositoryManager>();
             _mockEnemiesManager = Substitute.For<IEnemiesManager>();
             var mockUIManager = Substitute.For<IUIManager>();
+            _mockPlayerManager = Substitute.For<IPlayerManager>();
+            _mockProgressManager = Substitute.For<IProgressManager>();
+
+            _mockPlayerManager.PlayerStats.Returns(new ShipStats(new ShipBaseStats()));
 
             Container.Bind<IRepositoryManager>().FromInstance(_mockRepositoryManager);
             Container.Bind<IEnemiesManager>().FromInstance(_mockEnemiesManager);
             Container.Bind<IUIManager>().FromInstance(mockUIManager);
+            Container.Bind<IPlayerManager>().FromInstance(_mockPlayerManager);
+            Container.Bind<IProgressManager>().FromInstance(_mockProgressManager);
 
             _levelManager = Container.Instantiate<LevelManager>();
         }

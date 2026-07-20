@@ -50,7 +50,40 @@ namespace SpaceInvaders.Tests
 
             _powerupConfigs = new List<PowerupConfigSO>();
 
-            _repositoryManager = new RepositoryManager(_levelConfigs, _playerConfigs, _enemyConfigs, _powerupConfigs, 0f);
+            _repositoryManager = new RepositoryManager(
+                CreateLevelsDataConfig(_levelConfigs),
+                CreatePlayerDataConfig(_playerConfigs),
+                CreateEnemyDataConfig(_enemyConfigs),
+                CreatePowerupsDataConfig(_powerupConfigs, 0f));
+        }
+
+        private static LevelsDataConfigSO CreateLevelsDataConfig(List<LevelConfigSO> levelConfigs)
+        {
+            var config = Substitute.For<LevelsDataConfigSO>();
+            config.LevelsConfigs.Returns(levelConfigs);
+            return config;
+        }
+
+        private static PlayerDataConfigSO CreatePlayerDataConfig(List<PlayerSpaceshipConfigSO> playerConfigs)
+        {
+            var config = Substitute.For<PlayerDataConfigSO>();
+            config.PlayerConfigs.Returns(playerConfigs);
+            return config;
+        }
+
+        private static EnemyDataConfigSO CreateEnemyDataConfig(List<EnemySpaceshipConfigSO> enemyConfigs)
+        {
+            var config = Substitute.For<EnemyDataConfigSO>();
+            config.EnemyConfigs.Returns(enemyConfigs);
+            return config;
+        }
+
+        private static PowerupsDataConfigSO CreatePowerupsDataConfig(List<PowerupConfigSO> powerupConfigs, float globalPowerupDropChance)
+        {
+            var config = Substitute.For<PowerupsDataConfigSO>();
+            config.PowerupConfigs.Returns(powerupConfigs);
+            config.GlobalPowerupDropChance.Returns(globalPowerupDropChance);
+            return config;
         }
 
         [TearDown]
@@ -111,7 +144,11 @@ namespace SpaceInvaders.Tests
             var emptyEnemies = new List<EnemySpaceshipConfigSO>();
             var emptyPowerups = new List<PowerupConfigSO>();
 
-            var manager = new RepositoryManager(emptyLevels, emptyPlayers, emptyEnemies, emptyPowerups, 0f);
+            var manager = new RepositoryManager(
+                CreateLevelsDataConfig(emptyLevels),
+                CreatePlayerDataConfig(emptyPlayers),
+                CreateEnemyDataConfig(emptyEnemies),
+                CreatePowerupsDataConfig(emptyPowerups, 0f));
 
             Assert.AreEqual(0, manager.GetLevelsCount());
         }

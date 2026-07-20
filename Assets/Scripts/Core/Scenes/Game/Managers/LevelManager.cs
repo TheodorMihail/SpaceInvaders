@@ -22,7 +22,7 @@ namespace SpaceInvaders.Scenes.Game
         [SerializeField] private float _timeBetweenSpawns;
         [SerializeField] private float _entrySpeed;
 
-        public List<WaveFormationDTO> WavesFormation => _wavesFormation;
+        public List<WaveFormationDTO> WavesFormation => _wavesFormation ?? new List<WaveFormationDTO>();
         public float TimeBetweenSpawns => _timeBetweenSpawns;
         public float EntrySpeed => _entrySpeed;
 
@@ -47,8 +47,6 @@ namespace SpaceInvaders.Scenes.Game
 
     public class LevelManager : ILevelManager
     {
-        private const float TwoStarDamageMultiplier = 1.5f;
-
         [Inject] private readonly IRepositoryManager _repositoryManager;
         [Inject] private readonly IEnemiesManager _enemiesManager;
         [Inject] private readonly IUIManager _uiManager;
@@ -154,19 +152,19 @@ namespace SpaceInvaders.Scenes.Game
         private void AwardLevelStars()
         {
             ShipStats stats = _playerManager.PlayerStats;
-            int stars = CalculateStars(stats.CumulativeDamageTaken, _currentLevelConfigSo.ThreeStarMaxDamage);
+            int stars = CalculateStars(stats.CumulativeDamageTaken, _currentLevelConfigSo.ThreeStarMaxDamage, _repositoryManager.GetTwoStarDamageMultiplier());
 
             _progressManager.RecordLevelResult(CurrentLevelNumber, stars);
         }
 
-        private static int CalculateStars(int damageTaken, int threeStarMaxDamage)
+        private static int CalculateStars(int damageTaken, int threeStarMaxDamage, float twoStarDamageMultiplier)
         {
             if (damageTaken <= threeStarMaxDamage)
             {
                 return 3;
             }
 
-            if (damageTaken <= threeStarMaxDamage * TwoStarDamageMultiplier)
+            if (damageTaken <= threeStarMaxDamage * twoStarDamageMultiplier)
             {
                 return 2;
             }

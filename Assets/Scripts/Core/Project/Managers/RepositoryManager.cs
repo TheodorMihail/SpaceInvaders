@@ -14,44 +14,72 @@ namespace SpaceInvaders.Project
         PowerupConfigSO GetPowerupConfig(PowerupTypes powerupType);
         IReadOnlyList<PowerupConfigSO> GetAllPowerupConfigs();
         float GetPowerupDropChance();
+        float GetTwoStarDamageMultiplier();
         int GetLevelsCount();
     }
 
     public class RepositoryManager : Repository, IRepositoryManager
     {
-        private readonly float _globalPowerupDropChance;
-
         public RepositoryManager(
-            List<LevelConfigSO> levelsConfigs,
-            List<PlayerSpaceshipConfigSO> playersConfigs,
-            List<EnemySpaceshipConfigSO> enemiesConfigs,
-            List<PowerupConfigSO> powerupConfigs,
-            float globalPowerupDropChance)
+            LevelsDataConfigSO levelsDataConfigSO,
+            PlayerDataConfigSO playerDataConfigSO,
+            EnemyDataConfigSO enemyDataConfigSO,
+            PowerupsDataConfigSO powerupsDataConfigSO)
         {
-            AddObjects(levelsConfigs);
-            AddObjects(playersConfigs);
-            AddObjects(enemiesConfigs);
-            AddObjects(powerupConfigs);
-            _globalPowerupDropChance = globalPowerupDropChance;
+            AddObjects(levelsDataConfigSO.LevelsConfigs);
+            AddObjects(playerDataConfigSO.PlayerConfigs);
+            AddObjects(enemyDataConfigSO.EnemyConfigs);
+            AddObjects(powerupsDataConfigSO.PowerupConfigs);
+
+            AddObject(levelsDataConfigSO);
+            AddObject(playerDataConfigSO);
+            AddObject(enemyDataConfigSO);
+            AddObject(powerupsDataConfigSO);
         }
 
-        public LevelConfigSO GetLevelConfig(int level) => Get<LevelConfigSO>($"Level {level}");
+        public LevelConfigSO GetLevelConfig(int level)
+        {
+            return Get<LevelConfigSO>($"Level {level}");
+        }
 
-        public IReadOnlyList<LevelConfigSO> GetLevelConfigs() => GetAll<LevelConfigSO>().ToArray();
+        public IReadOnlyList<LevelConfigSO> GetLevelConfigs()
+        {
+            return GetAll<LevelConfigSO>().ToArray();
+        }
 
-        public PlayerSpaceshipConfigSO GetPlayerConfig(PlayerTypes playerType) =>
-            Get<PlayerSpaceshipConfigSO>(playerType.ToString());
+        public PlayerSpaceshipConfigSO GetPlayerConfig(PlayerTypes playerType)
+        {
+            return Get<PlayerSpaceshipConfigSO>(playerType.ToString());
+        }
 
-        public EnemySpaceshipConfigSO GetEnemyConfig(EnemyTypes enemyType) =>
-            Get<EnemySpaceshipConfigSO>(enemyType.ToString());
+        public EnemySpaceshipConfigSO GetEnemyConfig(EnemyTypes enemyType)
+        {
+            return Get<EnemySpaceshipConfigSO>(enemyType.ToString());
+        }
 
-        public PowerupConfigSO GetPowerupConfig(PowerupTypes powerupType) =>
-            Get<PowerupConfigSO>(powerupType.ToString());
+        public PowerupConfigSO GetPowerupConfig(PowerupTypes powerupType)
+        {
+            return Get<PowerupConfigSO>(powerupType.ToString());
+        }
 
-        public IReadOnlyList<PowerupConfigSO> GetAllPowerupConfigs() => GetAll<PowerupConfigSO>().ToArray();
+        public IReadOnlyList<PowerupConfigSO> GetAllPowerupConfigs()
+        {
+            return GetAll<PowerupConfigSO>().ToArray();
+        }
 
-        public float GetPowerupDropChance() => _globalPowerupDropChance;
+        public float GetPowerupDropChance()
+        {
+            return Get<PowerupsDataConfigSO>(nameof(PowerupsDataConfigSO)).GlobalPowerupDropChance;
+        }
 
-        public int GetLevelsCount() => GetAll<LevelConfigSO>().Count();
+        public float GetTwoStarDamageMultiplier()
+        {
+            return Get<LevelsDataConfigSO>(nameof(LevelsDataConfigSO)).TwoStarDamageMultiplier;
+        }
+
+        public int GetLevelsCount()
+        {
+            return GetAll<LevelConfigSO>().Count();
+        }
     }
 }
