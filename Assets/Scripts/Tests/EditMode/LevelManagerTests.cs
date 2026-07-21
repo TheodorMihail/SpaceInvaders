@@ -29,6 +29,7 @@ namespace SpaceInvaders.Tests
             }
 
             mockLevelConfig.WavesConfigs.Returns(waveConfigs);
+            mockLevelConfig.LevelName.Returns($"Level {level}");
             _mockRepositoryManager.GetLevelConfig(level).Returns(mockLevelConfig);
         }
 
@@ -39,7 +40,6 @@ namespace SpaceInvaders.Tests
 
             _mockRepositoryManager = Substitute.For<IRepositoryManager>();
             _mockEnemiesManager = Substitute.For<IEnemiesManager>();
-            var mockUIManager = Substitute.For<IUIManager>();
             _mockPlayerManager = Substitute.For<IPlayerManager>();
             _mockProgressManager = Substitute.For<IProgressManager>();
             _messageBus = new MessageBus();
@@ -48,7 +48,6 @@ namespace SpaceInvaders.Tests
 
             Container.Bind<IRepositoryManager>().FromInstance(_mockRepositoryManager);
             Container.Bind<IEnemiesManager>().FromInstance(_mockEnemiesManager);
-            Container.Bind<IUIManager>().FromInstance(mockUIManager);
             Container.Bind<IPlayerManager>().FromInstance(_mockPlayerManager);
             Container.Bind<IProgressManager>().FromInstance(_mockProgressManager);
             Container.Bind<IMessageBus>().FromInstance(_messageBus);
@@ -126,6 +125,42 @@ namespace SpaceInvaders.Tests
             _levelManager.GameStart(1).Forget();
 
             _mockEnemiesManager.Received(1).SpawnEnemies(Arg.Any<WaveConfigDTO>());
+        }
+
+        [Test]
+        public void OnGameStarted_PublishesLevelStartedMessage()
+        {
+            CreateMockLevelConfig(1, 3);
+            _mockRepositoryManager.GetLevelsCount().Returns(3);
+
+            var startedLevelNumber = -1;
+            string startedLevelName = null;
+            _messageBus.Subscribe<LevelStartedMessage>((message) =>
+            {
+                startedLevelNumber = message.LevelNumber;
+                startedLevelName = message.LevelName;
+            });
+
+            _levelManager.Initialize();
+            _levelManager.GameStart(1).Forget();
+
+            Assert.AreEqual(1, startedLevelNumber);
+            Assert.AreEqual("Level 1", startedLevelName);
+        }
+
+        [Test]
+        public void OnGameStarted_PublishesWaveStartedMessage()
+        {
+            CreateMockLevelConfig(1, 3);
+            _mockRepositoryManager.GetLevelsCount().Returns(3);
+
+            var startedWaveNumber = -1;
+            _messageBus.Subscribe<WaveStartedMessage>((message) => startedWaveNumber = message.WaveNumber);
+
+            _levelManager.Initialize();
+            _levelManager.GameStart(1).Forget();
+
+            Assert.AreEqual(1, startedWaveNumber);
         }
 
         [Test]

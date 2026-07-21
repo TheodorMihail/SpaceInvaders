@@ -36,6 +36,31 @@ namespace SpaceInvaders.Scenes.Game
             MaxHealth = maxHealth;
         }
     }
+
+    public readonly struct LevelStartedMessage : IMessageObject
+    {
+        public int LevelNumber { get; }
+        public string LevelName { get; }
+
+        public LevelStartedMessage(int levelNumber, string levelName)
+        {
+            LevelNumber = levelNumber;
+            LevelName = levelName;
+        }
+    }
+
+    public readonly struct WaveStartedMessage : IMessageObject
+    {
+        public int WaveNumber { get; }
+        public bool IsBossWave { get; }
+
+        public WaveStartedMessage(int waveNumber, bool isBossWave)
+        {
+            WaveNumber = waveNumber;
+            IsBossWave = isBossWave;
+        }
+    }
+
     public readonly struct BossHealthChangedMessage : IMessageObject
     {
         public int CurrentHealth { get; }

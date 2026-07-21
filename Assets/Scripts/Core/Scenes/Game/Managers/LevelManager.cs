@@ -5,7 +5,6 @@ using Cysharp.Threading.Tasks;
 using SpaceInvaders.Project;
 using UnityEngine;
 using Zenject;
-using static SpaceInvaders.Scenes.Game.AnnouncerScreen;
 
 namespace SpaceInvaders.Scenes.Game
 {
@@ -47,7 +46,6 @@ namespace SpaceInvaders.Scenes.Game
     {
         [Inject] private readonly IRepositoryManager _repositoryManager;
         [Inject] private readonly IEnemiesManager _enemiesManager;
-        [Inject] private readonly IUIManager _uiManager;
         [Inject] private readonly IPlayerManager _playerManager;
         [Inject] private readonly IProgressManager _progressManager;
         [Inject] private readonly IMessageBus _messageBus;
@@ -59,16 +57,6 @@ namespace SpaceInvaders.Scenes.Game
         public int MaxWaveNumber { get; private set; }
 
         private LevelConfigSO _currentLevelConfigSo;
-
-        private string NormalWaveString(int waveNumber)
-        {
-            return $"Wave {CurrentWaveNumber}";
-        }
-
-        private string BossWaveString()
-        {
-            return "BOSS WARNING!";
-        }
 
         public void Initialize()
         {
@@ -85,29 +73,28 @@ namespace SpaceInvaders.Scenes.Game
         {
             CurrentLevelNumber = levelNumber;
             LevelConfigSO levelConfig = GetLevelConfig(levelNumber);
-            return StartLevel(levelConfig);
+            StartLevel(levelConfig);
+            return UniTask.CompletedTask;
         }
 
         private void OnAllEnemiesDestroyedCallback(AllEnemiesDestroyedMessage message)
         {
             StartNextWave();
         }
-        
-        private async UniTask StartLevel(LevelConfigSO levelConfig)
+
+        private void StartLevel(LevelConfigSO levelConfig)
         {
             if (CurrentLevelNumber > MaxLevelNumber)
             {
                 this.LogError($"Level {CurrentLevelNumber} is out of range! Max levels: {MaxLevelNumber}");
                 return;
             }
-    
+
             _currentLevelConfigSo = levelConfig;
             CurrentWaveNumber = 0;
             MaxWaveNumber = _currentLevelConfigSo.WavesConfigs.Count;
-            
-            await _uiManager.ShowScreen<AnnouncerScreen, AnnouncerScreenParams>(
-                new AnnouncerScreenParams() { DisplayText = _currentLevelConfigSo.LevelName });
 
+            _messageBus.Publish(new LevelStartedMessage(CurrentLevelNumber, _currentLevelConfigSo.LevelName));
             StartNextWave();
         }
 
@@ -124,16 +111,8 @@ namespace SpaceInvaders.Scenes.Game
             _enemiesManager.SpawnEnemies(wave).Forget();
             CurrentWaveNumber++;
 
-            ShowWaveAnnouncerScreen(wave, CurrentWaveNumber);
+            _messageBus.Publish(new WaveStartedMessage(CurrentWaveNumber, WaveContainsBoss(wave)));
             this.Log($"Wave {CurrentWaveNumber} started!");
-        }
-
-        private void ShowWaveAnnouncerScreen(WaveConfigDTO wave, int waveNumber)
-        {
-            string announcementText = WaveContainsBoss(wave) ? BossWaveString() : NormalWaveString(waveNumber);
-
-            _uiManager.ShowScreen<AnnouncerScreen, AnnouncerScreenParams>(
-                new AnnouncerScreenParams() { DisplayText = announcementText });
         }
 
         private bool WaveContainsBoss(WaveConfigDTO wave)

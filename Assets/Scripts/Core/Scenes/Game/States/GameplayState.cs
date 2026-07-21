@@ -40,6 +40,7 @@ namespace SpaceInvaders.Scenes.Game
         private async UniTask SetupUI(int levelNumber)
         {
             _uiManager.ShowHUD<GameplayHUD, GameplayHUD.GameplayHUDParams>(new GameplayHUD.GameplayHUDParams { LevelNumber = levelNumber });
+            _uiManager.ShowHUD<GameAnnouncerHUD>();
             await _uiManager.ShowScreen<GameStartScreen>();
         }
 

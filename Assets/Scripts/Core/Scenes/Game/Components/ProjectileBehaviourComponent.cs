@@ -1,7 +1,5 @@
 using System;
-using BaseArchitecture.Core;
 using UnityEngine;
-using Zenject;
 
 namespace SpaceInvaders.Scenes.Game
 {
