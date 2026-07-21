@@ -19,6 +19,7 @@ namespace SpaceInvaders.Scenes.Game
             base.Initialize();
 
             _messageBus.Subscribe<EnemyDestroyedMessage>(OnEnemyDestroyedCallback);
+            _messageBus.Subscribe<BossSpawnedMessage>(OnBossSpawnedCallback);
             _messageBus.Subscribe<BossHealthChangedMessage>(OnBossHealthChangedCallback);
             _messageBus.Subscribe<PowerupActivatedMessage>(OnPowerupActivatedCallback);
             _messageBus.Subscribe<PowerupExpiredMessage>(OnPowerupExpiredCallback);
@@ -32,6 +33,7 @@ namespace SpaceInvaders.Scenes.Game
             base.Dispose();
 
             _messageBus.Unsubscribe<EnemyDestroyedMessage>(OnEnemyDestroyedCallback);
+            _messageBus.Unsubscribe<BossSpawnedMessage>(OnBossSpawnedCallback);
             _messageBus.Unsubscribe<BossHealthChangedMessage>(OnBossHealthChangedCallback);
             _messageBus.Unsubscribe<PowerupActivatedMessage>(OnPowerupActivatedCallback);
             _messageBus.Unsubscribe<PowerupExpiredMessage>(OnPowerupExpiredCallback);
@@ -56,9 +58,14 @@ namespace SpaceInvaders.Scenes.Game
             _view.UpdateScore(score);
         }
 
+        private void OnBossSpawnedCallback(BossSpawnedMessage message)
+        {
+            _view.InitializeBossHealthBar(message.MaxHealth);
+        }
+
         private void OnBossHealthChangedCallback(BossHealthChangedMessage message)
         {
-            _view.UpdateBossHealth(message.CurrentHealth, message.MaxHealth);
+            _view.UpdateBossHealth(message.CurrentHealth);
         }
 
         private void OnPowerupActivatedCallback(PowerupActivatedMessage message)

@@ -66,7 +66,7 @@ namespace SpaceInvaders.Scenes.Game
                 if (enemy.Category == EnemyCategory.Boss)
                 {
                     enemy.OnHealthChanged += OnBossHealthChangedCallback;
-                    _messageBus.Publish(new BossHealthChangedMessage(enemy.Stats.CurrentHealth, enemy.Stats.CurrentHealth));
+                    _messageBus.Publish(new BossSpawnedMessage(enemy.EnemyType, enemy.Stats.CurrentHealth));
                 }
             }
         }

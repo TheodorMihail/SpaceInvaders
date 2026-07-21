@@ -25,6 +25,17 @@ namespace SpaceInvaders.Scenes.Game
     {
     }
 
+    public readonly struct BossSpawnedMessage : IMessageObject
+    {
+        public EnemyTypes Type { get; }
+        public int MaxHealth { get; }
+
+        public BossSpawnedMessage(EnemyTypes type, int maxHealth)
+        {
+            Type = type;
+            MaxHealth = maxHealth;
+        }
+    }
     public readonly struct BossHealthChangedMessage : IMessageObject
     {
         public int CurrentHealth { get; }
