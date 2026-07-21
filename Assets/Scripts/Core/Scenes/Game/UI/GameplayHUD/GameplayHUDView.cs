@@ -32,17 +32,15 @@ namespace SpaceInvaders.Scenes.Game
             FormatScore(0);
         }
 
-        public void UpdateBossHealth(int currentHealth, int maxHealth)
+        public void InitializeBossHealthBar(int maxHealth)
         {
-            if (currentHealth == maxHealth)
-            {
-                _bossHealthBar.Initialize(currentHealth, maxHealth);
-                ShowBossHealthBar(true);
-            }
-            else
-            {
-                _bossHealthBar.UpdateHealth(currentHealth);
-            }
+            _bossHealthBar.Initialize(maxHealth, maxHealth);
+            ShowBossHealthBar(true);
+        }
+
+        public void UpdateBossHealth(int currentHealth)
+        {
+            _bossHealthBar.UpdateHealth(currentHealth);
         }
 
         public void ShowBossHealthBar(bool show)

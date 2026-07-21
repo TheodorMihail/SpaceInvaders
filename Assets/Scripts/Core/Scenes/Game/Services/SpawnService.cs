@@ -17,16 +17,29 @@ namespace SpaceInvaders.Scenes.Game
         void Despawn<T>(T instance) where T : MonoBehaviour, IPoolableObject;
     }
 
-    public class SpawnService : ISpawnService
+    public class SpawnService : ISpawnService, IGameEndListener
     {
         [Inject] private readonly IRepositoryManager _repositoryManager;
         [Inject] private readonly IAddressablesManager _addressablesManager;
         [Inject] private readonly IObjectPooling _objectPooling;
         [Inject] private readonly Transform _container;
 
+        private readonly HashSet<ScreenBoundedMovingComponent> _activeObjects = new();
+
         public void Dispose()
         {
             _objectPooling.ClearAll();
+        }
+
+        public UniTask GameEnd()
+        {
+            var pendingDespawns = new List<ScreenBoundedMovingComponent>(_activeObjects);
+            foreach (var obj in pendingDespawns)
+            {
+                Despawn(obj);
+            }
+
+            return UniTask.CompletedTask;
         }
 
         public async UniTask<IPlayerSpaceship> SpawnPlayer()
@@ -65,15 +78,16 @@ namespace SpaceInvaders.Scenes.Game
 
         public void Despawn<T>(T instance) where T : MonoBehaviour, IPoolableObject
         {
+            if (instance is ScreenBoundedMovingComponent transient)
+            {
+                _activeObjects.Remove(transient);
+            }
+
             _objectPooling.Return(instance);
         }
 
-        public ProjectileBehaviourComponent SpawnProjectile(
-            ProjectileBehaviourComponent prefab,
-            Vector3 position,
-            Vector3 direction,
-            int damage,
-            float speed)
+        public ProjectileBehaviourComponent SpawnProjectile(ProjectileBehaviourComponent prefab, 
+            Vector3 position, Vector3 direction, int damage, float speed)
         {
             var projectile = Spawn(prefab, position, Quaternion.identity);
 
@@ -83,6 +97,7 @@ namespace SpaceInvaders.Scenes.Game
             }
 
             projectile.Initialize(damage, speed, direction);
+            _activeObjects.Add(projectile);
 
             return projectile;
         }
@@ -97,6 +112,7 @@ namespace SpaceInvaders.Scenes.Game
             }
 
             pickup.Initialize(config.PowerupType);
+            _activeObjects.Add(pickup);
 
             return pickup;
         }
