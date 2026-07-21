@@ -44,16 +44,17 @@ namespace SpaceInvaders.Scenes.Game
 
                     case GameStateIds.GameOver:
                         GameOverStateResult gameOverResult = (GameOverStateResult)finishedState.paramsList[0];
-                        switch (gameOverResult) 
+                        switch (gameOverResult)
                         {
                             case GameOverStateResult.MainMenu:
                                 _scenesManager.LoadScene(SceneType.MainMenu.ToString());
                                 break;
                             case GameOverStateResult.Restart:
-                                _scenesManager.ReloadCurrentScene();
+                                _scenesManager.LoadScene(SceneType.Game.ToString(), _currentLevelNumber);
                                 break;
                             case GameOverStateResult.NextLevel:
-                                SetState(GameStateIds.Playing, _currentLevelNumber + 1); 
+                                _currentLevelNumber++;
+                                SetState(GameStateIds.Playing, _currentLevelNumber);
                                 break;
                         }
                     
