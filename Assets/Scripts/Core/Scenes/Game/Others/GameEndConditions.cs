@@ -1,25 +1,26 @@
 using System;
+using BaseArchitecture.Core;
 using Zenject;
 
 namespace SpaceInvaders.Scenes.Game
 {
     public class LevelCompletedCondition : IGameEndCondition, IInitializable, IDisposable
     {
-        [Inject] private readonly ILevelManager _levelManager;
+        [Inject] private readonly IMessageBus _messageBus;
 
         public event Action<GameplayStateResult> ConditionMet;
 
         public void Initialize()
         {
-            _levelManager.OnLevelCompleted += OnLevelCompleted;
+            _messageBus.Subscribe<LevelCompletedMessage>(OnLevelCompleted);
         }
 
         public void Dispose()
         {
-            _levelManager.OnLevelCompleted -= OnLevelCompleted;
+            _messageBus.Unsubscribe<LevelCompletedMessage>(OnLevelCompleted);
         }
 
-        private void OnLevelCompleted(int levelNumber)
+        private void OnLevelCompleted(LevelCompletedMessage message)
         {
             ConditionMet?.Invoke(GameplayStateResult.LevelFinished);
         }
@@ -27,21 +28,21 @@ namespace SpaceInvaders.Scenes.Game
 
     public class PlayerDestroyedCondition : IGameEndCondition, IInitializable, IDisposable
     {
-        [Inject] private readonly IPlayerManager _playerManager;
+        [Inject] private readonly IMessageBus _messageBus;
 
         public event Action<GameplayStateResult> ConditionMet;
 
         public void Initialize()
         {
-            _playerManager.OnPlayerDestroyed += OnPlayerDestroyed;
+            _messageBus.Subscribe<PlayerDestroyedMessage>(OnPlayerDestroyed);
         }
 
         public void Dispose()
         {
-            _playerManager.OnPlayerDestroyed -= OnPlayerDestroyed;
+            _messageBus.Unsubscribe<PlayerDestroyedMessage>(OnPlayerDestroyed);
         }
 
-        private void OnPlayerDestroyed()
+        private void OnPlayerDestroyed(PlayerDestroyedMessage message)
         {
             ConditionMet?.Invoke(GameplayStateResult.GameOver);
         }

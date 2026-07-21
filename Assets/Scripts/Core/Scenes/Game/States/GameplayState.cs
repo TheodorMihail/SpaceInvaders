@@ -23,12 +23,12 @@ namespace SpaceInvaders.Scenes.Game
             base.OnEnter();
 
             paramsList.TryGetParam(out int levelNumber, 1);
-            StartGameplay(levelNumber);
+            StartGameplay(levelNumber).Forget();
         }
 
         #region StartGameplay
 
-        private async void StartGameplay(int levelNumber)
+        private async UniTask StartGameplay(int levelNumber)
         {
             this.Log($"Start level: {levelNumber}");
 
@@ -40,6 +40,7 @@ namespace SpaceInvaders.Scenes.Game
         private async UniTask SetupUI(int levelNumber)
         {
             _uiManager.ShowHUD<GameplayHUD, GameplayHUD.GameplayHUDParams>(new GameplayHUD.GameplayHUDParams { LevelNumber = levelNumber });
+            _uiManager.ShowHUD<GameAnnouncerHUD>();
             await _uiManager.ShowScreen<GameStartScreen>();
         }
 

@@ -11,9 +11,6 @@ namespace SpaceInvaders.Scenes.Game
 {
     public interface IPowerupManager : IDisposable, IInitializable, IGameEndListener
     {
-        event Action<PowerupTypes, float> PowerupActivated; // duration = 0 means instant
-        event Action<PowerupTypes> PowerupExpired;
-
         void ActivatePowerup(PowerupTypes type);
     }
 
@@ -21,23 +18,20 @@ namespace SpaceInvaders.Scenes.Game
     {
         [Inject] private readonly IRepositoryManager _repositoryManager;
         [Inject] private readonly IPlayerManager _playerManager;
-        [Inject] private readonly IEnemiesManager _enemiesManager;
+        [Inject] private readonly IMessageBus _messageBus;
         [Inject] private readonly ISpawnService _spawnService;
         [Inject] private readonly ICustomFactory _factory;
 
         private readonly Dictionary<PowerupTypes, IPowerupBehaviour> _activePowerups = new();
 
-        public event Action<PowerupTypes, float> PowerupActivated;
-        public event Action<PowerupTypes> PowerupExpired;
-
         public void Initialize()
         {
-            _enemiesManager.EnemyDestroyed += OnEnemyDestroyed;
+            _messageBus.Subscribe<EnemyDestroyedMessage>(OnEnemyDestroyed);
         }
 
         public void Dispose()
         {
-            _enemiesManager.EnemyDestroyed -= OnEnemyDestroyed;
+            _messageBus.Unsubscribe<EnemyDestroyedMessage>(OnEnemyDestroyed);
             ClearActivePowerups();
         }
 
@@ -47,11 +41,11 @@ namespace SpaceInvaders.Scenes.Game
             return UniTask.CompletedTask;
         }
 
-        private void OnEnemyDestroyed(string enemyId, Vector3 position)
+        private void OnEnemyDestroyed(EnemyDestroyedMessage message)
         {
             if (TryGetPowerupDrop(out var config))
             {
-                _spawnService.SpawnPowerup(config, position);
+                _spawnService.SpawnPowerup(config, message.Position);
             }
         }
 
@@ -104,13 +98,13 @@ namespace SpaceInvaders.Scenes.Game
             if (_activePowerups.TryGetValue(type, out var existing))
             {
                 existing.Refresh();
-                PowerupActivated?.Invoke(type, config.Duration);
+                _messageBus.Publish(new PowerupActivatedMessage(type, config.Duration));
                 return;
             }
 
             var powerup = CreatePowerup(type);
             powerup.Initialize(_playerManager.PlayerStats, config);
-            PowerupActivated?.Invoke(type, config.Duration);
+            _messageBus.Publish(new PowerupActivatedMessage(type, config.Duration));
 
             if (config.Duration > 0f)
             {
@@ -133,7 +127,7 @@ namespace SpaceInvaders.Scenes.Game
         {
             powerup.Ended -= OnPowerupEnded;
             _activePowerups.Remove(powerup.PowerupType);
-            PowerupExpired?.Invoke(powerup.PowerupType);
+            _messageBus.Publish(new PowerupExpiredMessage(powerup.PowerupType));
         }
 
         private void ClearActivePowerups()

@@ -6,8 +6,8 @@ using UnityEngine;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    [AddressablePath("Screens/AnnouncerScreenView")]
-    public class AnnouncerView : View
+    [AddressablePath("Screens/GameAnnouncerHUDView")]
+    public class GameAnnouncerHUDView : View
     {
         [SerializeField] private CanvasGroup _textCanvasGroup;
         [SerializeField] private TextMeshProUGUI _displayText;
@@ -18,16 +18,18 @@ namespace SpaceInvaders.Scenes.Game
         {
             _cancellationTokenSource = new CancellationTokenSource();
             _displayText.alpha = 1f;
+            _textCanvasGroup.alpha = 0f;
         }
 
         public void SetDisplayText(string text)
         {
-            _displayText.text =  string.Format(text);
+            _displayText.text = text;
         }
 
         public async UniTask PlayAnimation(float animationDuration)
         {
             _textCanvasGroup.alpha = 0f;
+            
             try
             {
                 await _textCanvasGroup.FadeToAsync(1f, animationDuration, _cancellationTokenSource);

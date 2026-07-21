@@ -13,7 +13,6 @@ namespace SpaceInvaders.Scenes.Game
     
     public interface IPlayerManager : IDisposable, IGameStartListener, IGameEndListener, IGameInitializeListener
     {
-        event Action OnPlayerDestroyed;
         Vector3 PlayerPosition { get; }
         ShipStats PlayerStats { get; }
     }
@@ -21,10 +20,10 @@ namespace SpaceInvaders.Scenes.Game
     public class PlayerManager : IPlayerManager, ITickable
     {
         [Inject] private readonly ISpawnService _spawnService;
+        [Inject] private readonly IMessageBus _messageBus;
 
         private IPlayerSpaceship _playerInstance;
 
-        public event Action OnPlayerDestroyed;
         public Vector3 PlayerPosition => _playerInstance != null ? _playerInstance.Position : Vector3.zero;
         public ShipStats PlayerStats => _playerInstance?.Stats;
 
@@ -56,7 +55,7 @@ namespace SpaceInvaders.Scenes.Game
         {
             this.Log($"Player destroyed!");
             DespawnPlayer();
-            OnPlayerDestroyed?.Invoke();
+            _messageBus.Publish(new PlayerDestroyedMessage());
         }
 
         private void DespawnPlayer()
