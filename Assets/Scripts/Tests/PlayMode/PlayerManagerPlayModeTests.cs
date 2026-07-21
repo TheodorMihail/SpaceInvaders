@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using NSubstitute;
 using Zenject;
+using BaseArchitecture.Core;
 using Cysharp.Threading.Tasks;
 using UnityEngine.TestTools;
 
@@ -15,6 +16,7 @@ namespace SpaceInvaders.Tests
         private PlayerManager _playerManager;
         private ISpawnService _mockSpawnService;
         private IPlayerSpaceship _mockPlayer;
+        private IMessageBus _messageBus;
 
         private IEnumerator InitializeAndSpawnPlayer()
         {
@@ -28,10 +30,12 @@ namespace SpaceInvaders.Tests
 
             _mockSpawnService = Substitute.For<ISpawnService>();
             _mockPlayer = Substitute.For<IPlayerSpaceship>();
+            _messageBus = new MessageBus();
 
             _mockSpawnService.SpawnPlayer().Returns(UniTask.FromResult(_mockPlayer));
 
             Container.Bind<ISpawnService>().FromInstance(_mockSpawnService);
+            Container.Bind<IMessageBus>().FromInstance(_messageBus);
 
             _playerManager = Container.Instantiate<PlayerManager>();
         }
@@ -40,6 +44,7 @@ namespace SpaceInvaders.Tests
         public override void Teardown()
         {
             _playerManager.Dispose();
+            _messageBus.Dispose();
             base.Teardown();
         }
 
@@ -68,15 +73,15 @@ namespace SpaceInvaders.Tests
         }
 
         [UnityTest]
-        public IEnumerator OnPlayerDestroyed_InvokesOnPlayerDestroyedEvent()
+        public IEnumerator OnPlayerDestroyed_PublishesPlayerDestroyedMessage()
         {
-            var playerDestroyedInvoked = false;
-            _playerManager.OnPlayerDestroyed += () => playerDestroyedInvoked = true;
+            var playerDestroyedPublished = false;
+            _messageBus.Subscribe<PlayerDestroyedMessage>((message) => playerDestroyedPublished = true);
 
             yield return InitializeAndSpawnPlayer();
 
             _mockPlayer.OnDestroyed += Raise.Event<Action<IPlayerSpaceship>>(_mockPlayer);
-            Assert.IsTrue(playerDestroyedInvoked);
+            Assert.IsTrue(playerDestroyedPublished);
         }
 
         [UnityTest]

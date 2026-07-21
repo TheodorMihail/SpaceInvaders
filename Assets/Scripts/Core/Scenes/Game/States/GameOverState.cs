@@ -1,4 +1,5 @@
 using BaseArchitecture.Core;
+using Cysharp.Threading.Tasks;
 using Zenject;
 using static SpaceInvaders.Scenes.Game.LevelFinishedScreen;
 using static SpaceInvaders.Scenes.Game.GameOverScreen;
@@ -25,10 +26,10 @@ namespace SpaceInvaders.Scenes.Game
             base.OnEnter();
 
             GameplayStateResult result = (GameplayStateResult)paramsList[0];
-            ShowGameOver(result);
+            ShowGameOver(result).Forget();
         }
 
-        private async void ShowGameOver(GameplayStateResult result)
+        private async UniTask ShowGameOver(GameplayStateResult result)
         {
             switch (result)
             {

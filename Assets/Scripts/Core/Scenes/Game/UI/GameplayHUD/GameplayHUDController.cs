@@ -1,7 +1,5 @@
-using System;
 using BaseArchitecture.Core;
 using SpaceInvaders.Project;
-using UnityEngine;
 using Zenject;
 
 namespace SpaceInvaders.Scenes.Game
@@ -9,9 +7,7 @@ namespace SpaceInvaders.Scenes.Game
     public class GameplayHUDController : Controller<GameplayHUD, GameplayHUDModel, GameplayHUDView>
     {
         [Inject] private readonly IMessageBus _messageBus;
-        [Inject] private readonly IEnemiesManager _enemiesManager;
         [Inject] private readonly IRepositoryManager _repositoryManager;
-        [Inject] private readonly IPowerupManager _powerupManager;
 
         public GameplayHUDController(GameplayHUD hud, GameplayHUDModel model, GameplayHUDView view)
             : base(hud, model, view)
@@ -22,12 +18,12 @@ namespace SpaceInvaders.Scenes.Game
         {
             base.Initialize();
 
-            _enemiesManager.EnemyDestroyed += OnEnemyDestroyedCallback;
-            _enemiesManager.OnBossHealthChanged += OnBossHealthChangedCallback;
-            _powerupManager.PowerupActivated += OnPowerupActivatedCallback;
-            _powerupManager.PowerupExpired += OnPowerupExpiredCallback;
-
+            _messageBus.Subscribe<EnemyDestroyedMessage>(OnEnemyDestroyedCallback);
+            _messageBus.Subscribe<BossHealthChangedMessage>(OnBossHealthChangedCallback);
+            _messageBus.Subscribe<PowerupActivatedMessage>(OnPowerupActivatedCallback);
+            _messageBus.Subscribe<PowerupExpiredMessage>(OnPowerupExpiredCallback);
             _messageBus.Subscribe<GameEndedMessage>(OnGameEnded);
+
             _view.Setup(_model.LevelNumber);
         }
 
@@ -35,21 +31,19 @@ namespace SpaceInvaders.Scenes.Game
         {
             base.Dispose();
 
-            _enemiesManager.EnemyDestroyed -= OnEnemyDestroyedCallback;
-            _enemiesManager.OnBossHealthChanged -= OnBossHealthChangedCallback;
-            _powerupManager.PowerupActivated -= OnPowerupActivatedCallback;
-            _powerupManager.PowerupExpired -= OnPowerupExpiredCallback;
-
+            _messageBus.Unsubscribe<EnemyDestroyedMessage>(OnEnemyDestroyedCallback);
+            _messageBus.Unsubscribe<BossHealthChangedMessage>(OnBossHealthChangedCallback);
+            _messageBus.Unsubscribe<PowerupActivatedMessage>(OnPowerupActivatedCallback);
+            _messageBus.Unsubscribe<PowerupExpiredMessage>(OnPowerupExpiredCallback);
             _messageBus.Unsubscribe<GameEndedMessage>(OnGameEnded);
         }
 
-        private void OnEnemyDestroyedCallback(string enemyID, Vector3 position)
+        private void OnEnemyDestroyedCallback(EnemyDestroyedMessage message)
         {
-            var enemyType = Enum.Parse<EnemyTypes>(enemyID);
-            var enemyConfig = _repositoryManager.GetEnemyConfig(enemyType);
+            var enemyConfig = _repositoryManager.GetEnemyConfig(message.Type);
             UpdateScore(enemyConfig.ScoreReward);
 
-            if (enemyConfig.Category == EnemyCategory.Boss)
+            if (message.Category == EnemyCategory.Boss)
             {
                 _view.ShowBossHealthBar(false);
             }
@@ -62,24 +56,24 @@ namespace SpaceInvaders.Scenes.Game
             _view.UpdateScore(score);
         }
 
-        private void OnBossHealthChangedCallback(int currentHealth, int maxHealth)
+        private void OnBossHealthChangedCallback(BossHealthChangedMessage message)
         {
-            _view.UpdateBossHealth(currentHealth, maxHealth);
+            _view.UpdateBossHealth(message.CurrentHealth, message.MaxHealth);
         }
 
-        private void OnPowerupActivatedCallback(PowerupTypes type, float duration)
+        private void OnPowerupActivatedCallback(PowerupActivatedMessage message)
         {
-            var config = _repositoryManager.GetPowerupConfig(type);
-            
-            if (duration > 0)
+            var config = _repositoryManager.GetPowerupConfig(message.Type);
+
+            if (message.Duration > 0)
             {
-                _view.ShowPowerupActivated(type, config.Icon, duration);
+                _view.ShowPowerupActivated(message.Type, config.Icon, message.Duration);
             }
         }
 
-        private void OnPowerupExpiredCallback(PowerupTypes type)
+        private void OnPowerupExpiredCallback(PowerupExpiredMessage message)
         {
-            _view.HidePowerupIndicator(type);
+            _view.HidePowerupIndicator(message.Type);
         }
 
         private void OnGameEnded(GameEndedMessage message)

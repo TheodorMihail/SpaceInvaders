@@ -22,10 +22,6 @@ namespace SpaceInvaders.Scenes.Game
 
     public interface IEnemiesManager : IDisposable, IGameInitializeListener, IGameEndListener
     {
-        event Action<string, Vector3> EnemyDestroyed;
-        event Action OnAllEnemiesDestroyed;
-        event Action<IEnemySpaceship> OnBossSpawned;
-        event Action<int, int> OnBossHealthChanged;
         int EnemiesAlive { get; }
         public UniTask SpawnEnemies(WaveConfigDTO wave);
     }
@@ -33,14 +29,11 @@ namespace SpaceInvaders.Scenes.Game
     public class EnemiesManager : IEnemiesManager, ITickable
     {
         [Inject] private readonly ISpawnService _spawnService;
+        [Inject] private readonly IMessageBus _messageBus;
 
         private List<IEnemySpaceship> _spawnedEnemies;
 
         public int EnemiesAlive => _spawnedEnemies.Count;
-        public event Action<string, Vector3> EnemyDestroyed;
-        public event Action OnAllEnemiesDestroyed;
-        public event Action<IEnemySpaceship> OnBossSpawned;
-        public event Action<int, int> OnBossHealthChanged;
 
         public UniTask GameInitialize()
         {
@@ -58,7 +51,7 @@ namespace SpaceInvaders.Scenes.Game
         {
             ClearEnemies();
         }
-        
+
         public async UniTask SpawnEnemies(WaveConfigDTO waveConfig)
         {
             await UniTask.Delay((int)(waveConfig.TimeBetweenSpawns * 1000));
@@ -73,26 +66,24 @@ namespace SpaceInvaders.Scenes.Game
                 if (enemy.Category == EnemyCategory.Boss)
                 {
                     enemy.OnHealthChanged += OnBossHealthChangedCallback;
-                    OnBossSpawned?.Invoke(enemy);
-                    OnBossHealthChanged?.Invoke(enemy.Stats.CurrentHealth, enemy.Stats.CurrentHealth);
+                    _messageBus.Publish(new BossHealthChangedMessage(enemy.Stats.CurrentHealth, enemy.Stats.CurrentHealth));
                 }
             }
         }
 
         private void OnBossHealthChangedCallback(int currentHealth, int maxHealth)
         {
-            OnBossHealthChanged?.Invoke(currentHealth, maxHealth);
+            _messageBus.Publish(new BossHealthChangedMessage(currentHealth, maxHealth));
         }
 
         private void OnEnemyDestroyedCallback(IEnemySpaceship enemy)
         {
-            EnemyDestroyed?.Invoke(enemy.SpaceshipID, enemy.Position);
+            _messageBus.Publish(new EnemyDestroyedMessage(enemy.EnemyType, enemy.Category, enemy.Position));
             DespawnEnemy(enemy);
 
-            //this.Log($"Enemy destroyed, remaining: {_spawnedEnemies.Count}");
             if (_spawnedEnemies.Count == 0)
             {
-                OnAllEnemiesDestroyed?.Invoke();
+                _messageBus.Publish(new AllEnemiesDestroyedMessage());
             }
         }
 
