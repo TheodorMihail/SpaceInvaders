@@ -6,6 +6,7 @@ namespace SpaceInvaders.Project
     public interface IPlatformService
     {
         bool IsTouchPlatform { get; }
+        void ApplyFrameRateCap();
     }
 
     public class PlatformService : IPlatformService
@@ -24,6 +25,12 @@ namespace SpaceInvaders.Project
 #endif
                 return Application.isMobilePlatform;
             }
+        }
+
+        public void ApplyFrameRateCap()
+        {
+            QualitySettings.vSyncCount = 0;
+            Application.targetFrameRate = _repositoryManager.GetProjectDataConfig().MaxFrameRate;
         }
     }
 }

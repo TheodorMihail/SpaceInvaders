@@ -9,7 +9,11 @@ namespace SpaceInvaders.Project
         [Header("Editor Testing")]
         [SerializeField] private bool _editorForceTouchPlatform;
 
+        [Header("Performance")]
+        [SerializeField] private int _maxFrameRate = 60;
+
         public virtual bool EditorForceTouchPlatform => _editorForceTouchPlatform;
+        public virtual int MaxFrameRate => _maxFrameRate;
 
         public string ObjectID => nameof(ProjectDataConfigSO);
     }

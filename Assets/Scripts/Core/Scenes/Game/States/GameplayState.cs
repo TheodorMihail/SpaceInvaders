@@ -24,6 +24,8 @@ namespace SpaceInvaders.Scenes.Game
         {
             base.OnEnter();
 
+            _platformService.ApplyFrameRateCap();
+
             paramsList.TryGetParam(out int levelNumber, 1);
             StartGameplay(levelNumber).Forget();
         }
