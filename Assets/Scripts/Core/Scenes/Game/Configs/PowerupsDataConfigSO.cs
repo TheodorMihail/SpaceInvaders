@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    [CreateAssetMenu(fileName = "PowerupsDataConfig", menuName = "SpaceInvaders/Powerups Data Config")]
+    [CreateAssetMenu(fileName = "PowerupsDataConfig", menuName = "SpaceInvaders/Data Config/Powerups Data Config")]
     public class PowerupsDataConfigSO : ScriptableObject, IRepositoryObject
     {
         [Header("Powerups")]

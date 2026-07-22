@@ -15,5 +15,5 @@ MonoBehaviour:
   _duration: 10
   _dropWeight: 1
   _pickupPrefab: {fileID: 5567308644402932595, guid: 176c8d67b9bf78840b689129304e547b, type: 3}
-  _icon: {fileID: 21300000, guid: 6007b1cd52163544cad3d832d385e21e, type: 3}
+  _icon: {fileID: 21300000, guid: 957f61d3384a86e4ab44d649213699c4, type: 3}
   _damageMultiplierBonus: 0.5

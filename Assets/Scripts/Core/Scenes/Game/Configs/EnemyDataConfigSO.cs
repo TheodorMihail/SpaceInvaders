@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    [CreateAssetMenu(fileName = "EnemyDataConfig", menuName = "SpaceInvaders/Enemy Data Config")]
+    [CreateAssetMenu(fileName = "EnemyDataConfig", menuName = "SpaceInvaders/Data Config/Enemy Data Config")]
     public class EnemyDataConfigSO : ScriptableObject, IRepositoryObject
     {
         [SerializeField] private List<EnemySpaceshipConfigSO> _enemyConfigs;
