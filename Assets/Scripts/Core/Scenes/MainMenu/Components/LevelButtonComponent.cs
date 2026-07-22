@@ -1,5 +1,4 @@
 using System;
-using log4net.Core;
 using SpaceInvaders.Scenes.Game;
 using TMPro;
 using UnityEngine;
