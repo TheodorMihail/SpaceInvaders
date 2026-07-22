@@ -16,6 +16,7 @@ namespace SpaceInvaders.Project
         float GetPowerupDropChance();
         float GetTwoStarDamageMultiplier();
         int GetLevelsCount();
+        ProjectDataConfigSO GetProjectDataConfig();
     }
 
     public class RepositoryManager : Repository, IRepositoryManager
@@ -24,7 +25,8 @@ namespace SpaceInvaders.Project
             LevelsDataConfigSO levelsDataConfigSO,
             PlayerDataConfigSO playerDataConfigSO,
             EnemyDataConfigSO enemyDataConfigSO,
-            PowerupsDataConfigSO powerupsDataConfigSO)
+            PowerupsDataConfigSO powerupsDataConfigSO,
+            ProjectDataConfigSO projectDataConfigSO)
         {
             AddObjects(levelsDataConfigSO.LevelsConfigs);
             AddObjects(playerDataConfigSO.PlayerConfigs);
@@ -35,6 +37,7 @@ namespace SpaceInvaders.Project
             AddObject(playerDataConfigSO);
             AddObject(enemyDataConfigSO);
             AddObject(powerupsDataConfigSO);
+            AddObject(projectDataConfigSO);
         }
 
         public LevelConfigSO GetLevelConfig(int level)
@@ -80,6 +83,11 @@ namespace SpaceInvaders.Project
         public int GetLevelsCount()
         {
             return GetAll<LevelConfigSO>().Count();
+        }
+
+        public ProjectDataConfigSO GetProjectDataConfig()
+        {
+            return Get<ProjectDataConfigSO>(nameof(ProjectDataConfigSO));
         }
     }
 }

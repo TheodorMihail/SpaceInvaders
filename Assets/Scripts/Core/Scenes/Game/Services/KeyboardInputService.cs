@@ -1,17 +1,10 @@
 using System;
 using UnityEngine;
-using Zenject;
+using UnityEngine.InputSystem;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public interface IInputService :  ITickable
-    {
-        event Action OnShoot;
-        event Action<Vector3> OnMove;
-        event Action OnAnyKeyPress;
-    }
-
-    public class InputService : IInputService
+    public class KeyboardInputService : IInputService
     {
         public event Action OnShoot;
         public event Action<Vector3> OnMove;
@@ -26,7 +19,7 @@ namespace SpaceInvaders.Scenes.Game
 
         private void HandleAnyKeyPress()
         {
-            if (Input.anyKeyDown)
+            if (Keyboard.current != null && Keyboard.current.anyKey.wasPressedThisFrame)
             {
                 OnAnyKeyPress?.Invoke();
             }
@@ -34,24 +27,29 @@ namespace SpaceInvaders.Scenes.Game
 
         private void HandleMovementInput()
         {
+            if (Keyboard.current == null)
+            {
+                return;
+            }
+
             Vector3 direction = Vector3.zero;
 
             // Horizontal input
-            if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
+            if (Keyboard.current.leftArrowKey.isPressed || Keyboard.current.aKey.isPressed)
             {
                 direction.x = -1f;
             }
-            else if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
+            else if (Keyboard.current.rightArrowKey.isPressed || Keyboard.current.dKey.isPressed)
             {
                 direction.x = 1f;
             }
 
             // Vertical input
-            if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W))
+            if (Keyboard.current.upArrowKey.isPressed || Keyboard.current.wKey.isPressed)
             {
                 direction.z = 1f;
             }
-            else if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S))
+            else if (Keyboard.current.downArrowKey.isPressed || Keyboard.current.sKey.isPressed)
             {
                 direction.z = -1f;
             }
@@ -64,7 +62,7 @@ namespace SpaceInvaders.Scenes.Game
 
         private void HandleShootInput()
         {
-            if (Input.GetKey(KeyCode.Space))
+            if (Keyboard.current != null && Keyboard.current.spaceKey.isPressed)
             {
                 OnShoot?.Invoke();
             }

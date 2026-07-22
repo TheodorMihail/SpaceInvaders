@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using BaseArchitecture.Core;
+using SpaceInvaders.Project;
 using UnityEngine;
 using Zenject;
 
@@ -33,7 +33,15 @@ namespace SpaceInvaders.Scenes.Game
 
         private void ServicesInstall()
         {
-            Container.BindInterfacesTo<InputService>().AsSingle();
+            if (Container.Resolve<IPlatformService>().IsTouchPlatform)
+            {
+                Container.BindInterfacesTo<TouchInputService>().AsSingle();
+            }
+            else
+            {
+                Container.BindInterfacesTo<KeyboardInputService>().AsSingle();
+            }
+
             Container.BindInterfacesTo<SpawnService>().AsSingle().WithArguments(_gameContainer);
 
             Container.BindInterfacesTo<LevelCompletedCondition>().AsSingle();
