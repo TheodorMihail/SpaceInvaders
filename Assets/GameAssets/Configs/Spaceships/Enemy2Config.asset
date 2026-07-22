@@ -16,10 +16,10 @@ MonoBehaviour:
   _baseStats:
     _health: 75
     _moveSpeed: 75
-    _fireRate: 1
+    _fireRate: 1.25
     _projectileDamage: 15
     _projectileSpeed: 150
   _projectilePrefab: {fileID: 5265903246518343602, guid: 63d46c87fa8df9c41b02a10e4b06814b, type: 3}
-  _scoreReward: 10
+  _scoreReward: 15
   _enemyType: 1
   _category: 0

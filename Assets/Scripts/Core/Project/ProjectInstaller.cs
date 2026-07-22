@@ -25,7 +25,9 @@ namespace SpaceInvaders.Project
             Container.BindInterfacesTo<ProgressManager>().AsSingle();
             Container.BindInterfacesTo<RepositoryManager>().AsSingle().WithArguments(
                 _configsContainerSO.LevelsDataConfigSO, _configsContainerSO.PlayerDataConfigSO,
-                _configsContainerSO.EnemyDataConfigSO, _configsContainerSO.PowerupsDataConfigSO);
+                _configsContainerSO.EnemyDataConfigSO, _configsContainerSO.PowerupsDataConfigSO,
+                _configsContainerSO.ProjectDataConfigSO);
+            Container.BindInterfacesTo<PlatformService>().AsSingle();
         }
     }
 }

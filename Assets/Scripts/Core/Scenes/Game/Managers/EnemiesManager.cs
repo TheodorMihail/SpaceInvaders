@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using BaseArchitecture.Core;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using Zenject;
 
 namespace SpaceInvaders.Scenes.Game
@@ -108,7 +109,7 @@ namespace SpaceInvaders.Scenes.Game
         public void Tick()
         {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            if (Input.GetKeyDown(KeyCode.F1))
+            if (Keyboard.current != null && Keyboard.current.f1Key.wasPressedThisFrame)
             {
                 this.LogWarning("Debug: Destroying all enemies");
 

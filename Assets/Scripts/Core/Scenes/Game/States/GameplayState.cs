@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BaseArchitecture.Core;
 using Cysharp.Threading.Tasks;
+using SpaceInvaders.Project;
 using Zenject;
 using static SpaceInvaders.Scenes.Game.GameStateMachine;
 
@@ -17,10 +18,13 @@ namespace SpaceInvaders.Scenes.Game
         [Inject] private readonly IList<IGameEndListener> _gameEndListeners;
         [Inject] private readonly IList<IGameInitializeListener> _gameInitializeListeners;
         [Inject] private readonly IList<IGameEndCondition> _gameEndConditions;
+        [Inject] private readonly IPlatformService _platformService;
 
         public override void OnEnter(params object[] paramsList)
         {
             base.OnEnter();
+
+            _platformService.ApplyFrameRateCap();
 
             paramsList.TryGetParam(out int levelNumber, 1);
             StartGameplay(levelNumber).Forget();
@@ -41,6 +45,12 @@ namespace SpaceInvaders.Scenes.Game
         {
             _uiManager.ShowHUD<GameplayHUD, GameplayHUD.GameplayHUDParams>(new GameplayHUD.GameplayHUDParams { LevelNumber = levelNumber });
             _uiManager.ShowHUD<GameAnnouncerHUD>();
+
+            if (_platformService.IsTouchPlatform)
+            {
+                _uiManager.ShowHUD<MobileControlsHUD>();
+            }
+
             await _uiManager.ShowScreen<GameStartScreen>();
         }
 

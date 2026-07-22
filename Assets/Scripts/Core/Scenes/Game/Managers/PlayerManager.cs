@@ -2,6 +2,7 @@ using System;
 using BaseArchitecture.Core;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using Zenject;
 
 namespace SpaceInvaders.Scenes.Game
@@ -75,7 +76,7 @@ namespace SpaceInvaders.Scenes.Game
         public void Tick()
         {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            if (Input.GetKeyDown(KeyCode.F2))
+            if (Keyboard.current != null && Keyboard.current.f2Key.wasPressedThisFrame)
             {
                 this.LogWarning("Debug: Destroying player");
                 _playerInstance.TakeDamage(_playerInstance.Stats.CurrentHealth);

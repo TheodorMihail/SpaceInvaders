@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    [AddressablePath("Screens/GameAnnouncerHUDView")]
+    [AddressablePath("HUD/GameAnnouncerHUDView")]
     public class GameAnnouncerHUDView : View
     {
         [SerializeField] private CanvasGroup _textCanvasGroup;
