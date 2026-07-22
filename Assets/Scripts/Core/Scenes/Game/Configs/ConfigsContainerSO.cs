@@ -1,3 +1,4 @@
+using SpaceInvaders.Project;
 using UnityEngine;
 
 namespace SpaceInvaders.Scenes.Game
@@ -10,10 +11,12 @@ namespace SpaceInvaders.Scenes.Game
         [SerializeField] private PlayerDataConfigSO _playerDataConfigSO;
         [SerializeField] private EnemyDataConfigSO _enemyDataConfigSO;
         [SerializeField] private PowerupsDataConfigSO _powerupsDataConfigSO;
+        [SerializeField] private ProjectDataConfigSO _projectSettingsConfigSO;
 
         public LevelsDataConfigSO LevelsDataConfigSO => _levelsDataConfigSO;
         public PlayerDataConfigSO PlayerDataConfigSO => _playerDataConfigSO;
         public EnemyDataConfigSO EnemyDataConfigSO => _enemyDataConfigSO;
         public PowerupsDataConfigSO PowerupsDataConfigSO => _powerupsDataConfigSO;
+        public ProjectDataConfigSO ProjectDataConfigSO => _projectSettingsConfigSO;
     }
 }

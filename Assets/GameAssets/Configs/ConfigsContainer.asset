@@ -11,8 +11,9 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cf8a6489e66d8e646bfcbb71dc7059e4, type: 3}
   m_Name: ConfigsContainer
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   _levelsDataConfigSO: {fileID: 11400000, guid: 9d68b5ea320a39502a3bef1fd9acc0c7, type: 2}
   _playerDataConfigSO: {fileID: 11400000, guid: ce7776ebdea989b2dfa7f3b4d0a454fe, type: 2}
   _enemyDataConfigSO: {fileID: 11400000, guid: b84b05afa73d273b73e93d43a709ef90, type: 2}
   _powerupsDataConfigSO: {fileID: 11400000, guid: 47bfc17fc4f333030c437cf1383a42ab, type: 2}
+  _projectSettingsConfigSO: {fileID: 11400000, guid: cedfeb2e36062e944a54d57b5fa21f77, type: 2}

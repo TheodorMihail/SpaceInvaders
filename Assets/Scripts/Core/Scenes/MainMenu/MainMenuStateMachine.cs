@@ -29,14 +29,14 @@ namespace SpaceInvaders.Scenes.MainMenu
                 {
                     case MainMenuStateIds.Menu:
                     
-                        if (finishedState.paramsList.TryGetParam<MenuScreen.ResultType>(out var menuResult))
+                        if (finishedState.paramsList.TryGetParam<MenuScreen.MenuScreenResult>(out var menuResult))
                         {
-                            if(menuResult == MenuScreen.ResultType.QuitGame)
+                            if(menuResult.Result == MenuScreen.ResultType.QuitGame)
                             {
 #if UNITY_EDITOR
                                 UnityEditor.EditorApplication.isPlaying = false;
 #else
-                                Application.Quit();
+                                UnityEngine.Application.Quit();
 #endif
                             }
                         }

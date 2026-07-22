@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    [CreateAssetMenu(fileName = "LevelsDataConfig", menuName = "SpaceInvaders/Levels Data Config")]
+    [CreateAssetMenu(fileName = "LevelsDataConfig", menuName = "SpaceInvaders/Data Config/Levels Data Config")]
     public class LevelsDataConfigSO : ScriptableObject, IRepositoryObject
     {
         [Header("Levels")]

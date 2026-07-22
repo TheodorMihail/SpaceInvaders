@@ -54,7 +54,8 @@ namespace SpaceInvaders.Tests
                 CreateLevelsDataConfig(_levelConfigs),
                 CreatePlayerDataConfig(_playerConfigs),
                 CreateEnemyDataConfig(_enemyConfigs),
-                CreatePowerupsDataConfig(_powerupConfigs, 0f));
+                CreatePowerupsDataConfig(_powerupConfigs, 0f),
+                CreateProjectSettingsConfig());
         }
 
         private static LevelsDataConfigSO CreateLevelsDataConfig(List<LevelConfigSO> levelConfigs)
@@ -84,6 +85,11 @@ namespace SpaceInvaders.Tests
             config.PowerupConfigs.Returns(powerupConfigs);
             config.GlobalPowerupDropChance.Returns(globalPowerupDropChance);
             return config;
+        }
+
+        private static ProjectDataConfigSO CreateProjectSettingsConfig()
+        {
+            return Substitute.For<ProjectDataConfigSO>();
         }
 
         [TearDown]
@@ -154,7 +160,8 @@ namespace SpaceInvaders.Tests
                 CreateLevelsDataConfig(emptyLevels),
                 CreatePlayerDataConfig(emptyPlayers),
                 CreateEnemyDataConfig(emptyEnemies),
-                CreatePowerupsDataConfig(emptyPowerups, 0f));
+                CreatePowerupsDataConfig(emptyPowerups, 0f),
+                CreateProjectSettingsConfig());
 
             Assert.AreEqual(0, manager.GetLevelsCount());
         }
