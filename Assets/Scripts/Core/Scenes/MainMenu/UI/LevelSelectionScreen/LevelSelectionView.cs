@@ -4,6 +4,7 @@ using BaseArchitecture.Core;
 using SpaceInvaders.Project;
 using SpaceInvaders.Scenes.Game;
 using UnityEngine;
+using UnityEngine.UI;
 using Zenject;
 
 namespace SpaceInvaders.Scenes.MainMenu
@@ -13,10 +14,17 @@ namespace SpaceInvaders.Scenes.MainMenu
     {
         [SerializeField] private LevelButtonComponent _levelButtonPrefab;
         [SerializeField] private Transform _levelButtonsContainer;
+        [SerializeField] private Button _backButton;
 
         [Inject] private readonly IProgressManager _progressManager;
 
         public event Action<int> OnLevelSelectedClicked;
+        public event Action OnBackClicked;
+
+        private void Awake()
+        {
+            _backButton.onClick.AddListener(() => OnBackClicked?.Invoke());
+        }
 
         public void SetupLevels(IReadOnlyList<LevelConfigSO> levels)
         {

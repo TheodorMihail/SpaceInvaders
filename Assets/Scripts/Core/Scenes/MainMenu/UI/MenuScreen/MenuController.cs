@@ -13,12 +13,14 @@ namespace SpaceInvaders.Scenes.MainMenu
             base.Initialize();
             _view.OnPlayGameButtonClicked += HandlePlayGameButtonClicked;
             _view.OnQuitGameButtonClicked += HandleQuitGameButtonClicked;
+            _view.OnTalentsButtonClicked += HandleTalentsButtonClicked;
         }
 
         public override void Dispose()
         {
             _view.OnPlayGameButtonClicked -= HandlePlayGameButtonClicked;
             _view.OnQuitGameButtonClicked -= HandleQuitGameButtonClicked;
+            _view.OnTalentsButtonClicked -= HandleTalentsButtonClicked;
             base.Dispose();
         }
 
@@ -35,6 +37,14 @@ namespace SpaceInvaders.Scenes.MainMenu
             CloseScreenWithResult(new MenuScreen.MenuScreenResult
             {
                 Result = MenuScreen.ResultType.QuitGame
+            });
+        }
+
+        private void HandleTalentsButtonClicked()
+        {
+            CloseScreenWithResult(new MenuScreen.MenuScreenResult
+            {
+                Result = MenuScreen.ResultType.OpenTalentTree
             });
         }
     }

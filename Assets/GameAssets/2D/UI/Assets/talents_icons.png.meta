@@ -1,17 +1,7 @@
 fileFormatVersion: 2
-guid: da36750ec8adf9a45a55f8ac986760ce
-AssetOrigin:
-  serializedVersion: 1
-  productId: 298577
-  packageName: Space Game GUI kit
-  packageVersion: 1.1
-  assetPath: Assets/Space_Exploration_GUI_Kit/Grid_Components/Large/locked-level-overlay-large.png
-  uploadId: 937030
+guid: 5be90912f33c39649b363237f4946af9
 TextureImporter:
-  internalIDToNameTable:
-  - first:
-      213: 5597286104633953997
-    second: locked-level-overlay-large_0
+  internalIDToNameTable: []
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -49,7 +39,7 @@ TextureImporter:
     mipBias: 0
     wrapU: 1
     wrapV: 1
-    wrapW: 1
+    wrapW: 0
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
@@ -79,7 +69,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 1024
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
@@ -120,23 +110,111 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: locked-level-overlay-large_0
+      name: talents_icons_damage
       rect:
         serializedVersion: 2
-        x: 1
-        y: 3
-        width: 238
-        height: 250
+        x: 195
+        y: 278
+        width: 190
+        height: 190
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 15, y: 15, z: 15, w: 15}
+      border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: dcecfe47e0e8dad40800000000000000
-      internalID: 5597286104633953997
+      spriteID: a1712bc33e65e7a43a0ddf2105d5e445
+      internalID: 684007958
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: talents_icons_fire_rate
+      rect:
+        serializedVersion: 2
+        x: 418
+        y: 277
+        width: 190
+        height: 190
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b9b1957e54558994e836634d5d3da424
+      internalID: -1728361991
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: talents_icons_health
+      rect:
+        serializedVersion: 2
+        x: 638
+        y: 277
+        width: 190
+        height: 190
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 892d13fbb44c49446962db7e4912292e
+      internalID: 396909145
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: talents_icons_move_speed
+      rect:
+        serializedVersion: 2
+        x: 309
+        y: 62
+        width: 190
+        height: 190
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 58e9a7ea2c984264ba1d5d1773230395
+      internalID: -270264277
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: talents_icons_projectile_speed
+      rect:
+        serializedVersion: 2
+        x: 524
+        y: 62
+        width: 190
+        height: 190
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 807188b3102a01d479f005d729aa5eb5
+      internalID: -410462008
       vertices: []
       indices: 
       edges: []
@@ -145,7 +223,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: ab27ab95b5c914948bd428fa1b2563df
     internalID: 0
     vertices: []
     indices: 
@@ -155,7 +233,11 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      locked-level-overlay-large_0: 5597286104633953997
+      talents_icons_damage: 684007958
+      talents_icons_fire_rate: -1728361991
+      talents_icons_health: 396909145
+      talents_icons_move_speed: -270264277
+      talents_icons_projectile_speed: -410462008
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -21,6 +21,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Screen
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 151abcf2059370b468f815a88d545c76
+    m_Address: Screens/TalentTreeScreenView
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Screen
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 77a40495b69721c4dad04db18bd9b915
     m_Address: Screens/SplashScreenView
     m_ReadOnly: 0
