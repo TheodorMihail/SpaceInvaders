@@ -31,7 +31,7 @@ namespace SpaceInvaders.Project
 
         public int GetTalentLevel(TalentTypes type)
         {
-            return GetTalentEntry(type)?.Level ?? 0;
+            return GetTalent(type)?.Level ?? 0;
         }
 
         public bool IsMaxLevel(TalentTypes type)
@@ -98,14 +98,14 @@ namespace SpaceInvaders.Project
             stats.RefillHealth();
         }
 
-        private TalentSaveEntry GetTalentEntry(TalentTypes type)
+        private TalentSaveEntry GetTalent(TalentTypes type)
         {
             return _data.Talents.Find(t => t.TalentType == type.ToString());
         }
 
         private TalentSaveEntry GetOrCreateTalentEntry(TalentTypes type)
         {
-            TalentSaveEntry entry = GetTalentEntry(type);
+            TalentSaveEntry entry = GetTalent(type);
             if (entry == null)
             {
                 entry = new TalentSaveEntry { TalentType = type.ToString() };

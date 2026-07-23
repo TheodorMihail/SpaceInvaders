@@ -16,6 +16,7 @@ namespace SpaceInvaders.Tests
         private List<PlayerSpaceshipConfigSO> _playerConfigs;
         private List<EnemySpaceshipConfigSO> _enemyConfigs;
         private List<PowerupConfigSO> _powerupConfigs;
+        private List<TalentConfigSO> _talentConfigs;
 
         private static LevelConfigSO CreateMockLevelConfig(int levelIndex)
         {
@@ -49,13 +50,15 @@ namespace SpaceInvaders.Tests
             };
 
             _powerupConfigs = new List<PowerupConfigSO>();
+            _talentConfigs = new List<TalentConfigSO>();
 
             _repositoryManager = new RepositoryManager(
                 CreateLevelsDataConfig(_levelConfigs),
                 CreatePlayerDataConfig(_playerConfigs),
                 CreateEnemyDataConfig(_enemyConfigs),
                 CreatePowerupsDataConfig(_powerupConfigs, 0f),
-                CreateProjectSettingsConfig());
+                CreateProjectSettingsConfig(),
+                CreateTalentsDataConfig(_talentConfigs));
         }
 
         private static LevelsDataConfigSO CreateLevelsDataConfig(List<LevelConfigSO> levelConfigs)
@@ -90,6 +93,13 @@ namespace SpaceInvaders.Tests
         private static ProjectDataConfigSO CreateProjectSettingsConfig()
         {
             return Substitute.For<ProjectDataConfigSO>();
+        }
+
+        private static TalentsDataConfigSO CreateTalentsDataConfig(List<TalentConfigSO> talentConfigs)
+        {
+            var config = Substitute.For<TalentsDataConfigSO>();
+            config.TalentConfigs.Returns(talentConfigs);
+            return config;
         }
 
         [TearDown]
@@ -155,13 +165,15 @@ namespace SpaceInvaders.Tests
             var emptyPlayers = new List<PlayerSpaceshipConfigSO>();
             var emptyEnemies = new List<EnemySpaceshipConfigSO>();
             var emptyPowerups = new List<PowerupConfigSO>();
+            var emptyTalents = new List<TalentConfigSO>();
 
             var manager = new RepositoryManager(
                 CreateLevelsDataConfig(emptyLevels),
                 CreatePlayerDataConfig(emptyPlayers),
                 CreateEnemyDataConfig(emptyEnemies),
                 CreatePowerupsDataConfig(emptyPowerups, 0f),
-                CreateProjectSettingsConfig());
+                CreateProjectSettingsConfig(),
+                CreateTalentsDataConfig(emptyTalents));
 
             Assert.AreEqual(0, manager.GetLevelsCount());
         }

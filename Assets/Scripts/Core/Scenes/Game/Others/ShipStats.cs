@@ -37,11 +37,13 @@ namespace SpaceInvaders.Scenes.Game
         public int ExtraShotCount { get; private set; }
         public float SpreadAngleDegrees { get; private set; }
 
+        private float _healthMultiplierBonus;
         private float _damageMultiplierBonus;
         private float _fireRateMultiplierBonus;
         private float _moveSpeedMultiplierBonus;
         private float _projectileSpeedMultiplierBonus;
 
+        public int CurrentMaxHealth => Mathf.RoundToInt(BaseHealth * (1f + _healthMultiplierBonus));
         public float CurrentMoveSpeed => BaseMoveSpeed * (1f + _moveSpeedMultiplierBonus);
         public float CurrentFireRate => BaseFireRate * (1f + _fireRateMultiplierBonus);
         public int CurrentProjectileDamage => Mathf.RoundToInt(BaseProjectileDamage * (1f + _damageMultiplierBonus));
@@ -50,25 +52,36 @@ namespace SpaceInvaders.Scenes.Game
         public ShipStats(ShipBaseStats baseStats)
         {
             _baseStats = baseStats;
-            CurrentHealth = baseStats.BaseHealth;
+            CurrentHealth = CurrentMaxHealth;
         }
 
         public void ApplyDamage(int amount)
         {
             CumulativeDamageTaken += amount;
             CurrentHealth = Mathf.Max(CurrentHealth - amount, 0);
-            HealthChanged?.Invoke(CurrentHealth, BaseHealth);
+            HealthChanged?.Invoke(CurrentHealth, CurrentMaxHealth);
         }
 
         public void Heal(int amount)
         {
-            CurrentHealth = Mathf.Min(CurrentHealth + amount, BaseHealth);
-            HealthChanged?.Invoke(CurrentHealth, BaseHealth);
+            CurrentHealth = Mathf.Min(CurrentHealth + amount, CurrentMaxHealth);
+            HealthChanged?.Invoke(CurrentHealth, CurrentMaxHealth);
+        }
+
+        public void RefillHealth()
+        {
+            CurrentHealth = CurrentMaxHealth;
+            HealthChanged?.Invoke(CurrentHealth, CurrentMaxHealth);
         }
 
         public void SetInvincible(bool value)
         {
             IsInvincible = value;
+        }
+
+        public void UpdateHealthMultiplier(float delta)
+        {
+            _healthMultiplierBonus += delta;
         }
 
         public void UpdateDamageMultiplier(float delta)

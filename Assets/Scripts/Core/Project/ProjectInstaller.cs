@@ -23,10 +23,12 @@ namespace SpaceInvaders.Project
             Container.BindInterfacesTo<AddressablesManager>().AsSingle();
             Container.BindInterfacesTo<PersistenceManager>().AsSingle();
             Container.BindInterfacesTo<ProgressManager>().AsSingle();
+            Container.BindInterfacesTo<CurrencyManager>().AsSingle();
+            Container.BindInterfacesTo<TalentManager>().AsSingle();
             Container.BindInterfacesTo<RepositoryManager>().AsSingle().WithArguments(
                 _configsContainerSO.LevelsDataConfigSO, _configsContainerSO.PlayerDataConfigSO,
                 _configsContainerSO.EnemyDataConfigSO, _configsContainerSO.PowerupsDataConfigSO,
-                _configsContainerSO.ProjectDataConfigSO);
+                _configsContainerSO.ProjectDataConfigSO, _configsContainerSO.TalentsDataConfigSO);
             Container.BindInterfacesTo<PlatformService>().AsSingle();
         }
     }

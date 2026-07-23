@@ -108,4 +108,16 @@ namespace SpaceInvaders.Scenes.Game
             Type = type;
         }
     }
+
+    public readonly struct ScoreChangedMessage : IMessageObject
+    {
+        public int TotalScore { get; }
+        public int Delta { get; }
+
+        public ScoreChangedMessage(int totalScore, int delta)
+        {
+            TotalScore = totalScore;
+            Delta = delta;
+        }
+    }
 }

@@ -43,6 +43,7 @@ namespace SpaceInvaders.Scenes.Game
             }
 
             Container.BindInterfacesTo<SpawnService>().AsSingle().WithArguments(_gameContainer);
+            Container.BindInterfacesTo<ScoreService>().AsSingle();
 
             Container.BindInterfacesTo<LevelCompletedCondition>().AsSingle();
             Container.BindInterfacesTo<PlayerDestroyedCondition>().AsSingle();
