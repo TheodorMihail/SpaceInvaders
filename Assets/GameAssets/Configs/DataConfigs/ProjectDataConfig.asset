@@ -12,4 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ea7eaca8f7f5484fa68ebf7a6eb10bb, type: 3}
   m_Name: ProjectDataConfig
   m_EditorClassIdentifier: 
-  _editorForceTouchPlatform: 1
+  _editorForceTouchPlatform: 0
+  _debugAddCurrencyAmount: 9999
+  _maxFrameRate: 60
