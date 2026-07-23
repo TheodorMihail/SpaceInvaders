@@ -16,7 +16,7 @@ namespace SpaceInvaders.Scenes.MainMenu
         [SerializeField] private Transform _levelButtonsContainer;
         [SerializeField] private Button _backButton;
 
-        [Inject] private readonly IProgressManager _progressManager;
+        [Inject] private readonly ILevelManager _levelManager;
 
         public event Action<int> OnLevelSelectedClicked;
         public event Action OnBackClicked;
@@ -31,7 +31,7 @@ namespace SpaceInvaders.Scenes.MainMenu
             foreach(var level in levels)
             {
                 var button = Instantiate(_levelButtonPrefab, _levelButtonsContainer);
-                button.Setup(level, !_progressManager.IsLevelUnlocked(level.Index), _progressManager.GetLevelStars(level.Index));
+                button.Setup(level, !_levelManager.IsLevelUnlocked(level.Index), _levelManager.GetLevelStars(level.Index));
                 button.OnLevelButtonClicked += OnLevelSelectedClicked;
             }
         }

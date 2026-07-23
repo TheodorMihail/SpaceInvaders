@@ -16,17 +16,15 @@ namespace SpaceInvaders.Project
 
     public class TalentManager : ITalentManager
     {
-        private const string SaveKey = "TalentProgress";
-
         [Inject] private readonly IPersistenceManager _persistenceManager;
         [Inject] private readonly IRepositoryManager _repositoryManager;
         [Inject] private readonly ICurrencyManager _currencyManager;
 
-        private TalentSaveData _data;
+        private TalentsSaveData _data;
 
         public void Initialize()
         {
-            _data = _persistenceManager.Load<TalentSaveData>(SaveKey);
+            _data = _persistenceManager.Load<TalentsSaveData>(TalentsSaveData.SaveKey);
         }
 
         public int GetTalentLevel(TalentTypes type)
@@ -117,7 +115,7 @@ namespace SpaceInvaders.Project
 
         private void SaveData()
         {
-            _persistenceManager.Save(SaveKey, _data);
+            _persistenceManager.Save(TalentsSaveData.SaveKey, _data);
         }
     }
 }

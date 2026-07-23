@@ -33,40 +33,34 @@ namespace SpaceInvaders.Scenes.Game
         }
     }
 
-    public interface ILevelManager : IInitializable, IDisposable, IGameStartListener
+    public interface ILevelSessionService : IInitializable, IDisposable, IGameStartListener
     {
         public int CurrentLevelNumber { get; }
-        public int MaxLevelNumber { get; }
-
-        public int CurrentWaveNumber { get; }
-        public int MaxWaveNumber { get; }
     }
 
-    public class LevelManager : ILevelManager
+    public class LevelSessionService : ILevelSessionService
     {
         [Inject] private readonly IRepositoryManager _repositoryManager;
         [Inject] private readonly IEnemiesManager _enemiesManager;
         [Inject] private readonly IPlayerManager _playerManager;
-        [Inject] private readonly IProgressManager _progressManager;
+        [Inject] private readonly ILevelManager _levelManager;
         [Inject] private readonly IMessageBus _messageBus;
 
         public int CurrentLevelNumber { get; private set; }
-        public int MaxLevelNumber { get; private set; }
-        
-        public int CurrentWaveNumber { get; private set; }
-        public int MaxWaveNumber { get; private set; }
 
+        private int _currentWaveNumber;
         private LevelConfigSO _currentLevelConfigSo;
 
         public void Initialize()
         {
-            MaxLevelNumber = _repositoryManager.GetLevelsCount();
             _messageBus.Subscribe<AllEnemiesDestroyedMessage>(OnAllEnemiesDestroyedCallback);
+            _levelManager.RegisterSession(this);
         }
 
         public void Dispose()
         {
             _messageBus.Unsubscribe<AllEnemiesDestroyedMessage>(OnAllEnemiesDestroyedCallback);
+            _levelManager.UnregisterSession(this);
         }
 
         public UniTask GameStart(int levelNumber)
@@ -84,15 +78,14 @@ namespace SpaceInvaders.Scenes.Game
 
         private void StartLevel(LevelConfigSO levelConfig)
         {
-            if (CurrentLevelNumber > MaxLevelNumber)
+            if (CurrentLevelNumber > _levelManager.MaxLevelNumber)
             {
-                this.LogError($"Level {CurrentLevelNumber} is out of range! Max levels: {MaxLevelNumber}");
+                this.LogError($"Level {CurrentLevelNumber} is out of range! Max levels: {_levelManager.MaxLevelNumber}");
                 return;
             }
 
             _currentLevelConfigSo = levelConfig;
-            CurrentWaveNumber = 0;
-            MaxWaveNumber = _currentLevelConfigSo.WavesConfigs.Count;
+            _currentWaveNumber = 0;
 
             _messageBus.Publish(new LevelStartedMessage(CurrentLevelNumber, _currentLevelConfigSo.LevelName));
             StartNextWave();
@@ -100,19 +93,19 @@ namespace SpaceInvaders.Scenes.Game
 
         private void StartNextWave()
         {
-            if (CurrentWaveNumber >= _currentLevelConfigSo.WavesConfigs.Count)
+            if (_currentWaveNumber >= _currentLevelConfigSo.WavesConfigs.Count)
             {
                 AwardLevelStars();
                 _messageBus.Publish(new LevelCompletedMessage(CurrentLevelNumber));
                 return;
             }
 
-            WaveConfigDTO wave = _currentLevelConfigSo.WavesConfigs[CurrentWaveNumber];
+            WaveConfigDTO wave = _currentLevelConfigSo.WavesConfigs[_currentWaveNumber];
             _enemiesManager.SpawnEnemies(wave).Forget();
-            CurrentWaveNumber++;
+            _currentWaveNumber++;
 
-            _messageBus.Publish(new WaveStartedMessage(CurrentWaveNumber, WaveContainsBoss(wave)));
-            this.Log($"Wave {CurrentWaveNumber} started!");
+            _messageBus.Publish(new WaveStartedMessage(_currentWaveNumber, WaveContainsBoss(wave)));
+            this.Log($"Wave {_currentWaveNumber} started!");
         }
 
         private bool WaveContainsBoss(WaveConfigDTO wave)
@@ -139,7 +132,7 @@ namespace SpaceInvaders.Scenes.Game
             int stars = CalculateStars(stats.CumulativeDamageTaken, _currentLevelConfigSo.ThreeStarMaxDamage,
                     _repositoryManager.GetTwoStarDamageMultiplier());
 
-            _progressManager.RecordLevelResult(CurrentLevelNumber, stars);
+            _levelManager.RecordLevelResult(CurrentLevelNumber, stars);
         }
 
         private static int CalculateStars(int damageTaken, int threeStarMaxDamage, float twoStarDamageMultiplier)

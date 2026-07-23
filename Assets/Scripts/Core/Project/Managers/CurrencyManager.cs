@@ -13,18 +13,16 @@ namespace SpaceInvaders.Project
 
     public class CurrencyManager : ICurrencyManager, ITickable
     {
-        private const string SaveKey = "PlayerCurrency";
-
         [Inject] private readonly IPersistenceManager _persistenceManager;
         [Inject] private readonly IRepositoryManager _repositoryManager;
 
-        private CurrencyData _data;
+        private CurrencySaveData _data;
 
         public int Currency => _data.Amount;
 
         public void Initialize()
         {
-            _data = _persistenceManager.Load<CurrencyData>(SaveKey);
+            _data = _persistenceManager.Load<CurrencySaveData>(CurrencySaveData.SaveKey);
         }
 
         public void AddCurrency(int amount)
@@ -47,7 +45,7 @@ namespace SpaceInvaders.Project
 
         private void SaveData()
         {
-            _persistenceManager.Save(SaveKey, _data);
+            _persistenceManager.Save(CurrencySaveData.SaveKey, _data);
         }
 
         #region Debugging
