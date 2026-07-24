@@ -18,16 +18,21 @@ namespace SpaceInvaders.Project
 
         private void ManagersInstall()
         {
+            Container.BindInterfacesTo<MessageBus>().AsSingle();
             Container.BindInterfacesTo<CustomFactory>().AsSingle();
             Container.BindInterfacesTo<ScenesManager>().AsSingle();
             Container.BindInterfacesTo<UIManager>().AsSingle();
             Container.BindInterfacesTo<AddressablesManager>().AsSingle();
             Container.BindInterfacesTo<PersistenceManager>().AsSingle();
-            Container.BindInterfacesTo<RepositoryManager>().AsSingle().WithArguments(
+            Container.BindInterfacesTo<RepositoryManager>().AsSingle().WithArguments(new object[]
+            {
                 _configsContainerSO.LevelsDataConfigSO, _configsContainerSO.PlayerDataConfigSO,
                 _configsContainerSO.EnemyDataConfigSO, _configsContainerSO.PowerupsDataConfigSO,
-                _configsContainerSO.ProjectDataConfigSO, _configsContainerSO.TalentsDataConfigSO);
+                _configsContainerSO.ProjectDataConfigSO, _configsContainerSO.TalentsDataConfigSO,
+                _configsContainerSO.SoundsDataConfigSO
+            });
 
+            Container.BindInterfacesTo<SoundsManager>().AsSingle();
             Container.BindInterfacesTo<LevelManager>().AsSingle();
             Container.BindInterfacesTo<CurrencyManager>().AsSingle();
             Container.BindInterfacesTo<TalentManager>().AsSingle();
@@ -36,6 +41,7 @@ namespace SpaceInvaders.Project
         private void ServicesInstall()
         {
             Container.BindInterfacesTo<PlatformService>().AsSingle();
+            Container.BindInterfacesTo<SoundsService>().AsSingle();
         }
     }
 }

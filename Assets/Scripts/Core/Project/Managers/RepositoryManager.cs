@@ -19,6 +19,7 @@ namespace SpaceInvaders.Project
         ProjectDataConfigSO GetProjectDataConfig();
         TalentConfigSO GetTalentConfig(TalentTypes talentType);
         IReadOnlyList<TalentConfigSO> GetAllTalentConfigs();
+        SoundConfigSO GetSoundConfig(SoundTypes soundType);
     }
 
     public class RepositoryManager : Repository, IRepositoryManager
@@ -29,13 +30,15 @@ namespace SpaceInvaders.Project
             EnemyDataConfigSO enemyDataConfigSO,
             PowerupsDataConfigSO powerupsDataConfigSO,
             ProjectDataConfigSO projectDataConfigSO,
-            TalentsDataConfigSO talentsDataConfigSO)
+            TalentsDataConfigSO talentsDataConfigSO,
+            SoundsDataConfigSO soundsDataConfigSO)
         {
             AddObjects(levelsDataConfigSO.LevelsConfigs);
             AddObjects(playerDataConfigSO.PlayerConfigs);
             AddObjects(enemyDataConfigSO.EnemyConfigs);
             AddObjects(powerupsDataConfigSO.PowerupConfigs);
             AddObjects(talentsDataConfigSO.TalentConfigs);
+            AddObjects(soundsDataConfigSO.SoundConfigs);
 
             AddObject(levelsDataConfigSO);
             AddObject(playerDataConfigSO);
@@ -43,6 +46,7 @@ namespace SpaceInvaders.Project
             AddObject(powerupsDataConfigSO);
             AddObject(projectDataConfigSO);
             AddObject(talentsDataConfigSO);
+            AddObject(soundsDataConfigSO);
         }
 
         public LevelConfigSO GetLevelConfig(int level)
@@ -103,6 +107,11 @@ namespace SpaceInvaders.Project
         public IReadOnlyList<TalentConfigSO> GetAllTalentConfigs()
         {
             return GetAll<TalentConfigSO>().ToArray();
+        }
+
+        public SoundConfigSO GetSoundConfig(SoundTypes soundType)
+        {
+            return Get<SoundConfigSO>(soundType.ToString());
         }
     }
 }
