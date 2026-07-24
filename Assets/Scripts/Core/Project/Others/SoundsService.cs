@@ -7,7 +7,7 @@ using Zenject;
 
 namespace SpaceInvaders.Project
 {
-    public interface ISoundsService : IInitializable, IDisposable, IGameStartListener, IGameEndListener, IMenuEnterListener
+    public interface ISoundsService : IInitializable, IDisposable, IGameInitializeListener, IGameEndListener, IMenuEnterListener
     {
         void PlaySound(SoundTypes type);
         bool IsPlaying(SoundTypes type);
@@ -54,7 +54,7 @@ namespace SpaceInvaders.Project
             return UniTask.CompletedTask;
         }
 
-        public UniTask GameStart(int levelNumber)
+        public UniTask GameInitialize()
         {
             PlaySound(SoundTypes.GameplayMusic);
             return UniTask.CompletedTask;
