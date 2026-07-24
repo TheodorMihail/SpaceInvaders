@@ -20,6 +20,7 @@ namespace SpaceInvaders.Scenes.MainMenu
 
         [Inject] private readonly ITalentManager _talentManager;
         [Inject] private readonly ICurrencyManager _currencyManager;
+        [Inject] private readonly ICustomFactory _factory;
 
         private readonly Dictionary<TalentTypes, TalentButtonComponent> _talentButtons = new();
         private readonly Dictionary<TalentTypes, TalentConfigSO> _talentConfigs = new();
@@ -44,7 +45,7 @@ namespace SpaceInvaders.Scenes.MainMenu
 
             foreach (var talent in talents)
             {
-                var button = Instantiate(_talentButtonPrefab, _talentButtonsContainer);
+                var button = _factory.CreateFromPrefab(_talentButtonPrefab, _talentButtonsContainer);
                 button.OnTalentButtonClicked += OnTalentPurchaseClicked;
 
                 _talentButtons[talent.TalentType] = button;

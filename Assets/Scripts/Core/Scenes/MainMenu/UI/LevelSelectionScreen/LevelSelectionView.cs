@@ -17,6 +17,7 @@ namespace SpaceInvaders.Scenes.MainMenu
         [SerializeField] private Button _backButton;
 
         [Inject] private readonly ILevelManager _levelManager;
+        [Inject] private readonly ICustomFactory _factory;
 
         public event Action<int> OnLevelSelectedClicked;
         public event Action OnBackClicked;
@@ -30,7 +31,7 @@ namespace SpaceInvaders.Scenes.MainMenu
         {
             foreach(var level in levels)
             {
-                var button = Instantiate(_levelButtonPrefab, _levelButtonsContainer);
+                var button = _factory.CreateFromPrefab(_levelButtonPrefab, _levelButtonsContainer);
                 button.Setup(level, !_levelManager.IsLevelUnlocked(level.Index), _levelManager.GetLevelStars(level.Index));
                 button.OnLevelButtonClicked += OnLevelSelectedClicked;
             }

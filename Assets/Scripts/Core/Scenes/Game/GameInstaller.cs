@@ -52,7 +52,6 @@ namespace SpaceInvaders.Scenes.Game
 
         private void ManagersInstall()
         {
-            Container.BindInterfacesTo<MessageBus>().AsSingle();
             Container.BindInterfacesTo<ObjectPooling>().AsSingle().WithArguments(_objectPoolingContainer);
             Container.BindInterfacesTo<CameraManager>().AsSingle();
             Container.BindInterfacesTo<PlayerManager>().AsSingle();

@@ -36,6 +36,8 @@ namespace SpaceInvaders.Scenes.Game
             _playerInstance = await _spawnService.SpawnPlayer();
             _talentManager.ApplyTalentBonuses(_playerInstance.Stats);
             _playerInstance.OnDestroyed += OnDestroyedCallback;
+            _playerInstance.OnShotFired += OnShotFiredCallback;
+            _playerInstance.OnDamaged += OnDamagedCallback;
         }
 
         public UniTask GameStart(int levelNumber)
@@ -49,7 +51,7 @@ namespace SpaceInvaders.Scenes.Game
             DespawnPlayer();
             return UniTask.CompletedTask;
         }
-        
+
         public void Dispose()
         {
             DespawnPlayer();
@@ -62,6 +64,16 @@ namespace SpaceInvaders.Scenes.Game
             _messageBus.Publish(new PlayerDestroyedMessage());
         }
 
+        private void OnShotFiredCallback(ISpaceship spaceship)
+        {
+            _messageBus.Publish(new ShipShotFiredMessage(spaceship.Position));
+        }
+
+        private void OnDamagedCallback(ISpaceship spaceship, int damage)
+        {
+            _messageBus.Publish(new ShipDamagedMessage(spaceship.Stats.CurrentHealth, damage));
+        }
+
         private void DespawnPlayer()
         {
             if (_playerInstance == null)
@@ -70,6 +82,8 @@ namespace SpaceInvaders.Scenes.Game
             }
 
             _playerInstance.OnDestroyed -= OnDestroyedCallback;
+            _playerInstance.OnShotFired -= OnShotFiredCallback;
+            _playerInstance.OnDamaged -= OnDamagedCallback;
             _spawnService.Despawn(_playerInstance as PlayerSpaceshipBehaviourComponent);
             _playerInstance = null;
         }

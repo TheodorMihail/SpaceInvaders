@@ -18,3 +18,4 @@ MonoBehaviour:
   _powerupsDataConfigSO: {fileID: 11400000, guid: 47bfc17fc4f333030c437cf1383a42ab, type: 2}
   _projectDataConfigSO: {fileID: 11400000, guid: cedfeb2e36062e944a54d57b5fa21f77, type: 2}
   _talentsDataConfigSO: {fileID: 11400000, guid: 0066424f87f16d148905cc1f76b9432c, type: 2}
+  _soundsDataConfigSO: {fileID: 11400000, guid: f2aef56594a2c4b44b05dc74f26329f8, type: 2}

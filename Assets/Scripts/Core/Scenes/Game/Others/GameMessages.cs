@@ -120,4 +120,30 @@ namespace SpaceInvaders.Scenes.Game
             Delta = delta;
         }
     }
+
+    public readonly struct ButtonClickedMessage : IMessageObject
+    {
+    }
+
+    public readonly struct ShipShotFiredMessage : IMessageObject
+    {
+        public Vector3 Position { get; }
+
+        public ShipShotFiredMessage(Vector3 position)
+        {
+            Position = position;
+        }
+    }
+
+    public readonly struct ShipDamagedMessage : IMessageObject
+    {
+        public int CurrentHealth { get; }
+        public int Damage { get; }
+
+        public ShipDamagedMessage(int currentHealth, int damage)
+        {
+            CurrentHealth = currentHealth;
+            Damage = damage;
+        }
+    }
 }

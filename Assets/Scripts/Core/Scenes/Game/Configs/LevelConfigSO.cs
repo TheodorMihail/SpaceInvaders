@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    [CreateAssetMenu(fileName = "LevelConfig", menuName = "SpaceInvaders/Level Config")]
+    [CreateAssetMenu(fileName = "LevelConfig", menuName = "SpaceInvaders/Levels/Level Config")]
     public class LevelConfigSO : ScriptableObject, IRepositoryObject
     {
         [Header("Level Settings")]
