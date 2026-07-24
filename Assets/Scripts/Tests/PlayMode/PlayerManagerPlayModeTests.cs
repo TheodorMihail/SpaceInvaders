@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using SpaceInvaders.Project;
 using SpaceInvaders.Scenes.Game;
 using System;
 using System.Collections;
@@ -17,6 +18,7 @@ namespace SpaceInvaders.Tests
         private ISpawnService _mockSpawnService;
         private IPlayerSpaceship _mockPlayer;
         private IMessageBus _messageBus;
+        private ITalentManager _mockTalentManager;
 
         private IEnumerator InitializeAndSpawnPlayer()
         {
@@ -31,11 +33,13 @@ namespace SpaceInvaders.Tests
             _mockSpawnService = Substitute.For<ISpawnService>();
             _mockPlayer = Substitute.For<IPlayerSpaceship>();
             _messageBus = new MessageBus();
+            _mockTalentManager = Substitute.For<ITalentManager>();
 
             _mockSpawnService.SpawnPlayer().Returns(UniTask.FromResult(_mockPlayer));
 
             Container.Bind<ISpawnService>().FromInstance(_mockSpawnService);
             Container.Bind<IMessageBus>().FromInstance(_messageBus);
+            Container.Bind<ITalentManager>().FromInstance(_mockTalentManager);
 
             _playerManager = Container.Instantiate<PlayerManager>();
         }

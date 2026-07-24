@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54b799fea87e5674990c38af2e080408, type: 3}
+  m_Name: FireRateTalentConfig
+  m_EditorClassIdentifier: 
+  _displayName: Fire Rate
+  _icon: {fileID: -1728361991, guid: 5be90912f33c39649b363237f4946af9, type: 3}
+  _levels:
+  - _cost: 50
+    _bonusDelta: 0.1
+  - _cost: 100
+    _bonusDelta: 0.1
+  - _cost: 150
+    _bonusDelta: 0.1
+  - _cost: 250
+    _bonusDelta: 0.1
+  - _cost: 500
+    _bonusDelta: 0.1

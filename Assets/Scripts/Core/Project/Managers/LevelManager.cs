@@ -1,35 +1,43 @@
 using BaseArchitecture.Core;
+using SpaceInvaders.Scenes.Game;
 using Zenject;
 
 namespace SpaceInvaders.Project
 {
-    public interface IProgressManager : IInitializable
+    public interface ILevelManager : IInitializable
     {
+        int MaxLevelNumber { get; }
+        int CurrentLevelNumber { get; }
+
         int GetLevelStars(int levelIndex);
         int LastPlayedLevelStarsEarned { get; }
         bool IsLevelUnlocked(int levelIndex);
         void SetLevelUnlocked(int levelIndex, bool unlocked);
         void RecordLevelResult(int levelIndex, int stars);
+
+        void RegisterSession(ILevelSessionService session);
+        void UnregisterSession(ILevelSessionService session);
     }
 
-    public class ProgressManager : IProgressManager
+    public class LevelManager : ILevelManager
     {
-        private const string SaveKey = "PlayerProgress";
-
         [Inject] private readonly IPersistenceManager _persistenceManager;
         [Inject] private readonly IRepositoryManager _repositoryManager;
 
-        private GameProgressData _data;
+        private LevelsSaveData _data;
+        private ILevelSessionService _activeSession;
 
+        public int MaxLevelNumber => _repositoryManager.GetLevelsCount();
+        public int CurrentLevelNumber => _activeSession?.CurrentLevelNumber ?? 0;
         public int LastPlayedLevelStarsEarned { get; private set; }
 
         public void Initialize()
         {
-            _data = _persistenceManager.Load<GameProgressData>(SaveKey);
+            _data = _persistenceManager.Load<LevelsSaveData>(LevelsSaveData.SaveKey);
 
-            LevelProgressEntry level1 = GetOrCreateLevelProgress(1);
-            level1.Unlocked = true;
-            SaveProgress();
+            LevelSaveEntry firstLevel = GetOrCreateLevelProgress(1);
+            firstLevel.Unlocked = true;
+            SaveData();
         }
 
         public int GetLevelStars(int levelIndex)
@@ -45,14 +53,14 @@ namespace SpaceInvaders.Project
         public void SetLevelUnlocked(int levelIndex, bool unlocked)
         {
             GetOrCreateLevelProgress(levelIndex).Unlocked = unlocked;
-            SaveProgress();
+            SaveData();
         }
 
         public void RecordLevelResult(int levelIndex, int stars)
         {
             LastPlayedLevelStarsEarned = stars;
 
-            LevelProgressEntry entry = GetOrCreateLevelProgress(levelIndex);
+            LevelSaveEntry entry = GetOrCreateLevelProgress(levelIndex);
             if (stars > entry.Stars)
             {
                 entry.Stars = stars;
@@ -64,29 +72,42 @@ namespace SpaceInvaders.Project
                 GetOrCreateLevelProgress(nextLevel).Unlocked = true;
             }
 
-            SaveProgress();
+            SaveData();
         }
 
-        private LevelProgressEntry GetLevelProgress(int levelIndex)
+        public void RegisterSession(ILevelSessionService session)
+        {
+            _activeSession = session;
+        }
+
+        public void UnregisterSession(ILevelSessionService session)
+        {
+            if (_activeSession == session)
+            {
+                _activeSession = null;
+            }
+        }
+
+        private LevelSaveEntry GetLevelProgress(int levelIndex)
         {
             return _data.Levels.Find(l => l.LevelIndex == levelIndex);
         }
 
-        private LevelProgressEntry GetOrCreateLevelProgress(int levelIndex)
+        private LevelSaveEntry GetOrCreateLevelProgress(int levelIndex)
         {
-            LevelProgressEntry entry = GetLevelProgress(levelIndex);
+            LevelSaveEntry entry = GetLevelProgress(levelIndex);
             if (entry == null)
             {
-                entry = new LevelProgressEntry { LevelIndex = levelIndex };
+                entry = new LevelSaveEntry { LevelIndex = levelIndex };
                 _data.Levels.Add(entry);
             }
 
             return entry;
         }
 
-        private void SaveProgress()
+        private void SaveData()
         {
-            _persistenceManager.Save(SaveKey, _data);
+            _persistenceManager.Save(LevelsSaveData.SaveKey, _data);
         }
     }
 }

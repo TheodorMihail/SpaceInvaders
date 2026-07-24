@@ -1,6 +1,7 @@
 using System;
 using BaseArchitecture.Core;
 using Cysharp.Threading.Tasks;
+using SpaceInvaders.Project;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Zenject;
@@ -22,16 +23,18 @@ namespace SpaceInvaders.Scenes.Game
     {
         [Inject] private readonly ISpawnService _spawnService;
         [Inject] private readonly IMessageBus _messageBus;
+        [Inject] private readonly ITalentManager _talentManager;
 
         private IPlayerSpaceship _playerInstance;
 
         public Vector3 PlayerPosition => _playerInstance != null ? _playerInstance.Position : Vector3.zero;
         public ShipStats PlayerStats => _playerInstance?.Stats;
 
-        
+
         public async UniTask GameInitialize()
         {
             _playerInstance = await _spawnService.SpawnPlayer();
+            _talentManager.ApplyTalentBonuses(_playerInstance.Stats);
             _playerInstance.OnDestroyed += OnDestroyedCallback;
         }
 

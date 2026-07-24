@@ -8,6 +8,7 @@ namespace SpaceInvaders.Scenes.MainMenu
         public struct LevelSelectionScreenResult : IScreenResult
         {
             public int LevelSelected { get; set; }
+            public bool Back { get; set; }
         }
         
         private LevelSelectionScreenResult _result;

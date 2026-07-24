@@ -17,6 +17,8 @@ namespace SpaceInvaders.Project
         float GetTwoStarDamageMultiplier();
         int GetLevelsCount();
         ProjectDataConfigSO GetProjectDataConfig();
+        TalentConfigSO GetTalentConfig(TalentTypes talentType);
+        IReadOnlyList<TalentConfigSO> GetAllTalentConfigs();
     }
 
     public class RepositoryManager : Repository, IRepositoryManager
@@ -26,18 +28,21 @@ namespace SpaceInvaders.Project
             PlayerDataConfigSO playerDataConfigSO,
             EnemyDataConfigSO enemyDataConfigSO,
             PowerupsDataConfigSO powerupsDataConfigSO,
-            ProjectDataConfigSO projectDataConfigSO)
+            ProjectDataConfigSO projectDataConfigSO,
+            TalentsDataConfigSO talentsDataConfigSO)
         {
             AddObjects(levelsDataConfigSO.LevelsConfigs);
             AddObjects(playerDataConfigSO.PlayerConfigs);
             AddObjects(enemyDataConfigSO.EnemyConfigs);
             AddObjects(powerupsDataConfigSO.PowerupConfigs);
+            AddObjects(talentsDataConfigSO.TalentConfigs);
 
             AddObject(levelsDataConfigSO);
             AddObject(playerDataConfigSO);
             AddObject(enemyDataConfigSO);
             AddObject(powerupsDataConfigSO);
             AddObject(projectDataConfigSO);
+            AddObject(talentsDataConfigSO);
         }
 
         public LevelConfigSO GetLevelConfig(int level)
@@ -88,6 +93,16 @@ namespace SpaceInvaders.Project
         public ProjectDataConfigSO GetProjectDataConfig()
         {
             return Get<ProjectDataConfigSO>(nameof(ProjectDataConfigSO));
+        }
+
+        public TalentConfigSO GetTalentConfig(TalentTypes talentType)
+        {
+            return Get<TalentConfigSO>(talentType.ToString());
+        }
+
+        public IReadOnlyList<TalentConfigSO> GetAllTalentConfigs()
+        {
+            return GetAll<TalentConfigSO>().ToArray();
         }
     }
 }

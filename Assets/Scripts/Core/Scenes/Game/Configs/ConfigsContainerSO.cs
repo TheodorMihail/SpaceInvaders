@@ -11,12 +11,14 @@ namespace SpaceInvaders.Scenes.Game
         [SerializeField] private PlayerDataConfigSO _playerDataConfigSO;
         [SerializeField] private EnemyDataConfigSO _enemyDataConfigSO;
         [SerializeField] private PowerupsDataConfigSO _powerupsDataConfigSO;
-        [SerializeField] private ProjectDataConfigSO _projectSettingsConfigSO;
+        [SerializeField] private ProjectDataConfigSO _projectDataConfigSO;
+        [SerializeField] private TalentsDataConfigSO _talentsDataConfigSO;
 
         public LevelsDataConfigSO LevelsDataConfigSO => _levelsDataConfigSO;
         public PlayerDataConfigSO PlayerDataConfigSO => _playerDataConfigSO;
         public EnemyDataConfigSO EnemyDataConfigSO => _enemyDataConfigSO;
         public PowerupsDataConfigSO PowerupsDataConfigSO => _powerupsDataConfigSO;
-        public ProjectDataConfigSO ProjectDataConfigSO => _projectSettingsConfigSO;
+        public ProjectDataConfigSO ProjectDataConfigSO => _projectDataConfigSO;
+        public TalentsDataConfigSO TalentsDataConfigSO => _talentsDataConfigSO;
     }
 }

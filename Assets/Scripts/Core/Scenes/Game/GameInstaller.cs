@@ -43,6 +43,8 @@ namespace SpaceInvaders.Scenes.Game
             }
 
             Container.BindInterfacesTo<SpawnService>().AsSingle().WithArguments(_gameContainer);
+            Container.BindInterfacesTo<ScoreService>().AsSingle();
+            Container.BindInterfacesTo<LevelSessionService>().AsSingle();
 
             Container.BindInterfacesTo<LevelCompletedCondition>().AsSingle();
             Container.BindInterfacesTo<PlayerDestroyedCondition>().AsSingle();
@@ -53,7 +55,6 @@ namespace SpaceInvaders.Scenes.Game
             Container.BindInterfacesTo<MessageBus>().AsSingle();
             Container.BindInterfacesTo<ObjectPooling>().AsSingle().WithArguments(_objectPoolingContainer);
             Container.BindInterfacesTo<CameraManager>().AsSingle();
-            Container.BindInterfacesTo<LevelManager>().AsSingle();
             Container.BindInterfacesTo<PlayerManager>().AsSingle();
             Container.BindInterfacesTo<EnemiesManager>().AsSingle();
             Container.BindInterfacesTo<PowerupManager>().AsSingle();

@@ -72,19 +72,19 @@ namespace SpaceInvaders.Scenes.Game
                 return;
             }
 
-            _healthBar.Initialize(Stats.CurrentHealth, Stats.BaseHealth);
+            _healthBar.Initialize(Stats.CurrentHealth, Stats.CurrentMaxHealth);
 
-            RaiseHealthChanged(Stats.CurrentHealth, Stats.BaseHealth);
+            RaiseHealthChanged(Stats.CurrentHealth, Stats.CurrentMaxHealth);
         }
 
-        private void OnStatsHealthChanged(int currentHealth, int baseHealth)
+        private void OnStatsHealthChanged(int currentHealth, int maxHealth)
         {
             if (_healthBar != null)
             {
-                _healthBar.UpdateHealth(currentHealth, false);
+                _healthBar.Initialize(currentHealth, maxHealth, false);
             }
 
-            RaiseHealthChanged(currentHealth, baseHealth);
+            RaiseHealthChanged(currentHealth, maxHealth);
 
             if (currentHealth == 0)
             {
