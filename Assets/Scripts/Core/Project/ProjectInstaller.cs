@@ -13,6 +13,7 @@ namespace SpaceInvaders.Project
         public override void InstallBindings()
         {
             ManagersInstall();
+            ServicesInstall();
         }
 
         private void ManagersInstall()
@@ -22,16 +23,19 @@ namespace SpaceInvaders.Project
             Container.BindInterfacesTo<UIManager>().AsSingle();
             Container.BindInterfacesTo<AddressablesManager>().AsSingle();
             Container.BindInterfacesTo<PersistenceManager>().AsSingle();
-            Container.BindInterfacesTo<PlatformService>().AsSingle();
             Container.BindInterfacesTo<RepositoryManager>().AsSingle().WithArguments(
                 _configsContainerSO.LevelsDataConfigSO, _configsContainerSO.PlayerDataConfigSO,
                 _configsContainerSO.EnemyDataConfigSO, _configsContainerSO.PowerupsDataConfigSO,
                 _configsContainerSO.ProjectDataConfigSO, _configsContainerSO.TalentsDataConfigSO);
 
-
             Container.BindInterfacesTo<LevelManager>().AsSingle();
             Container.BindInterfacesTo<CurrencyManager>().AsSingle();
             Container.BindInterfacesTo<TalentManager>().AsSingle();
+        }
+
+        private void ServicesInstall()
+        {
+            Container.BindInterfacesTo<PlatformService>().AsSingle();
         }
     }
 }

@@ -103,12 +103,12 @@ namespace SpaceInvaders.Scenes.Game
 
         protected override void OnApply()
         {
-            Stats.UpdateDamageMultiplier(((DamageBoostPowerupConfigSO)Config).DamageMultiplierBonus);
+            Stats.DamageStat.AddBonus(((DamageBoostPowerupConfigSO)Config).DamageMultiplierBonus);
         }
 
         protected override void OnRemove()
         {
-            Stats.UpdateDamageMultiplier(-((DamageBoostPowerupConfigSO)Config).DamageMultiplierBonus);
+            Stats.DamageStat.RemoveBonus(((DamageBoostPowerupConfigSO)Config).DamageMultiplierBonus);
         }
     }
 
@@ -118,12 +118,12 @@ namespace SpaceInvaders.Scenes.Game
 
         protected override void OnApply()
         {
-            Stats.UpdateFireRateMultiplier(((RapidFirePowerupConfigSO)Config).FireRateMultiplierBonus);
+            Stats.FireRateStat.AddBonus(((RapidFirePowerupConfigSO)Config).FireRateMultiplierBonus);
         }
 
         protected override void OnRemove()
         {
-            Stats.UpdateFireRateMultiplier(-((RapidFirePowerupConfigSO)Config).FireRateMultiplierBonus);
+            Stats.FireRateStat.RemoveBonus(((RapidFirePowerupConfigSO)Config).FireRateMultiplierBonus);
         }
     }
 

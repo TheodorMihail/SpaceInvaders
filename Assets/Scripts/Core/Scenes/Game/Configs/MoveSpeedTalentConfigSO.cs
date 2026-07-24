@@ -9,7 +9,7 @@ namespace SpaceInvaders.Scenes.Game
 
         public override void ApplyBonus(ShipStats stats, float totalBonusDelta)
         {
-            stats.UpdateMoveSpeedMultiplier(totalBonusDelta);
+            stats.MoveSpeedStat.AddBonus(totalBonusDelta);
         }
     }
 }
