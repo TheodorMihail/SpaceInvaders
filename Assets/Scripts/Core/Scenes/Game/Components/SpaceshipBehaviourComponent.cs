@@ -118,6 +118,28 @@ namespace SpaceInvaders.Scenes.Game
             _activeProjectiles.Clear();
         }
 
+        protected void SpawnDestroyVFX()
+        {
+            if (_shipConfig.DestroyVFXPrefab == null)
+            {
+                this.LogWarning("No destroy vfx prefab assigned!");
+                return;
+            }
+
+            _spawnService.SpawnVFX(_shipConfig.DestroyVFXPrefab, Position);
+        }
+
+        protected void SpawnHitVFX()
+        {
+            if (_shipConfig.HitVFXPrefab == null)
+            {
+                this.LogWarning("No hit vfx prefab assigned!");
+                return;
+            }
+
+            _spawnService.SpawnVFX(_shipConfig.HitVFXPrefab, Position);
+        }
+
         public override void Shoot()
         {
             // Check fire rate cooldown
@@ -149,6 +171,7 @@ namespace SpaceInvaders.Scenes.Game
             }
 
             Stats.ApplyDamage(damage);
+            SpawnHitVFX();
             RaiseDamaged(damage);
         }
 
@@ -202,7 +225,13 @@ namespace SpaceInvaders.Scenes.Game
 
         protected void FireProjectile(Vector3 direction)
         {
-            Vector3 spawnPosition = transform.localPosition + _projectileOffset;
+            if(_shipConfig.ProjectilePrefab == null)
+            {
+                this.LogWarning("No projectile prefab assigned!");
+                return;
+            }
+
+            Vector3 spawnPosition = Position + _projectileOffset;
 
             var projectile = _spawnService.SpawnProjectile(
                 _shipConfig.ProjectilePrefab,

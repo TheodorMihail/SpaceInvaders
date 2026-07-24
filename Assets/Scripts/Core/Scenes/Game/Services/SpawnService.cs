@@ -14,6 +14,7 @@ namespace SpaceInvaders.Scenes.Game
         UniTask<List<IEnemySpaceship>> SpawnEnemies(WaveConfigDTO waveConfig);
         ProjectileBehaviourComponent SpawnProjectile(ProjectileBehaviourComponent prefab, Vector3 position, Vector3 direction, int damage, float speed);
         PowerupBehaviourComponent SpawnPowerup(PowerupConfigSO config, Vector3 position);
+        VFXBehaviourComponent SpawnVFX(VFXBehaviourComponent prefab, Vector3 position);
         void Despawn<T>(T instance) where T : MonoBehaviour, IPoolableObject;
     }
 
@@ -115,6 +116,11 @@ namespace SpaceInvaders.Scenes.Game
             _activeObjects.Add(pickup);
 
             return pickup;
+        }
+
+        public VFXBehaviourComponent SpawnVFX(VFXBehaviourComponent prefab, Vector3 position)
+        {
+            return Spawn(prefab, position, Quaternion.identity);
         }
 
         private T Spawn<T>(T prefab, Vector3 position, Quaternion rotation) where T : MonoBehaviour, IPoolableObject

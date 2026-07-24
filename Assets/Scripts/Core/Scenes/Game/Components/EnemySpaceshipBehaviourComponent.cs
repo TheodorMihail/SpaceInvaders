@@ -35,6 +35,7 @@ namespace SpaceInvaders.Scenes.Game
 
         protected override void Destroy()
         {
+            SpawnDestroyVFX();
             OnDestroyed?.Invoke(this);
         }
 
