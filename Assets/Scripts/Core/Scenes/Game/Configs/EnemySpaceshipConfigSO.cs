@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    [CreateAssetMenu(fileName = "EnemySpaceshipConfig", menuName = "SpaceInvaders/Enemy Spaceship Config")]
+    [CreateAssetMenu(fileName = "EnemySpaceshipConfig", menuName = "SpaceInvaders/Ships/Enemy Spaceship Config")]
     public class EnemySpaceshipConfigSO : SpaceshipConfigSO
     {
         [SerializeField] private int _scoreReward = 10;

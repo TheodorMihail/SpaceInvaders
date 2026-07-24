@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using BaseArchitecture.Core;
@@ -19,6 +20,7 @@ namespace SpaceInvaders.Scenes.Game
         [Inject] private readonly IList<IGameInitializeListener> _gameInitializeListeners;
         [Inject] private readonly IList<IGameEndCondition> _gameEndConditions;
         [Inject] private readonly IPlatformService _platformService;
+        [Inject] private readonly IRepositoryManager _repositoryManager;
 
         public override void OnEnter(params object[] paramsList)
         {
@@ -86,6 +88,9 @@ namespace SpaceInvaders.Scenes.Game
             {
                 condition.ConditionMet -= OnGameEndConditionMet;
             }
+
+            float delay = _repositoryManager.GetProjectDataConfig().GameEndTransitionDelay;
+            await UniTask.Delay(TimeSpan.FromSeconds(delay));
 
             await UniTask.WhenAll(_gameEndListeners.Select(handler => handler.GameEnd()));
 

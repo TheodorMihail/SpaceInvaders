@@ -13,9 +13,13 @@ namespace SpaceInvaders.Project
         [Header("Performance")]
         [SerializeField] private int _maxFrameRate = 60;
 
+        [Header("Gameplay")]
+        [SerializeField] private float _gameEndTransitionDelay = 2f;
+
         public virtual bool EditorForceTouchPlatform => _editorForceTouchPlatform;
         public virtual int DebugAddCurrencyAmount => _debugAddCurrencyAmount;
         public virtual int MaxFrameRate => _maxFrameRate;
+        public virtual float GameEndTransitionDelay => _gameEndTransitionDelay;
 
         public string ObjectID => nameof(ProjectDataConfigSO);
     }
