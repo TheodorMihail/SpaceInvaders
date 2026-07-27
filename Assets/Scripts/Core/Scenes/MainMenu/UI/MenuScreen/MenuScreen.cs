@@ -9,6 +9,7 @@ namespace SpaceInvaders.Scenes.MainMenu
         {
             PlayGame,
             OpenTalentTree,
+            OpenInventory,
             QuitGame
         }
 

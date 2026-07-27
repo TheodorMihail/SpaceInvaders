@@ -39,6 +39,10 @@ namespace SpaceInvaders.Scenes.MainMenu
                     await _uiManager.ShowScreen<TalentTreeScreen>();
                     ShowMenuScreen();
                     break;
+                case MenuScreen.ResultType.OpenInventory:
+                    await _uiManager.ShowScreen<InventoryScreen>();
+                    ShowMenuScreen();
+                    break;
                 default:
                     ShowLevelSelectionScreen();
                     break;
