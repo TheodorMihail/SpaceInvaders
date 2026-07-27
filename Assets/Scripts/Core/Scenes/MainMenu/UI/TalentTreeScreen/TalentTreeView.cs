@@ -22,10 +22,10 @@ namespace SpaceInvaders.Scenes.MainMenu
         [Inject] private readonly ICurrencyManager _currencyManager;
         [Inject] private readonly ICustomFactory _factory;
 
-        private readonly Dictionary<TalentTypes, TalentButtonComponent> _talentButtons = new();
-        private readonly Dictionary<TalentTypes, TalentConfigSO> _talentConfigs = new();
+        private readonly Dictionary<ShipUpgradableStatTypes, TalentButtonComponent> _talentButtons = new();
+        private readonly Dictionary<ShipUpgradableStatTypes, TalentConfigSO> _talentConfigs = new();
 
-        public event Action<TalentTypes> OnTalentPurchaseClicked;
+        public event Action<ShipUpgradableStatTypes> OnTalentPurchaseClicked;
         public event Action OnBackClicked;
 
         private void Awake()
@@ -67,7 +67,7 @@ namespace SpaceInvaders.Scenes.MainMenu
             UpdateCurrencyDisplay();
         }
 
-        private void RefreshButtonDisplay(TalentTypes type)
+        private void RefreshButtonDisplay(ShipUpgradableStatTypes type)
         {
             if (!_talentButtons.TryGetValue(type, out var button) || !_talentConfigs.TryGetValue(type, out var config))
             {
