@@ -61,7 +61,16 @@ namespace SpaceInvaders.Tests
                 CreatePowerupsDataConfig(_powerupConfigs, 0f),
                 CreateProjectSettingsConfig(),
                 CreateTalentsDataConfig(_talentConfigs),
-                CreateSoundsDataConfig(_soundConfigs));
+                CreateSoundsDataConfig(_soundConfigs),
+                CreateItemsDataConfig(new List<ItemConfigSO>(), new List<ItemRarityConfigSO>()));
+        }
+
+        private static ItemsDataConfigSO CreateItemsDataConfig(List<ItemConfigSO> itemConfigs, List<ItemRarityConfigSO> rarityConfigs)
+        {
+            var config = Substitute.For<ItemsDataConfigSO>();
+            config.ItemConfigs.Returns(itemConfigs);
+            config.RarityConfigs.Returns(rarityConfigs);
+            return config;
         }
 
         private static LevelsDataConfigSO CreateLevelsDataConfig(List<LevelConfigSO> levelConfigs)
@@ -185,7 +194,8 @@ namespace SpaceInvaders.Tests
                 CreatePowerupsDataConfig(emptyPowerups, 0f),
                 CreateProjectSettingsConfig(),
                 CreateTalentsDataConfig(emptyTalents),
-                CreateSoundsDataConfig(emptySounds));
+                CreateSoundsDataConfig(emptySounds),
+                CreateItemsDataConfig(new List<ItemConfigSO>(), new List<ItemRarityConfigSO>()));
 
             Assert.AreEqual(0, manager.GetLevelsCount());
         }

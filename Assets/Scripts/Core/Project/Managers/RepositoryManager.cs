@@ -17,9 +17,15 @@ namespace SpaceInvaders.Project
         float GetTwoStarDamageMultiplier();
         int GetLevelsCount();
         ProjectDataConfigSO GetProjectDataConfig();
-        TalentConfigSO GetTalentConfig(TalentTypes talentType);
+        TalentConfigSO GetTalentConfig(ShipUpgradableStatTypes talentType);
         IReadOnlyList<TalentConfigSO> GetAllTalentConfigs();
         SoundConfigSO GetSoundConfig(SoundTypes soundType);
+        ItemConfigSO GetItemConfig(string itemId);
+        IReadOnlyList<ItemConfigSO> GetAllItemConfigs();
+        ItemRarityConfigSO GetItemRarityConfig(ItemRarities rarity);
+        IReadOnlyList<ItemRarityConfigSO> GetAllItemRarityConfigs();
+        float GetItemDropChance();
+        IReadOnlyList<EquipmentSlotConfigDTO> GetAllEquipmentSlotConfigs();
     }
 
     public class RepositoryManager : Repository, IRepositoryManager
@@ -31,7 +37,8 @@ namespace SpaceInvaders.Project
             PowerupsDataConfigSO powerupsDataConfigSO,
             ProjectDataConfigSO projectDataConfigSO,
             TalentsDataConfigSO talentsDataConfigSO,
-            SoundsDataConfigSO soundsDataConfigSO)
+            SoundsDataConfigSO soundsDataConfigSO,
+            ItemsDataConfigSO itemsDataConfigSO)
         {
             AddObjects(levelsDataConfigSO.LevelsConfigs);
             AddObjects(playerDataConfigSO.PlayerConfigs);
@@ -39,6 +46,8 @@ namespace SpaceInvaders.Project
             AddObjects(powerupsDataConfigSO.PowerupConfigs);
             AddObjects(talentsDataConfigSO.TalentConfigs);
             AddObjects(soundsDataConfigSO.SoundConfigs);
+            AddObjects(itemsDataConfigSO.ItemConfigs);
+            AddObjects(itemsDataConfigSO.RarityConfigs);
 
             AddObject(levelsDataConfigSO);
             AddObject(playerDataConfigSO);
@@ -47,6 +56,7 @@ namespace SpaceInvaders.Project
             AddObject(projectDataConfigSO);
             AddObject(talentsDataConfigSO);
             AddObject(soundsDataConfigSO);
+            AddObject(itemsDataConfigSO);
         }
 
         public LevelConfigSO GetLevelConfig(int level)
@@ -99,7 +109,7 @@ namespace SpaceInvaders.Project
             return Get<ProjectDataConfigSO>(nameof(ProjectDataConfigSO));
         }
 
-        public TalentConfigSO GetTalentConfig(TalentTypes talentType)
+        public TalentConfigSO GetTalentConfig(ShipUpgradableStatTypes talentType)
         {
             return Get<TalentConfigSO>(talentType.ToString());
         }
@@ -112,6 +122,36 @@ namespace SpaceInvaders.Project
         public SoundConfigSO GetSoundConfig(SoundTypes soundType)
         {
             return Get<SoundConfigSO>(soundType.ToString());
+        }
+
+        public ItemConfigSO GetItemConfig(string itemId)
+        {
+            return Get<ItemConfigSO>(itemId);
+        }
+
+        public IReadOnlyList<ItemConfigSO> GetAllItemConfigs()
+        {
+            return GetAll<ItemConfigSO>().ToArray();
+        }
+
+        public ItemRarityConfigSO GetItemRarityConfig(ItemRarities rarity)
+        {
+            return Get<ItemRarityConfigSO>(rarity.ToString());
+        }
+
+        public IReadOnlyList<ItemRarityConfigSO> GetAllItemRarityConfigs()
+        {
+            return GetAll<ItemRarityConfigSO>().ToArray();
+        }
+
+        public float GetItemDropChance()
+        {
+            return Get<ItemsDataConfigSO>(nameof(ItemsDataConfigSO)).GlobalItemDropChance;
+        }
+
+        public IReadOnlyList<EquipmentSlotConfigDTO> GetAllEquipmentSlotConfigs()
+        {
+            return Get<ItemsDataConfigSO>(nameof(ItemsDataConfigSO)).SlotConfigs;
         }
     }
 }
