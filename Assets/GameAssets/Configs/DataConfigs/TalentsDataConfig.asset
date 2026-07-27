@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: TalentsDataConfig
   m_EditorClassIdentifier: 
   _talentConfigs:
-  - {fileID: 11400000, guid: 1d83839175689224187a1301ede065a4, type: 2}
-  - {fileID: 11400000, guid: 68b851893a8ee9446b8e643e07e40385, type: 2}
-  - {fileID: 11400000, guid: 5e2a31b3b474f7f48bc783129fb8cc48, type: 2}
-  - {fileID: 11400000, guid: 91d2e9e2b9f591e4395f89199399af22, type: 2}
-  - {fileID: 11400000, guid: 57d93d8482d25f64eaf9e8cda8eaf047, type: 2}
+  - {fileID: 11400000, guid: 53827ea5bbed0ba40808018c19d0762f, type: 2}
+  - {fileID: 11400000, guid: 96cea34e51e169548954d2fe5c5dc17b, type: 2}
+  - {fileID: 11400000, guid: cf7712e67a6ad6d49a67a7da48474f64, type: 2}
+  - {fileID: 11400000, guid: 40c700e9b54dc824ab3ffeba40f14426, type: 2}
+  - {fileID: 11400000, guid: 8322d597084b94b4fa6e2cecbf763f8c, type: 2}

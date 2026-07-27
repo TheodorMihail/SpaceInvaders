@@ -9,18 +9,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54b799fea87e5674990c38af2e080408, type: 3}
+  m_Script: {fileID: 11500000, guid: 72428aea5974ab543a312b312090f474, type: 3}
   m_Name: FireRateTalentConfig
   m_EditorClassIdentifier: 
+  _talentType: 2
   _displayName: Fire Rate
   _icon: {fileID: -1728361991, guid: 5be90912f33c39649b363237f4946af9, type: 3}
   _levels:
   - _cost: 50
-    _bonusDelta: 0.1
+    _bonusDelta: 0.05
   - _cost: 100
-    _bonusDelta: 0.1
+    _bonusDelta: 0.05
   - _cost: 150
-    _bonusDelta: 0.1
+    _bonusDelta: 0.05
   - _cost: 250
     _bonusDelta: 0.1
   - _cost: 500
