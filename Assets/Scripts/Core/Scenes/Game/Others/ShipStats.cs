@@ -4,6 +4,18 @@ using UnityEngine;
 
 namespace SpaceInvaders.Scenes.Game
 {
+    /// <summary>
+    /// Ship stats that permanent progression (talents, equipped items) can modify.
+    /// </summary>
+    public enum ShipUpgradableStatTypes
+    {
+        Health,
+        MoveSpeed,
+        FireRate,
+        Damage,
+        ProjectileSpeed
+    }
+
     [Serializable]
     public class ShipBaseStats
     {
@@ -130,6 +142,42 @@ namespace SpaceInvaders.Scenes.Game
         {
             CurrentHealth = CurrentMaxHealth;
             HealthChanged?.Invoke(CurrentHealth, CurrentMaxHealth);
+        }
+
+        /// <summary>
+        /// Adds a permanent bonus to the given stat. FireRate is a cooldown, so a positive
+        /// bonus is inverted here to make the ship shoot faster.
+        /// </summary>
+        public void ApplyStatBonus(ShipUpgradableStatTypes statType, float bonus)
+        {
+            switch (statType)
+            {
+                case ShipUpgradableStatTypes.Health:
+                {
+                    _healthStat.AddBonus(bonus);
+                    break;
+                }
+                case ShipUpgradableStatTypes.MoveSpeed:
+                {
+                    _moveSpeedStat.AddBonus(bonus);
+                    break;
+                }
+                case ShipUpgradableStatTypes.FireRate:
+                {
+                    _fireRateStat.AddBonus(-bonus);
+                    break;
+                }
+                case ShipUpgradableStatTypes.Damage:
+                {
+                    _damageStat.AddBonus(bonus);
+                    break;
+                }
+                case ShipUpgradableStatTypes.ProjectileSpeed:
+                {
+                    _projectileSpeedStat.AddBonus(bonus);
+                    break;
+                }
+            }
         }
 
         public void SetInvincible(bool value)
