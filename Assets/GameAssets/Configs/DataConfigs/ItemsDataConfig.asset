@@ -23,7 +23,7 @@ MonoBehaviour:
   _slotConfigs:
   - _slot: 0
     _acceptedType: 0
-    _displayName: Wing Left
+    _displayName: Wing
   - _slot: 1
     _acceptedType: 1
     _displayName: Engine

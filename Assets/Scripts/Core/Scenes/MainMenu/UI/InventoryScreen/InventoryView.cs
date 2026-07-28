@@ -10,7 +10,7 @@ using Zenject;
 namespace SpaceInvaders.Scenes.MainMenu
 {
     [AddressablePath("Screens/InventoryScreenView")]
-    public class InventoryView : View
+    public class InventoryView : View<InventoryModel>
     {
         [Inject] private readonly ICustomFactory _factory;
 
@@ -36,7 +36,6 @@ namespace SpaceInvaders.Scenes.MainMenu
         private readonly Dictionary<EquipmentSlots, List<ItemSlotComponent>> _equipmentItemsDic = new();
         private readonly Dictionary<string, ItemSlotComponent> _inventoryItemsDic = new();
 
-        private InventoryModel _model;
         private string _lastSelectedInstanceId;
 
         public event Action<RectTransform, string> OnItemClicked;
@@ -49,9 +48,8 @@ namespace SpaceInvaders.Scenes.MainMenu
             RegisterEquipmentSlots();
         }
 
-        public void Setup(InventoryModel model)
+        public void Setup()
         {
-            _model = model;
             InitializeInventory();
             _tooltip.Hide();
         }

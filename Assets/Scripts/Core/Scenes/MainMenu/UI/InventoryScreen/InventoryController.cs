@@ -7,7 +7,6 @@ namespace SpaceInvaders.Scenes.MainMenu
 {
     public class InventoryController : Controller<InventoryScreen, InventoryModel, InventoryView>
     {
-        [Inject] private readonly IEquipmentManager _equipmentManager;
         [Inject] private readonly IMessageBus _messageBus;
 
         public InventoryController(InventoryScreen uiComponent, InventoryModel model, InventoryView view)
@@ -22,7 +21,7 @@ namespace SpaceInvaders.Scenes.MainMenu
             _view.OnBackClicked += OnBackClicked;
             _messageBus.Subscribe<ItemEquipChangedMessage>(OnItemEquipChanged);
 
-            _view.Setup(_model);
+            _view.Setup();
             _view.RefreshStatsPanel(_model.GetStatsPanel());
         }
 
