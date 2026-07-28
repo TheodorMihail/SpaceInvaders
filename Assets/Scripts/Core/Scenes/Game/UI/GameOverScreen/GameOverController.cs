@@ -11,6 +11,7 @@ namespace SpaceInvaders.Scenes.Game
         public override void Initialize()
         {
             base.Initialize();
+            _view.Initialize(_model.TotalScore);
             _view.OnRestartButtonClicked += HandleRestartButtonClicked;
             _view.OnMainMenuButtonClicked += HandleMainMenuButtonClicked;
         }

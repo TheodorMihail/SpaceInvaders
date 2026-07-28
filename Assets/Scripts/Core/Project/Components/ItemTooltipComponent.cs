@@ -2,13 +2,12 @@ using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using SpaceInvaders.Project;
 using SpaceInvaders.Scenes.Game;
 using Zenject;
 using System.Text;
 using System.Collections.Generic;
 
-namespace SpaceInvaders.Scenes.MainMenu
+namespace SpaceInvaders.Project
 {
     /// <summary>
     /// Confirm-tooltip shown near a clicked inventory item or ship slot. Uses a center pivot so
@@ -56,6 +55,18 @@ namespace SpaceInvaders.Scenes.MainMenu
 
         public void Show(RectTransform anchor, string instanceId)
         {
+            ShowInternal(anchor, instanceId, showActions: true);
+        }
+
+        /// <summary>Info-only variant for non-interactive contexts (e.g. the Level Finished
+        /// screen) - shows name/rarity/affixes but never an Equip/Unequip button.</summary>
+        public void ShowReadOnly(RectTransform anchor, string instanceId)
+        {
+            ShowInternal(anchor, instanceId, showActions: false);
+        }
+
+        private void ShowInternal(RectTransform anchor, string instanceId, bool showActions)
+        {
             Hide();
 
             InventoryItemEntry entry = _inventoryManager.GetItem(instanceId);
@@ -66,14 +77,23 @@ namespace SpaceInvaders.Scenes.MainMenu
                 return;
             }
 
-            _currentInstanceId = instanceId;
             ItemRarityConfigSO rarityConfig = _repositoryManager.GetItemRarityConfig(config.Rarity);
             string rarityText = rarityConfig != null ? rarityConfig.DisplayName : config.Rarity.ToString();
             _rarityText.color = rarityConfig != null ? rarityConfig.DisplayColor : Color.white;
-            bool isEquipped = _equipmentManager.IsEquipped(instanceId);
 
-            _equipButton.gameObject.SetActive(!isEquipped);
-            _unequipButton.gameObject.SetActive(isEquipped);
+            if (showActions)
+            {
+                _currentInstanceId = instanceId;
+                bool isEquipped = _equipmentManager.IsEquipped(instanceId);
+                _equipButton.gameObject.SetActive(!isEquipped);
+                _unequipButton.gameObject.SetActive(isEquipped);
+            }
+            else
+            {
+                _currentInstanceId = null;
+                _equipButton.gameObject.SetActive(false);
+                _unequipButton.gameObject.SetActive(false);
+            }
 
             Show(anchor, config.DisplayName, rarityText, BuildAffixesText(entry));
         }

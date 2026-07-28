@@ -1,5 +1,6 @@
 using System;
 using BaseArchitecture.Core;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,6 +11,9 @@ namespace SpaceInvaders.Scenes.Game
     {
         [SerializeField] private Button _restartButton;
         [SerializeField] private Button _mainMenuButton;
+        [SerializeField] private TextMeshProUGUI _scoreText;
+
+        [SerializeField] private string _scoreString = "Score: {0}";
 
         public event Action OnRestartButtonClicked;
         public event Action OnMainMenuButtonClicked;
@@ -18,6 +22,11 @@ namespace SpaceInvaders.Scenes.Game
         {
             _restartButton.onClick.AddListener(() => OnRestartButtonClicked?.Invoke());
             _mainMenuButton.onClick.AddListener(() => OnMainMenuButtonClicked?.Invoke());
+        }
+
+        public void Initialize(int score)
+        {
+            _scoreText.text = string.Format(_scoreString, score);
         }
     }
 }

@@ -10,6 +10,7 @@ namespace SpaceInvaders.Scenes.Game
 {
     public interface ILootManager : IDisposable, IInitializable, IGameEndListener
     {
+        IReadOnlyList<InventoryItemEntry> LastBankedLoot { get; }
         void CollectItem(InventoryItemEntry item);
     }
 
@@ -27,6 +28,9 @@ namespace SpaceInvaders.Scenes.Game
         [Inject] private readonly ISpawnService _spawnService;
 
         private readonly List<InventoryItemEntry> _pendingLoot = new();
+        private IReadOnlyList<InventoryItemEntry> _lastBankedLoot = Array.Empty<InventoryItemEntry>();
+
+        public IReadOnlyList<InventoryItemEntry> LastBankedLoot => _lastBankedLoot;
 
         public void Initialize()
         {
@@ -123,6 +127,7 @@ namespace SpaceInvaders.Scenes.Game
 
             var bankedLoot = new List<InventoryItemEntry>(_pendingLoot);
             _pendingLoot.Clear();
+            _lastBankedLoot = bankedLoot;
             _inventoryManager.AddItems(bankedLoot);
         }
 

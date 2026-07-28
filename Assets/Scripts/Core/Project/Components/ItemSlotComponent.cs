@@ -1,9 +1,8 @@
 using System;
-using SpaceInvaders.Project;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace SpaceInvaders.Scenes.MainMenu
+namespace SpaceInvaders.Project
 {
     /// <summary>A container that holds one item or none - shared by ship slots and grid cells.</summary>
     public class ItemSlotComponent : MonoBehaviour

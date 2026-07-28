@@ -292,6 +292,35 @@ namespace SpaceInvaders.Tests
         }
 
         [Test]
+        public void OnLevelCompleted_SetsLastBankedLootToWhatWasBanked()
+        {
+            SetupSingleNormalItem();
+
+            _lootManager.CollectItem(new InventoryItemEntry { InstanceId = "a", ItemId = "PlasmaWing" });
+            _lootManager.CollectItem(new InventoryItemEntry { InstanceId = "b", ItemId = "PlasmaWing" });
+
+            _messageBus.Publish(new LevelCompletedMessage(1));
+
+            Assert.AreEqual(2, _lootManager.LastBankedLoot.Count);
+            CollectionAssert.AreEquivalent(
+                new[] { "a", "b" },
+                new List<string> { _lootManager.LastBankedLoot[0].InstanceId, _lootManager.LastBankedLoot[1].InstanceId });
+        }
+
+        [Test]
+        public void OnLevelCompleted_WithNoPendingLoot_DoesNotChangeLastBankedLoot()
+        {
+            SetupSingleNormalItem();
+            _lootManager.CollectItem(new InventoryItemEntry { InstanceId = "a", ItemId = "PlasmaWing" });
+            _messageBus.Publish(new LevelCompletedMessage(1));
+
+            _messageBus.Publish(new LevelCompletedMessage(2));
+
+            Assert.AreEqual(1, _lootManager.LastBankedLoot.Count);
+            Assert.AreEqual("a", _lootManager.LastBankedLoot[0].InstanceId);
+        }
+
+        [Test]
         public void OnLevelCompleted_WithNoPendingLoot_DoesNotTouchInventory()
         {
             _messageBus.Publish(new LevelCompletedMessage(1));
