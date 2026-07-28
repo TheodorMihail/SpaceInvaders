@@ -7,19 +7,32 @@ namespace SpaceInvaders.Project
 {
     public interface IRepositoryManager
     {
+        //Project
+        ProjectDataConfigSO GetProjectDataConfig();
+
+        //Levels
         LevelConfigSO GetLevelConfig(int level);
         IReadOnlyList<LevelConfigSO> GetLevelConfigs();
+        int GetLevelsCount();
+        float GetTwoStarDamageMultiplier();
+
+        //Ships
         PlayerSpaceshipConfigSO GetPlayerConfig(PlayerTypes playerType);
         EnemySpaceshipConfigSO GetEnemyConfig(EnemyTypes enemyType);
+        
+        //Powerups
         PowerupConfigSO GetPowerupConfig(PowerupTypes powerupType);
         IReadOnlyList<PowerupConfigSO> GetAllPowerupConfigs();
         float GetPowerupDropChance();
-        float GetTwoStarDamageMultiplier();
-        int GetLevelsCount();
-        ProjectDataConfigSO GetProjectDataConfig();
+
+        //Talents
         TalentConfigSO GetTalentConfig(ShipUpgradableStatTypes talentType);
         IReadOnlyList<TalentConfigSO> GetAllTalentConfigs();
+
+        //Sounds
         SoundConfigSO GetSoundConfig(SoundTypes soundType);
+
+        //Items
         ItemConfigSO GetItemConfig(string itemId);
         IReadOnlyList<ItemConfigSO> GetAllItemConfigs();
         ItemRarityConfigSO GetItemRarityConfig(ItemRarityTypes rarity);
@@ -59,6 +72,17 @@ namespace SpaceInvaders.Project
             AddObject(itemsDataConfigSO);
         }
 
+        #region Project
+
+        public ProjectDataConfigSO GetProjectDataConfig()
+        {
+            return Get<ProjectDataConfigSO>(nameof(ProjectDataConfigSO));
+        }
+
+        #endregion
+
+        #region Levels
+
         public LevelConfigSO GetLevelConfig(int level)
         {
             return Get<LevelConfigSO>($"Level {level}");
@@ -69,6 +93,20 @@ namespace SpaceInvaders.Project
             return GetAll<LevelConfigSO>().ToArray();
         }
 
+        public int GetLevelsCount()
+        {
+            return GetAll<LevelConfigSO>().Count();
+        }
+
+        public float GetTwoStarDamageMultiplier()
+        {
+            return Get<LevelsDataConfigSO>(nameof(LevelsDataConfigSO)).TwoStarDamageMultiplier;
+        }
+
+        #endregion
+
+        #region Ships
+
         public PlayerSpaceshipConfigSO GetPlayerConfig(PlayerTypes playerType)
         {
             return Get<PlayerSpaceshipConfigSO>(playerType.ToString());
@@ -78,6 +116,10 @@ namespace SpaceInvaders.Project
         {
             return Get<EnemySpaceshipConfigSO>(enemyType.ToString());
         }
+
+        #endregion
+
+        #region Powerups
 
         public PowerupConfigSO GetPowerupConfig(PowerupTypes powerupType)
         {
@@ -94,20 +136,18 @@ namespace SpaceInvaders.Project
             return Get<PowerupsDataConfigSO>(nameof(PowerupsDataConfigSO)).GlobalPowerupDropChance;
         }
 
-        public float GetTwoStarDamageMultiplier()
+        #endregion
+
+        #region Sounds
+
+        public SoundConfigSO GetSoundConfig(SoundTypes soundType)
         {
-            return Get<LevelsDataConfigSO>(nameof(LevelsDataConfigSO)).TwoStarDamageMultiplier;
+            return Get<SoundConfigSO>(soundType.ToString());
         }
 
-        public int GetLevelsCount()
-        {
-            return GetAll<LevelConfigSO>().Count();
-        }
+        #endregion
 
-        public ProjectDataConfigSO GetProjectDataConfig()
-        {
-            return Get<ProjectDataConfigSO>(nameof(ProjectDataConfigSO));
-        }
+        #region Talents
 
         public TalentConfigSO GetTalentConfig(ShipUpgradableStatTypes talentType)
         {
@@ -119,10 +159,9 @@ namespace SpaceInvaders.Project
             return GetAll<TalentConfigSO>().ToArray();
         }
 
-        public SoundConfigSO GetSoundConfig(SoundTypes soundType)
-        {
-            return Get<SoundConfigSO>(soundType.ToString());
-        }
+        #endregion
+
+        #region Items
 
         public ItemConfigSO GetItemConfig(string itemId)
         {
@@ -153,5 +192,7 @@ namespace SpaceInvaders.Project
         {
             return Get<ItemsDataConfigSO>(nameof(ItemsDataConfigSO)).SlotConfigs;
         }
+    
+        #endregion
     }
 }

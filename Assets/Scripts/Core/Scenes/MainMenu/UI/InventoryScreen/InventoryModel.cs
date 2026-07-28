@@ -33,7 +33,7 @@ namespace SpaceInvaders.Scenes.MainMenu
         public bool TryGetInventoryItem(string instanceId, out (InventoryItemEntry entry, ItemConfigSO config) item)
         {
             item.entry = _inventoryManager.GetItem(instanceId);
-            item.config = _inventoryManager.GetItemConfig(item.entry.ItemId);
+            item.config = item.entry != null ? _inventoryManager.GetItemConfig(item.entry.ItemId) : null;
 
             return item.entry != null && item.config != null;
         }
