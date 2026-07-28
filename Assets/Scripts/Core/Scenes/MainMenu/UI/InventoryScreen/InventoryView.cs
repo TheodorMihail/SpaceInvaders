@@ -123,7 +123,7 @@ namespace SpaceInvaders.Scenes.MainMenu
 
         private void HandleEquipmentSlotClicked(EquipmentSlotTypes slot, ItemSlotComponent component)
         {
-            if(!_model.TryGetEquippedItemForEquipmentSlot(slot, out InventoryItemEntry equipped))
+            if(!_model.TryGetEquippedItemForEquipmentSlotType(slot, out InventoryItemEntry equipped))
             {
                 return;
             }
@@ -146,7 +146,7 @@ namespace SpaceInvaders.Scenes.MainMenu
                 return;
             }
 
-            if(!_model.TryGetEquipmentSlotForItem(inventoryItem.entry, out EquipmentSlotTypes? slot))
+            if(!_model.TryGetEquipmentSlotTypeForItem(inventoryItem.entry, out EquipmentSlotTypes? slot))
             {
                 return;
             }

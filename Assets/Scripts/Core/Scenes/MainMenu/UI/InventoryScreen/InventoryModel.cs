@@ -38,15 +38,15 @@ namespace SpaceInvaders.Scenes.MainMenu
             return item.entry != null && item.config != null;
         }
 
-        public bool TryGetEquippedItemForEquipmentSlot(EquipmentSlotTypes slot, out InventoryItemEntry item)
+        public bool TryGetEquippedItemForEquipmentSlotType(EquipmentSlotTypes slot, out InventoryItemEntry item)
         {
-            item = _equipmentManager.GetEquippedItem(slot);
+            item = _equipmentManager.GetEquippedItemForEquipmentSlotType(slot);
             return item != null;
         }
 
-        public bool TryGetEquipmentSlotForItem(InventoryItemEntry entry, out EquipmentSlotTypes? slot)
+        public bool TryGetEquipmentSlotTypeForItem(InventoryItemEntry entry, out EquipmentSlotTypes? slot)
         {
-            slot = _equipmentManager.GetEquipmentSlotForItem(entry);
+            slot = _equipmentManager.GetEquipmentSlotTypeForItem(entry.InstanceId);
             return slot != null;
         }
 

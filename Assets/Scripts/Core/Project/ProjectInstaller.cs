@@ -36,6 +36,8 @@ namespace SpaceInvaders.Project
             Container.BindInterfacesTo<LevelManager>().AsSingle();
             Container.BindInterfacesTo<CurrencyManager>().AsSingle();
             Container.BindInterfacesTo<TalentManager>().AsSingle();
+            Container.BindInterfacesTo<InventoryManager>().AsSingle();
+            Container.BindInterfacesTo<EquipmentManager>().AsSingle();
         }
 
         private void ServicesInstall()

@@ -52,10 +52,6 @@ namespace SpaceInvaders.Project
         public int Level;
     }
 
-    /// <summary>
-    /// One owned item. Affixes are rolled at drop time, so every entry is unique.
-    /// ItemId points back at the ItemConfigSO template for icon, name, slot and rarity.
-    /// </summary>
     public class InventoryItemEntry
     {
         public string InstanceId;
