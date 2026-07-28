@@ -20,3 +20,4 @@ MonoBehaviour:
   _talentsDataConfigSO: {fileID: 11400000, guid: 0066424f87f16d148905cc1f76b9432c, type: 2}
   _soundsDataConfigSO: {fileID: 11400000, guid: f2aef56594a2c4b44b05dc74f26329f8, type: 2}
   _itemsDataConfigSO: {fileID: 11400000, guid: 56be236a491fb5a4d8fe7ff22880ad91, type: 2}
+  _dropTableConfigSO: {fileID: 11400000, guid: aea00731d6b6bfd4f9b8146440c87f8d, type: 2}

@@ -23,7 +23,9 @@ namespace SpaceInvaders.Project
         //Powerups
         PowerupConfigSO GetPowerupConfig(PowerupTypes powerupType);
         IReadOnlyList<PowerupConfigSO> GetAllPowerupConfigs();
-        float GetPowerupDropChance();
+
+        //Drops
+        IReadOnlyList<DropCategoryWeightDTO> GetAllDropCategoryWeights();
 
         //Talents
         TalentConfigSO GetTalentConfig(ShipUpgradableStatTypes talentType);
@@ -37,7 +39,6 @@ namespace SpaceInvaders.Project
         IReadOnlyList<ItemConfigSO> GetAllItemConfigs();
         ItemRarityConfigSO GetItemRarityConfig(ItemRarityTypes rarity);
         IReadOnlyList<ItemRarityConfigSO> GetAllItemRarityConfigs();
-        float GetItemDropChance();
         IReadOnlyList<EquipmentSlotConfigDTO> GetAllEquipmentSlotConfigs();
     }
 
@@ -51,7 +52,8 @@ namespace SpaceInvaders.Project
             ProjectDataConfigSO projectDataConfigSO,
             TalentsDataConfigSO talentsDataConfigSO,
             SoundsDataConfigSO soundsDataConfigSO,
-            ItemsDataConfigSO itemsDataConfigSO)
+            ItemsDataConfigSO itemsDataConfigSO,
+            DropTableConfigSO dropTableConfigSO)
         {
             AddObjects(levelsDataConfigSO.LevelsConfigs);
             AddObjects(playerDataConfigSO.PlayerConfigs);
@@ -70,6 +72,7 @@ namespace SpaceInvaders.Project
             AddObject(talentsDataConfigSO);
             AddObject(soundsDataConfigSO);
             AddObject(itemsDataConfigSO);
+            AddObject(dropTableConfigSO);
         }
 
         #region Project
@@ -131,9 +134,13 @@ namespace SpaceInvaders.Project
             return GetAll<PowerupConfigSO>().ToArray();
         }
 
-        public float GetPowerupDropChance()
+        #endregion
+
+        #region Drops
+
+        public IReadOnlyList<DropCategoryWeightDTO> GetAllDropCategoryWeights()
         {
-            return Get<PowerupsDataConfigSO>(nameof(PowerupsDataConfigSO)).GlobalPowerupDropChance;
+            return Get<DropTableConfigSO>(nameof(DropTableConfigSO)).CategoryWeights;
         }
 
         #endregion
@@ -181,11 +188,6 @@ namespace SpaceInvaders.Project
         public IReadOnlyList<ItemRarityConfigSO> GetAllItemRarityConfigs()
         {
             return GetAll<ItemRarityConfigSO>().ToArray();
-        }
-
-        public float GetItemDropChance()
-        {
-            return Get<ItemsDataConfigSO>(nameof(ItemsDataConfigSO)).GlobalItemDropChance;
         }
 
         public IReadOnlyList<EquipmentSlotConfigDTO> GetAllEquipmentSlotConfigs()

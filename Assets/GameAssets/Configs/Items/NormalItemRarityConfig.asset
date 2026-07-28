@@ -17,4 +17,4 @@ MonoBehaviour:
   _affixCount: 1
   _displayName: Normal
   _displayColor: {r: 1, g: 1, b: 1, a: 1}
-  _pickupPrefab: {fileID: 0}
+  _pickupPrefab: {fileID: 682224948518202323, guid: 98b368879d19c11459cc03be6fe12645, type: 3}

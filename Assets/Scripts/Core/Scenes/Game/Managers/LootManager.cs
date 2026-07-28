@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using BaseArchitecture.Core;
 using Cysharp.Threading.Tasks;
 using SpaceInvaders.Project;
+using UnityEngine;
 using Zenject;
-using Random = UnityEngine.Random;
 
 namespace SpaceInvaders.Scenes.Game
 {
@@ -14,8 +14,10 @@ namespace SpaceInvaders.Scenes.Game
     }
 
     /// <summary>
-    /// Rolls item drops on enemy kills and holds what the player picked up this run.
-    /// Pending loot is only committed to the inventory when the level is completed.
+    /// Decides what, if anything, drops on an enemy kill - exactly one category (Powerup, Item,
+    /// or none) wins a weighted roll, so a single kill can never drop both. Also holds what the
+    /// player picked up this run; pending loot is only committed to the inventory when the level
+    /// is completed.
     /// </summary>
     public class LootManager : ILootManager
     {
@@ -66,13 +68,50 @@ namespace SpaceInvaders.Scenes.Game
 
         private void OnEnemyDestroyed(EnemyDestroyedMessage message)
         {
-            if (!TryRollItemDrop(out InventoryItemEntry item, out ItemRarityConfigSO rarityConfig))
+            switch (RollDropCategory())
+            {
+                case DropCategoryTypes.Powerup:
+                {
+                    SpawnPowerupDrop(message.Position);
+                    break;
+                }
+                case DropCategoryTypes.Item:
+                {
+                    SpawnItemDrop(message.Position);
+                    break;
+                }
+            }
+        }
+
+        private void SpawnItemDrop(Vector3 position)
+        {
+            ItemRarityConfigSO rarityConfig = RollRarity();
+            if (rarityConfig == null)
             {
                 return;
             }
 
-            _spawnService.SpawnItemPickup(rarityConfig, item, message.Position);
-            _messageBus.Publish(new ItemDroppedMessage(item.InstanceId, message.Position));
+            ItemConfigSO itemConfig = RollItem(rarityConfig.Rarity);
+            if (itemConfig == null)
+            {
+                return;
+            }
+
+            InventoryItemEntry item = itemConfig.RollEntry(rarityConfig.AffixCount);
+
+            _spawnService.SpawnItemPickup(rarityConfig, item, position);
+            _messageBus.Publish(new ItemDroppedMessage(item.InstanceId, position));
+        }
+
+        private void SpawnPowerupDrop(Vector3 position)
+        {
+            PowerupConfigSO config = GameUtils.RollWeighted(_repositoryManager.GetAllPowerupConfigs(), candidate => candidate.DropWeight);
+            if (config == null)
+            {
+                return;
+            }
+
+            _spawnService.SpawnPowerup(config, position);
         }
 
         private void OnLevelCompleted(LevelCompletedMessage message)
@@ -87,61 +126,19 @@ namespace SpaceInvaders.Scenes.Game
             _inventoryManager.AddItems(bankedLoot);
         }
 
-#region  Drop Rolls
+        #region Drop Rolls
 
-        private bool TryRollItemDrop(out InventoryItemEntry item, out ItemRarityConfigSO rarityConfig)
+        private DropCategoryTypes RollDropCategory()
         {
-            item = null;
-            rarityConfig = null;
+            IReadOnlyList<DropCategoryWeightDTO> weights = _repositoryManager.GetAllDropCategoryWeights();
+            DropCategoryWeightDTO winner = GameUtils.RollWeighted(weights, weight => weight.Weight);
 
-            if (Random.value > _repositoryManager.GetItemDropChance())
-            {
-                return false;
-            }
-
-            rarityConfig = RollRarity();
-            if (rarityConfig == null)
-            {
-                return false;
-            }
-
-            ItemConfigSO itemConfig = RollItem(rarityConfig.Rarity);
-            if (itemConfig == null)
-            {
-                return false;
-            }
-
-            item = itemConfig.RollEntry(rarityConfig.AffixCount);
-            return true;
+            return winner?.Category ?? DropCategoryTypes.None;
         }
 
         private ItemRarityConfigSO RollRarity()
         {
-            IReadOnlyList<ItemRarityConfigSO> rarities = _repositoryManager.GetAllItemRarityConfigs();
-
-            int totalWeight = 0;
-            foreach (ItemRarityConfigSO candidate in rarities)
-            {
-                totalWeight += candidate.DropWeight;
-            }
-
-            if (totalWeight <= 0)
-            {
-                return null;
-            }
-
-            int roll = Random.Range(0, totalWeight);
-
-            foreach (ItemRarityConfigSO candidate in rarities)
-            {
-                roll -= candidate.DropWeight;
-                if (roll < 0)
-                {
-                    return candidate;
-                }
-            }
-
-            return null;
+            return GameUtils.RollWeighted(_repositoryManager.GetAllItemRarityConfigs(), candidate => candidate.DropWeight);
         }
 
         private ItemConfigSO RollItem(ItemRarityTypes rarity)
@@ -162,31 +159,9 @@ namespace SpaceInvaders.Scenes.Game
                 return null;
             }
 
-            int totalWeight = 0;
-            foreach (ItemConfigSO candidate in candidates)
-            {
-                totalWeight += candidate.DropWeight;
-            }
-
-            if (totalWeight <= 0)
-            {
-                return null;
-            }
-
-            int roll = Random.Range(0, totalWeight);
-
-            foreach (ItemConfigSO candidate in candidates)
-            {
-                roll -= candidate.DropWeight;
-                if (roll < 0)
-                {
-                    return candidate;
-                }
-            }
-
-            return null;
+            return GameUtils.RollWeighted(candidates, candidate => candidate.DropWeight);
         }
-        
+
         #endregion
     }
 }

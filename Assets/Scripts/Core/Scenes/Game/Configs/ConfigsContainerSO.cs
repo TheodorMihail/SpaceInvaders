@@ -15,6 +15,7 @@ namespace SpaceInvaders.Scenes.Game
         [SerializeField] private TalentsDataConfigSO _talentsDataConfigSO;
         [SerializeField] private SoundsDataConfigSO _soundsDataConfigSO;
         [SerializeField] private ItemsDataConfigSO _itemsDataConfigSO;
+        [SerializeField] private DropTableConfigSO _dropTableConfigSO;
 
         public LevelsDataConfigSO LevelsDataConfigSO => _levelsDataConfigSO;
         public PlayerDataConfigSO PlayerDataConfigSO => _playerDataConfigSO;
@@ -24,5 +25,6 @@ namespace SpaceInvaders.Scenes.Game
         public TalentsDataConfigSO TalentsDataConfigSO => _talentsDataConfigSO;
         public SoundsDataConfigSO SoundsDataConfigSO => _soundsDataConfigSO;
         public ItemsDataConfigSO ItemsDataConfigSO => _itemsDataConfigSO;
+        public DropTableConfigSO DropTableConfigSO => _dropTableConfigSO;
     }
 }

@@ -20,6 +20,7 @@ namespace SpaceInvaders.Tests
 
         private readonly List<ItemConfigSO> _itemConfigs = new();
         private readonly List<ItemRarityConfigSO> _rarityConfigs = new();
+        private readonly List<PowerupConfigSO> _powerupConfigs = new();
 
         [SetUp]
         public override void Setup()
@@ -28,10 +29,12 @@ namespace SpaceInvaders.Tests
 
             _itemConfigs.Clear();
             _rarityConfigs.Clear();
+            _powerupConfigs.Clear();
 
             _mockRepositoryManager = Substitute.For<IRepositoryManager>();
             _mockRepositoryManager.GetAllItemConfigs().Returns(_ => _itemConfigs);
             _mockRepositoryManager.GetAllItemRarityConfigs().Returns(_ => _rarityConfigs);
+            _mockRepositoryManager.GetAllPowerupConfigs().Returns(_ => _powerupConfigs);
             _mockRepositoryManager.GetItemConfig(Arg.Any<string>())
                 .Returns(call => _itemConfigs.Find(config => config.ItemId == (string)call[0]));
 
@@ -81,10 +84,27 @@ namespace SpaceInvaders.Tests
             return new ItemAffixDTO(statType, min, max);
         }
 
+        private void AddPowerup(PowerupTypes type, int dropWeight = 1)
+        {
+            var config = Substitute.For<PowerupConfigSO>();
+            config.PowerupType.Returns(type);
+            config.DropWeight.Returns(dropWeight);
+            _powerupConfigs.Add(config);
+        }
+
         private void SetupSingleNormalItem(int affixCount = 1, params ItemAffixDTO[] affixes)
         {
             AddRarity(ItemRarityTypes.Normal, 1, affixCount);
             AddItem("PlasmaWing", ItemRarityTypes.Normal, affixes);
+        }
+
+        /// <summary>Stubs the category roll so only the given category can ever win.</summary>
+        private void GuaranteeDropCategory(DropCategoryTypes category)
+        {
+            _mockRepositoryManager.GetAllDropCategoryWeights().Returns(new List<DropCategoryWeightDTO>
+            {
+                new(category, 1)
+            });
         }
 
         private static void PublishEnemyDestroyed(IMessageBus bus)
@@ -105,10 +125,10 @@ namespace SpaceInvaders.Tests
         }
 
         [Test]
-        public void OnEnemyDestroyed_WithZeroDropChance_DoesNotSpawnPickup()
+        public void OnEnemyDestroyed_WhenNoneCategoryWins_DoesNotSpawnPickup()
         {
             SetupSingleNormalItem();
-            _mockRepositoryManager.GetItemDropChance().Returns(0f);
+            GuaranteeDropCategory(DropCategoryTypes.None);
 
             PublishEnemyDestroyed(_messageBus);
 
@@ -117,15 +137,41 @@ namespace SpaceInvaders.Tests
         }
 
         [Test]
-        public void OnEnemyDestroyed_WithGuaranteedDropChance_SpawnsPickup()
+        public void OnEnemyDestroyed_WhenItemCategoryWins_SpawnsPickup()
         {
             SetupSingleNormalItem(1, Affix(ShipUpgradableStatTypes.Damage));
-            _mockRepositoryManager.GetItemDropChance().Returns(1f);
+            GuaranteeDropCategory(DropCategoryTypes.Item);
 
             PublishEnemyDestroyed(_messageBus);
 
             _mockSpawnService.Received(1).SpawnItemPickup(
                 Arg.Any<ItemRarityConfigSO>(), Arg.Any<InventoryItemEntry>(), Arg.Any<Vector3>());
+        }
+
+        [Test]
+        public void OnEnemyDestroyed_WhenPowerupCategoryWins_SpawnsPowerupDropAndNoItem()
+        {
+            SetupSingleNormalItem(1, Affix(ShipUpgradableStatTypes.Damage));
+            AddPowerup(PowerupTypes.Heal);
+            GuaranteeDropCategory(DropCategoryTypes.Powerup);
+
+            PublishEnemyDestroyed(_messageBus);
+
+            _mockSpawnService.Received(1).SpawnPowerup(Arg.Any<PowerupConfigSO>(), Vector3.zero);
+            _mockSpawnService.DidNotReceive().SpawnItemPickup(
+                Arg.Any<ItemRarityConfigSO>(), Arg.Any<InventoryItemEntry>(), Arg.Any<Vector3>());
+        }
+
+        [Test]
+        public void OnEnemyDestroyed_WhenItemCategoryWins_DoesNotSpawnPowerupDrop()
+        {
+            SetupSingleNormalItem(1, Affix(ShipUpgradableStatTypes.Damage));
+            AddPowerup(PowerupTypes.Heal);
+            GuaranteeDropCategory(DropCategoryTypes.Item);
+
+            PublishEnemyDestroyed(_messageBus);
+
+            _mockSpawnService.DidNotReceive().SpawnPowerup(Arg.Any<PowerupConfigSO>(), Arg.Any<Vector3>());
         }
 
         [Test]
@@ -136,7 +182,7 @@ namespace SpaceInvaders.Tests
                 Affix(ShipUpgradableStatTypes.Damage),
                 Affix(ShipUpgradableStatTypes.MoveSpeed),
                 Affix(ShipUpgradableStatTypes.Health));
-            _mockRepositoryManager.GetItemDropChance().Returns(1f);
+            GuaranteeDropCategory(DropCategoryTypes.Item);
 
             InventoryItemEntry item = CaptureSpawnedItem();
 
@@ -152,7 +198,7 @@ namespace SpaceInvaders.Tests
                 Affix(ShipUpgradableStatTypes.Damage),
                 Affix(ShipUpgradableStatTypes.MoveSpeed),
                 Affix(ShipUpgradableStatTypes.Health));
-            _mockRepositoryManager.GetItemDropChance().Returns(1f);
+            GuaranteeDropCategory(DropCategoryTypes.Item);
 
             InventoryItemEntry item = CaptureSpawnedItem();
 
@@ -167,7 +213,7 @@ namespace SpaceInvaders.Tests
         public void OnEnemyDestroyed_RollsBonusWithinAuthoredRange()
         {
             SetupSingleNormalItem(1, Affix(ShipUpgradableStatTypes.Damage, 0.25f, 0.75f));
-            _mockRepositoryManager.GetItemDropChance().Returns(1f);
+            GuaranteeDropCategory(DropCategoryTypes.Item);
 
             InventoryItemEntry item = CaptureSpawnedItem();
 
@@ -180,7 +226,7 @@ namespace SpaceInvaders.Tests
         public void OnEnemyDestroyed_AssignsUniqueInstanceIds()
         {
             SetupSingleNormalItem(1, Affix(ShipUpgradableStatTypes.Damage));
-            _mockRepositoryManager.GetItemDropChance().Returns(1f);
+            GuaranteeDropCategory(DropCategoryTypes.Item);
 
             var ids = new List<string>();
             _mockSpawnService.SpawnItemPickup(
@@ -200,7 +246,7 @@ namespace SpaceInvaders.Tests
         {
             AddRarity(ItemRarityTypes.Normal, 1, 3);
             AddItem("PlasmaWing", ItemRarityTypes.Normal, Affix(ShipUpgradableStatTypes.Damage));
-            _mockRepositoryManager.GetItemDropChance().Returns(1f);
+            GuaranteeDropCategory(DropCategoryTypes.Item);
 
             InventoryItemEntry item = CaptureSpawnedItem();
 
@@ -211,7 +257,7 @@ namespace SpaceInvaders.Tests
         public void OnEnemyDestroyed_WithNoItemsForRolledRarity_DoesNotSpawnPickup()
         {
             AddRarity(ItemRarityTypes.Legendary, 1, 1);
-            _mockRepositoryManager.GetItemDropChance().Returns(1f);
+            GuaranteeDropCategory(DropCategoryTypes.Item);
 
             PublishEnemyDestroyed(_messageBus);
 
@@ -282,7 +328,7 @@ namespace SpaceInvaders.Tests
         public void Dispose_StopsReactingToEnemyDestroyedMessage()
         {
             SetupSingleNormalItem(1, Affix(ShipUpgradableStatTypes.Damage));
-            _mockRepositoryManager.GetItemDropChance().Returns(1f);
+            GuaranteeDropCategory(DropCategoryTypes.Item);
 
             _lootManager.Dispose();
             PublishEnemyDestroyed(_messageBus);

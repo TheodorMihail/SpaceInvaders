@@ -29,7 +29,8 @@ namespace SpaceInvaders.Project
                 _configsContainerSO.LevelsDataConfigSO, _configsContainerSO.PlayerDataConfigSO,
                 _configsContainerSO.EnemyDataConfigSO, _configsContainerSO.PowerupsDataConfigSO,
                 _configsContainerSO.ProjectDataConfigSO, _configsContainerSO.TalentsDataConfigSO,
-                _configsContainerSO.SoundsDataConfigSO, _configsContainerSO.ItemsDataConfigSO
+                _configsContainerSO.SoundsDataConfigSO, _configsContainerSO.ItemsDataConfigSO,
+                _configsContainerSO.DropTableConfigSO
             });
 
             Container.BindInterfacesTo<SoundsManager>().AsSingle();

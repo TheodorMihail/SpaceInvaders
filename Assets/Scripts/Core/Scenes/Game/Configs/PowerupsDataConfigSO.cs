@@ -10,11 +10,7 @@ namespace SpaceInvaders.Scenes.Game
         [Header("Powerups")]
         [SerializeField] private List<PowerupConfigSO> _powerupConfigs;
 
-        [Header("Powerup Settings")]
-        [SerializeField, Range(0f, 1f)] private float _globalPowerupDropChance = 0.15f;
-
         public virtual List<PowerupConfigSO> PowerupConfigs => _powerupConfigs;
-        public virtual float GlobalPowerupDropChance => _globalPowerupDropChance;
 
         public string ObjectID => nameof(PowerupsDataConfigSO);
     }

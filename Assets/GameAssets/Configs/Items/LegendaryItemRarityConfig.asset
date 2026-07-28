@@ -17,4 +17,4 @@ MonoBehaviour:
   _affixCount: 3
   _displayName: Legendary
   _displayColor: {r: 1, g: 0.66177595, b: 0, a: 1}
-  _pickupPrefab: {fileID: 0}
+  _pickupPrefab: {fileID: 4897564844788297738, guid: 1d7997b38f8438e41b173a2e25d9806b, type: 3}

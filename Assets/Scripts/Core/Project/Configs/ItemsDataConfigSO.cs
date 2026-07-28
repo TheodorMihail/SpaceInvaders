@@ -52,13 +52,9 @@ namespace SpaceInvaders.Project
         [Header("Equipment")]
         [SerializeField] private List<EquipmentSlotConfigDTO> _slotConfigs;
 
-        [Header("Drop Settings")]
-        [SerializeField, Range(0f, 1f)] private float _globalItemDropChance = 0.1f;
-
         public virtual List<ItemConfigSO> ItemConfigs => _itemConfigs;
         public virtual List<ItemRarityConfigSO> RarityConfigs => _rarityConfigs;
         public virtual IReadOnlyList<EquipmentSlotConfigDTO> SlotConfigs => _slotConfigs ?? new List<EquipmentSlotConfigDTO>();
-        public virtual float GlobalItemDropChance => _globalItemDropChance;
 
         public string ObjectID => nameof(ItemsDataConfigSO);
     }
