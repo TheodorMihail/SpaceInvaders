@@ -190,5 +190,46 @@ namespace SpaceInvaders.Scenes.Game
             ExtraShotCount = Mathf.Max(0, ExtraShotCount + deltaCount);
             SpreadAngleDegrees = ExtraShotCount > 0 ? angleDegrees : 0f;
         }
+
+        public static string StatDisplayName(ShipUpgradableStatTypes statType)
+        {
+            return statType switch
+            {
+                ShipUpgradableStatTypes.Health => "Health",
+                ShipUpgradableStatTypes.MoveSpeed => "Move Speed",
+                ShipUpgradableStatTypes.FireRate => "Fire Rate",
+                ShipUpgradableStatTypes.Damage => "Damage",
+                ShipUpgradableStatTypes.ProjectileSpeed => "Projectile Speed",
+                _ => statType.ToString()
+            };
+        }
+
+        public static string AffixFormat(ShipUpgradableStatTypes statType, float bonus)
+        {
+            return $"{StatDisplayName(statType)} {FormatPercent(bonus)}";
+        }
+
+        public static string FormatStatValue(ShipUpgradableStatTypes statType, float value)
+        {
+            // Health/Damage are whole numbers on ShipStats (Mathf.RoundToInt); the rest are floats.
+            bool isWholeNumberStat = statType == ShipUpgradableStatTypes.Health || statType == ShipUpgradableStatTypes.Damage;
+            if (isWholeNumberStat)
+            {
+                return ((int)Math.Round(value, MidpointRounding.AwayFromZero)).ToString();
+            }
+
+            return value.ToString("0.#");
+        }
+
+        public static string FormatStatDelta(ShipUpgradableStatTypes statType, float delta)
+        {
+            string sign = delta >= 0f ? "+" : string.Empty; // negative values already print their own "-"
+            return $"{sign}{FormatStatValue(statType, delta)}";
+        }
+
+        private static string FormatPercent(float bonus)
+        {
+            return $"{(bonus >= 0f ? "+" : string.Empty)}{bonus * 100f:0.#}%";
+        }
     }
 }

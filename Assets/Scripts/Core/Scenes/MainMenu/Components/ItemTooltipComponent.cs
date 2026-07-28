@@ -2,6 +2,11 @@ using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using SpaceInvaders.Project;
+using SpaceInvaders.Scenes.Game;
+using Zenject;
+using System.Text;
+using System.Collections.Generic;
 
 namespace SpaceInvaders.Scenes.MainMenu
 {
@@ -11,22 +16,28 @@ namespace SpaceInvaders.Scenes.MainMenu
     /// </summary>
     public class ItemTooltipComponent : MonoBehaviour
     {
+        [Inject] private readonly IInventoryManager _inventoryManager;
+        [Inject] private readonly IEquipmentManager _equipmentManager;
+        [Inject] private readonly IRepositoryManager _repositoryManager;
+        
         [Header("References")]
         [SerializeField] private RectTransform _rectTransform;
         [SerializeField] private TextMeshProUGUI _titleText;
         [SerializeField] private TextMeshProUGUI _rarityText;
         [SerializeField] private TextMeshProUGUI _bodyText;
-        [SerializeField] private Button _actionButton;
-        [SerializeField] private TextMeshProUGUI _actionButtonText;
+        [SerializeField] private Button _equipButton;
+        [SerializeField] private Button _unequipButton;
+        [SerializeField] private List<Button> _closeBackgroundBtnList;
 
         [Header("Placement")]
-        [SerializeField] private Vector2 _localOffset = new Vector2(24f, -24f);
+        [SerializeField] private Vector2 _localOffset = new Vector2(-50f, 0);
 
         private RectTransform _parentRect;
         private Canvas _canvas;
         private RectTransform _canvasRect;
+        private string _currentInstanceId;
 
-        public event Action OnActionClicked;
+        public event Action OnHide;
 
         private void Awake()
         {
@@ -34,10 +45,66 @@ namespace SpaceInvaders.Scenes.MainMenu
             _canvas = GetComponentInParent<Canvas>().rootCanvas;
             _canvasRect = _canvas.GetComponent<RectTransform>();
 
-            _actionButton.onClick.AddListener(() => OnActionClicked?.Invoke());
+            _equipButton.onClick.AddListener(() => ActionButtonClicked(true));
+            _unequipButton.onClick.AddListener(() => ActionButtonClicked(false));
+
+            foreach (var btn in _closeBackgroundBtnList)
+            {
+                btn.onClick.AddListener(Hide);
+            }
         }
 
-        public void Show(RectTransform anchor, string title, string rarityText, string body, string actionLabel, bool showAction)
+        public void Show(RectTransform anchor, string instanceId)
+        {
+            Hide();
+
+            InventoryItemEntry entry = _inventoryManager.GetItem(instanceId);
+            ItemConfigSO config = entry != null ? _inventoryManager.GetItemConfig(entry) : null;
+
+            if (entry == null || config == null)
+            {
+                return;
+            }
+
+            _currentInstanceId = instanceId;
+            ItemRarityConfigSO rarityConfig = _repositoryManager.GetItemRarityConfig(config.Rarity);
+            string rarityText = rarityConfig != null ? rarityConfig.DisplayName : config.Rarity.ToString();
+            _rarityText.color = rarityConfig != null ? rarityConfig.DisplayColor : Color.white;
+            bool isEquipped = _equipmentManager.IsEquipped(instanceId);
+
+            _equipButton.gameObject.SetActive(!isEquipped);
+            _unequipButton.gameObject.SetActive(isEquipped);
+
+            Show(anchor, config.DisplayName, rarityText, BuildAffixesText(entry));
+        }
+
+
+        public void Hide()
+        {
+            gameObject.SetActive(false);
+            OnHide?.Invoke();
+        }
+
+        private void ActionButtonClicked(bool equip)
+        {
+            if(_currentInstanceId == null)
+            {
+                return;
+            }
+
+            if (equip)
+            {
+                _equipmentManager.Equip(_currentInstanceId);
+            }
+            else
+            {
+                _equipmentManager.Unequip(_currentInstanceId);
+            }
+
+            Hide();
+        }
+
+        private void Show(RectTransform anchor, string title, string rarityText, string body)
         {
             gameObject.SetActive(true);
 
@@ -45,19 +112,27 @@ namespace SpaceInvaders.Scenes.MainMenu
             _rarityText.gameObject.SetActive(!string.IsNullOrEmpty(rarityText));
             _rarityText.text = rarityText;
             _bodyText.text = body;
-            _actionButtonText.text = actionLabel;
-            _actionButton.gameObject.SetActive(showAction);
 
-            // A freshly (re)activated/resized rect hasn't rebuilt layout yet this frame - force it
-            // now so the rect.size read during clamping below isn't stale from before this Show().
             Canvas.ForceUpdateCanvases();
 
             PositionNear(anchor);
         }
 
-        public void Hide()
+        private string BuildAffixesText(InventoryItemEntry entry)
         {
-            gameObject.SetActive(false);
+            var builder = new StringBuilder();
+
+            foreach (RolledAffixEntry affix in entry.Affixes)
+            {
+                if (!Enum.TryParse(affix.StatType, out ShipUpgradableStatTypes statType))
+                {
+                    continue;
+                }
+
+                builder.AppendLine(ShipStats.AffixFormat(statType, affix.Bonus));
+            }
+
+            return builder.ToString().TrimEnd();
         }
 
         private void PositionNear(RectTransform anchor)

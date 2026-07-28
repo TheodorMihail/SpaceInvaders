@@ -74,5 +74,40 @@ namespace SpaceInvaders.Project
         public virtual IReadOnlyList<ItemAffixDTO> PossibleAffixes => _possibleAffixes;
 
         public virtual string ObjectID => _itemId;
+
+        /// <summary>Rolls a fresh owned instance of this item: a new instance id and up to
+        /// affixCount distinct affixes drawn from the pool. Shared by real drops (LootManager)
+        /// and the debug "add random item" cheat (InventoryManager), so both stay in sync.</summary>
+        public InventoryItemEntry RollEntry(int affixCount)
+        {
+            var entry = new InventoryItemEntry
+            {
+                InstanceId = Guid.NewGuid().ToString(),
+                ItemId = _itemId
+            };
+
+            var pool = new List<ItemAffixDTO>(PossibleAffixes ?? new List<ItemAffixDTO>());
+            int rollCount = Mathf.Min(affixCount, pool.Count);
+
+            if (pool.Count < affixCount)
+            {
+                this.LogWarning($"Item '{_itemId}' has {pool.Count} affixes but rolled for {affixCount}. Rolling what is available.");
+            }
+
+            for (int i = 0; i < rollCount; i++)
+            {
+                int index = UnityEngine.Random.Range(0, pool.Count);
+                ItemAffixDTO affix = pool[index];
+                pool.RemoveAt(index);
+
+                entry.Affixes.Add(new RolledAffixEntry
+                {
+                    StatType = affix.StatType.ToString(),
+                    Bonus = UnityEngine.Random.Range(affix.MinBonus, affix.MaxBonus)
+                });
+            }
+
+            return entry;
+        }
     }
 }

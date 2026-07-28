@@ -1,49 +1,63 @@
-using System;
+using System.Collections.Generic;
+using System.Text;
 using BaseArchitecture.Core;
 using SpaceInvaders.Project;
 using SpaceInvaders.Scenes.Game;
+using Zenject;
 
 namespace SpaceInvaders.Scenes.MainMenu
 {
     public class InventoryModel : Model
     {
+        [Inject] private readonly IInventoryManager _inventoryManager;
+        [Inject] private readonly IEquipmentManager _equipmentManager;
+        [Inject] private readonly ITalentManager _talentManager;
+        [Inject] private readonly IRepositoryManager _repositoryManager;
+        
         public string EmptyInventoryText { get; } = "No items collected yet.";
-        public string EquipActionLabel { get; } = "Equip";
-        public string UnequipActionLabel { get; } = "Unequip";
 
-        /// <summary>Instance id of the inventory item whose tooltip is open, or null.</summary>
-        public string OpenItemInstanceId { get; set; }
-
-        /// <summary>Equipment slot whose tooltip is open, or null. Mutually exclusive with OpenItemInstanceId.</summary>
-        public EquipmentSlots? OpenSlot { get; set; }
-
-        public void CloseTooltip()
+        public IEnumerable<(InventoryItemEntry entry, ItemConfigSO config)> GetInventoryItems()
         {
-            OpenItemInstanceId = null;
-            OpenSlot = null;
-        }
-
-        public string AffixFormat(ShipUpgradableStatTypes statType, float bonus)
-        {
-            return $"{StatDisplayName(statType)} {FormatPercent(bonus)}";
-        }
-
-        public string StatDisplayName(ShipUpgradableStatTypes statType)
-        {
-            return statType switch
+            foreach (InventoryItemEntry entry in _inventoryManager.Items)
             {
-                ShipUpgradableStatTypes.Health => "Health",
-                ShipUpgradableStatTypes.MoveSpeed => "Move Speed",
-                ShipUpgradableStatTypes.FireRate => "Fire Rate",
-                ShipUpgradableStatTypes.Damage => "Damage",
-                ShipUpgradableStatTypes.ProjectileSpeed => "Projectile Speed",
-                _ => statType.ToString()
-            };
+                ItemConfigSO config = _inventoryManager.GetItemConfig(entry);
+                if (config == null)
+                {
+                    continue;
+                }
+
+                yield return (entry, config);
+            }
         }
 
-        public string FormatPercent(float bonus)
+        public bool TryGetInventoryItem(string instanceId, out (InventoryItemEntry entry, ItemConfigSO config) item)
         {
-            return $"{(bonus >= 0f ? "+" : string.Empty)}{bonus * 100f:0.#}%";
+            item.entry = _inventoryManager.GetItem(instanceId);
+            item.config = _inventoryManager.GetItemConfig(item.entry);
+
+            return item.entry != null && item.config != null;
+        }
+
+        public bool TryGetEquippedItemForEquipmentSlot(EquipmentSlots slot, out InventoryItemEntry item)
+        {
+            item = _equipmentManager.GetEquippedItem(slot);
+            return item != null;
+        }
+
+        public bool TryGetEquipmentSlotForItem(InventoryItemEntry entry, out EquipmentSlots? slot)
+        {
+            slot = _equipmentManager.GetSlotForItem(entry);
+            return slot != null;
+        }
+
+        public ItemRarityConfigSO GetItemRarity(ItemRarities rarity)
+        {
+            return _repositoryManager.GetItemRarityConfig(rarity);
+        }
+
+        public bool IsItemEquipped(string instanceId)
+        {
+            return _equipmentManager.IsEquipped(instanceId);
         }
 
         /// <summary>
@@ -54,27 +68,42 @@ namespace SpaceInvaders.Scenes.MainMenu
         public string StatRowText(ShipUpgradableStatTypes statType, float baseValue, float withEquipmentValue)
         {
             float delta = withEquipmentValue - baseValue;
-            string baseText = FormatStatValue(statType, baseValue);
-            string deltaText = delta == 0 ? "" : FormatStatDelta(statType, delta);
-            return $"{StatDisplayName(statType)}: <color=white>{baseText}</color> <color=green>{deltaText}</color>";
+            string baseText = ShipStats.FormatStatValue(statType, baseValue);
+            string deltaText = delta == 0 ? "" : ShipStats.FormatStatDelta(statType, delta);
+            return $"{ShipStats.StatDisplayName(statType)}: <color=white>{baseText}</color> <color=green>{deltaText}</color>";
         }
 
-        private string FormatStatDelta(ShipUpgradableStatTypes statType, float delta)
+        public string GetStatsPanel()
         {
-            string sign = delta >= 0f ? "+" : string.Empty; // negative values already print their own "-"
-            return $"{sign}{FormatStatValue(statType, delta)}";
+            (ShipStats withoutEquipment, ShipStats withEquipment) = BuildComparableStats();
+            var builder = new StringBuilder();
+
+            builder.AppendLine(StatRowText(ShipUpgradableStatTypes.Health, withoutEquipment.CurrentMaxHealth, withEquipment.CurrentMaxHealth));
+            builder.AppendLine(StatRowText(ShipUpgradableStatTypes.MoveSpeed, withoutEquipment.CurrentMoveSpeed, withEquipment.CurrentMoveSpeed));
+            builder.AppendLine(StatRowText(ShipUpgradableStatTypes.FireRate, withoutEquipment.CurrentFireRate, withEquipment.CurrentFireRate));
+            builder.AppendLine(StatRowText(ShipUpgradableStatTypes.Damage, withoutEquipment.CurrentProjectileDamage, withEquipment.CurrentProjectileDamage));
+            builder.Append(StatRowText(ShipUpgradableStatTypes.ProjectileSpeed, withoutEquipment.CurrentProjectileSpeed, withEquipment.CurrentProjectileSpeed));
+
+            return builder.ToString();
         }
 
-        private string FormatStatValue(ShipUpgradableStatTypes statType, float value)
+        /// <summary>
+        /// Builds two independent stat snapshots - one with only talents applied, one with
+        /// talents and equipment - so the stat sheet can isolate exactly what the currently
+        /// equipped gear contributes on top of the base value.
+        /// </summary>
+        private (ShipStats withoutEquipment, ShipStats withEquipment) BuildComparableStats()
         {
-            // Health/Damage are whole numbers on ShipStats (Mathf.RoundToInt); the rest are floats.
-            bool isWholeNumberStat = statType == ShipUpgradableStatTypes.Health || statType == ShipUpgradableStatTypes.Damage;
-            if (isWholeNumberStat)
-            {
-                return ((int)Math.Round(value, MidpointRounding.AwayFromZero)).ToString();
-            }
+            PlayerSpaceshipConfigSO config = _repositoryManager.GetPlayerConfig(PlayerTypes.Player1);
 
-            return value.ToString("0.#");
+            ShipStats withoutEquipment = config.CreateStats();
+            _talentManager.ApplyTalentBonuses(withoutEquipment);
+
+            ShipStats withEquipment = config.CreateStats();
+            _talentManager.ApplyTalentBonuses(withEquipment);
+            _equipmentManager.ApplyEquipmentBonuses(withEquipment);
+
+            return (withoutEquipment, withEquipment);
         }
     }
 }

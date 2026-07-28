@@ -221,7 +221,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4041415545271611028}
   - component: {fileID: 7523641346495843146}
-  - component: {fileID: 4835499697169760357}
+  - component: {fileID: 6933939027450730330}
   m_Layer: 5
   m_Name: EquipmentSlotButton
   m_TagString: Untagged
@@ -261,7 +261,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4408304737631182029}
   m_CullTransparentMesh: 1
---- !u!114 &4835499697169760357
+--- !u!114 &6933939027450730330
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -270,15 +270,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 4408304737631182029}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 72bce6e4255a7b1489f20def6b187e71, type: 3}
+  m_Script: {fileID: 11500000, guid: bda232562dd32184ab521722937fd51f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _iconImage: {fileID: 4236829749141468265}
   _rarityFrameImage: {fileID: 6973770783958210984}
-  _slotNameText: {fileID: 7222063613740474088}
   _selectedHighlight: {fileID: 786796725605226310}
-  _slotButton: {fileID: 2004171794552539228}
-  _emptyFrameColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  _button: {fileID: 2004171794552539228}
+  _equippedBadge: {fileID: 0}
 --- !u!1 &5369584884859841786
 GameObject:
   m_ObjectHideFlags: 0

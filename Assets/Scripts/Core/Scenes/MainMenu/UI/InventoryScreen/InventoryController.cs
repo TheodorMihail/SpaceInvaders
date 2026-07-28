@@ -1,5 +1,6 @@
 using BaseArchitecture.Core;
 using SpaceInvaders.Project;
+using UnityEngine;
 using Zenject;
 
 namespace SpaceInvaders.Scenes.MainMenu
@@ -7,6 +8,7 @@ namespace SpaceInvaders.Scenes.MainMenu
     public class InventoryController : Controller<InventoryScreen, InventoryModel, InventoryView>
     {
         [Inject] private readonly IEquipmentManager _equipmentManager;
+        [Inject] private readonly IMessageBus _messageBus;
 
         public InventoryController(InventoryScreen uiComponent, InventoryModel model, InventoryView view)
             : base(uiComponent, model, view)
@@ -16,75 +18,31 @@ namespace SpaceInvaders.Scenes.MainMenu
         public override void Initialize()
         {
             base.Initialize();
-            _view.OnSlotClicked += OnSlotClicked;
             _view.OnItemClicked += OnItemClicked;
-            _view.OnTooltipActionClicked += OnTooltipActionClicked;
-            _view.OnTooltipCloseClicked += OnTooltipCloseClicked;
             _view.OnBackClicked += OnBackClicked;
+            _messageBus.Subscribe<ItemEquipChangedMessage>(OnItemEquipChanged);
+
             _view.Setup(_model);
+            _view.RefreshStatsPanel(_model.GetStatsPanel());
         }
 
         public override void Dispose()
         {
-            _view.OnSlotClicked -= OnSlotClicked;
             _view.OnItemClicked -= OnItemClicked;
-            _view.OnTooltipActionClicked -= OnTooltipActionClicked;
-            _view.OnTooltipCloseClicked -= OnTooltipCloseClicked;
             _view.OnBackClicked -= OnBackClicked;
+            _messageBus.Unsubscribe<ItemEquipChangedMessage>(OnItemEquipChanged);
             base.Dispose();
         }
 
-        /// <summary>Clicking an already-open slot's tooltip closes it; otherwise opens it.</summary>
-        private void OnSlotClicked(EquipmentSlots slot)
+        private void OnItemClicked(RectTransform anchor, string instanceId)
         {
-            if (_model.OpenSlot == slot)
-            {
-                _model.CloseTooltip();
-            }
-            else
-            {
-                _model.OpenItemInstanceId = null;
-                _model.OpenSlot = slot;
-            }
-
-            _view.Refresh();
+            _view.OpenTooltip(anchor, instanceId);
         }
-
-        private void OnItemClicked(string instanceId)
+        
+        private void OnItemEquipChanged(ItemEquipChangedMessage message)
         {
-            if (_model.OpenItemInstanceId == instanceId)
-            {
-                _model.CloseTooltip();
-            }
-            else
-            {
-                _model.OpenSlot = null;
-                _model.OpenItemInstanceId = instanceId;
-            }
-
-            _view.Refresh();
-        }
-
-        /// <summary>Equip when an item's tooltip is open, unequip when a filled slot's tooltip is open.</summary>
-        private void OnTooltipActionClicked()
-        {
-            if (_model.OpenItemInstanceId != null)
-            {
-                _equipmentManager.Equip(_model.OpenItemInstanceId);
-            }
-            else if (_model.OpenSlot != null)
-            {
-                _equipmentManager.Unequip(_model.OpenSlot.Value);
-            }
-
-            _model.CloseTooltip();
-            _view.Refresh();
-        }
-
-        private void OnTooltipCloseClicked()
-        {
-            _model.CloseTooltip();
-            _view.Refresh();
+            _view.ApplyEquipChange(message.EquippedInstanceId, message.UnequippedInstanceId);
+            _view.RefreshStatsPanel(_model.GetStatsPanel());
         }
 
         private void OnBackClicked()
