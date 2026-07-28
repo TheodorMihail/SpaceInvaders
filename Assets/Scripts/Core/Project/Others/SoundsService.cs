@@ -11,7 +11,7 @@ namespace SpaceInvaders.Project
     {
         void PlaySound(SoundTypes type);
         bool IsPlaying(SoundTypes type);
-        bool IsCategoryPlaying(SoundCategory category);
+        bool IsCategoryPlaying(SoundCategoryTypes category);
     }
 
     public class SoundsService : ISoundsService
@@ -93,7 +93,7 @@ namespace SpaceInvaders.Project
             return _soundsManager.IsPlaying(_repositoryManager.GetSoundConfig(type).Clip);
         }
 
-        public bool IsCategoryPlaying(SoundCategory category)
+        public bool IsCategoryPlaying(SoundCategoryTypes category)
         {
             return _soundsManager.IsChannelPlaying(category.ToString());
         }

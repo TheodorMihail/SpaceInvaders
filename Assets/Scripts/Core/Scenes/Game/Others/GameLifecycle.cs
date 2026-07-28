@@ -3,7 +3,7 @@ using Cysharp.Threading.Tasks;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public enum GameplayStateResult
+    public enum GameplayStateResultTypes
     {
         LevelFinished,
         GameOver
@@ -26,6 +26,6 @@ namespace SpaceInvaders.Scenes.Game
 
     public interface IGameEndCondition
     {
-        event Action<GameplayStateResult> ConditionMet;
+        event Action<GameplayStateResultTypes> ConditionMet;
     }
 }

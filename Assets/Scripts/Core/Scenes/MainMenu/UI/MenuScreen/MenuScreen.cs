@@ -5,7 +5,7 @@ namespace SpaceInvaders.Scenes.MainMenu
 {
     public class MenuScreen : Screen<MenuModel, MenuView, MenuController>, IScreenWithResult<MenuScreenResult>
     {
-        public enum ResultType
+        public enum ResultTypes
         {
             PlayGame,
             OpenTalentTree,
@@ -15,7 +15,7 @@ namespace SpaceInvaders.Scenes.MainMenu
 
         public struct MenuScreenResult : IScreenResult
         {
-            public ResultType Result { get; set; }
+            public ResultTypes Result { get; set; }
         }
         
         private MenuScreenResult _result;

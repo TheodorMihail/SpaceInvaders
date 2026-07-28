@@ -33,7 +33,7 @@ namespace SpaceInvaders.Scenes.MainMenu
         [SerializeField] private TextMeshProUGUI _statSheetText;
         [SerializeField] private Button _backButton;
 
-        private readonly Dictionary<EquipmentSlots, List<ItemSlotComponent>> _equipmentItemsDic = new();
+        private readonly Dictionary<EquipmentSlotTypes, List<ItemSlotComponent>> _equipmentItemsDic = new();
         private readonly Dictionary<string, ItemSlotComponent> _inventoryItemsDic = new();
 
         private string _lastSelectedInstanceId;
@@ -81,14 +81,14 @@ namespace SpaceInvaders.Scenes.MainMenu
 
         private void RegisterEquipmentSlots()
         {
-            RegisterEquipmentSlotComponent(EquipmentSlots.Weapon, _weaponSlot);
-            RegisterEquipmentSlotComponent(EquipmentSlots.Core, _coreSlot);
-            RegisterEquipmentSlotComponent(EquipmentSlots.Wings, _wingLeftSlot);
-            RegisterEquipmentSlotComponent(EquipmentSlots.Wings, _wingRightSlot);
-            RegisterEquipmentSlotComponent(EquipmentSlots.Engine, _engineSlot);
+            RegisterEquipmentSlotComponent(EquipmentSlotTypes.Weapon, _weaponSlot);
+            RegisterEquipmentSlotComponent(EquipmentSlotTypes.Core, _coreSlot);
+            RegisterEquipmentSlotComponent(EquipmentSlotTypes.Wings, _wingLeftSlot);
+            RegisterEquipmentSlotComponent(EquipmentSlotTypes.Wings, _wingRightSlot);
+            RegisterEquipmentSlotComponent(EquipmentSlotTypes.Engine, _engineSlot);
         }
 
-        private void RegisterEquipmentSlotComponent(EquipmentSlots slot, ItemSlotComponent component)
+        private void RegisterEquipmentSlotComponent(EquipmentSlotTypes slot, ItemSlotComponent component)
         {
             if (!_equipmentItemsDic.TryGetValue(slot, out List<ItemSlotComponent> components))
             {
@@ -121,7 +121,7 @@ namespace SpaceInvaders.Scenes.MainMenu
             _emptyInventoryText.text = _model.EmptyInventoryText;
         }
 
-        private void HandleEquipmentSlotClicked(EquipmentSlots slot, ItemSlotComponent component)
+        private void HandleEquipmentSlotClicked(EquipmentSlotTypes slot, ItemSlotComponent component)
         {
             if(!_model.TryGetEquippedItemForEquipmentSlot(slot, out InventoryItemEntry equipped))
             {
@@ -146,7 +146,7 @@ namespace SpaceInvaders.Scenes.MainMenu
                 return;
             }
 
-            if(!_model.TryGetEquipmentSlotForItem(inventoryItem.entry, out EquipmentSlots? slot))
+            if(!_model.TryGetEquipmentSlotForItem(inventoryItem.entry, out EquipmentSlotTypes? slot))
             {
                 return;
             }

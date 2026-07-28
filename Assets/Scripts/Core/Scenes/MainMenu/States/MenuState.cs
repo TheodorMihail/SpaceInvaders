@@ -7,9 +7,9 @@ using static SpaceInvaders.Scenes.MainMenu.MainMenuStateMachine;
 
 namespace SpaceInvaders.Scenes.MainMenu
 {
-    public class MenuState : BaseState<MainMenuStateIds>
+    public class MenuState : BaseState<MainMenuStateTypes>
     {
-        public override MainMenuStateIds Id => MainMenuStateIds.Menu;
+        public override MainMenuStateTypes Id => MainMenuStateTypes.Menu;
 
         [Inject] private readonly IUIManager _uiManager;
         [Inject] private readonly IList<IMenuEnterListener> _menuEnterListeners;
@@ -32,14 +32,14 @@ namespace SpaceInvaders.Scenes.MainMenu
 
             switch (result.Result)
             {
-                case MenuScreen.ResultType.QuitGame:
+                case MenuScreen.ResultTypes.QuitGame:
                     FinishState(result);
                     break;
-                case MenuScreen.ResultType.OpenTalentTree:
+                case MenuScreen.ResultTypes.OpenTalentTree:
                     await _uiManager.ShowScreen<TalentTreeScreen>();
                     ShowMenuScreen();
                     break;
-                case MenuScreen.ResultType.OpenInventory:
+                case MenuScreen.ResultTypes.OpenInventory:
                     await _uiManager.ShowScreen<InventoryScreen>();
                     ShowMenuScreen();
                     break;

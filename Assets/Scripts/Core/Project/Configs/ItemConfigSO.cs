@@ -14,7 +14,7 @@ namespace SpaceInvaders.Project
         Core
     }
 
-    public enum ItemRarities
+    public enum ItemRarityTypes
     {
         Normal,
         Rare,
@@ -59,7 +59,7 @@ namespace SpaceInvaders.Project
         [SerializeField] private string _displayName;
         [SerializeField] private Sprite _icon;
         [SerializeField] private ItemSlotTypes _slotType;
-        [SerializeField] private ItemRarities _rarity;
+        [SerializeField] private ItemRarityTypes _rarity;
         [SerializeField] private int _dropWeight = 1;
 
         [Header("Affix Pool")]
@@ -69,7 +69,7 @@ namespace SpaceInvaders.Project
         public virtual string DisplayName => _displayName;
         public virtual Sprite Icon => _icon;
         public virtual ItemSlotTypes SlotType => _slotType;
-        public virtual ItemRarities Rarity => _rarity;
+        public virtual ItemRarityTypes Rarity => _rarity;
         public virtual int DropWeight => _dropWeight;
         public virtual IReadOnlyList<ItemAffixDTO> PossibleAffixes => _possibleAffixes;
 

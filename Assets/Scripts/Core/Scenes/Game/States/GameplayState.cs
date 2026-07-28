@@ -9,9 +9,9 @@ using static SpaceInvaders.Scenes.Game.GameStateMachine;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public class GameplayState : BaseState<GameStateIds>
+    public class GameplayState : BaseState<GameStateTypes>
     {
-        public override GameStateIds Id => GameStateIds.Playing;
+        public override GameStateTypes Id => GameStateTypes.Playing;
 
         [Inject] private readonly IMessageBus _messageBus;
         [Inject] private readonly IUIManager _uiManager;
@@ -75,12 +75,12 @@ namespace SpaceInvaders.Scenes.Game
 
         #region EndGameplay
 
-        private void OnGameEndConditionMet(GameplayStateResult result)
+        private void OnGameEndConditionMet(GameplayStateResultTypes result)
         {
             TriggerEndGame(result).Forget();
         }
 
-        private async UniTask TriggerEndGame(GameplayStateResult result)
+        private async UniTask TriggerEndGame(GameplayStateResultTypes result)
         {
             _messageBus.Publish(new GameEndedMessage());
 

@@ -27,7 +27,7 @@ namespace SpaceInvaders.Scenes.Game
         {
             CloseScreenWithResult(new LevelFinishedScreen.LevelFinishedScreenResult
             {
-                Result = LevelFinishedScreen.ResultType.NextLevel
+                Result = LevelFinishedScreen.ResultTypes.NextLevel
             });
         }
 
@@ -35,7 +35,7 @@ namespace SpaceInvaders.Scenes.Game
         {
             CloseScreenWithResult(new LevelFinishedScreen.LevelFinishedScreenResult
             {
-                Result = LevelFinishedScreen.ResultType.MainMenu
+                Result = LevelFinishedScreen.ResultTypes.MainMenu
             });
         }
     }

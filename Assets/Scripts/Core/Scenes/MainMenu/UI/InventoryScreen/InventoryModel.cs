@@ -20,7 +20,7 @@ namespace SpaceInvaders.Scenes.MainMenu
         {
             foreach (InventoryItemEntry entry in _inventoryManager.Items)
             {
-                ItemConfigSO config = _inventoryManager.GetItemConfig(entry);
+                ItemConfigSO config = _inventoryManager.GetItemConfig(entry.ItemId);
                 if (config == null)
                 {
                     continue;
@@ -33,24 +33,24 @@ namespace SpaceInvaders.Scenes.MainMenu
         public bool TryGetInventoryItem(string instanceId, out (InventoryItemEntry entry, ItemConfigSO config) item)
         {
             item.entry = _inventoryManager.GetItem(instanceId);
-            item.config = _inventoryManager.GetItemConfig(item.entry);
+            item.config = _inventoryManager.GetItemConfig(item.entry.ItemId);
 
             return item.entry != null && item.config != null;
         }
 
-        public bool TryGetEquippedItemForEquipmentSlot(EquipmentSlots slot, out InventoryItemEntry item)
+        public bool TryGetEquippedItemForEquipmentSlot(EquipmentSlotTypes slot, out InventoryItemEntry item)
         {
             item = _equipmentManager.GetEquippedItem(slot);
             return item != null;
         }
 
-        public bool TryGetEquipmentSlotForItem(InventoryItemEntry entry, out EquipmentSlots? slot)
+        public bool TryGetEquipmentSlotForItem(InventoryItemEntry entry, out EquipmentSlotTypes? slot)
         {
-            slot = _equipmentManager.GetSlotForItem(entry);
+            slot = _equipmentManager.GetEquipmentSlotForItem(entry);
             return slot != null;
         }
 
-        public ItemRarityConfigSO GetItemRarity(ItemRarities rarity)
+        public ItemRarityConfigSO GetItemRarity(ItemRarityTypes rarity)
         {
             return _repositoryManager.GetItemRarityConfig(rarity);
         }

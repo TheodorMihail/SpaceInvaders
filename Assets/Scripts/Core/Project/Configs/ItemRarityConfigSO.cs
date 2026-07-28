@@ -12,7 +12,7 @@ namespace SpaceInvaders.Project
     public class ItemRarityConfigSO : ScriptableObject, IRepositoryObject
     {
         [Header("Rarity Settings")]
-        [SerializeField] private ItemRarities _rarity;
+        [SerializeField] private ItemRarityTypes _rarity;
         [SerializeField] private int _dropWeight = 1;
         [SerializeField] private int _affixCount = 1;
 
@@ -21,7 +21,7 @@ namespace SpaceInvaders.Project
         [SerializeField] private Color _displayColor = Color.white;
         [SerializeField] private ItemPickupBehaviourComponent _pickupPrefab;
 
-        public virtual ItemRarities Rarity => _rarity;
+        public virtual ItemRarityTypes Rarity => _rarity;
         public virtual int DropWeight => _dropWeight;
         public virtual int AffixCount => _affixCount;
         public virtual string DisplayName => _displayName;

@@ -59,7 +59,7 @@ namespace SpaceInvaders.Scenes.MainMenu
             Hide();
 
             InventoryItemEntry entry = _inventoryManager.GetItem(instanceId);
-            ItemConfigSO config = entry != null ? _inventoryManager.GetItemConfig(entry) : null;
+            ItemConfigSO config = entry != null ? _inventoryManager.GetItemConfig(entry.ItemId) : null;
 
             if (entry == null || config == null)
             {

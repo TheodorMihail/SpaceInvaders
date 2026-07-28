@@ -22,7 +22,7 @@ namespace SpaceInvaders.Project
         SoundConfigSO GetSoundConfig(SoundTypes soundType);
         ItemConfigSO GetItemConfig(string itemId);
         IReadOnlyList<ItemConfigSO> GetAllItemConfigs();
-        ItemRarityConfigSO GetItemRarityConfig(ItemRarities rarity);
+        ItemRarityConfigSO GetItemRarityConfig(ItemRarityTypes rarity);
         IReadOnlyList<ItemRarityConfigSO> GetAllItemRarityConfigs();
         float GetItemDropChance();
         IReadOnlyList<EquipmentSlotConfigDTO> GetAllEquipmentSlotConfigs();
@@ -134,7 +134,7 @@ namespace SpaceInvaders.Project
             return GetAll<ItemConfigSO>().ToArray();
         }
 
-        public ItemRarityConfigSO GetItemRarityConfig(ItemRarities rarity)
+        public ItemRarityConfigSO GetItemRarityConfig(ItemRarityTypes rarity)
         {
             return Get<ItemRarityConfigSO>(rarity.ToString());
         }

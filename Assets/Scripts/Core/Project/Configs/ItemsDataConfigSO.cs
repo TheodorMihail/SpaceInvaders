@@ -8,7 +8,7 @@ namespace SpaceInvaders.Project
     /// <summary>
     /// The ship's physical equipment slots.
     /// </summary>
-    public enum EquipmentSlots
+    public enum EquipmentSlotTypes
     {
         Wings,
         Engine,
@@ -22,11 +22,11 @@ namespace SpaceInvaders.Project
     [Serializable]
     public class EquipmentSlotConfigDTO
     {
-        [SerializeField] private EquipmentSlots _slot;
+        [SerializeField] private EquipmentSlotTypes _slot;
         [SerializeField] private ItemSlotTypes _acceptedType;
         [SerializeField] private string _displayName;
 
-        public EquipmentSlots Slot => _slot;
+        public EquipmentSlotTypes Slot => _slot;
         public ItemSlotTypes AcceptedType => _acceptedType;
         public string DisplayName => _displayName;
 
@@ -34,7 +34,7 @@ namespace SpaceInvaders.Project
         {
         }
 
-        public EquipmentSlotConfigDTO(EquipmentSlots slot, ItemSlotTypes acceptedType, string displayName)
+        public EquipmentSlotConfigDTO(EquipmentSlotTypes slot, ItemSlotTypes acceptedType, string displayName)
         {
             _slot = slot;
             _acceptedType = acceptedType;

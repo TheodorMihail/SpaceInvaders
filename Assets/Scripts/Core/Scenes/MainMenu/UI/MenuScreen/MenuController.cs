@@ -30,7 +30,7 @@ namespace SpaceInvaders.Scenes.MainMenu
         {
             CloseScreenWithResult(new MenuScreen.MenuScreenResult
             {
-                Result = MenuScreen.ResultType.PlayGame
+                Result = MenuScreen.ResultTypes.PlayGame
             });
         }
 
@@ -38,7 +38,7 @@ namespace SpaceInvaders.Scenes.MainMenu
         {
             CloseScreenWithResult(new MenuScreen.MenuScreenResult
             {
-                Result = MenuScreen.ResultType.QuitGame
+                Result = MenuScreen.ResultTypes.QuitGame
             });
         }
 
@@ -46,7 +46,7 @@ namespace SpaceInvaders.Scenes.MainMenu
         {
             CloseScreenWithResult(new MenuScreen.MenuScreenResult
             {
-                Result = MenuScreen.ResultType.OpenTalentTree
+                Result = MenuScreen.ResultTypes.OpenTalentTree
             });
         }
 
@@ -54,7 +54,7 @@ namespace SpaceInvaders.Scenes.MainMenu
         {
             CloseScreenWithResult(new MenuScreen.MenuScreenResult
             {
-                Result = MenuScreen.ResultType.OpenInventory
+                Result = MenuScreen.ResultTypes.OpenInventory
             });
         }
     }

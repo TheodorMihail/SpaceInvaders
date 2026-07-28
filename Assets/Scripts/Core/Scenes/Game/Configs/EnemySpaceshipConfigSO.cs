@@ -7,11 +7,11 @@ namespace SpaceInvaders.Scenes.Game
     {
         [SerializeField] private int _scoreReward = 10;
         [SerializeField] private EnemyTypes _enemyType;
-        [SerializeField] private EnemyCategory _category;
+        [SerializeField] private EnemyCategoryTypes _category;
 
         public int ScoreReward => _scoreReward;
         public EnemyTypes EnemyType => _enemyType;
-        public EnemyCategory Category => _category;
+        public EnemyCategoryTypes Category => _category;
         public override string SpaceshipID => _enemyType.ToString();
     }
 }
