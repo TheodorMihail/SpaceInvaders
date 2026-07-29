@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using BaseArchitecture.Core;
@@ -8,9 +9,9 @@ using static SpaceInvaders.Scenes.Game.GameStateMachine;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public class GameplayState : BaseState<GameStateIds>
+    public class GameplayState : BaseState<GameStateTypes>
     {
-        public override GameStateIds Id => GameStateIds.Playing;
+        public override GameStateTypes Id => GameStateTypes.Playing;
 
         [Inject] private readonly IMessageBus _messageBus;
         [Inject] private readonly IUIManager _uiManager;
@@ -19,6 +20,7 @@ namespace SpaceInvaders.Scenes.Game
         [Inject] private readonly IList<IGameInitializeListener> _gameInitializeListeners;
         [Inject] private readonly IList<IGameEndCondition> _gameEndConditions;
         [Inject] private readonly IPlatformService _platformService;
+        [Inject] private readonly IRepositoryManager _repositoryManager;
 
         public override void OnEnter(params object[] paramsList)
         {
@@ -73,12 +75,12 @@ namespace SpaceInvaders.Scenes.Game
 
         #region EndGameplay
 
-        private void OnGameEndConditionMet(GameplayStateResult result)
+        private void OnGameEndConditionMet(GameplayStateResultTypes result)
         {
             TriggerEndGame(result).Forget();
         }
 
-        private async UniTask TriggerEndGame(GameplayStateResult result)
+        private async UniTask TriggerEndGame(GameplayStateResultTypes result)
         {
             _messageBus.Publish(new GameEndedMessage());
 
@@ -86,6 +88,9 @@ namespace SpaceInvaders.Scenes.Game
             {
                 condition.ConditionMet -= OnGameEndConditionMet;
             }
+
+            float delay = _repositoryManager.GetProjectDataConfig().GameEndTransitionDelay;
+            await UniTask.Delay(TimeSpan.FromSeconds(delay));
 
             await UniTask.WhenAll(_gameEndListeners.Select(handler => handler.GameEnd()));
 

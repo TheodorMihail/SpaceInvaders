@@ -21,6 +21,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Screen
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 151abcf2059370b468f815a88d545c76
+    m_Address: Screens/TalentTreeScreenView
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Screen
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 77a40495b69721c4dad04db18bd9b915
     m_Address: Screens/SplashScreenView
     m_ReadOnly: 0
@@ -35,6 +41,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ba97ce10952ee3c40b6029b957214cd5
     m_Address: Screens/GameStartScreenView
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Screen
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bb9e81589fb5e454798e56a76c62686d
+    m_Address: Screens/InventoryScreenView
     m_ReadOnly: 0
     m_SerializedLabels:
     - Screen

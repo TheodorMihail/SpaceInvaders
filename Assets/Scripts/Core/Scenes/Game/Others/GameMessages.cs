@@ -1,4 +1,5 @@
 using BaseArchitecture.Core;
+using SpaceInvaders.Project;
 using UnityEngine;
 
 namespace SpaceInvaders.Scenes.Game
@@ -10,10 +11,10 @@ namespace SpaceInvaders.Scenes.Game
     public readonly struct EnemyDestroyedMessage : IMessageObject
     {
         public EnemyTypes Type { get; }
-        public EnemyCategory Category { get; }
+        public EnemyCategoryTypes Category { get; }
         public Vector3 Position { get; }
 
-        public EnemyDestroyedMessage(EnemyTypes type, EnemyCategory category, Vector3 position)
+        public EnemyDestroyedMessage(EnemyTypes type, EnemyCategoryTypes category, Vector3 position)
         {
             Type = type;
             Category = category;
@@ -106,6 +107,67 @@ namespace SpaceInvaders.Scenes.Game
         public PowerupExpiredMessage(PowerupTypes type)
         {
             Type = type;
+        }
+    }
+
+    public readonly struct ItemDroppedMessage : IMessageObject
+    {
+        public string InstanceId { get; }
+        public Vector3 Position { get; }
+
+        public ItemDroppedMessage(string instanceId, Vector3 position)
+        {
+            InstanceId = instanceId;
+            Position = position;
+        }
+    }
+
+    public readonly struct ItemCollectedMessage : IMessageObject
+    {
+        public string InstanceId { get; }
+
+        public ItemCollectedMessage(string instanceId)
+        {
+            InstanceId = instanceId;
+        }
+    }
+
+
+    public readonly struct ScoreChangedMessage : IMessageObject
+    {
+        public int TotalScore { get; }
+        public int Delta { get; }
+
+        public ScoreChangedMessage(int totalScore, int delta)
+        {
+            TotalScore = totalScore;
+            Delta = delta;
+        }
+    }
+
+    public readonly struct ButtonClickedMessage : IMessageObject
+    {
+    }
+
+    public readonly struct ShipShotFiredMessage : IMessageObject
+    {
+        public Vector3 Position { get; }
+
+        public ShipShotFiredMessage(Vector3 position)
+        {
+            Position = position;
+        }
+    }
+
+    public readonly struct ShipDamagedMessage : IMessageObject
+    {
+        public int CurrentHealth { get; }
+        public int Damage { get; }
+
+        public ShipDamagedMessage(int currentHealth, int damage)
+        {
+            CurrentHealth = currentHealth;
+            Damage = damage;
         }
     }
 }

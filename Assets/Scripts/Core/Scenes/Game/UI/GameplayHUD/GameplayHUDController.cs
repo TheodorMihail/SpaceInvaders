@@ -19,6 +19,7 @@ namespace SpaceInvaders.Scenes.Game
             base.Initialize();
 
             _messageBus.Subscribe<EnemyDestroyedMessage>(OnEnemyDestroyedCallback);
+            _messageBus.Subscribe<ScoreChangedMessage>(OnScoreChangedCallback);
             _messageBus.Subscribe<BossSpawnedMessage>(OnBossSpawnedCallback);
             _messageBus.Subscribe<BossHealthChangedMessage>(OnBossHealthChangedCallback);
             _messageBus.Subscribe<PowerupActivatedMessage>(OnPowerupActivatedCallback);
@@ -33,6 +34,7 @@ namespace SpaceInvaders.Scenes.Game
             base.Dispose();
 
             _messageBus.Unsubscribe<EnemyDestroyedMessage>(OnEnemyDestroyedCallback);
+            _messageBus.Unsubscribe<ScoreChangedMessage>(OnScoreChangedCallback);
             _messageBus.Unsubscribe<BossSpawnedMessage>(OnBossSpawnedCallback);
             _messageBus.Unsubscribe<BossHealthChangedMessage>(OnBossHealthChangedCallback);
             _messageBus.Unsubscribe<PowerupActivatedMessage>(OnPowerupActivatedCallback);
@@ -42,20 +44,16 @@ namespace SpaceInvaders.Scenes.Game
 
         private void OnEnemyDestroyedCallback(EnemyDestroyedMessage message)
         {
-            var enemyConfig = _repositoryManager.GetEnemyConfig(message.Type);
-            UpdateScore(enemyConfig.ScoreReward);
-
-            if (message.Category == EnemyCategory.Boss)
+            if (message.Category == EnemyCategoryTypes.Boss)
             {
                 _view.ShowBossHealthBar(false);
             }
         }
 
-        private void UpdateScore(int score)
+        private void OnScoreChangedCallback(ScoreChangedMessage message)
         {
-            score += _model.Score;
-            _model.Score = score;
-            _view.UpdateScore(score);
+            _model.Score = message.TotalScore;
+            _view.UpdateScore(message.TotalScore);
         }
 
         private void OnBossSpawnedCallback(BossSpawnedMessage message)

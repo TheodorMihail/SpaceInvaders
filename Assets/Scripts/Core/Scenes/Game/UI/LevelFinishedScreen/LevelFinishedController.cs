@@ -11,7 +11,7 @@ namespace SpaceInvaders.Scenes.Game
         public override void Initialize()
         {
             base.Initialize();
-            _view.Initialize(_model.AllLevelsComplete, _model.StarsEarned);
+            _view.Initialize(_model.AllLevelsComplete, _model.StarsEarned, _model.TotalScore, _model.GetCollectedItems());
             _view.OnNextLevelButtonClicked += HandleNextLevelButtonClicked;
             _view.OnMainMenuButtonClicked += HandleMainMenuButtonClicked;
         }
@@ -27,7 +27,7 @@ namespace SpaceInvaders.Scenes.Game
         {
             CloseScreenWithResult(new LevelFinishedScreen.LevelFinishedScreenResult
             {
-                Result = LevelFinishedScreen.ResultType.NextLevel
+                Result = LevelFinishedScreen.ResultTypes.NextLevel
             });
         }
 
@@ -35,7 +35,7 @@ namespace SpaceInvaders.Scenes.Game
         {
             CloseScreenWithResult(new LevelFinishedScreen.LevelFinishedScreenResult
             {
-                Result = LevelFinishedScreen.ResultType.MainMenu
+                Result = LevelFinishedScreen.ResultTypes.MainMenu
             });
         }
     }

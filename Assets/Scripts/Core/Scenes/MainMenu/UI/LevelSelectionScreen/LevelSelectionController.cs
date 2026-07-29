@@ -17,12 +17,14 @@ namespace SpaceInvaders.Scenes.MainMenu
         {
             base.Initialize();
             _view.OnLevelSelectedClicked += OnLevelSelectedClicked;
+            _view.OnBackClicked += OnBackClicked;
             _view.SetupLevels(_repository.GetLevelConfigs());
         }
 
         public override void Dispose()
         {
             _view.OnLevelSelectedClicked -= OnLevelSelectedClicked;
+            _view.OnBackClicked -= OnBackClicked;
             base.Dispose();
         }
 
@@ -31,6 +33,14 @@ namespace SpaceInvaders.Scenes.MainMenu
             CloseScreenWithResult(new LevelSelectionScreen.LevelSelectionScreenResult
             {
                 LevelSelected = levelSelected
+            });
+        }
+
+        private void OnBackClicked()
+        {
+            CloseScreenWithResult(new LevelSelectionScreen.LevelSelectionScreenResult
+            {
+                Back = true
             });
         }
     }

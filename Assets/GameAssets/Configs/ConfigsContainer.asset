@@ -16,4 +16,8 @@ MonoBehaviour:
   _playerDataConfigSO: {fileID: 11400000, guid: ce7776ebdea989b2dfa7f3b4d0a454fe, type: 2}
   _enemyDataConfigSO: {fileID: 11400000, guid: b84b05afa73d273b73e93d43a709ef90, type: 2}
   _powerupsDataConfigSO: {fileID: 11400000, guid: 47bfc17fc4f333030c437cf1383a42ab, type: 2}
-  _projectSettingsConfigSO: {fileID: 11400000, guid: cedfeb2e36062e944a54d57b5fa21f77, type: 2}
+  _projectDataConfigSO: {fileID: 11400000, guid: cedfeb2e36062e944a54d57b5fa21f77, type: 2}
+  _talentsDataConfigSO: {fileID: 11400000, guid: 0066424f87f16d148905cc1f76b9432c, type: 2}
+  _soundsDataConfigSO: {fileID: 11400000, guid: f2aef56594a2c4b44b05dc74f26329f8, type: 2}
+  _itemsDataConfigSO: {fileID: 11400000, guid: 56be236a491fb5a4d8fe7ff22880ad91, type: 2}
+  _dropTableConfigSO: {fileID: 11400000, guid: aea00731d6b6bfd4f9b8146440c87f8d, type: 2}

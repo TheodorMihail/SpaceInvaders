@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f485b3a4e7f579f4ebc051a2e7e02a70, type: 3}
+  m_Name: TalentsDataConfig
+  m_EditorClassIdentifier: 
+  _talentConfigs:
+  - {fileID: 11400000, guid: 53827ea5bbed0ba40808018c19d0762f, type: 2}
+  - {fileID: 11400000, guid: 96cea34e51e169548954d2fe5c5dc17b, type: 2}
+  - {fileID: 11400000, guid: cf7712e67a6ad6d49a67a7da48474f64, type: 2}
+  - {fileID: 11400000, guid: 40c700e9b54dc824ab3ffeba40f14426, type: 2}
+  - {fileID: 11400000, guid: 8322d597084b94b4fa6e2cecbf763f8c, type: 2}

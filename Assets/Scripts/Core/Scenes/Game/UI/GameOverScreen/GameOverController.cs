@@ -11,6 +11,7 @@ namespace SpaceInvaders.Scenes.Game
         public override void Initialize()
         {
             base.Initialize();
+            _view.Initialize(_model.TotalScore);
             _view.OnRestartButtonClicked += HandleRestartButtonClicked;
             _view.OnMainMenuButtonClicked += HandleMainMenuButtonClicked;
         }
@@ -26,7 +27,7 @@ namespace SpaceInvaders.Scenes.Game
         {
             CloseScreenWithResult(new GameOverScreen.GameOverScreenResult
             {
-                Result = GameOverScreen.ResultType.Restart
+                Result = GameOverScreen.ResultTypes.Restart
             });
         }
 
@@ -34,7 +35,7 @@ namespace SpaceInvaders.Scenes.Game
         {
             CloseScreenWithResult(new GameOverScreen.GameOverScreenResult
             {
-                Result = GameOverScreen.ResultType.MainMenu
+                Result = GameOverScreen.ResultTypes.MainMenu
             });
         }
     }

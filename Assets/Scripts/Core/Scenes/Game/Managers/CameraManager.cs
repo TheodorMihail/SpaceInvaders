@@ -4,7 +4,7 @@ using Zenject;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public enum ScreenRegionType
+    public enum ScreenRegionTypes
     {
         Full,           // Entire screen
         TopHalf,        // Top half (for enemies)
@@ -13,7 +13,7 @@ namespace SpaceInvaders.Scenes.Game
 
     public interface ICameraManager : IInitializable, IDisposable
     {
-        (Vector3 min, Vector3 max) GetScreenBounds(Renderer renderer, ScreenRegionType regionType, float buffer = 0f);
+        (Vector3 min, Vector3 max) GetScreenBounds(Renderer renderer, ScreenRegionTypes regionType, float buffer = 0f);
         Vector3 GetViewportWorldPoint(float viewportX, float viewportY, float yPosition);
     }
 
@@ -36,7 +36,7 @@ namespace SpaceInvaders.Scenes.Game
             _mainCamera = null;
         }
 
-        public (Vector3 min, Vector3 max) GetScreenBounds(Renderer renderer, ScreenRegionType regionType, float buffer = 0f)
+        public (Vector3 min, Vector3 max) GetScreenBounds(Renderer renderer, ScreenRegionTypes regionType, float buffer = 0f)
         {
             if (_mainCamera == null || renderer == null)
             {
@@ -56,7 +56,7 @@ namespace SpaceInvaders.Scenes.Game
 
             switch (regionType)
             {
-                case ScreenRegionType.TopHalf:
+                case ScreenRegionTypes.TopHalf:
                     // Upper half of screen (center to top)
                     minBounds = new Vector3(
                         screenBottomLeft.x + extents.x + buffer,
@@ -70,7 +70,7 @@ namespace SpaceInvaders.Scenes.Game
                     );
                     break;
 
-                case ScreenRegionType.BottomHalf:
+                case ScreenRegionTypes.BottomHalf:
                     // Lower half of screen (bottom to center)
                     minBounds = new Vector3(
                         screenBottomLeft.x + extents.x + buffer,
@@ -84,7 +84,7 @@ namespace SpaceInvaders.Scenes.Game
                     );
                     break;
 
-                case ScreenRegionType.Full:
+                case ScreenRegionTypes.Full:
                 default:
                     // Full screen with buffer extending beyond edges
                     minBounds = new Vector3(

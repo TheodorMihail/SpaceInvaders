@@ -20,11 +20,11 @@ namespace SpaceInvaders.Scenes.Game
         [SerializeField] private PowerupBehaviourComponent _pickupPrefab;
         [SerializeField] private Sprite _icon;
 
-        public float Duration => _duration;
-        public int DropWeight => _dropWeight;
-        public PowerupBehaviourComponent PickupPrefab => _pickupPrefab;
-        public Sprite Icon => _icon;
-        public string ObjectID => PowerupType.ToString();
+        public virtual float Duration => _duration;
+        public virtual int DropWeight => _dropWeight;
+        public virtual PowerupBehaviourComponent PickupPrefab => _pickupPrefab;
+        public virtual Sprite Icon => _icon;
+        public virtual string ObjectID => PowerupType.ToString();
 
         public abstract PowerupTypes PowerupType { get; }
     }

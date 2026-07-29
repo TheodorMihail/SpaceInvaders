@@ -1,0 +1,18 @@
+{
+    "name": "SpaceInvaders.Editor",
+    "rootNamespace": "SpaceInvaders.Editor",
+    "references": [
+        "GUID:932a5c5f00ed5a9479a04956f6aeab73"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

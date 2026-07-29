@@ -4,9 +4,9 @@ using static SpaceInvaders.Scenes.Preload.PreloadStateMachine;
 
 namespace SpaceInvaders.Scenes.Preload
 {
-    public class BootState : BaseState<PreloadStateIds>
+    public class BootState : BaseState<PreloadStateTypes>
     {
-        public override PreloadStateIds Id => PreloadStateIds.BootState;
+        public override PreloadStateTypes Id => PreloadStateTypes.BootState;
 
         [Inject] private readonly IUIManager _uiManager;
 

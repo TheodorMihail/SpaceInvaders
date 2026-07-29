@@ -6,33 +6,33 @@ using static SpaceInvaders.Scenes.Preload.PreloadStateMachine;
 
 namespace SpaceInvaders.Scenes.Preload
 {
-    public class PreloadStateMachine : BaseStateMachine<PreloadStateIds>
+    public class PreloadStateMachine : BaseStateMachine<PreloadStateTypes>
     {
-        public enum PreloadStateIds
+        public enum PreloadStateTypes
         {
             SplashState,
             BootState
         }
 
-        protected override PreloadStateIds DefaultStateId => PreloadStateIds.SplashState;
+        protected override PreloadStateTypes DefaultStateId => PreloadStateTypes.SplashState;
 
         [Inject] private readonly IScenesManager _scenesManager;
 
-        public PreloadStateMachine(IList<IState<PreloadStateIds>> preloadStates) : base(preloadStates)
+        public PreloadStateMachine(IList<IState<PreloadStateTypes>> preloadStates) : base(preloadStates)
         {
         }
 
-        protected override void OnStateFinished((PreloadStateIds stateId, object[] paramsList) finishedState)
+        protected override void OnStateFinished((PreloadStateTypes stateId, object[] paramsList) finishedState)
         {
             try
             {
                 switch (finishedState.stateId)
                 {
-                    case PreloadStateIds.SplashState:
-                        SetState(PreloadStateIds.BootState);
+                    case PreloadStateTypes.SplashState:
+                        SetState(PreloadStateTypes.BootState);
                         break;
-                    case PreloadStateIds.BootState:
-                        _scenesManager.LoadScene(SceneType.MainMenu.ToString());
+                    case PreloadStateTypes.BootState:
+                        _scenesManager.LoadScene(SceneTypes.MainMenu.ToString());
                         break;
                 }
             }

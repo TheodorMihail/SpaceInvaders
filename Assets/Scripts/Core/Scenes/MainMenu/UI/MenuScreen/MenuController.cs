@@ -13,12 +13,16 @@ namespace SpaceInvaders.Scenes.MainMenu
             base.Initialize();
             _view.OnPlayGameButtonClicked += HandlePlayGameButtonClicked;
             _view.OnQuitGameButtonClicked += HandleQuitGameButtonClicked;
+            _view.OnTalentsButtonClicked += HandleTalentsButtonClicked;
+            _view.OnInventoryButtonClicked += HandleInventoryButtonClicked;
         }
 
         public override void Dispose()
         {
             _view.OnPlayGameButtonClicked -= HandlePlayGameButtonClicked;
             _view.OnQuitGameButtonClicked -= HandleQuitGameButtonClicked;
+            _view.OnTalentsButtonClicked -= HandleTalentsButtonClicked;
+            _view.OnInventoryButtonClicked -= HandleInventoryButtonClicked;
             base.Dispose();
         }
 
@@ -26,7 +30,7 @@ namespace SpaceInvaders.Scenes.MainMenu
         {
             CloseScreenWithResult(new MenuScreen.MenuScreenResult
             {
-                Result = MenuScreen.ResultType.PlayGame
+                Result = MenuScreen.ResultTypes.PlayGame
             });
         }
 
@@ -34,7 +38,23 @@ namespace SpaceInvaders.Scenes.MainMenu
         {
             CloseScreenWithResult(new MenuScreen.MenuScreenResult
             {
-                Result = MenuScreen.ResultType.QuitGame
+                Result = MenuScreen.ResultTypes.QuitGame
+            });
+        }
+
+        private void HandleTalentsButtonClicked()
+        {
+            CloseScreenWithResult(new MenuScreen.MenuScreenResult
+            {
+                Result = MenuScreen.ResultTypes.OpenTalentTree
+            });
+        }
+
+        private void HandleInventoryButtonClicked()
+        {
+            CloseScreenWithResult(new MenuScreen.MenuScreenResult
+            {
+                Result = MenuScreen.ResultTypes.OpenInventory
             });
         }
     }

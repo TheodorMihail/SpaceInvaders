@@ -10,7 +10,7 @@ namespace SpaceInvaders.Scenes.Game
     {
         new event Action<IEnemySpaceship> OnDestroyed;
         EnemyTypes EnemyType { get; }
-        EnemyCategory Category { get; }
+        EnemyCategoryTypes Category { get; }
         void StartEntryAnimation(float entrySpeed);
     }
 
@@ -19,7 +19,7 @@ namespace SpaceInvaders.Scenes.Game
         private enum EnemyState { Entering, Bouncing }
 
         public EnemyTypes EnemyType => ShipConfig.EnemyType;
-        public EnemyCategory Category => ShipConfig.Category;
+        public EnemyCategoryTypes Category => ShipConfig.Category;
 
         [Inject] private readonly ICameraManager _cameraManager;
 
@@ -35,13 +35,14 @@ namespace SpaceInvaders.Scenes.Game
 
         protected override void Destroy()
         {
+            SpawnDestroyVFX();
             OnDestroyed?.Invoke(this);
         }
 
         public override void OnSpawned()
         {
             base.OnSpawned();
-            (_minBounds, _maxBounds) = _cameraManager.GetScreenBounds(_renderer, ScreenRegionType.TopHalf);
+            (_minBounds, _maxBounds) = _cameraManager.GetScreenBounds(_renderer, ScreenRegionTypes.TopHalf);
         }
 
         public override void OnDespawned()

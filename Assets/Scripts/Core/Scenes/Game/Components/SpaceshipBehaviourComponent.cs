@@ -13,6 +13,8 @@ namespace SpaceInvaders.Scenes.Game
         Vector3 Position { get; }
         event Action<ISpaceship> OnDestroyed;
         event Action<int, int> OnHealthChanged;
+        event Action<ISpaceship> OnShotFired;
+        event Action<ISpaceship, int> OnDamaged;
 
         void Move(Vector3 direction, Vector3 minBounds, Vector3 maxBounds);
         void Shoot();
@@ -34,6 +36,8 @@ namespace SpaceInvaders.Scenes.Game
         public virtual Vector3 Position => transform.localPosition;
         public virtual event Action<ISpaceship> OnDestroyed;
         public virtual event Action<int, int> OnHealthChanged;
+        public virtual event Action<ISpaceship> OnShotFired;
+        public virtual event Action<ISpaceship, int> OnDamaged;
 
         public abstract void OnSpawned();
         public abstract void OnDespawned();
@@ -49,6 +53,16 @@ namespace SpaceInvaders.Scenes.Game
         protected void RaiseHealthChanged(int currentHealth, int maxHealth)
         {
             OnHealthChanged?.Invoke(currentHealth, maxHealth);
+        }
+
+        protected void RaiseShotFired()
+        {
+            OnShotFired?.Invoke(this);
+        }
+
+        protected void RaiseDamaged(int damage)
+        {
+            OnDamaged?.Invoke(this, damage);
         }
     }
     
@@ -72,19 +86,19 @@ namespace SpaceInvaders.Scenes.Game
                 return;
             }
 
-            _healthBar.Initialize(Stats.CurrentHealth, Stats.BaseHealth);
+            _healthBar.Initialize(Stats.CurrentHealth, Stats.CurrentMaxHealth);
 
-            RaiseHealthChanged(Stats.CurrentHealth, Stats.BaseHealth);
+            RaiseHealthChanged(Stats.CurrentHealth, Stats.CurrentMaxHealth);
         }
 
-        private void OnStatsHealthChanged(int currentHealth, int baseHealth)
+        private void OnStatsHealthChanged(int currentHealth, int maxHealth)
         {
             if (_healthBar != null)
             {
-                _healthBar.UpdateHealth(currentHealth, false);
+                _healthBar.Initialize(currentHealth, maxHealth, false);
             }
 
-            RaiseHealthChanged(currentHealth, baseHealth);
+            RaiseHealthChanged(currentHealth, maxHealth);
 
             if (currentHealth == 0)
             {
@@ -104,6 +118,28 @@ namespace SpaceInvaders.Scenes.Game
             _activeProjectiles.Clear();
         }
 
+        protected void SpawnDestroyVFX()
+        {
+            if (_shipConfig.DestroyVFXPrefab == null)
+            {
+                this.LogWarning("No destroy vfx prefab assigned!");
+                return;
+            }
+
+            _spawnService.SpawnVFX(_shipConfig.DestroyVFXPrefab, Position);
+        }
+
+        protected void SpawnHitVFX()
+        {
+            if (_shipConfig.HitVFXPrefab == null)
+            {
+                this.LogWarning("No hit vfx prefab assigned!");
+                return;
+            }
+
+            _spawnService.SpawnVFX(_shipConfig.HitVFXPrefab, Position);
+        }
+
         public override void Shoot()
         {
             // Check fire rate cooldown
@@ -118,6 +154,8 @@ namespace SpaceInvaders.Scenes.Game
             {
                 FireProjectile(direction);
             }
+
+            RaiseShotFired();
         }
 
         public override void TakeDamage(int damage)
@@ -133,6 +171,8 @@ namespace SpaceInvaders.Scenes.Game
             }
 
             Stats.ApplyDamage(damage);
+            SpawnHitVFX();
+            RaiseDamaged(damage);
         }
 
         public override void Move(Vector3 direction, Vector3 minBounds, Vector3 maxBounds)
@@ -185,7 +225,13 @@ namespace SpaceInvaders.Scenes.Game
 
         protected void FireProjectile(Vector3 direction)
         {
-            Vector3 spawnPosition = transform.localPosition + _projectileOffset;
+            if(_shipConfig.ProjectilePrefab == null)
+            {
+                this.LogWarning("No projectile prefab assigned!");
+                return;
+            }
+
+            Vector3 spawnPosition = Position + _projectileOffset;
 
             var projectile = _spawnService.SpawnProjectile(
                 _shipConfig.ProjectilePrefab,

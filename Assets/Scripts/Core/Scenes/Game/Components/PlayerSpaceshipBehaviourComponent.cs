@@ -23,13 +23,14 @@ namespace SpaceInvaders.Scenes.Game
 
         protected override void Destroy()
         {
+            SpawnDestroyVFX();
             OnDestroyed?.Invoke(this);
         }
 
         public override void OnSpawned()
         {
             base.OnSpawned();
-            (_minBounds, _maxBounds) = _cameraManager.GetScreenBounds(_renderer, ScreenRegionType.BottomHalf);
+            (_minBounds, _maxBounds) = _cameraManager.GetScreenBounds(_renderer, ScreenRegionTypes.BottomHalf);
         }
 
         public override void OnDespawned()

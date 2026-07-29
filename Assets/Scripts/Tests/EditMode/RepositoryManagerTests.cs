@@ -16,6 +16,8 @@ namespace SpaceInvaders.Tests
         private List<PlayerSpaceshipConfigSO> _playerConfigs;
         private List<EnemySpaceshipConfigSO> _enemyConfigs;
         private List<PowerupConfigSO> _powerupConfigs;
+        private List<TalentConfigSO> _talentConfigs;
+        private List<SoundConfigSO> _soundConfigs;
 
         private static LevelConfigSO CreateMockLevelConfig(int levelIndex)
         {
@@ -49,13 +51,27 @@ namespace SpaceInvaders.Tests
             };
 
             _powerupConfigs = new List<PowerupConfigSO>();
+            _talentConfigs = new List<TalentConfigSO>();
+            _soundConfigs = new List<SoundConfigSO>();
 
             _repositoryManager = new RepositoryManager(
                 CreateLevelsDataConfig(_levelConfigs),
                 CreatePlayerDataConfig(_playerConfigs),
                 CreateEnemyDataConfig(_enemyConfigs),
-                CreatePowerupsDataConfig(_powerupConfigs, 0f),
-                CreateProjectSettingsConfig());
+                CreatePowerupsDataConfig(_powerupConfigs),
+                CreateProjectSettingsConfig(),
+                CreateTalentsDataConfig(_talentConfigs),
+                CreateSoundsDataConfig(_soundConfigs),
+                CreateItemsDataConfig(new List<ItemConfigSO>(), new List<ItemRarityConfigSO>()),
+                CreateDropTableConfig());
+        }
+
+        private static ItemsDataConfigSO CreateItemsDataConfig(List<ItemConfigSO> itemConfigs, List<ItemRarityConfigSO> rarityConfigs)
+        {
+            var config = Substitute.For<ItemsDataConfigSO>();
+            config.ItemConfigs.Returns(itemConfigs);
+            config.RarityConfigs.Returns(rarityConfigs);
+            return config;
         }
 
         private static LevelsDataConfigSO CreateLevelsDataConfig(List<LevelConfigSO> levelConfigs)
@@ -79,17 +95,37 @@ namespace SpaceInvaders.Tests
             return config;
         }
 
-        private static PowerupsDataConfigSO CreatePowerupsDataConfig(List<PowerupConfigSO> powerupConfigs, float globalPowerupDropChance)
+        private static PowerupsDataConfigSO CreatePowerupsDataConfig(List<PowerupConfigSO> powerupConfigs)
         {
             var config = Substitute.For<PowerupsDataConfigSO>();
             config.PowerupConfigs.Returns(powerupConfigs);
-            config.GlobalPowerupDropChance.Returns(globalPowerupDropChance);
+            return config;
+        }
+
+        private static DropTableConfigSO CreateDropTableConfig()
+        {
+            var config = Substitute.For<DropTableConfigSO>();
+            config.CategoryWeights.Returns(new List<DropCategoryWeightDTO>());
             return config;
         }
 
         private static ProjectDataConfigSO CreateProjectSettingsConfig()
         {
             return Substitute.For<ProjectDataConfigSO>();
+        }
+
+        private static TalentsDataConfigSO CreateTalentsDataConfig(List<TalentConfigSO> talentConfigs)
+        {
+            var config = Substitute.For<TalentsDataConfigSO>();
+            config.TalentConfigs.Returns(talentConfigs);
+            return config;
+        }
+
+        private static SoundsDataConfigSO CreateSoundsDataConfig(List<SoundConfigSO> soundConfigs)
+        {
+            var config = Substitute.For<SoundsDataConfigSO>();
+            config.SoundConfigs.Returns(soundConfigs);
+            return config;
         }
 
         [TearDown]
@@ -155,13 +191,19 @@ namespace SpaceInvaders.Tests
             var emptyPlayers = new List<PlayerSpaceshipConfigSO>();
             var emptyEnemies = new List<EnemySpaceshipConfigSO>();
             var emptyPowerups = new List<PowerupConfigSO>();
+            var emptyTalents = new List<TalentConfigSO>();
+            var emptySounds = new List<SoundConfigSO>();
 
             var manager = new RepositoryManager(
                 CreateLevelsDataConfig(emptyLevels),
                 CreatePlayerDataConfig(emptyPlayers),
                 CreateEnemyDataConfig(emptyEnemies),
-                CreatePowerupsDataConfig(emptyPowerups, 0f),
-                CreateProjectSettingsConfig());
+                CreatePowerupsDataConfig(emptyPowerups),
+                CreateProjectSettingsConfig(),
+                CreateTalentsDataConfig(emptyTalents),
+                CreateSoundsDataConfig(emptySounds),
+                CreateItemsDataConfig(new List<ItemConfigSO>(), new List<ItemRarityConfigSO>()),
+                CreateDropTableConfig());
 
             Assert.AreEqual(0, manager.GetLevelsCount());
         }

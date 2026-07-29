@@ -15,7 +15,7 @@ namespace SpaceInvaders.Scenes.Game
         Boss1
     }
 
-    public enum EnemyCategory
+    public enum EnemyCategoryTypes
     {
         Normal,
         Boss
@@ -62,9 +62,11 @@ namespace SpaceInvaders.Scenes.Game
             {
                 _spawnedEnemies.Add(enemy);
                 enemy.OnDestroyed += OnEnemyDestroyedCallback;
+                enemy.OnShotFired += OnEnemyShotFiredCallback;
+                enemy.OnDamaged += OnEnemyDamagedCallback;
                 enemy.StartEntryAnimation(waveConfig.EntrySpeed);
 
-                if (enemy.Category == EnemyCategory.Boss)
+                if (enemy.Category == EnemyCategoryTypes.Boss)
                 {
                     enemy.OnHealthChanged += OnBossHealthChangedCallback;
                     _messageBus.Publish(new BossSpawnedMessage(enemy.EnemyType, enemy.Stats.CurrentHealth));
@@ -88,10 +90,22 @@ namespace SpaceInvaders.Scenes.Game
             }
         }
 
+        private void OnEnemyShotFiredCallback(ISpaceship spaceship)
+        {
+            _messageBus.Publish(new ShipShotFiredMessage(spaceship.Position));
+        }
+
+        private void OnEnemyDamagedCallback(ISpaceship spaceship, int damage)
+        {
+            _messageBus.Publish(new ShipDamagedMessage(spaceship.Stats.CurrentHealth, damage));
+        }
+
         private void DespawnEnemy(IEnemySpaceship enemy)
         {
             enemy.OnDestroyed -= OnEnemyDestroyedCallback;
             enemy.OnHealthChanged -= OnBossHealthChangedCallback;
+            enemy.OnShotFired -= OnEnemyShotFiredCallback;
+            enemy.OnDamaged -= OnEnemyDamagedCallback;
             _spawnedEnemies.Remove(enemy);
             _spawnService.Despawn(enemy as EnemySpaceshipBehaviourComponent);
         }
