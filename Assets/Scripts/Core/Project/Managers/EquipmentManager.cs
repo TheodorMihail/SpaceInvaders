@@ -136,7 +136,7 @@ namespace SpaceInvaders.Project
                     continue;
                 }
 
-                foreach (RolledAffixEntry affix in entry.Affixes)
+                foreach (AffixEntry affix in entry.Affixes)
                 {
                     if (!Enum.TryParse(affix.StatType, out ShipUpgradableStatTypes statType))
                     {
@@ -144,7 +144,16 @@ namespace SpaceInvaders.Project
                         continue;
                     }
 
-                    stats.ApplyStatBonus(statType, affix.Bonus);
+                    // Empty ValueType means this affix was persisted before the field existed -
+                    // default to Flat rather than dropping the bonus for every pre-existing save.
+                    ShipStatValueTypes valueType = ShipStatValueTypes.Flat;
+                    if (!string.IsNullOrEmpty(affix.ValueType) && !Enum.TryParse(affix.ValueType, out valueType))
+                    {
+                        this.LogWarning($"Unknown value type '{affix.ValueType}' on item '{entry.ItemId}'. Skipping.");
+                        continue;
+                    }
+
+                    stats.ApplyStatBonus(statType, affix.Bonus, valueType);
                 }
             }
 

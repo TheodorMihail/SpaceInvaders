@@ -87,7 +87,7 @@ namespace SpaceInvaders.Tests
         }
 
         /// <summary>Registers an owned item of the given slot type, with optional rolled affixes.</summary>
-        private InventoryItemEntry GiveItem(string instanceId, ItemSlotTypes slotType, params RolledAffixEntry[] affixes)
+        private InventoryItemEntry GiveItem(string instanceId, ItemSlotTypes slotType, params AffixEntry[] affixes)
         {
             string itemId = $"{slotType}Item";
 
@@ -103,16 +103,16 @@ namespace SpaceInvaders.Tests
             {
                 InstanceId = instanceId,
                 ItemId = itemId,
-                Affixes = new List<RolledAffixEntry>(affixes)
+                Affixes = new List<AffixEntry>(affixes)
             };
 
             _ownedItems[instanceId] = entry;
             return entry;
         }
 
-        private static RolledAffixEntry Affix(ShipUpgradableStatTypes statType, float bonus)
+        private static AffixEntry Affix(ShipUpgradableStatTypes statType, float bonus, ShipStatValueTypes valueType = ShipStatValueTypes.Percentage)
         {
-            return new RolledAffixEntry { StatType = statType.ToString(), Bonus = bonus };
+            return new AffixEntry { StatType = statType.ToString(), ValueType = valueType.ToString(), Bonus = bonus };
         }
 
         [Test]

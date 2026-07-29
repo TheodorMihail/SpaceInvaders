@@ -142,14 +142,22 @@ namespace SpaceInvaders.Project
         {
             var builder = new StringBuilder();
 
-            foreach (RolledAffixEntry affix in entry.Affixes)
+            foreach (AffixEntry affix in entry.Affixes)
             {
                 if (!Enum.TryParse(affix.StatType, out ShipUpgradableStatTypes statType))
                 {
                     continue;
                 }
 
-                builder.AppendLine(ShipStats.AffixFormat(statType, affix.Bonus));
+                // Empty ValueType means this affix was persisted before the field existed -
+                // default to Flat instead of dropping the line for every pre-existing save.
+                ShipStatValueTypes valueType = ShipStatValueTypes.Flat;
+                if (!string.IsNullOrEmpty(affix.ValueType) && !Enum.TryParse(affix.ValueType, out valueType))
+                {
+                    continue;
+                }
+
+                builder.AppendLine(ShipStats.AffixFormat(statType, affix.Bonus, valueType));
             }
 
             return builder.ToString().TrimEnd();

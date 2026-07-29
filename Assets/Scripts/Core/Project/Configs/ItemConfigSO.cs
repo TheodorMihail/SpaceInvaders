@@ -28,10 +28,12 @@ namespace SpaceInvaders.Project
     public class ItemAffixDTO
     {
         [SerializeField] private ShipUpgradableStatTypes _statType;
+        [SerializeField] private ShipStatValueTypes _valueType;
         [SerializeField] private float _minBonus;
         [SerializeField] private float _maxBonus;
 
         public ShipUpgradableStatTypes StatType => _statType;
+        public ShipStatValueTypes ValueType => _valueType;
         public float MinBonus => _minBonus;
         public float MaxBonus => _maxBonus;
 
@@ -39,9 +41,10 @@ namespace SpaceInvaders.Project
         {
         }
 
-        public ItemAffixDTO(ShipUpgradableStatTypes statType, float minBonus, float maxBonus)
+        public ItemAffixDTO(ShipUpgradableStatTypes statType, ShipStatValueTypes valueType, float minBonus, float maxBonus)
         {
             _statType = statType;
+            _valueType = valueType;
             _minBonus = minBonus;
             _maxBonus = maxBonus;
         }
@@ -100,9 +103,10 @@ namespace SpaceInvaders.Project
                 ItemAffixDTO affix = pool[index];
                 pool.RemoveAt(index);
 
-                entry.Affixes.Add(new RolledAffixEntry
+                entry.Affixes.Add(new AffixEntry
                 {
                     StatType = affix.StatType.ToString(),
+                    ValueType = affix.ValueType.ToString(),
                     Bonus = UnityEngine.Random.Range(affix.MinBonus, affix.MaxBonus)
                 });
             }

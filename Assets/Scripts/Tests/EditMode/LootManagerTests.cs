@@ -79,9 +79,9 @@ namespace SpaceInvaders.Tests
             _itemConfigs.Add(config);
         }
 
-        private static ItemAffixDTO Affix(ShipUpgradableStatTypes statType, float min = 0.1f, float max = 0.2f)
+        private static ItemAffixDTO Affix(ShipUpgradableStatTypes statType, float min = 0.1f, float max = 0.2f, ShipStatValueTypes valueType = ShipStatValueTypes.Percentage)
         {
-            return new ItemAffixDTO(statType, min, max);
+            return new ItemAffixDTO(statType, valueType, min, max);
         }
 
         private void AddPowerup(PowerupTypes type, int dropWeight = 1)
@@ -203,7 +203,7 @@ namespace SpaceInvaders.Tests
             InventoryItemEntry item = CaptureSpawnedItem();
 
             var seen = new HashSet<string>();
-            foreach (RolledAffixEntry affix in item.Affixes)
+            foreach (AffixEntry affix in item.Affixes)
             {
                 Assert.IsTrue(seen.Add(affix.StatType), $"Affix {affix.StatType} was rolled twice.");
             }

@@ -56,12 +56,13 @@ namespace SpaceInvaders.Project
     {
         public string InstanceId;
         public string ItemId;
-        public List<RolledAffixEntry> Affixes = new();
+        public List<AffixEntry> Affixes = new();
     }
 
-    public class RolledAffixEntry
+    public class AffixEntry
     {
         public string StatType;
+        public string ValueType;
         public float Bonus;
     }
 
