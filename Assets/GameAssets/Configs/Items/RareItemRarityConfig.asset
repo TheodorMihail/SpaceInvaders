@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RareItemRarityConfig
   m_EditorClassIdentifier: 
   _rarity: 1
-  _dropWeight: 1
+  _dropWeight: 3
   _affixCount: 2
   _displayName: Rare
   _displayColor: {r: 0, g: 0.5332718, b: 1, a: 1}
