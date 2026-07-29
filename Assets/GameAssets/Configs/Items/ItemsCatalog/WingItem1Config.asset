@@ -20,11 +20,14 @@ MonoBehaviour:
   _dropWeight: 1
   _possibleAffixes:
   - _statType: 0
+    _valueType: 1
     _minBonus: 1
     _maxBonus: 10
   - _statType: 1
+    _valueType: 1
     _minBonus: 1
-    _maxBonus: 10
+    _maxBonus: 15
   - _statType: 2
-    _minBonus: 1
-    _maxBonus: 10
+    _valueType: 1
+    _minBonus: 0.01
+    _maxBonus: 0.1

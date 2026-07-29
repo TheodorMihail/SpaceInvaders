@@ -10,23 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d94f0a4a1f374a142bde1259d545b970, type: 3}
-  m_Name: WingItem2Config
+  m_Name: WeaponItem3Config
   m_EditorClassIdentifier: 
-  _itemId: Wing_Item_2
-  _displayName: Iron Wings
-  _icon: {fileID: 1369433675, guid: 5fc342b21f7214545999fe565796490a, type: 3}
-  _slotType: 0
-  _rarity: 1
-  _dropWeight: 1
+  _itemId: Weapon_Item_3
+  _displayName: Adamantium Barrel
+  _icon: {fileID: -1510689436, guid: 5fc342b21f7214545999fe565796490a, type: 3}
+  _slotType: 2
+  _rarity: 2
+  _dropWeight: 3
   _possibleAffixes:
-  - _statType: 0
+  - _statType: 3
     _valueType: 1
     _minBonus: 1
-    _maxBonus: 10
-  - _statType: 1
+    _maxBonus: 5
+  - _statType: 4
     _valueType: 1
     _minBonus: 1
-    _maxBonus: 15
+    _maxBonus: 20
   - _statType: 2
     _valueType: 1
     _minBonus: 0.01
