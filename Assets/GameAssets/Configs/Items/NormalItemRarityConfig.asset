@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: NormalItemRarityConfig
   m_EditorClassIdentifier: 
   _rarity: 0
-  _dropWeight: 1
+  _dropWeight: 6
   _affixCount: 1
   _displayName: Normal
   _displayColor: {r: 1, g: 1, b: 1, a: 1}
