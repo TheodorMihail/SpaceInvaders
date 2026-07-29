@@ -25,9 +25,7 @@ namespace SpaceInvaders.Scenes.Game
         public override void OnEnter(params object[] paramsList)
         {
             base.OnEnter();
-
-            _platformService.ApplyFrameRateCap();
-
+            
             paramsList.TryGetParam(out int levelNumber, 1);
             StartGameplay(levelNumber).Forget();
         }
