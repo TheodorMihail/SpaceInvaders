@@ -53,11 +53,23 @@ namespace SpaceInvaders.Project
         public void Tick()
         {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            if (Keyboard.current != null && Keyboard.current.f3Key.wasPressedThisFrame)
+            if (Keyboard.current == null)
+            {
+                return;
+            }
+
+            if (Keyboard.current.f3Key.wasPressedThisFrame)
             {
                 int amount = _repositoryManager.GetProjectDataConfig().DebugAddCurrencyAmount;
                 AddCurrency(amount);
                 this.LogWarning($"Debug: Added {amount} currency. New balance: {Currency}");
+            }
+
+            if (Keyboard.current.f9Key.wasPressedThisFrame)
+            {
+                _data.Amount = 0;
+                SaveData();
+                this.LogWarning("Debug: Currency cleared.");
             }
 #endif
         }

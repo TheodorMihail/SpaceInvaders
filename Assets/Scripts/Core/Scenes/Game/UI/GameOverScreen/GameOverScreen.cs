@@ -5,7 +5,7 @@ namespace SpaceInvaders.Scenes.Game
 {
     public class GameOverScreen : Screen<GameOverModel, GameOverView, GameOverController>, IScreenWithResult<GameOverScreenResult>
     {
-        public enum ResultType
+        public enum ResultTypes
         {
             Restart,
             MainMenu
@@ -13,7 +13,7 @@ namespace SpaceInvaders.Scenes.Game
 
         public struct GameOverScreenResult : IScreenResult
         {
-            public ResultType Result { get; set; }
+            public ResultTypes Result { get; set; }
         }
 
         private GameOverScreenResult _result;

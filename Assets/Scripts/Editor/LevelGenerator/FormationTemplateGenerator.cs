@@ -5,7 +5,7 @@ using Random = System.Random;
 
 namespace SpaceInvaders.Editor
 {
-    public enum FormationTemplateType
+    public enum FormationTemplateTypes
     {
         Grid,
         VShape,
@@ -17,7 +17,7 @@ namespace SpaceInvaders.Editor
 
     public static class FormationTemplateGenerator
     {
-        public static List<Vector2Int> Generate(FormationTemplateType type, int enemyCount, int spacingX, int spacingY, Random random)
+        public static List<Vector2Int> Generate(FormationTemplateTypes type, int enemyCount, int spacingX, int spacingY, Random random)
         {
             if (enemyCount <= 0)
             {
@@ -26,17 +26,17 @@ namespace SpaceInvaders.Editor
 
             switch (type)
             {
-                case FormationTemplateType.Grid:
+                case FormationTemplateTypes.Grid:
                     return GenerateGrid(enemyCount, spacingX, spacingY);
-                case FormationTemplateType.VShape:
+                case FormationTemplateTypes.VShape:
                     return GenerateVShape(enemyCount, spacingX, spacingY);
-                case FormationTemplateType.Line:
+                case FormationTemplateTypes.Line:
                     return GenerateSymmetricRow(enemyCount, spacingX, 0);
-                case FormationTemplateType.Diamond:
+                case FormationTemplateTypes.Diamond:
                     return GenerateDiamond(enemyCount, spacingX, spacingY);
-                case FormationTemplateType.Circle:
+                case FormationTemplateTypes.Circle:
                     return GenerateCircle(enemyCount, spacingX, spacingY, random);
-                case FormationTemplateType.Cluster:
+                case FormationTemplateTypes.Cluster:
                     return GenerateCluster(enemyCount, spacingX, spacingY, random);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, "Unhandled formation template type.");

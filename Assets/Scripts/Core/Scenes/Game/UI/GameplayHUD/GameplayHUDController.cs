@@ -44,7 +44,7 @@ namespace SpaceInvaders.Scenes.Game
 
         private void OnEnemyDestroyedCallback(EnemyDestroyedMessage message)
         {
-            if (message.Category == EnemyCategory.Boss)
+            if (message.Category == EnemyCategoryTypes.Boss)
             {
                 _view.ShowBossHealthBar(false);
             }

@@ -14,6 +14,7 @@ namespace SpaceInvaders.Scenes.Game
         UniTask<List<IEnemySpaceship>> SpawnEnemies(WaveConfigDTO waveConfig);
         ProjectileBehaviourComponent SpawnProjectile(ProjectileBehaviourComponent prefab, Vector3 position, Vector3 direction, int damage, float speed);
         PowerupBehaviourComponent SpawnPowerup(PowerupConfigSO config, Vector3 position);
+        ItemPickupBehaviourComponent SpawnItemPickup(ItemRarityConfigSO rarityConfig, InventoryItemEntry item, Vector3 position);
         VFXBehaviourComponent SpawnVFX(VFXBehaviourComponent prefab, Vector3 position);
         void Despawn<T>(T instance) where T : MonoBehaviour, IPoolableObject;
     }
@@ -113,6 +114,21 @@ namespace SpaceInvaders.Scenes.Game
             }
 
             pickup.Initialize(config.PowerupType);
+            _activeObjects.Add(pickup);
+
+            return pickup;
+        }
+
+        public ItemPickupBehaviourComponent SpawnItemPickup(ItemRarityConfigSO rarityConfig, InventoryItemEntry item, Vector3 position)
+        {
+            var pickup = Spawn(rarityConfig.PickupPrefab, position, Quaternion.identity);
+
+            if (pickup == null)
+            {
+                return null;
+            }
+
+            pickup.Initialize(item);
             _activeObjects.Add(pickup);
 
             return pickup;

@@ -30,7 +30,7 @@ namespace SpaceInvaders.Scenes.MainMenu
             base.Dispose();
         }
 
-        private void OnTalentPurchaseClicked(TalentTypes type)
+        private void OnTalentPurchaseClicked(ShipUpgradableStatTypes type)
         {
             if (_talentManager.TryPurchaseLevel(type))
             {

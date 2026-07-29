@@ -6,32 +6,32 @@ using static SpaceInvaders.Scenes.MainMenu.MainMenuStateMachine;
 
 namespace SpaceInvaders.Scenes.MainMenu
 {
-    public class MainMenuStateMachine : BaseStateMachine<MainMenuStateIds>
+    public class MainMenuStateMachine : BaseStateMachine<MainMenuStateTypes>
     {
-        public enum MainMenuStateIds
+        public enum MainMenuStateTypes
         {
             Menu
         }
 
-        protected override MainMenuStateIds DefaultStateId => MainMenuStateIds.Menu;
+        protected override MainMenuStateTypes DefaultStateId => MainMenuStateTypes.Menu;
 
         [Inject] private readonly IScenesManager _scenesManager;
 
-        public MainMenuStateMachine(IList<IState<MainMenuStateIds>> mainMenuStates) : base(mainMenuStates)
+        public MainMenuStateMachine(IList<IState<MainMenuStateTypes>> mainMenuStates) : base(mainMenuStates)
         {
         }
 
-        protected override void OnStateFinished((MainMenuStateIds stateId, object[] paramsList) finishedState)
+        protected override void OnStateFinished((MainMenuStateTypes stateId, object[] paramsList) finishedState)
         {
             try
             {
                 switch (finishedState.stateId)
                 {
-                    case MainMenuStateIds.Menu:
+                    case MainMenuStateTypes.Menu:
                     
                         if (finishedState.paramsList.TryGetParam<MenuScreen.MenuScreenResult>(out var menuResult))
                         {
-                            if(menuResult.Result == MenuScreen.ResultType.QuitGame)
+                            if(menuResult.Result == MenuScreen.ResultTypes.QuitGame)
                             {
 #if UNITY_EDITOR
                                 UnityEditor.EditorApplication.isPlaying = false;
@@ -42,7 +42,7 @@ namespace SpaceInvaders.Scenes.MainMenu
                         }
                         else if (finishedState.paramsList.TryGetParam<LevelSelectionScreen.LevelSelectionScreenResult>(out var levelResult))
                         {
-                            _scenesManager.LoadScene(SceneType.Game.ToString(), levelResult.LevelSelected);
+                            _scenesManager.LoadScene(SceneTypes.Game.ToString(), levelResult.LevelSelected);
                         }
                             
                     break;

@@ -4,6 +4,24 @@ using UnityEngine;
 
 namespace SpaceInvaders.Scenes.Game
 {
+    /// <summary>
+    /// Ship stats that permanent progression (talents, equipped items) can modify.
+    /// </summary>
+    public enum ShipUpgradableStatTypes
+    {
+        Health,
+        MoveSpeed,
+        FireRate,
+        Damage,
+        ProjectileSpeed
+    }
+
+    public enum ShipStatValueTypes
+    {
+        Percentage,
+        Flat
+    }
+
     [Serializable]
     public class ShipBaseStats
     {
@@ -21,38 +39,70 @@ namespace SpaceInvaders.Scenes.Game
     }
 
     /// <summary>
-    /// A base value with stackable bonus modifiers. Positive (growth) bonuses sum additively,
-    /// Negative gives diminishing returns, never reaching/crossing -100%)
+    /// A base value with stackable flat and percentage bonus modifiers. Both count from base
+    /// independently (order doesn't matter): percentage bonuses scale the base (positive bonuses
+    /// sum additively, negative gives diminishing returns, never reaching/crossing -100%), flat
+    /// bonuses add directly to it. The combined result is floored at 10% of base either way, so
+    /// no combination of maluses can zero out or invert a stat.
     /// </summary>
     public class StatValue
     {
+        private const float MinValueFraction = 0.1f;
+
         private readonly float _baseValue;
-        private readonly List<float> _bonuses = new();
+        private readonly List<float> _percentageBonuses = new();
+        private readonly List<float> _flatBonuses = new();
 
         public float BaseValue => _baseValue;
-        public float CurrentValue => _baseValue * CombineBonuses();
+
+        public float CurrentValue
+        {
+            get
+            {
+                float flatAdjustedBase = Mathf.Max(_baseValue + CombineFlatBonuses(), _baseValue * MinValueFraction);
+                float percentageContribution = _baseValue * (CombinePercentageBonuses() - 1f);
+
+                return Mathf.Max(flatAdjustedBase + percentageContribution, _baseValue * MinValueFraction);
+            }
+        }
 
         public StatValue(float baseValue)
         {
             _baseValue = baseValue;
         }
 
-        public void AddBonus(float bonus)
+        public void AddBonus(float bonus, ShipStatValueTypes valueType)
         {
-            _bonuses.Add(bonus);
+            GetBonusList(valueType).Add(bonus);
         }
 
-        public void RemoveBonus(float bonus)
+        public void RemoveBonus(float bonus, ShipStatValueTypes valueType)
         {
-            _bonuses.Remove(bonus);
+            GetBonusList(valueType).Remove(bonus);
         }
 
-        private float CombineBonuses()
+        private List<float> GetBonusList(ShipStatValueTypes valueType)
+        {
+            return valueType == ShipStatValueTypes.Flat ? _flatBonuses : _percentageBonuses;
+        }
+
+        private float CombineFlatBonuses()
+        {
+            float sum = 0f;
+            foreach (float bonus in _flatBonuses)
+            {
+                sum += bonus;
+            }
+
+            return sum;
+        }
+
+        private float CombinePercentageBonuses()
         {
             float positiveSum = 0f;
             float negativeFactor = 1f;
 
-            foreach (float bonus in _bonuses)
+            foreach (float bonus in _percentageBonuses)
             {
                 if (bonus >= 0f)
                 {
@@ -132,6 +182,42 @@ namespace SpaceInvaders.Scenes.Game
             HealthChanged?.Invoke(CurrentHealth, CurrentMaxHealth);
         }
 
+        /// <summary>
+        /// Adds a permanent bonus to the given stat. FireRate is a cooldown, so a positive
+        /// bonus is inverted here to make the ship shoot faster.
+        /// </summary>
+        public void ApplyStatBonus(ShipUpgradableStatTypes statType, float bonus, ShipStatValueTypes valueType)
+        {
+            switch (statType)
+            {
+                case ShipUpgradableStatTypes.Health:
+                {
+                    _healthStat.AddBonus(bonus, valueType);
+                    break;
+                }
+                case ShipUpgradableStatTypes.MoveSpeed:
+                {
+                    _moveSpeedStat.AddBonus(bonus, valueType);
+                    break;
+                }
+                case ShipUpgradableStatTypes.FireRate:
+                {
+                    _fireRateStat.AddBonus(-bonus, valueType);
+                    break;
+                }
+                case ShipUpgradableStatTypes.Damage:
+                {
+                    _damageStat.AddBonus(bonus, valueType);
+                    break;
+                }
+                case ShipUpgradableStatTypes.ProjectileSpeed:
+                {
+                    _projectileSpeedStat.AddBonus(bonus, valueType);
+                    break;
+                }
+            }
+        }
+
         public void SetInvincible(bool value)
         {
             IsInvincible = value;
@@ -141,6 +227,48 @@ namespace SpaceInvaders.Scenes.Game
         {
             ExtraShotCount = Mathf.Max(0, ExtraShotCount + deltaCount);
             SpreadAngleDegrees = ExtraShotCount > 0 ? angleDegrees : 0f;
+        }
+
+        public static string StatDisplayName(ShipUpgradableStatTypes statType)
+        {
+            return statType switch
+            {
+                ShipUpgradableStatTypes.Health => "Health",
+                ShipUpgradableStatTypes.MoveSpeed => "Move Speed",
+                ShipUpgradableStatTypes.FireRate => "Fire Rate",
+                ShipUpgradableStatTypes.Damage => "Damage",
+                ShipUpgradableStatTypes.ProjectileSpeed => "Projectile Speed",
+                _ => statType.ToString()
+            };
+        }
+
+        public static string AffixFormat(ShipUpgradableStatTypes statType, float bonus, ShipStatValueTypes valueType)
+        {
+            string valueText = valueType == ShipStatValueTypes.Flat ? FormatStatDelta(statType, bonus) : FormatPercent(bonus);
+            return $"{StatDisplayName(statType)} {valueText}";
+        }
+
+        public static string FormatStatValue(ShipUpgradableStatTypes statType, float value)
+        {
+            // Health/Damage are whole numbers on ShipStats (Mathf.RoundToInt); the rest are floats.
+            bool isWholeNumberStat = statType == ShipUpgradableStatTypes.Health || statType == ShipUpgradableStatTypes.Damage;
+            if (isWholeNumberStat)
+            {
+                return ((int)Math.Round(value, MidpointRounding.AwayFromZero)).ToString();
+            }
+
+            return value.ToString("0.##");
+        }
+
+        public static string FormatStatDelta(ShipUpgradableStatTypes statType, float delta)
+        {
+            string sign = delta >= 0f ? "+" : string.Empty; // negative values already print their own "-"
+            return $"{sign}{FormatStatValue(statType, delta)}";
+        }
+
+        private static string FormatPercent(float bonus)
+        {
+            return $"{(bonus >= 0f ? "+" : string.Empty)}{bonus * 100f:0.#}%";
         }
     }
 }

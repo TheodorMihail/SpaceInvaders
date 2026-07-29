@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using BaseArchitecture.Core;
-using SpaceInvaders.Project;
 using SpaceInvaders.Scenes.Game;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,14 +9,13 @@ using Zenject;
 namespace SpaceInvaders.Scenes.MainMenu
 {
     [AddressablePath("Screens/LevelSelectionScreenView")]
-    public class LevelSelectionView : View
+    public class LevelSelectionView : View<LevelSelectionModel>
     {
+        [Inject] private readonly ICustomFactory _factory;
+
         [SerializeField] private LevelButtonComponent _levelButtonPrefab;
         [SerializeField] private Transform _levelButtonsContainer;
         [SerializeField] private Button _backButton;
-
-        [Inject] private readonly ILevelManager _levelManager;
-        [Inject] private readonly ICustomFactory _factory;
 
         public event Action<int> OnLevelSelectedClicked;
         public event Action OnBackClicked;
@@ -32,7 +30,7 @@ namespace SpaceInvaders.Scenes.MainMenu
             foreach(var level in levels)
             {
                 var button = _factory.CreateFromPrefab(_levelButtonPrefab, _levelButtonsContainer);
-                button.Setup(level, !_levelManager.IsLevelUnlocked(level.Index), _levelManager.GetLevelStars(level.Index));
+                button.Setup(level, !_model.IsLevelUnlocked(level.Index), _model.GetLevelStars(level.Index));
                 button.OnLevelButtonClicked += OnLevelSelectedClicked;
             }
         }

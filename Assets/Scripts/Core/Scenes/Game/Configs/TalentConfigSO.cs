@@ -5,31 +5,28 @@ using UnityEngine;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public enum TalentTypes
-    {
-        Health,
-        MoveSpeed,
-        FireRate,
-        Damage,
-        ProjectileSpeed
-    }
-
-    public abstract class TalentConfigSO : ScriptableObject, IRepositoryObject
+    [CreateAssetMenu(fileName = "TalentConfig", menuName = "SpaceInvaders/Talents/Talent Config")]
+    public class TalentConfigSO : ScriptableObject, IRepositoryObject
     {
         [Header("Talent Settings")]
+        [SerializeField] private ShipUpgradableStatTypes _talentType;
+        [SerializeField] private ShipStatValueTypes _valueType;
         [SerializeField] private string _displayName;
         [SerializeField] private Sprite _icon;
         [SerializeField] private List<TalentLevelDTO> _levels;
 
+        public ShipUpgradableStatTypes TalentType => _talentType;
+        public ShipStatValueTypes ValueType => _valueType;
         public string DisplayName => _displayName;
         public Sprite Icon => _icon;
         public IReadOnlyList<TalentLevelDTO> Levels => _levels;
         public int MaxLevel => _levels?.Count ?? 0;
-        public string ObjectID => TalentType.ToString();
+        public string ObjectID => _talentType.ToString();
 
-        public abstract TalentTypes TalentType { get; }
-
-        public abstract void ApplyBonus(ShipStats stats, float totalBonusDelta);
+        public void ApplyBonus(ShipStats stats, float totalBonusDelta)
+        {
+            stats.ApplyStatBonus(TalentType, totalBonusDelta, ValueType);
+        }
 
         [Serializable]
         public struct TalentLevelDTO

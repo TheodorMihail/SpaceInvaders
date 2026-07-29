@@ -112,7 +112,7 @@ namespace SpaceInvaders.Scenes.Game
         {
             foreach (WaveConfigDTO.WaveFormationDTO formation in wave.WavesFormation)
             {
-                if (_repositoryManager.GetEnemyConfig(formation.EnemyType).Category == EnemyCategory.Boss)
+                if (_repositoryManager.GetEnemyConfig(formation.EnemyType).Category == EnemyCategoryTypes.Boss)
                 {
                     return true;
                 }

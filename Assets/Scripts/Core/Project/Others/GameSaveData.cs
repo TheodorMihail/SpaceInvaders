@@ -23,6 +23,18 @@ namespace SpaceInvaders.Project
         public int Amount;
     }
 
+    public class InventorySaveData : ISaveData
+    {
+        public const string SaveKey = "PlayerInventory";
+        public List<InventoryItemEntry> Items = new();
+    }
+
+    public class EquipmentSaveData : ISaveData
+    {
+        public const string SaveKey = "PlayerEquipment";
+        public List<EquippedSlotEntry> Slots = new();
+    }
+
     #endregion
 
     #region  SaveEntries
@@ -38,6 +50,26 @@ namespace SpaceInvaders.Project
     {
         public string TalentType;
         public int Level;
+    }
+
+    public class InventoryItemEntry
+    {
+        public string InstanceId;
+        public string ItemId;
+        public List<AffixEntry> Affixes = new();
+    }
+
+    public class AffixEntry
+    {
+        public string StatType;
+        public string ValueType;
+        public float Bonus;
+    }
+
+    public class EquippedSlotEntry
+    {
+        public string Slot;
+        public string InstanceId;
     }
 
     #endregion

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using BaseArchitecture.Core;
-using SpaceInvaders.Project;
 using SpaceInvaders.Scenes.Game;
 using TMPro;
 using UnityEngine;
@@ -11,21 +10,19 @@ using Zenject;
 namespace SpaceInvaders.Scenes.MainMenu
 {
     [AddressablePath("Screens/TalentTreeScreenView")]
-    public class TalentTreeView : View
+    public class TalentTreeView : View<TalentTreeModel>
     {
+        [Inject] private readonly ICustomFactory _factory;
+
         [SerializeField] private TalentButtonComponent _talentButtonPrefab;
         [SerializeField] private Transform _talentButtonsContainer;
         [SerializeField] private TextMeshProUGUI _currencyText;
         [SerializeField] private Button _backButton;
 
-        [Inject] private readonly ITalentManager _talentManager;
-        [Inject] private readonly ICurrencyManager _currencyManager;
-        [Inject] private readonly ICustomFactory _factory;
+        private readonly Dictionary<ShipUpgradableStatTypes, TalentButtonComponent> _talentButtons = new();
+        private readonly Dictionary<ShipUpgradableStatTypes, TalentConfigSO> _talentConfigs = new();
 
-        private readonly Dictionary<TalentTypes, TalentButtonComponent> _talentButtons = new();
-        private readonly Dictionary<TalentTypes, TalentConfigSO> _talentConfigs = new();
-
-        public event Action<TalentTypes> OnTalentPurchaseClicked;
+        public event Action<ShipUpgradableStatTypes> OnTalentPurchaseClicked;
         public event Action OnBackClicked;
 
         private void Awake()
@@ -67,7 +64,7 @@ namespace SpaceInvaders.Scenes.MainMenu
             UpdateCurrencyDisplay();
         }
 
-        private void RefreshButtonDisplay(TalentTypes type)
+        private void RefreshButtonDisplay(ShipUpgradableStatTypes type)
         {
             if (!_talentButtons.TryGetValue(type, out var button) || !_talentConfigs.TryGetValue(type, out var config))
             {
@@ -76,15 +73,15 @@ namespace SpaceInvaders.Scenes.MainMenu
 
             button.Setup(
                 config,
-                _talentManager.GetTalentLevel(type),
-                _talentManager.GetNextLevelCost(type),
-                _talentManager.IsMaxLevel(type),
-                _talentManager.CanAfford(type));
+                _model.GetTalentLevel(type),
+                _model.GetNextLevelCost(type),
+                _model.IsMaxLevel(type),
+                _model.CanAfford(type));
         }
 
         private void UpdateCurrencyDisplay()
         {
-            _currencyText.text = _currencyManager.Currency.ToString();
+            _currencyText.text = _model.Currency.ToString();
         }
     }
 }

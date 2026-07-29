@@ -19,7 +19,7 @@ namespace SpaceInvaders.Scenes.Game
 
         public virtual void OnSpawned()
         {
-            (_minBounds, _maxBounds) = _cameraManager.GetScreenBounds(_renderer, ScreenRegionType.Full, buffer: 2f);
+            (_minBounds, _maxBounds) = _cameraManager.GetScreenBounds(_renderer, ScreenRegionTypes.Full, buffer: 2f);
         }
 
         public virtual void OnDespawned()

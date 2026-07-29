@@ -15,7 +15,7 @@ namespace SpaceInvaders.Scenes.Game
         Boss1
     }
 
-    public enum EnemyCategory
+    public enum EnemyCategoryTypes
     {
         Normal,
         Boss
@@ -66,7 +66,7 @@ namespace SpaceInvaders.Scenes.Game
                 enemy.OnDamaged += OnEnemyDamagedCallback;
                 enemy.StartEntryAnimation(waveConfig.EntrySpeed);
 
-                if (enemy.Category == EnemyCategory.Boss)
+                if (enemy.Category == EnemyCategoryTypes.Boss)
                 {
                     enemy.OnHealthChanged += OnBossHealthChangedCallback;
                     _messageBus.Publish(new BossSpawnedMessage(enemy.EnemyType, enemy.Stats.CurrentHealth));

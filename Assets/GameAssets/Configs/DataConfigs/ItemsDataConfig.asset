@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7cbfb58a8fda98344b5179962514aa81, type: 3}
+  m_Name: ItemsDataConfig
+  m_EditorClassIdentifier: 
+  _itemConfigs:
+  - {fileID: 11400000, guid: dadc8b649cbc0384aa4fddb68bf2137e, type: 2}
+  - {fileID: 11400000, guid: 4531301f4ef84384893606558294191f, type: 2}
+  - {fileID: 11400000, guid: ae7e7ea5e5808024db8e2daee578cbcf, type: 2}
+  - {fileID: 11400000, guid: c376bdcfcc353a84d912c150a3d68e61, type: 2}
+  - {fileID: 11400000, guid: 820d66f3e03f4024e8450f75c3102f1c, type: 2}
+  - {fileID: 11400000, guid: 22b4128fe794ed04da35f5f35b0b97f3, type: 2}
+  - {fileID: 11400000, guid: cf01b021a029b9746850120e68a48413, type: 2}
+  - {fileID: 11400000, guid: 951665d2064feae4abdff9aa0f515bb2, type: 2}
+  - {fileID: 11400000, guid: 7067f2d573412234389d7f2d16ddfc89, type: 2}
+  - {fileID: 11400000, guid: 0a6d8fcaf16a23141909816812e93df3, type: 2}
+  - {fileID: 11400000, guid: 51fe229a798236e49a1d133d0df58b1e, type: 2}
+  - {fileID: 11400000, guid: 536f5ca02689d88458e848620090a7d1, type: 2}
+  _rarityConfigs:
+  - {fileID: 11400000, guid: 36e9d985e5534a74aacafa63c6cd4938, type: 2}
+  - {fileID: 11400000, guid: 0d504075a17f19249b95321484eef838, type: 2}
+  - {fileID: 11400000, guid: cef575bc2eb7e854eba3914c1c4a42ab, type: 2}
+  _slotConfigs:
+  - _slot: 0
+    _acceptedType: 0
+    _displayName: Wing
+  - _slot: 1
+    _acceptedType: 1
+    _displayName: Engine
+  - _slot: 2
+    _acceptedType: 2
+    _displayName: Weapon
+  - _slot: 3
+    _acceptedType: 3
+    _displayName: Core

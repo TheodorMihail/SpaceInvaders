@@ -7,19 +7,39 @@ namespace SpaceInvaders.Project
 {
     public interface IRepositoryManager
     {
+        //Project
+        ProjectDataConfigSO GetProjectDataConfig();
+
+        //Levels
         LevelConfigSO GetLevelConfig(int level);
         IReadOnlyList<LevelConfigSO> GetLevelConfigs();
+        int GetLevelsCount();
+        float GetTwoStarDamageMultiplier();
+
+        //Ships
         PlayerSpaceshipConfigSO GetPlayerConfig(PlayerTypes playerType);
         EnemySpaceshipConfigSO GetEnemyConfig(EnemyTypes enemyType);
+        
+        //Powerups
         PowerupConfigSO GetPowerupConfig(PowerupTypes powerupType);
         IReadOnlyList<PowerupConfigSO> GetAllPowerupConfigs();
-        float GetPowerupDropChance();
-        float GetTwoStarDamageMultiplier();
-        int GetLevelsCount();
-        ProjectDataConfigSO GetProjectDataConfig();
-        TalentConfigSO GetTalentConfig(TalentTypes talentType);
+
+        //Drops
+        IReadOnlyList<DropCategoryWeightDTO> GetAllDropCategoryWeights();
+
+        //Talents
+        TalentConfigSO GetTalentConfig(ShipUpgradableStatTypes talentType);
         IReadOnlyList<TalentConfigSO> GetAllTalentConfigs();
+
+        //Sounds
         SoundConfigSO GetSoundConfig(SoundTypes soundType);
+
+        //Items
+        ItemConfigSO GetItemConfig(string itemId);
+        IReadOnlyList<ItemConfigSO> GetAllItemConfigs();
+        ItemRarityConfigSO GetItemRarityConfig(ItemRarityTypes rarity);
+        IReadOnlyList<ItemRarityConfigSO> GetAllItemRarityConfigs();
+        IReadOnlyList<EquipmentSlotConfigDTO> GetAllEquipmentSlotConfigs();
     }
 
     public class RepositoryManager : Repository, IRepositoryManager
@@ -31,7 +51,9 @@ namespace SpaceInvaders.Project
             PowerupsDataConfigSO powerupsDataConfigSO,
             ProjectDataConfigSO projectDataConfigSO,
             TalentsDataConfigSO talentsDataConfigSO,
-            SoundsDataConfigSO soundsDataConfigSO)
+            SoundsDataConfigSO soundsDataConfigSO,
+            ItemsDataConfigSO itemsDataConfigSO,
+            DropTableConfigSO dropTableConfigSO)
         {
             AddObjects(levelsDataConfigSO.LevelsConfigs);
             AddObjects(playerDataConfigSO.PlayerConfigs);
@@ -39,6 +61,8 @@ namespace SpaceInvaders.Project
             AddObjects(powerupsDataConfigSO.PowerupConfigs);
             AddObjects(talentsDataConfigSO.TalentConfigs);
             AddObjects(soundsDataConfigSO.SoundConfigs);
+            AddObjects(itemsDataConfigSO.ItemConfigs);
+            AddObjects(itemsDataConfigSO.RarityConfigs);
 
             AddObject(levelsDataConfigSO);
             AddObject(playerDataConfigSO);
@@ -47,7 +71,20 @@ namespace SpaceInvaders.Project
             AddObject(projectDataConfigSO);
             AddObject(talentsDataConfigSO);
             AddObject(soundsDataConfigSO);
+            AddObject(itemsDataConfigSO);
+            AddObject(dropTableConfigSO);
         }
+
+        #region Project
+
+        public ProjectDataConfigSO GetProjectDataConfig()
+        {
+            return Get<ProjectDataConfigSO>(nameof(ProjectDataConfigSO));
+        }
+
+        #endregion
+
+        #region Levels
 
         public LevelConfigSO GetLevelConfig(int level)
         {
@@ -59,6 +96,20 @@ namespace SpaceInvaders.Project
             return GetAll<LevelConfigSO>().ToArray();
         }
 
+        public int GetLevelsCount()
+        {
+            return GetAll<LevelConfigSO>().Count();
+        }
+
+        public float GetTwoStarDamageMultiplier()
+        {
+            return Get<LevelsDataConfigSO>(nameof(LevelsDataConfigSO)).TwoStarDamageMultiplier;
+        }
+
+        #endregion
+
+        #region Ships
+
         public PlayerSpaceshipConfigSO GetPlayerConfig(PlayerTypes playerType)
         {
             return Get<PlayerSpaceshipConfigSO>(playerType.ToString());
@@ -68,6 +119,10 @@ namespace SpaceInvaders.Project
         {
             return Get<EnemySpaceshipConfigSO>(enemyType.ToString());
         }
+
+        #endregion
+
+        #region Powerups
 
         public PowerupConfigSO GetPowerupConfig(PowerupTypes powerupType)
         {
@@ -79,27 +134,29 @@ namespace SpaceInvaders.Project
             return GetAll<PowerupConfigSO>().ToArray();
         }
 
-        public float GetPowerupDropChance()
+        #endregion
+
+        #region Drops
+
+        public IReadOnlyList<DropCategoryWeightDTO> GetAllDropCategoryWeights()
         {
-            return Get<PowerupsDataConfigSO>(nameof(PowerupsDataConfigSO)).GlobalPowerupDropChance;
+            return Get<DropTableConfigSO>(nameof(DropTableConfigSO)).CategoryWeights;
         }
 
-        public float GetTwoStarDamageMultiplier()
+        #endregion
+
+        #region Sounds
+
+        public SoundConfigSO GetSoundConfig(SoundTypes soundType)
         {
-            return Get<LevelsDataConfigSO>(nameof(LevelsDataConfigSO)).TwoStarDamageMultiplier;
+            return Get<SoundConfigSO>(soundType.ToString());
         }
 
-        public int GetLevelsCount()
-        {
-            return GetAll<LevelConfigSO>().Count();
-        }
+        #endregion
 
-        public ProjectDataConfigSO GetProjectDataConfig()
-        {
-            return Get<ProjectDataConfigSO>(nameof(ProjectDataConfigSO));
-        }
+        #region Talents
 
-        public TalentConfigSO GetTalentConfig(TalentTypes talentType)
+        public TalentConfigSO GetTalentConfig(ShipUpgradableStatTypes talentType)
         {
             return Get<TalentConfigSO>(talentType.ToString());
         }
@@ -109,9 +166,35 @@ namespace SpaceInvaders.Project
             return GetAll<TalentConfigSO>().ToArray();
         }
 
-        public SoundConfigSO GetSoundConfig(SoundTypes soundType)
+        #endregion
+
+        #region Items
+
+        public ItemConfigSO GetItemConfig(string itemId)
         {
-            return Get<SoundConfigSO>(soundType.ToString());
+            return Get<ItemConfigSO>(itemId);
         }
+
+        public IReadOnlyList<ItemConfigSO> GetAllItemConfigs()
+        {
+            return GetAll<ItemConfigSO>().ToArray();
+        }
+
+        public ItemRarityConfigSO GetItemRarityConfig(ItemRarityTypes rarity)
+        {
+            return Get<ItemRarityConfigSO>(rarity.ToString());
+        }
+
+        public IReadOnlyList<ItemRarityConfigSO> GetAllItemRarityConfigs()
+        {
+            return GetAll<ItemRarityConfigSO>().ToArray();
+        }
+
+        public IReadOnlyList<EquipmentSlotConfigDTO> GetAllEquipmentSlotConfigs()
+        {
+            return Get<ItemsDataConfigSO>(nameof(ItemsDataConfigSO)).SlotConfigs;
+        }
+    
+        #endregion
     }
 }

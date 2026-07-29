@@ -1,20 +1,21 @@
 using BaseArchitecture.Core;
 using SpaceInvaders.Scenes.Game;
+using UnityEngine.InputSystem;
 using Zenject;
 
 namespace SpaceInvaders.Project
 {
     public interface ITalentManager : IInitializable
     {
-        int GetTalentLevel(TalentTypes type);
-        int GetNextLevelCost(TalentTypes type);
-        bool IsMaxLevel(TalentTypes type);
-        bool CanAfford(TalentTypes type);
-        bool TryPurchaseLevel(TalentTypes type);
+        int GetTalentLevel(ShipUpgradableStatTypes type);
+        int GetNextLevelCost(ShipUpgradableStatTypes type);
+        bool IsMaxLevel(ShipUpgradableStatTypes type);
+        bool CanAfford(ShipUpgradableStatTypes type);
+        bool TryPurchaseLevel(ShipUpgradableStatTypes type);
         void ApplyTalentBonuses(ShipStats stats);
     }
 
-    public class TalentManager : ITalentManager
+    public class TalentManager : ITalentManager, ITickable
     {
         [Inject] private readonly IPersistenceManager _persistenceManager;
         [Inject] private readonly IRepositoryManager _repositoryManager;
@@ -27,18 +28,18 @@ namespace SpaceInvaders.Project
             _data = _persistenceManager.Load<TalentsSaveData>(TalentsSaveData.SaveKey);
         }
 
-        public int GetTalentLevel(TalentTypes type)
+        public int GetTalentLevel(ShipUpgradableStatTypes type)
         {
             return GetTalent(type)?.Level ?? 0;
         }
 
-        public bool IsMaxLevel(TalentTypes type)
+        public bool IsMaxLevel(ShipUpgradableStatTypes type)
         {
             TalentConfigSO config = _repositoryManager.GetTalentConfig(type);
             return GetTalentLevel(type) >= config.MaxLevel;
         }
 
-        public int GetNextLevelCost(TalentTypes type)
+        public int GetNextLevelCost(ShipUpgradableStatTypes type)
         {
             if (IsMaxLevel(type))
             {
@@ -49,13 +50,13 @@ namespace SpaceInvaders.Project
             return config.Levels[GetTalentLevel(type)].Cost;
         }
 
-        public bool CanAfford(TalentTypes type)
+        public bool CanAfford(ShipUpgradableStatTypes type)
         {
             int cost = GetNextLevelCost(type);
             return cost >= 0 && _currencyManager.Currency >= cost;
         }
 
-        public bool TryPurchaseLevel(TalentTypes type)
+        public bool TryPurchaseLevel(ShipUpgradableStatTypes type)
         {
             int cost = GetNextLevelCost(type);
             if (cost < 0)
@@ -96,12 +97,12 @@ namespace SpaceInvaders.Project
             stats.RefillHealth();
         }
 
-        private TalentSaveEntry GetTalent(TalentTypes type)
+        private TalentSaveEntry GetTalent(ShipUpgradableStatTypes type)
         {
             return _data.Talents.Find(t => t.TalentType == type.ToString());
         }
 
-        private TalentSaveEntry GetOrCreateTalentEntry(TalentTypes type)
+        private TalentSaveEntry GetOrCreateTalentEntry(ShipUpgradableStatTypes type)
         {
             TalentSaveEntry entry = GetTalent(type);
             if (entry == null)
@@ -117,5 +118,21 @@ namespace SpaceInvaders.Project
         {
             _persistenceManager.Save(TalentsSaveData.SaveKey, _data);
         }
+
+        #region Debugging
+
+        public void Tick()
+        {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            if (Keyboard.current != null && Keyboard.current.f10Key.wasPressedThisFrame)
+            {
+                _data.Talents.Clear();
+                SaveData();
+                this.LogWarning("Debug: Talents cleared.");
+            }
+#endif
+        }
+
+        #endregion
     }
 }

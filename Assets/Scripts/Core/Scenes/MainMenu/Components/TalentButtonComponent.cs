@@ -22,8 +22,8 @@ namespace SpaceInvaders.Scenes.MainMenu
         [SerializeField] private string _costFormat = "Cost: {0}";
         [SerializeField] private string _maxLevelValue = "MAX";
 
-        private TalentTypes _talentType;
-        public event Action<TalentTypes> OnTalentButtonClicked;
+        private ShipUpgradableStatTypes _talentType;
+        public event Action<ShipUpgradableStatTypes> OnTalentButtonClicked;
 
         private void Awake()
         {

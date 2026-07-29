@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using BaseArchitecture.Core;
 using Cysharp.Threading.Tasks;
 using SpaceInvaders.Project;
-using UnityEngine;
 using Zenject;
-using Random = UnityEngine.Random;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public interface IPowerupManager : IDisposable, IInitializable, IGameEndListener
+    public interface IPowerupManager : IDisposable, IGameEndListener
     {
         void ActivatePowerup(PowerupTypes type);
     }
@@ -19,19 +17,12 @@ namespace SpaceInvaders.Scenes.Game
         [Inject] private readonly IRepositoryManager _repositoryManager;
         [Inject] private readonly IPlayerManager _playerManager;
         [Inject] private readonly IMessageBus _messageBus;
-        [Inject] private readonly ISpawnService _spawnService;
         [Inject] private readonly ICustomFactory _factory;
 
         private readonly Dictionary<PowerupTypes, IPowerupBehaviour> _activePowerups = new();
 
-        public void Initialize()
-        {
-            _messageBus.Subscribe<EnemyDestroyedMessage>(OnEnemyDestroyed);
-        }
-
         public void Dispose()
         {
-            _messageBus.Unsubscribe<EnemyDestroyedMessage>(OnEnemyDestroyed);
             ClearActivePowerups();
         }
 
@@ -39,56 +30,6 @@ namespace SpaceInvaders.Scenes.Game
         {
             ClearActivePowerups();
             return UniTask.CompletedTask;
-        }
-
-        private void OnEnemyDestroyed(EnemyDestroyedMessage message)
-        {
-            if (TryGetPowerupDrop(out var config))
-            {
-                _spawnService.SpawnPowerup(config, message.Position);
-            }
-        }
-
-        private bool TryGetPowerupDrop(out PowerupConfigSO config)
-        {
-            config = null;
-
-            if (Random.value > _repositoryManager.GetPowerupDropChance())
-            {
-                return false;
-            }
-
-            var configs = _repositoryManager.GetAllPowerupConfigs();
-
-            if (configs.Count == 0)
-            {
-                return false;
-            }
-
-            int totalWeight = 0;
-            foreach (var candidate in configs)
-            {
-                totalWeight += candidate.DropWeight;
-            }
-
-            if (totalWeight <= 0)
-            {
-                return false;
-            }
-
-            int roll = Random.Range(0, totalWeight);
-
-            foreach (var candidate in configs)
-            {
-                roll -= candidate.DropWeight;
-                if (roll < 0)
-                {
-                    config = candidate;
-                    return true;
-                }
-            }
-
-            return false;
         }
 
         public void ActivatePowerup(PowerupTypes type)

@@ -7,21 +7,21 @@ using static SpaceInvaders.Scenes.Game.GameStateMachine;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public class GameStateMachine : BaseStateMachine<GameStateIds>
+    public class GameStateMachine : BaseStateMachine<GameStateTypes>
     {
-        public enum GameStateIds
+        public enum GameStateTypes
         {
             Playing,
             GameOver
         }
 
-        protected override GameStateIds DefaultStateId => GameStateIds.Playing;
+        protected override GameStateTypes DefaultStateId => GameStateTypes.Playing;
 
         [Inject] private readonly IScenesManager _scenesManager;
 
         private int _currentLevelNumber;
 
-        public GameStateMachine(IList<IState<GameStateIds>> gameStates) : base(gameStates)
+        public GameStateMachine(IList<IState<GameStateTypes>> gameStates) : base(gameStates)
         {
         }
         
@@ -31,30 +31,30 @@ namespace SpaceInvaders.Scenes.Game
             SetState(DefaultStateId, _currentLevelNumber);
         }
 
-        protected override void OnStateFinished((GameStateIds stateId, object[] paramsList) finishedState)
+        protected override void OnStateFinished((GameStateTypes stateId, object[] paramsList) finishedState)
         {
             try
             {
                 switch (finishedState.stateId)
                 {
-                    case GameStateIds.Playing:
-                        GameplayStateResult result = (GameplayStateResult)finishedState.paramsList[0];
-                        SetState(GameStateIds.GameOver, result);
+                    case GameStateTypes.Playing:
+                        GameplayStateResultTypes result = (GameplayStateResultTypes)finishedState.paramsList[0];
+                        SetState(GameStateTypes.GameOver, result);
                         break;
 
-                    case GameStateIds.GameOver:
-                        GameOverStateResult gameOverResult = (GameOverStateResult)finishedState.paramsList[0];
+                    case GameStateTypes.GameOver:
+                        GameOverStateResultTypes gameOverResult = (GameOverStateResultTypes)finishedState.paramsList[0];
                         switch (gameOverResult)
                         {
-                            case GameOverStateResult.MainMenu:
-                                _scenesManager.LoadScene(SceneType.MainMenu.ToString());
+                            case GameOverStateResultTypes.MainMenu:
+                                _scenesManager.LoadScene(SceneTypes.MainMenu.ToString());
                                 break;
-                            case GameOverStateResult.Restart:
-                                _scenesManager.LoadScene(SceneType.Game.ToString(), _currentLevelNumber);
+                            case GameOverStateResultTypes.Restart:
+                                _scenesManager.LoadScene(SceneTypes.Game.ToString(), _currentLevelNumber);
                                 break;
-                            case GameOverStateResult.NextLevel:
+                            case GameOverStateResultTypes.NextLevel:
                                 _currentLevelNumber++;
-                                SetState(GameStateIds.Playing, _currentLevelNumber);
+                                SetState(GameStateTypes.Playing, _currentLevelNumber);
                                 break;
                         }
                     

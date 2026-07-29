@@ -8,7 +8,7 @@ namespace SpaceInvaders.Scenes.Game
     {
         [Inject] private readonly IMessageBus _messageBus;
 
-        public event Action<GameplayStateResult> ConditionMet;
+        public event Action<GameplayStateResultTypes> ConditionMet;
 
         public void Initialize()
         {
@@ -22,7 +22,7 @@ namespace SpaceInvaders.Scenes.Game
 
         private void OnLevelCompleted(LevelCompletedMessage message)
         {
-            ConditionMet?.Invoke(GameplayStateResult.LevelFinished);
+            ConditionMet?.Invoke(GameplayStateResultTypes.LevelFinished);
         }
     }
 
@@ -30,7 +30,7 @@ namespace SpaceInvaders.Scenes.Game
     {
         [Inject] private readonly IMessageBus _messageBus;
 
-        public event Action<GameplayStateResult> ConditionMet;
+        public event Action<GameplayStateResultTypes> ConditionMet;
 
         public void Initialize()
         {
@@ -44,7 +44,7 @@ namespace SpaceInvaders.Scenes.Game
 
         private void OnPlayerDestroyed(PlayerDestroyedMessage message)
         {
-            ConditionMet?.Invoke(GameplayStateResult.GameOver);
+            ConditionMet?.Invoke(GameplayStateResultTypes.GameOver);
         }
     }
 }

@@ -8,16 +8,16 @@ using static SpaceInvaders.Scenes.Game.GameStateMachine;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public class GameOverState : BaseState<GameStateIds>
+    public class GameOverState : BaseState<GameStateTypes>
     {
-        public enum GameOverStateResult
+        public enum GameOverStateResultTypes
         {
             Restart,
             MainMenu,
             NextLevel
         }
 
-        public override GameStateIds Id => GameStateIds.GameOver;
+        public override GameStateTypes Id => GameStateTypes.GameOver;
 
         [Inject] private readonly IUIManager _uiManager;
 
@@ -25,36 +25,36 @@ namespace SpaceInvaders.Scenes.Game
         {
             base.OnEnter();
 
-            GameplayStateResult result = (GameplayStateResult)paramsList[0];
+            GameplayStateResultTypes result = (GameplayStateResultTypes)paramsList[0];
             ShowGameOver(result).Forget();
         }
 
-        private async UniTask ShowGameOver(GameplayStateResult result)
+        private async UniTask ShowGameOver(GameplayStateResultTypes result)
         {
             switch (result)
             {
-                case GameplayStateResult.GameOver:
+                case GameplayStateResultTypes.GameOver:
                     GameOverScreenResult gameOverResult = await _uiManager.ShowScreen<GameOverScreen, GameOverScreenResult>();
                     switch (gameOverResult.Result)
                     {
-                        case GameOverScreen.ResultType.MainMenu:
-                            FinishState(GameOverStateResult.MainMenu);
+                        case GameOverScreen.ResultTypes.MainMenu:
+                            FinishState(GameOverStateResultTypes.MainMenu);
                             break;
-                        case GameOverScreen.ResultType.Restart:
-                            FinishState(GameOverStateResult.Restart);
+                        case GameOverScreen.ResultTypes.Restart:
+                            FinishState(GameOverStateResultTypes.Restart);
                             break;
                     }
                     break;
 
-                case GameplayStateResult.LevelFinished:
+                case GameplayStateResultTypes.LevelFinished:
                     LevelFinishedScreenResult gameFinishedResult = await _uiManager.ShowScreen<LevelFinishedScreen, LevelFinishedScreenResult>();
                     switch (gameFinishedResult.Result)
                     {
-                        case LevelFinishedScreen.ResultType.MainMenu:
-                            FinishState(GameOverStateResult.MainMenu);
+                        case LevelFinishedScreen.ResultTypes.MainMenu:
+                            FinishState(GameOverStateResultTypes.MainMenu);
                             break;
-                        case LevelFinishedScreen.ResultType.NextLevel:
-                            FinishState(GameOverStateResult.NextLevel);
+                        case LevelFinishedScreen.ResultTypes.NextLevel:
+                            FinishState(GameOverStateResultTypes.NextLevel);
                             break;
                     }
                     break;

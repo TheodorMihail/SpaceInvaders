@@ -1,5 +1,6 @@
 using BaseArchitecture.Core;
 using SpaceInvaders.Scenes.Game;
+using UnityEngine.InputSystem;
 using Zenject;
 
 namespace SpaceInvaders.Project
@@ -19,7 +20,7 @@ namespace SpaceInvaders.Project
         void UnregisterSession(ILevelSessionService session);
     }
 
-    public class LevelManager : ILevelManager
+    public class LevelManager : ILevelManager, ITickable
     {
         [Inject] private readonly IPersistenceManager _persistenceManager;
         [Inject] private readonly IRepositoryManager _repositoryManager;
@@ -109,5 +110,22 @@ namespace SpaceInvaders.Project
         {
             _persistenceManager.Save(LevelsSaveData.SaveKey, _data);
         }
+
+        #region Debugging
+
+        public void Tick()
+        {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            if (Keyboard.current != null && Keyboard.current.f12Key.wasPressedThisFrame)
+            {
+                _data.Levels.Clear();
+                GetOrCreateLevelProgress(1).Unlocked = true;
+                SaveData();
+                this.LogWarning("Debug: Level progress cleared.");
+            }
+#endif
+        }
+
+        #endregion
     }
 }

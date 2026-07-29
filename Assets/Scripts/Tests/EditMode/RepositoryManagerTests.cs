@@ -58,10 +58,20 @@ namespace SpaceInvaders.Tests
                 CreateLevelsDataConfig(_levelConfigs),
                 CreatePlayerDataConfig(_playerConfigs),
                 CreateEnemyDataConfig(_enemyConfigs),
-                CreatePowerupsDataConfig(_powerupConfigs, 0f),
+                CreatePowerupsDataConfig(_powerupConfigs),
                 CreateProjectSettingsConfig(),
                 CreateTalentsDataConfig(_talentConfigs),
-                CreateSoundsDataConfig(_soundConfigs));
+                CreateSoundsDataConfig(_soundConfigs),
+                CreateItemsDataConfig(new List<ItemConfigSO>(), new List<ItemRarityConfigSO>()),
+                CreateDropTableConfig());
+        }
+
+        private static ItemsDataConfigSO CreateItemsDataConfig(List<ItemConfigSO> itemConfigs, List<ItemRarityConfigSO> rarityConfigs)
+        {
+            var config = Substitute.For<ItemsDataConfigSO>();
+            config.ItemConfigs.Returns(itemConfigs);
+            config.RarityConfigs.Returns(rarityConfigs);
+            return config;
         }
 
         private static LevelsDataConfigSO CreateLevelsDataConfig(List<LevelConfigSO> levelConfigs)
@@ -85,11 +95,17 @@ namespace SpaceInvaders.Tests
             return config;
         }
 
-        private static PowerupsDataConfigSO CreatePowerupsDataConfig(List<PowerupConfigSO> powerupConfigs, float globalPowerupDropChance)
+        private static PowerupsDataConfigSO CreatePowerupsDataConfig(List<PowerupConfigSO> powerupConfigs)
         {
             var config = Substitute.For<PowerupsDataConfigSO>();
             config.PowerupConfigs.Returns(powerupConfigs);
-            config.GlobalPowerupDropChance.Returns(globalPowerupDropChance);
+            return config;
+        }
+
+        private static DropTableConfigSO CreateDropTableConfig()
+        {
+            var config = Substitute.For<DropTableConfigSO>();
+            config.CategoryWeights.Returns(new List<DropCategoryWeightDTO>());
             return config;
         }
 
@@ -182,10 +198,12 @@ namespace SpaceInvaders.Tests
                 CreateLevelsDataConfig(emptyLevels),
                 CreatePlayerDataConfig(emptyPlayers),
                 CreateEnemyDataConfig(emptyEnemies),
-                CreatePowerupsDataConfig(emptyPowerups, 0f),
+                CreatePowerupsDataConfig(emptyPowerups),
                 CreateProjectSettingsConfig(),
                 CreateTalentsDataConfig(emptyTalents),
-                CreateSoundsDataConfig(emptySounds));
+                CreateSoundsDataConfig(emptySounds),
+                CreateItemsDataConfig(new List<ItemConfigSO>(), new List<ItemRarityConfigSO>()),
+                CreateDropTableConfig());
 
             Assert.AreEqual(0, manager.GetLevelsCount());
         }

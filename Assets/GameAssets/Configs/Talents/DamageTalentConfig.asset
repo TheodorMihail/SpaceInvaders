@@ -9,19 +9,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2cb6682b5d6239c40acef55dff329ba6, type: 3}
+  m_Script: {fileID: 11500000, guid: 72428aea5974ab543a312b312090f474, type: 3}
   m_Name: DamageTalentConfig
   m_EditorClassIdentifier: 
+  _talentType: 3
+  _valueType: 0
   _displayName: Damage
   _icon: {fileID: 684007958, guid: 5be90912f33c39649b363237f4946af9, type: 3}
   _levels:
   - _cost: 50
-    _bonusDelta: 0.1
+    _bonusDelta: 0.02
   - _cost: 100
-    _bonusDelta: 0.1
+    _bonusDelta: 0.03
   - _cost: 150
-    _bonusDelta: 0.1
+    _bonusDelta: 0.05
   - _cost: 250
-    _bonusDelta: 0.1
+    _bonusDelta: 0.05
   - _cost: 500
     _bonusDelta: 0.1

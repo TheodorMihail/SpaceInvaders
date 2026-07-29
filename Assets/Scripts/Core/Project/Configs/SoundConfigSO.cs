@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace SpaceInvaders.Project
 {
-    public enum SoundCategory
+    public enum SoundCategoryTypes
     {
         Music,
         SFX,
@@ -31,13 +31,13 @@ namespace SpaceInvaders.Project
     public class SoundConfigSO : ScriptableObject, IRepositoryObject
     {
         [SerializeField] private SoundTypes _type;
-        [SerializeField] private SoundCategory _category;
+        [SerializeField] private SoundCategoryTypes _category;
         [SerializeField] private AudioClip _clip;
         [SerializeField, Range(0f, 1f)] private float _volume = 1f;
         [SerializeField] private bool _loop;
 
         public SoundTypes Type => _type;
-        public SoundCategory Category => _category;
+        public SoundCategoryTypes Category => _category;
         public AudioClip Clip => _clip;
         public float Volume => _volume;
         public bool Loop => _loop;

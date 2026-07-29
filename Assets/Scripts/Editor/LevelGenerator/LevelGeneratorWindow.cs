@@ -285,7 +285,7 @@ namespace SpaceInvaders.Editor
         private List<WaveConfigDTO> BuildWavesConfigs(Random random)
         {
             EnemyTypes[] enemyTypeValues = (EnemyTypes[])Enum.GetValues(typeof(EnemyTypes));
-            FormationTemplateType[] templateValues = (FormationTemplateType[])Enum.GetValues(typeof(FormationTemplateType));
+            FormationTemplateTypes[] templateValues = (FormationTemplateTypes[])Enum.GetValues(typeof(FormationTemplateTypes));
             List<WaveConfigDTO> wavesConfigs = new List<WaveConfigDTO>();
 
             foreach (WaveDraft draft in _waveDrafts)
@@ -300,7 +300,7 @@ namespace SpaceInvaders.Editor
                 }
                 Shuffle(enemyPool, random);
 
-                FormationTemplateType template = templateValues[random.Next(templateValues.Length)];
+                FormationTemplateTypes template = templateValues[random.Next(templateValues.Length)];
                 List<Vector2Int> slotPositions = FormationTemplateGenerator.Generate(template, enemyPool.Count, _spacingX, _spacingY, random);
 
                 List<WaveConfigDTO.WaveFormationDTO> waveFormation = new List<WaveConfigDTO.WaveFormationDTO>();
