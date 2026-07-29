@@ -88,9 +88,21 @@ namespace SpaceInvaders.Project
         public void Tick()
         {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            if (Keyboard.current != null && Keyboard.current.f4Key.wasPressedThisFrame)
+            if (Keyboard.current == null)
+            {
+                return;
+            }
+
+            if (Keyboard.current.f4Key.wasPressedThisFrame)
             {
                 AddRandomItem();
+            }
+
+            if (Keyboard.current.f11Key.wasPressedThisFrame)
+            {
+                _data.Items.Clear();
+                SaveData();
+                this.LogWarning("Debug: Inventory cleared.");
             }
 #endif
         }
