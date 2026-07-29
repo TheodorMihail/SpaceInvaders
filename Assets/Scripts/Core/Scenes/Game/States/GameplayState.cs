@@ -20,7 +20,7 @@ namespace SpaceInvaders.Scenes.Game
         [Inject] private readonly IList<IGameInitializeListener> _gameInitializeListeners;
         [Inject] private readonly IList<IGameEndCondition> _gameEndConditions;
         [Inject] private readonly IPlatformService _platformService;
-        [Inject] private readonly IRepositoryManager _repositoryManager;
+        [Inject] private readonly IProjectRepository _projectRepository;
 
         public override void OnEnter(params object[] paramsList)
         {
@@ -87,7 +87,7 @@ namespace SpaceInvaders.Scenes.Game
                 condition.ConditionMet -= OnGameEndConditionMet;
             }
 
-            float delay = _repositoryManager.GetProjectDataConfig().GameEndTransitionDelay;
+            float delay = _projectRepository.GetProjectDataConfig().GameEndTransitionDelay;
             await UniTask.Delay(TimeSpan.FromSeconds(delay));
 
             await UniTask.WhenAll(_gameEndListeners.Select(handler => handler.GameEnd()));

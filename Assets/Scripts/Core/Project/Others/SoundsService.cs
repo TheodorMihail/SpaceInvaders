@@ -18,7 +18,7 @@ namespace SpaceInvaders.Project
     {
         [Inject] private readonly IMessageBus _messageBus;
         [Inject] private readonly ISoundsManager _soundsManager;
-        [Inject] private readonly IRepositoryManager _repositoryManager;
+        [Inject] private readonly ISoundsRepository _soundsRepository;
 
         public void Initialize()
         {
@@ -68,11 +68,8 @@ namespace SpaceInvaders.Project
 
         public void PlaySound(SoundTypes type)
         {
-            var config = _repositoryManager.GetSoundConfig(type);
-
-            if(config == null)
+            if (!_soundsRepository.TryGetSoundConfig(type, out var config))
             {
-                this.LogWarning($"No sound could be found for {type}");
                 return;
             }
 
@@ -90,7 +87,12 @@ namespace SpaceInvaders.Project
 
         public bool IsPlaying(SoundTypes type)
         {
-            return _soundsManager.IsPlaying(_repositoryManager.GetSoundConfig(type).Clip);
+            if (!_soundsRepository.TryGetSoundConfig(type, out var config))
+            {
+                return false;
+            }
+
+            return _soundsManager.IsPlaying(config.Clip);
         }
 
         public bool IsCategoryPlaying(SoundCategoryTypes category)

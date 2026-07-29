@@ -21,7 +21,7 @@ namespace SpaceInvaders.Scenes.Game
 
     public class SpawnService : ISpawnService, IGameEndListener
     {
-        [Inject] private readonly IRepositoryManager _repositoryManager;
+        [Inject] private readonly IShipsRepository _shipsRepository;
         [Inject] private readonly IAddressablesManager _addressablesManager;
         [Inject] private readonly IObjectPooling _objectPooling;
         [Inject] private readonly Transform _container;
@@ -46,7 +46,11 @@ namespace SpaceInvaders.Scenes.Game
 
         public async UniTask<IPlayerSpaceship> SpawnPlayer()
         {
-            var playerConfig = _repositoryManager.GetPlayerConfig(PlayerTypes.Player1);
+            if (!_shipsRepository.TryGetPlayerConfig(PlayerTypes.Player1, out var playerConfig))
+            {
+                return null;
+            }
+
             var prefabPath = playerConfig.SpaceshipPrefabAddress;
 
             var prefab = await LoadPrefabAsync<PlayerSpaceshipBehaviourComponent>(prefabPath);
@@ -60,7 +64,11 @@ namespace SpaceInvaders.Scenes.Game
 
             foreach (var formation in waveConfig.WavesFormation)
             {
-                var enemyConfig = _repositoryManager.GetEnemyConfig(formation.EnemyType);
+                if (!_shipsRepository.TryGetEnemyConfig(formation.EnemyType, out var enemyConfig))
+                {
+                    continue;
+                }
+
                 var prefabPath = enemyConfig.SpaceshipPrefabAddress;
 
                 var enemyPrefab = await LoadPrefabAsync<EnemySpaceshipBehaviourComponent>(prefabPath);

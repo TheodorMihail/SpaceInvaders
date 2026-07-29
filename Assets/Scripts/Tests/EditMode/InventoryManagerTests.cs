@@ -12,7 +12,7 @@ namespace SpaceInvaders.Tests
     {
         private InventoryManager _inventoryManager;
         private IPersistenceManager _mockPersistenceManager;
-        private IRepositoryManager _mockRepositoryManager;
+        private IItemsRepository _mockItemsRepository;
         private InventorySaveData _saveData;
 
         [SetUp]
@@ -23,10 +23,10 @@ namespace SpaceInvaders.Tests
             _saveData = new InventorySaveData();
             _mockPersistenceManager = Substitute.For<IPersistenceManager>();
             _mockPersistenceManager.Load<InventorySaveData>(InventorySaveData.SaveKey).Returns(_saveData);
-            _mockRepositoryManager = Substitute.For<IRepositoryManager>();
+            _mockItemsRepository = Substitute.For<IItemsRepository>();
 
             Container.Bind<IPersistenceManager>().FromInstance(_mockPersistenceManager);
-            Container.Bind<IRepositoryManager>().FromInstance(_mockRepositoryManager);
+            Container.Bind<IItemsRepository>().FromInstance(_mockItemsRepository);
 
             _inventoryManager = Container.Instantiate<InventoryManager>();
             _inventoryManager.Initialize();
@@ -100,7 +100,13 @@ namespace SpaceInvaders.Tests
         public void GetItemConfig_ResolvesTemplateFromItemId()
         {
             var config = Substitute.For<ItemConfigSO>();
-            _mockRepositoryManager.GetItemConfig("PlasmaWing").Returns(config);
+            _mockItemsRepository.TryGetItemConfig("PlasmaWing", out ItemConfigSO _)
+                .Returns(call =>
+                {
+                    call[1] = config;
+                    return true;
+                });
+
             Assert.AreSame(config, _inventoryManager.GetItemConfig("PlasmaWing"));
         }
 

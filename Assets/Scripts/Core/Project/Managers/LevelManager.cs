@@ -23,12 +23,12 @@ namespace SpaceInvaders.Project
     public class LevelManager : ILevelManager, ITickable
     {
         [Inject] private readonly IPersistenceManager _persistenceManager;
-        [Inject] private readonly IRepositoryManager _repositoryManager;
+        [Inject] private readonly ILevelsRepository _levelsRepository;
 
         private LevelsSaveData _data;
         private ILevelSessionService _activeSession;
 
-        public int MaxLevelNumber => _repositoryManager.GetLevelsCount();
+        public int MaxLevelNumber => _levelsRepository.GetLevelsCount();
         public int CurrentLevelNumber => _activeSession?.CurrentLevelNumber ?? 0;
         public int LastPlayedLevelStarsEarned { get; private set; }
 
@@ -68,7 +68,7 @@ namespace SpaceInvaders.Project
             }
 
             int nextLevel = levelIndex + 1;
-            if (nextLevel <= _repositoryManager.GetLevelsCount())
+            if (nextLevel <= _levelsRepository.GetLevelsCount())
             {
                 GetOrCreateLevelProgress(nextLevel).Unlocked = true;
             }

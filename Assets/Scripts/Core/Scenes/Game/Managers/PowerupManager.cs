@@ -14,7 +14,7 @@ namespace SpaceInvaders.Scenes.Game
 
     public class PowerupManager : IPowerupManager
     {
-        [Inject] private readonly IRepositoryManager _repositoryManager;
+        [Inject] private readonly IPowerupsRepository _powerupsRepository;
         [Inject] private readonly IPlayerManager _playerManager;
         [Inject] private readonly IMessageBus _messageBus;
         [Inject] private readonly ICustomFactory _factory;
@@ -34,7 +34,10 @@ namespace SpaceInvaders.Scenes.Game
 
         public void ActivatePowerup(PowerupTypes type)
         {
-            var config = _repositoryManager.GetPowerupConfig(type);
+            if (!_powerupsRepository.TryGetPowerupConfig(type, out var config))
+            {
+                return;
+            }
 
             if (_activePowerups.TryGetValue(type, out var existing))
             {

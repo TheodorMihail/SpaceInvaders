@@ -11,7 +11,7 @@ namespace SpaceInvaders.Scenes.Game
         [Inject] private readonly IScoreService _scoreService;
         [Inject] private readonly ILootManager _lootManager;
         [Inject] private readonly IInventoryManager _inventoryManager;
-        [Inject] private readonly IRepositoryManager _repositoryManager;
+        [Inject] private readonly IItemsRepository _itemsRepository;
 
         public bool AllLevelsComplete => _levelManager.CurrentLevelNumber >= _levelManager.MaxLevelNumber;
         public int StarsEarned => _levelManager.LastPlayedLevelStarsEarned;
@@ -27,7 +27,7 @@ namespace SpaceInvaders.Scenes.Game
                     continue;
                 }
 
-                ItemRarityConfigSO rarity = _repositoryManager.GetItemRarityConfig(config.Rarity);
+                _itemsRepository.TryGetItemRarityConfig(config.Rarity, out ItemRarityConfigSO rarity);
                 yield return (entry, config, rarity);
             }
         }

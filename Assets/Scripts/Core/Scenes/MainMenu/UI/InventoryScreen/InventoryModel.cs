@@ -12,7 +12,8 @@ namespace SpaceInvaders.Scenes.MainMenu
         [Inject] private readonly IInventoryManager _inventoryManager;
         [Inject] private readonly IEquipmentManager _equipmentManager;
         [Inject] private readonly ITalentManager _talentManager;
-        [Inject] private readonly IRepositoryManager _repositoryManager;
+        [Inject] private readonly IItemsRepository _itemsRepository;
+        [Inject] private readonly IShipsRepository _shipsRepository;
         
         public string EmptyInventoryText { get; } = "No items collected yet.";
 
@@ -52,7 +53,8 @@ namespace SpaceInvaders.Scenes.MainMenu
 
         public ItemRarityConfigSO GetItemRarity(ItemRarityTypes rarity)
         {
-            return _repositoryManager.GetItemRarityConfig(rarity);
+            _itemsRepository.TryGetItemRarityConfig(rarity, out ItemRarityConfigSO config);
+            return config;
         }
 
         public bool IsItemEquipped(string instanceId)
@@ -94,7 +96,11 @@ namespace SpaceInvaders.Scenes.MainMenu
         /// </summary>
         private (ShipStats withoutEquipment, ShipStats withEquipment) BuildComparableStats()
         {
-            PlayerSpaceshipConfigSO config = _repositoryManager.GetPlayerConfig(PlayerTypes.Player1);
+            if (!_shipsRepository.TryGetPlayerConfig(PlayerTypes.Player1, out PlayerSpaceshipConfigSO config))
+            {
+                var fallbackStats = new ShipStats(new ShipBaseStats());
+                return (fallbackStats, fallbackStats);
+            }
 
             ShipStats withoutEquipment = config.CreateStats();
             _talentManager.ApplyTalentBonuses(withoutEquipment);

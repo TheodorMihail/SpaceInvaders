@@ -6,7 +6,7 @@ namespace SpaceInvaders.Scenes.MainMenu
 {
     public class LevelSelectionController : Controller<LevelSelectionScreen, LevelSelectionModel, LevelSelectionView>
     {
-        [Inject] private readonly IRepositoryManager _repository;
+        [Inject] private readonly ILevelsRepository _levelsRepository;
 
         public LevelSelectionController(LevelSelectionScreen uiComponent, LevelSelectionModel model, LevelSelectionView view)
             : base(uiComponent, model, view)
@@ -18,7 +18,7 @@ namespace SpaceInvaders.Scenes.MainMenu
             base.Initialize();
             _view.OnLevelSelectedClicked += OnLevelSelectedClicked;
             _view.OnBackClicked += OnBackClicked;
-            _view.SetupLevels(_repository.GetLevelConfigs());
+            _view.SetupLevels(_levelsRepository.GetLevelConfigs());
         }
 
         public override void Dispose()

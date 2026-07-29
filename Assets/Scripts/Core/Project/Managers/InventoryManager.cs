@@ -19,7 +19,7 @@ namespace SpaceInvaders.Project
     public class InventoryManager : IInventoryManager, ITickable
     {
         [Inject] private readonly IPersistenceManager _persistenceManager;
-        [Inject] private readonly IRepositoryManager _repositoryManager;
+        [Inject] private readonly IItemsRepository _itemsRepository;
 
         private InventorySaveData _data;
 
@@ -47,12 +47,8 @@ namespace SpaceInvaders.Project
 
         public ItemConfigSO GetItemConfig(string itemId)
         {
-            if (string.IsNullOrEmpty(itemId))
-            {
-                return null;
-            }
-
-            return _repositoryManager.GetItemConfig(itemId);
+            _itemsRepository.TryGetItemConfig(itemId, out ItemConfigSO config);
+            return config;
         }
 
         public void AddItems(IReadOnlyList<InventoryItemEntry> entries)
@@ -109,7 +105,7 @@ namespace SpaceInvaders.Project
 
         private void AddRandomItem()
         {
-            IReadOnlyList<ItemConfigSO> configs = _repositoryManager.GetAllItemConfigs();
+            IReadOnlyList<ItemConfigSO> configs = _itemsRepository.GetAllItemConfigs();
             if (configs.Count == 0)
             {
                 this.LogWarning("Debug: No item configs authored, nothing to add.");
@@ -117,8 +113,8 @@ namespace SpaceInvaders.Project
             }
 
             ItemConfigSO config = configs[Random.Range(0, configs.Count)];
-            ItemRarityConfigSO rarityConfig = _repositoryManager.GetItemRarityConfig(config.Rarity);
-            int affixCount = rarityConfig != null ? rarityConfig.AffixCount : 1;
+            bool hasRarityConfig = _itemsRepository.TryGetItemRarityConfig(config.Rarity, out ItemRarityConfigSO rarityConfig);
+            int affixCount = hasRarityConfig ? rarityConfig.AffixCount : 1;
             InventoryItemEntry entry = config.RollEntry(affixCount);
 
             AddItems(new List<InventoryItemEntry> { entry });

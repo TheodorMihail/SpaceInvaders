@@ -40,7 +40,8 @@ namespace SpaceInvaders.Scenes.Game
 
     public class LevelSessionService : ILevelSessionService
     {
-        [Inject] private readonly IRepositoryManager _repositoryManager;
+        [Inject] private readonly ILevelsRepository _levelsRepository;
+        [Inject] private readonly IShipsRepository _shipsRepository;
         [Inject] private readonly IEnemiesManager _enemiesManager;
         [Inject] private readonly IPlayerManager _playerManager;
         [Inject] private readonly ILevelManager _levelManager;
@@ -66,7 +67,12 @@ namespace SpaceInvaders.Scenes.Game
         public UniTask GameStart(int levelNumber)
         {
             CurrentLevelNumber = levelNumber;
-            LevelConfigSO levelConfig = GetLevelConfig(levelNumber);
+
+            if (!_levelsRepository.TryGetLevelConfig(levelNumber, out LevelConfigSO levelConfig))
+            {
+                return UniTask.CompletedTask;
+            }
+
             StartLevel(levelConfig);
             return UniTask.CompletedTask;
         }
@@ -112,7 +118,12 @@ namespace SpaceInvaders.Scenes.Game
         {
             foreach (WaveConfigDTO.WaveFormationDTO formation in wave.WavesFormation)
             {
-                if (_repositoryManager.GetEnemyConfig(formation.EnemyType).Category == EnemyCategoryTypes.Boss)
+                if (!_shipsRepository.TryGetEnemyConfig(formation.EnemyType, out var enemyConfig))
+                {
+                    continue;
+                }
+
+                if (enemyConfig.Category == EnemyCategoryTypes.Boss)
                 {
                     return true;
                 }
@@ -121,16 +132,11 @@ namespace SpaceInvaders.Scenes.Game
             return false;
         }
 
-        private LevelConfigSO GetLevelConfig(int levelNumber)
-        {
-            return _repositoryManager.GetLevelConfig(levelNumber);
-        }
-
         private void AwardLevelStars()
         {
             ShipStats stats = _playerManager.PlayerStats;
             int stars = CalculateStars(stats.CumulativeDamageTaken, _currentLevelConfigSo.ThreeStarMaxDamage,
-                    _repositoryManager.GetTwoStarDamageMultiplier());
+                    _levelsRepository.GetTwoStarDamageMultiplier());
 
             _levelManager.RecordLevelResult(CurrentLevelNumber, stars);
         }
