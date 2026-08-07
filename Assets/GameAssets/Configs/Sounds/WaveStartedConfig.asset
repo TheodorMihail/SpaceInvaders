@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc8114b23dd724b4fb3460eb4dc2e270, type: 3}
   m_Name: WaveStartedConfig
   m_EditorClassIdentifier: 
-  _type: 10
+  _type: 41
   _category: 1
   _clip: {fileID: 8300000, guid: e85cd4c1dddc94535a85d4e37d54ea45, type: 3}
   _volume: 1

@@ -5,26 +5,36 @@ namespace SpaceInvaders.Project
 {
     public enum SoundCategoryTypes
     {
-        Music,
-        SFX,
-        UI
+        Music = 0,
+        SFX = 1,
+        UI = 2
     }
 
     public enum SoundTypes
     {
-        MenuMusic,
-        GameplayMusic,
-        ButtonClick,
-        ShipShoot,
-        ShipDamaged,
-        EnemyDestroyed,
-        PlayerDestroyed,
-        PowerupPickup,
-        PowerupExpired,
-        BossSpawned,
-        WaveStarted,
-        LevelCompleted,
-        GameOver
+        //Music
+        MenuMusic = 0,
+        GameplayMusic = 1,
+
+        //UI
+        ButtonClick = 10,
+
+        //Gameplay
+        ShipShoot = 20,
+        ShipDamaged = 21,
+        EnemyDestroyed = 22,
+        PlayerDestroyed = 23,
+        PowerupPickup = 24,
+        PowerupExpired = 25,
+        ItemCollected = 26,
+        ItemDropped = 27,
+        PowerupDropped = 28,
+
+        //Level
+        BossSpawned = 40,
+        WaveStarted = 41,
+        LevelCompleted = 42,
+        GameOver = 43
     }
 
     [CreateAssetMenu(fileName = "SoundConfig", menuName = "SpaceInvaders/Sounds/Sound Config")]

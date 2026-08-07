@@ -110,6 +110,18 @@ namespace SpaceInvaders.Scenes.Game
         }
     }
 
+    public readonly struct PowerupDroppedMessage : IMessageObject
+    {
+        public PowerupTypes Type { get; }
+        public Vector3 Position { get; }
+
+        public PowerupDroppedMessage(PowerupTypes type, Vector3 position)
+        {
+            Type = type;
+            Position = position;
+        }
+    }
+
     public readonly struct ItemDroppedMessage : IMessageObject
     {
         public string InstanceId { get; }

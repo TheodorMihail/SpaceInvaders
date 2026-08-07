@@ -117,6 +117,7 @@ namespace SpaceInvaders.Scenes.Game
             }
 
             _spawnService.SpawnPowerup(config, position);
+            _messageBus.Publish(new PowerupDroppedMessage(config.PowerupType, position));
         }
 
         private void OnLevelCompleted(LevelCompletedMessage message)

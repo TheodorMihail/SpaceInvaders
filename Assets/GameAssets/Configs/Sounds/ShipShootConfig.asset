@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc8114b23dd724b4fb3460eb4dc2e270, type: 3}
   m_Name: ShipShootConfig
   m_EditorClassIdentifier: 
-  _type: 3
+  _type: 20
   _category: 1
   _clip: {fileID: 8300000, guid: 0a57168aa686ae74fa7bd740eae689e0, type: 3}
   _volume: 1

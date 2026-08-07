@@ -176,6 +176,21 @@ namespace SpaceInvaders.Tests
         }
 
         [Test]
+        public void OnEnemyDestroyed_WhenPowerupCategoryWins_PublishesPowerupDroppedMessage()
+        {
+            SetupSingleNormalItem(1, Affix(ShipUpgradableStatTypes.Damage));
+            AddPowerup(PowerupTypes.Heal);
+            GuaranteeDropCategory(DropCategoryTypes.Powerup);
+
+            var droppedType = default(PowerupTypes?);
+            _messageBus.Subscribe<PowerupDroppedMessage>(message => droppedType = message.Type);
+
+            PublishEnemyDestroyed(_messageBus);
+
+            Assert.AreEqual(PowerupTypes.Heal, droppedType);
+        }
+
+        [Test]
         public void OnEnemyDestroyed_WhenItemCategoryWins_DoesNotSpawnPowerupDrop()
         {
             SetupSingleNormalItem(1, Affix(ShipUpgradableStatTypes.Damage));
