@@ -2,12 +2,32 @@ All Rights Reserved
 
 Copyright (c) Theodor Mihail
 
-This repository and its contents (source code, assets, and
-documentation) are made publicly available for viewing purposes
-only. No license, right, or permission is granted to copy, modify,
-merge, publish, distribute, sublicense, sell, or otherwise use any
-part of this repository, in whole or in part, for any purpose,
-without the express prior written permission of the copyright
+The original contents of this repository (source code, documentation,
+and assets authored by the copyright holder) are made publicly
+available for viewing purposes only. No license, right, or permission
+is granted to copy, modify, merge, publish, distribute, sublicense,
+sell, or otherwise use any part of them, in whole or in part, for any
+purpose, without the express prior written permission of the copyright
 holder.
 
 All rights not expressly granted are reserved.
+
+Third-Party Materials
+
+This repository includes third-party materials, including but not
+limited to the contents of the following directories:
+
+  Assets/GameAssets/2D/External
+  Assets/GameAssets/3D/External
+  Assets/GameAssets/Sounds/External
+  Assets/Plugins
+
+Those materials remain the property of their respective owners and are
+governed by their own licenses and terms. No copyright is claimed over
+them, and this notice grants no rights to them. Anyone wishing to use
+them must obtain them from, and comply with the terms of, their
+original source.
+
+Dependencies resolved through the Unity Package Manager (including
+BaseArchitecture, Zenject, and UniTask) are likewise not covered by
+this notice and are governed by their own licenses.
