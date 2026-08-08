@@ -24,35 +24,45 @@ namespace SpaceInvaders.Project
         public void Initialize()
         {
             _messageBus.Subscribe<ButtonClickedMessage>(OnButtonClicked);
+
             _messageBus.Subscribe<ShipShotFiredMessage>(OnShipShotFired);
             _messageBus.Subscribe<ShipDamagedMessage>(OnShipDamaged);
             _messageBus.Subscribe<EnemyDestroyedMessage>(OnEnemyDestroyed);
             _messageBus.Subscribe<PlayerDestroyedMessage>(OnPlayerDestroyed);
+
+            _messageBus.Subscribe<PowerupDroppedMessage>(OnPowerupDropped);
             _messageBus.Subscribe<PowerupActivatedMessage>(OnPowerupActivated);
             _messageBus.Subscribe<PowerupExpiredMessage>(OnPowerupExpired);
-            _messageBus.Subscribe<PowerupDroppedMessage>(OnPowerupDropped);
-            _messageBus.Subscribe<BossSpawnedMessage>(OnBossSpawned);
-            _messageBus.Subscribe<WaveStartedMessage>(OnWaveStarted);
-            _messageBus.Subscribe<LevelCompletedMessage>(OnLevelCompleted);
+
             _messageBus.Subscribe<ItemDroppedMessage>(OnItemDropped);
             _messageBus.Subscribe<ItemCollectedMessage>(OnItemCollected);
+
+            _messageBus.Subscribe<WaveStartedMessage>(OnWaveStarted);
+            _messageBus.Subscribe<BossSpawnedMessage>(OnBossSpawned);
+
+            _messageBus.Subscribe<LevelCompletedMessage>(OnLevelCompleted);
         }
 
         public void Dispose()
         {
             _messageBus.Unsubscribe<ButtonClickedMessage>(OnButtonClicked);
+
             _messageBus.Unsubscribe<ShipShotFiredMessage>(OnShipShotFired);
             _messageBus.Unsubscribe<ShipDamagedMessage>(OnShipDamaged);
             _messageBus.Unsubscribe<EnemyDestroyedMessage>(OnEnemyDestroyed);
             _messageBus.Unsubscribe<PlayerDestroyedMessage>(OnPlayerDestroyed);
+
+            _messageBus.Unsubscribe<PowerupDroppedMessage>(OnPowerupDropped);
             _messageBus.Unsubscribe<PowerupActivatedMessage>(OnPowerupActivated);
             _messageBus.Unsubscribe<PowerupExpiredMessage>(OnPowerupExpired);
-            _messageBus.Unsubscribe<PowerupDroppedMessage>(OnPowerupDropped);
-            _messageBus.Unsubscribe<BossSpawnedMessage>(OnBossSpawned);
-            _messageBus.Unsubscribe<WaveStartedMessage>(OnWaveStarted);
-            _messageBus.Unsubscribe<LevelCompletedMessage>(OnLevelCompleted);
+
             _messageBus.Unsubscribe<ItemDroppedMessage>(OnItemDropped);
             _messageBus.Unsubscribe<ItemCollectedMessage>(OnItemCollected);
+
+            _messageBus.Unsubscribe<WaveStartedMessage>(OnWaveStarted);
+            _messageBus.Unsubscribe<BossSpawnedMessage>(OnBossSpawned);
+
+            _messageBus.Unsubscribe<LevelCompletedMessage>(OnLevelCompleted);
         }
 
         public UniTask MenuEnter()
@@ -132,6 +142,11 @@ namespace SpaceInvaders.Project
             PlaySound(SoundTypes.PlayerDestroyed);
         }
 
+        private void OnPowerupDropped(PowerupDroppedMessage message)
+        {
+            PlaySound(SoundTypes.PowerupDropped);
+        }
+
         private void OnPowerupActivated(PowerupActivatedMessage message)
         {
             PlaySound(SoundTypes.PowerupPickup);
@@ -142,19 +157,14 @@ namespace SpaceInvaders.Project
             PlaySound(SoundTypes.PowerupExpired);
         }
 
-        private void OnPowerupDropped(PowerupDroppedMessage message)
+        private void OnWaveStarted(WaveStartedMessage message)
         {
-            PlaySound(SoundTypes.PowerupDropped);
+            PlaySound(SoundTypes.WaveStarted);
         }
 
         private void OnBossSpawned(BossSpawnedMessage message)
         {
             PlaySound(SoundTypes.BossSpawned);
-        }
-
-        private void OnWaveStarted(WaveStartedMessage message)
-        {
-            PlaySound(SoundTypes.WaveStarted);
         }
 
         private void OnLevelCompleted(LevelCompletedMessage message)
@@ -164,12 +174,12 @@ namespace SpaceInvaders.Project
 
         private void OnItemDropped(ItemDroppedMessage message)
         {
-            PlaySound(SoundTypes.WaveStarted);
+            PlaySound(SoundTypes.ItemDropped);
         }
 
         private void OnItemCollected(ItemCollectedMessage message)
         {
-            PlaySound(SoundTypes.LevelCompleted);
+            PlaySound(SoundTypes.ItemCollected);
         }
     }
 }
