@@ -7,7 +7,7 @@ namespace SpaceInvaders.Scenes.Game
     public class GameplayHUDController : Controller<GameplayHUD, GameplayHUDModel, GameplayHUDView>
     {
         [Inject] private readonly IMessageBus _messageBus;
-        [Inject] private readonly IRepositoryManager _repositoryManager;
+        [Inject] private readonly IPowerupsRepository _powerupsRepository;
 
         public GameplayHUDController(GameplayHUD hud, GameplayHUDModel model, GameplayHUDView view)
             : base(hud, model, view)
@@ -68,7 +68,10 @@ namespace SpaceInvaders.Scenes.Game
 
         private void OnPowerupActivatedCallback(PowerupActivatedMessage message)
         {
-            var config = _repositoryManager.GetPowerupConfig(message.Type);
+            if (!_powerupsRepository.TryGetPowerupConfig(message.Type, out var config))
+            {
+                return;
+            }
 
             if (message.Duration > 0)
             {

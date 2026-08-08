@@ -35,22 +35,22 @@ namespace SpaceInvaders.Scenes.Game
 
         private void HandleTriggerEnter(Collider other)
         {
-            // Check if hit something with a different tag
+            // Matching tags mean the same team, so friendly ships are ignored.
             if (other.CompareTag(gameObject.tag))
             {
-                return; // Same team, ignore
+                return;
             }
 
-            // Try to get spaceship component and apply damage
             if (other.TryGetComponent<BaseSpaceshipBehaviourComponent>(out var target))
             {
                 target.TakeDamage(_damage);
             }
 
-            // Trigger destroy event
             TriggerDestroy();
         }
 
+        /// <summary>Raises the destroy event before despawning, so the owner always releases its
+        /// reference.</summary>
         protected override void Despawn()
         {
             TriggerDestroy();

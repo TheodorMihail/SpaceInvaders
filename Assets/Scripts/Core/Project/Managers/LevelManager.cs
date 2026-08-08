@@ -23,12 +23,12 @@ namespace SpaceInvaders.Project
     public class LevelManager : ILevelManager, ITickable
     {
         [Inject] private readonly IPersistenceManager _persistenceManager;
-        [Inject] private readonly IRepositoryManager _repositoryManager;
+        [Inject] private readonly ILevelsRepository _levelsRepository;
 
         private LevelsSaveData _data;
         private ILevelSessionService _activeSession;
 
-        public int MaxLevelNumber => _repositoryManager.GetLevelsCount();
+        public int MaxLevelNumber => _levelsRepository.GetLevelsCount();
         public int CurrentLevelNumber => _activeSession?.CurrentLevelNumber ?? 0;
         public int LastPlayedLevelStarsEarned { get; private set; }
 
@@ -57,6 +57,7 @@ namespace SpaceInvaders.Project
             SaveData();
         }
 
+        /// <summary>Stores the star count if it improves the previous result, and unlocks the next level.</summary>
         public void RecordLevelResult(int levelIndex, int stars)
         {
             LastPlayedLevelStarsEarned = stars;
@@ -68,7 +69,7 @@ namespace SpaceInvaders.Project
             }
 
             int nextLevel = levelIndex + 1;
-            if (nextLevel <= _repositoryManager.GetLevelsCount())
+            if (nextLevel <= _levelsRepository.GetLevelsCount())
             {
                 GetOrCreateLevelProgress(nextLevel).Unlocked = true;
             }
@@ -76,6 +77,8 @@ namespace SpaceInvaders.Project
             SaveData();
         }
 
+        /// <summary>Registers the active gameplay session. CurrentLevelNumber returns 0 while none
+        /// is registered.</summary>
         public void RegisterSession(ILevelSessionService session)
         {
             _activeSession = session;

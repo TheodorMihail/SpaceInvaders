@@ -11,14 +11,14 @@ namespace SpaceInvaders.Project
 
     public class PlatformService : IPlatformService
     {
-        [Inject] private readonly IRepositoryManager _repositoryManager;
+        [Inject] private readonly IProjectRepository _projectRepository;
 
         public bool IsTouchPlatform
         {
             get
             {
 #if UNITY_EDITOR
-                if (_repositoryManager.GetProjectDataConfig().EditorForceTouchPlatform)
+                if (_projectRepository.GetProjectDataConfig().EditorForceTouchPlatform)
                 {
                     return true;
                 }
@@ -30,7 +30,7 @@ namespace SpaceInvaders.Project
         public void ApplyFrameRateCap()
         {
             QualitySettings.vSyncCount = 0;
-            Application.targetFrameRate = _repositoryManager.GetProjectDataConfig().MaxFrameRate;
+            Application.targetFrameRate = _projectRepository.GetProjectDataConfig().MaxFrameRate;
         }
     }
 }

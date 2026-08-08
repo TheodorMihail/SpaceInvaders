@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc8114b23dd724b4fb3460eb4dc2e270, type: 3}
   m_Name: BossSpawnedConfig
   m_EditorClassIdentifier: 
-  _type: 9
+  _type: 40
   _category: 1
   _clip: {fileID: 8300000, guid: 12b3b33c8e4a14427911cddc98b9441a, type: 3}
   _volume: 1

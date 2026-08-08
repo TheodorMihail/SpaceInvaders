@@ -29,6 +29,8 @@ namespace SpaceInvaders.Scenes.Game
         [SerializeField] protected HealthBarUIComponent _healthBar;
 
         protected float _lastShotTime;
+
+        /// <summary>Kept only to unsubscribe from projectile events on despawn.</summary>
         protected readonly List<ProjectileBehaviourComponent> _activeProjectiles = new();
 
         public virtual ShipStats Stats { get; protected set; }
@@ -67,6 +69,10 @@ namespace SpaceInvaders.Scenes.Game
     }
     
 
+    /// <summary>
+    /// Config-driven spaceship behaviour: stat creation, shooting, damage handling and bounded
+    /// movement. Stats are recreated on spawn, so pooled instances start clean.
+    /// </summary>
     public abstract class BaseSpaceshipBehaviourComponent<T, Config> : BaseSpaceshipBehaviourComponent
         where T : BaseSpaceshipBehaviourComponent<T, Config>
         where Config : SpaceshipConfigSO
@@ -142,7 +148,6 @@ namespace SpaceInvaders.Scenes.Game
 
         public override void Shoot()
         {
-            // Check fire rate cooldown
             if (Time.time - _lastShotTime < Stats.CurrentFireRate)
             {
                 return;
@@ -199,6 +204,7 @@ namespace SpaceInvaders.Scenes.Game
             yield return GetProjectileDirection();
         }
 
+        /// <summary>Expands each direction into an evenly spread shot pattern centered on it.</summary>
         private IEnumerable<Vector3> ApplyStatsShotSpread(IEnumerable<Vector3> baseDirections)
         {
             if (Stats.ExtraShotCount <= 0)

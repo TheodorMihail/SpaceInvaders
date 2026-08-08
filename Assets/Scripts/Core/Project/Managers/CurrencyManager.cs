@@ -14,7 +14,7 @@ namespace SpaceInvaders.Project
     public class CurrencyManager : ICurrencyManager, ITickable
     {
         [Inject] private readonly IPersistenceManager _persistenceManager;
-        [Inject] private readonly IRepositoryManager _repositoryManager;
+        [Inject] private readonly IProjectRepository _projectRepository;
 
         private CurrencySaveData _data;
 
@@ -60,7 +60,7 @@ namespace SpaceInvaders.Project
 
             if (Keyboard.current.f3Key.wasPressedThisFrame)
             {
-                int amount = _repositoryManager.GetProjectDataConfig().DebugAddCurrencyAmount;
+                int amount = _projectRepository.GetProjectDataConfig().DebugAddCurrencyAmount;
                 AddCurrency(amount);
                 this.LogWarning($"Debug: Added {amount} currency. New balance: {Currency}");
             }

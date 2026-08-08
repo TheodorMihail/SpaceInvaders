@@ -13,7 +13,7 @@ namespace SpaceInvaders.Tests
     {
         private EquipmentManager _equipmentManager;
         private IPersistenceManager _mockPersistenceManager;
-        private IRepositoryManager _mockRepositoryManager;
+        private IItemsRepository _mockItemsRepository;
         private IInventoryManager _mockInventoryManager;
         private IMessageBus _messageBus;
 
@@ -31,8 +31,8 @@ namespace SpaceInvaders.Tests
             _mockPersistenceManager = Substitute.For<IPersistenceManager>();
             _mockPersistenceManager.Load<EquipmentSaveData>(EquipmentSaveData.SaveKey).Returns(new EquipmentSaveData());
 
-            _mockRepositoryManager = Substitute.For<IRepositoryManager>();
-            _mockRepositoryManager.GetAllEquipmentSlotConfigs().Returns(new List<EquipmentSlotConfigDTO>
+            _mockItemsRepository = Substitute.For<IItemsRepository>();
+            _mockItemsRepository.GetAllEquipmentSlotConfigs().Returns(new List<EquipmentSlotConfigDTO>
             {
                 new(EquipmentSlotTypes.Wings, ItemSlotTypes.Wings, "Wings"),
                 new(EquipmentSlotTypes.Engine, ItemSlotTypes.Engine, "Tail"),
@@ -49,7 +49,7 @@ namespace SpaceInvaders.Tests
             _messageBus = new MessageBus();
 
             Container.Bind<IPersistenceManager>().FromInstance(_mockPersistenceManager);
-            Container.Bind<IRepositoryManager>().FromInstance(_mockRepositoryManager);
+            Container.Bind<IItemsRepository>().FromInstance(_mockItemsRepository);
             Container.Bind<IInventoryManager>().FromInstance(_mockInventoryManager);
             Container.Bind<IMessageBus>().FromInstance(_messageBus);
 
@@ -132,7 +132,7 @@ namespace SpaceInvaders.Tests
         [Test]
         public void GetSlotForItem_WithNoMatchingSlotConfig_ReturnsNull()
         {
-            _mockRepositoryManager.GetAllEquipmentSlotConfigs().Returns(new List<EquipmentSlotConfigDTO>
+            _mockItemsRepository.GetAllEquipmentSlotConfigs().Returns(new List<EquipmentSlotConfigDTO>
             {
                 new(EquipmentSlotTypes.Wings, ItemSlotTypes.Wings, "Wings")
             });
@@ -164,7 +164,7 @@ namespace SpaceInvaders.Tests
         [Test]
         public void Equip_WithNoMatchingSlotConfig_IsIgnored()
         {
-            _mockRepositoryManager.GetAllEquipmentSlotConfigs().Returns(new List<EquipmentSlotConfigDTO>
+            _mockItemsRepository.GetAllEquipmentSlotConfigs().Returns(new List<EquipmentSlotConfigDTO>
             {
                 new(EquipmentSlotTypes.Wings, ItemSlotTypes.Wings, "Wings")
             });

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc8114b23dd724b4fb3460eb4dc2e270, type: 3}
   m_Name: ShipDamagedConfig
   m_EditorClassIdentifier: 
-  _type: 4
+  _type: 21
   _category: 1
   _clip: {fileID: 8300000, guid: 4dc2a20ba63b8c34fbd7a1b66dd50aa2, type: 3}
   _volume: 1

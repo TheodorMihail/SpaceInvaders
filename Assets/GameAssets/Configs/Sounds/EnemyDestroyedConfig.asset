@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc8114b23dd724b4fb3460eb4dc2e270, type: 3}
   m_Name: EnemyDestroyedConfig
   m_EditorClassIdentifier: 
-  _type: 5
+  _type: 22
   _category: 1
   _clip: {fileID: 8300000, guid: 59f250c566d5f254bb73d6be529bd8a3, type: 3}
   _volume: 1

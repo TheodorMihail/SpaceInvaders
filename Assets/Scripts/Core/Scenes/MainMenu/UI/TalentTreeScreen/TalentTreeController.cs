@@ -7,7 +7,7 @@ namespace SpaceInvaders.Scenes.MainMenu
 {
     public class TalentTreeController : Controller<TalentTreeScreen, TalentTreeModel, TalentTreeView>
     {
-        [Inject] private readonly IRepositoryManager _repository;
+        [Inject] private readonly ITalentsRepository _talentsRepository;
         [Inject] private readonly ITalentManager _talentManager;
 
         public TalentTreeController(TalentTreeScreen uiComponent, TalentTreeModel model, TalentTreeView view)
@@ -20,7 +20,7 @@ namespace SpaceInvaders.Scenes.MainMenu
             base.Initialize();
             _view.OnTalentPurchaseClicked += OnTalentPurchaseClicked;
             _view.OnBackClicked += OnBackClicked;
-            _view.SetupTalents(_repository.GetAllTalentConfigs());
+            _view.SetupTalents(_talentsRepository.GetAllTalentConfigs());
         }
 
         public override void Dispose()

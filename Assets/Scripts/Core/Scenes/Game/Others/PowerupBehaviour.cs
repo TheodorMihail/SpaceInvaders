@@ -15,6 +15,10 @@ namespace SpaceInvaders.Scenes.Game
         void CancelTimer(); // teardown: stop the timer without reverting the bonus or raising Ended
     }
 
+    /// <summary>
+    /// Applies its effect on initialization and reverts it after Duration. A Duration of 0 or less is
+    /// instant and never starts a timer.
+    /// </summary>
     public abstract class PowerupBaseBehaviour : IPowerupBehaviour
     {
         protected ShipStats Stats { get; private set; }

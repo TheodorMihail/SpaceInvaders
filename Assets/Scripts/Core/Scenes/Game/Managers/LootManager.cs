@@ -22,11 +22,14 @@ namespace SpaceInvaders.Scenes.Game
     /// </summary>
     public class LootManager : ILootManager
     {
-        [Inject] private readonly IRepositoryManager _repositoryManager;
+        [Inject] private readonly IItemsRepository _itemsRepository;
+        [Inject] private readonly IPowerupsRepository _powerupsRepository;
+        [Inject] private readonly IDropsRepository _dropsRepository;
         [Inject] private readonly IInventoryManager _inventoryManager;
         [Inject] private readonly IMessageBus _messageBus;
         [Inject] private readonly ISpawnService _spawnService;
 
+        /// <summary>Loot collected during the current run. Added to the inventory only on level completion.</summary>
         private readonly List<InventoryItemEntry> _pendingLoot = new();
         private IReadOnlyList<InventoryItemEntry> _lastBankedLoot = Array.Empty<InventoryItemEntry>();
 
@@ -61,8 +64,7 @@ namespace SpaceInvaders.Scenes.Game
 
             _pendingLoot.Add(item);
 
-            ItemConfigSO config = _repositoryManager.GetItemConfig(item.ItemId);
-            if (config == null)
+            if (!_itemsRepository.TryGetItemConfig(item.ItemId, out _))
             {
                 return;
             }
@@ -109,13 +111,14 @@ namespace SpaceInvaders.Scenes.Game
 
         private void SpawnPowerupDrop(Vector3 position)
         {
-            PowerupConfigSO config = GameUtils.RollWeighted(_repositoryManager.GetAllPowerupConfigs(), candidate => candidate.DropWeight);
+            PowerupConfigSO config = GameUtils.RollWeighted(_powerupsRepository.GetAllPowerupConfigs(), candidate => candidate.DropWeight);
             if (config == null)
             {
                 return;
             }
 
             _spawnService.SpawnPowerup(config, position);
+            _messageBus.Publish(new PowerupDroppedMessage(config.PowerupType, position));
         }
 
         private void OnLevelCompleted(LevelCompletedMessage message)
@@ -135,7 +138,7 @@ namespace SpaceInvaders.Scenes.Game
 
         private DropCategoryTypes RollDropCategory()
         {
-            IReadOnlyList<DropCategoryWeightDTO> weights = _repositoryManager.GetAllDropCategoryWeights();
+            IReadOnlyList<DropCategoryWeightDTO> weights = _dropsRepository.GetAllDropCategoryWeights();
             DropCategoryWeightDTO winner = GameUtils.RollWeighted(weights, weight => weight.Weight);
 
             return winner?.Category ?? DropCategoryTypes.None;
@@ -143,14 +146,14 @@ namespace SpaceInvaders.Scenes.Game
 
         private ItemRarityConfigSO RollRarity()
         {
-            return GameUtils.RollWeighted(_repositoryManager.GetAllItemRarityConfigs(), candidate => candidate.DropWeight);
+            return GameUtils.RollWeighted(_itemsRepository.GetAllItemRarityConfigs(), candidate => candidate.DropWeight);
         }
 
         private ItemConfigSO RollItem(ItemRarityTypes rarity)
         {
             var candidates = new List<ItemConfigSO>();
 
-            foreach (ItemConfigSO config in _repositoryManager.GetAllItemConfigs())
+            foreach (ItemConfigSO config in _itemsRepository.GetAllItemConfigs())
             {
                 if (config.Rarity == rarity)
                 {
