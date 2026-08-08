@@ -32,6 +32,8 @@ namespace SpaceInvaders.Scenes.Game
         public ShipStats PlayerStats => _playerInstance?.Stats;
 
 
+        /// <summary>Spawns the player ship and applies permanent progression bonuses to its stats.
+        /// Controls are enabled later, on game start.</summary>
         public async UniTask GameInitialize()
         {
             _playerInstance = await _spawnService.SpawnPlayer();

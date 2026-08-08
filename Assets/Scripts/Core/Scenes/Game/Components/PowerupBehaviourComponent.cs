@@ -3,6 +3,7 @@ using Zenject;
 
 namespace SpaceInvaders.Scenes.Game
 {
+    /// <summary>Powerup pickup that falls down the screen and is activated on player contact.</summary>
     public class PowerupBehaviourComponent : ScreenBoundedMovingComponent
     {
         [Inject] private readonly IPowerupManager _powerupManager;

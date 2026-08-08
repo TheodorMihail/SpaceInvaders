@@ -78,6 +78,8 @@ namespace SpaceInvaders.Project
             return true;
         }
 
+        /// <summary>Applies the sum of the purchased level deltas for each talent, then refills
+        /// health since max health may have changed.</summary>
         public void ApplyTalentBonuses(ShipStats stats)
         {
             foreach (TalentConfigSO config in _talentsRepository.GetAllTalentConfigs())

@@ -4,6 +4,7 @@ using Zenject;
 
 namespace SpaceInvaders.Scenes.Game
 {
+    /// <summary>Item pickup that falls down the screen and is collected on player contact.</summary>
     public class ItemPickupBehaviourComponent : ScreenBoundedMovingComponent
     {
         [Inject] private readonly ILootManager _lootManager;

@@ -4,6 +4,7 @@ using Zenject;
 
 namespace SpaceInvaders.Scenes.Game
 {
+    /// <summary>Message adapters that signal the end of the game.</summary>
     public class LevelCompletedCondition : IGameEndCondition, IInitializable, IDisposable
     {
         [Inject] private readonly IMessageBus _messageBus;

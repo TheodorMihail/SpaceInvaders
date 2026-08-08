@@ -15,6 +15,10 @@ namespace SpaceInvaders.Editor
         Cluster
     }
 
+    /// <summary>
+    /// Generates formation slot offsets around the origin, in spacing units. All randomness comes
+    /// from the supplied instance, so results are reproducible per seed.
+    /// </summary>
     public static class FormationTemplateGenerator
     {
         public static List<Vector2Int> Generate(FormationTemplateTypes type, int enemyCount, int spacingX, int spacingY, Random random)
@@ -43,6 +47,7 @@ namespace SpaceInvaders.Editor
             }
         }
 
+        /// <summary>Row of positions centered on x = 0.</summary>
         private static List<Vector2Int> GenerateSymmetricRow(int count, int spacingX, int y)
         {
             List<Vector2Int> positions = new List<Vector2Int>();
@@ -117,6 +122,7 @@ namespace SpaceInvaders.Editor
             return positions;
         }
 
+        /// <summary>Row widths increase by 2 up to the middle row, then decrease symmetrically.</summary>
         private static List<int> BuildDiamondRowWidths(int count)
         {
             List<int> widths = new List<int>();
@@ -149,6 +155,7 @@ namespace SpaceInvaders.Editor
                 return positions;
             }
 
+            // Radius scales with the count to keep the spacing between neighbours roughly constant.
             float radius = Mathf.Max(spacingX, spacingY) * count / (2f * Mathf.PI) * 1.2f;
             float startAngle = (float)(random.NextDouble() * Mathf.PI * 2f);
 

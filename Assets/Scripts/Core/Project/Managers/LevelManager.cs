@@ -57,6 +57,7 @@ namespace SpaceInvaders.Project
             SaveData();
         }
 
+        /// <summary>Stores the star count if it improves the previous result, and unlocks the next level.</summary>
         public void RecordLevelResult(int levelIndex, int stars)
         {
             LastPlayedLevelStarsEarned = stars;
@@ -76,6 +77,8 @@ namespace SpaceInvaders.Project
             SaveData();
         }
 
+        /// <summary>Registers the active gameplay session. CurrentLevelNumber returns 0 while none
+        /// is registered.</summary>
         public void RegisterSession(ILevelSessionService session)
         {
             _activeSession = session;

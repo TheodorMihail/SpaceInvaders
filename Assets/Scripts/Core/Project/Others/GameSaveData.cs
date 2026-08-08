@@ -3,6 +3,9 @@ using BaseArchitecture.Core;
 
 namespace SpaceInvaders.Project
 {
+    // One save blob per manager, each with its own SaveKey. Enums are stored as strings: renaming an
+    // enum member invalidates existing saves, reordering does not.
+
     #region  SaveData
 
     public class LevelsSaveData : ISaveData

@@ -9,6 +9,10 @@ using static SpaceInvaders.Scenes.Game.GameStateMachine;
 
 namespace SpaceInvaders.Scenes.Game
 {
+    /// <summary>
+    /// Runs a single gameplay session: initialization, UI setup, start, and end handling once an end
+    /// condition is met.
+    /// </summary>
     public class GameplayState : BaseState<GameStateTypes>
     {
         public override GameStateTypes Id => GameStateTypes.Playing;
@@ -56,6 +60,7 @@ namespace SpaceInvaders.Scenes.Game
 
         private UniTask TriggerGameInitialize()
         {
+            // Listeners run concurrently, with no ordering guarantee.
             return UniTask.WhenAll(_gameInitializeListeners.Select(handler => handler.GameInitialize()));
         }
 

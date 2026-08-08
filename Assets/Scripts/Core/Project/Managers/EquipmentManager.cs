@@ -34,6 +34,8 @@ namespace SpaceInvaders.Project
             _data = _persistenceManager.Load<EquipmentSaveData>(EquipmentSaveData.SaveKey);
         }
 
+        /// <summary>Removes the slot entry if the referenced item is no longer in the inventory.
+        /// Validated on read, since save data load order is not guaranteed.</summary>
         public InventoryItemEntry GetEquippedItemForEquipmentSlotType(EquipmentSlotTypes slot)
         {
             EquippedSlotEntry slotEntry = GetEquipmentSlotEntry(slot);

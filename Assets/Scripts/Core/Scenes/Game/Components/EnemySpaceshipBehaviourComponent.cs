@@ -14,6 +14,10 @@ namespace SpaceInvaders.Scenes.Game
         void StartEntryAnimation(float entrySpeed);
     }
 
+    /// <summary>
+    /// Enemy ship with two movement phases: a tweened entry towards the top of the screen, followed
+    /// by bouncing movement within the top half bounds.
+    /// </summary>
     public class EnemySpaceshipBehaviourComponent : BaseSpaceshipBehaviourComponent<EnemySpaceshipBehaviourComponent, EnemySpaceshipConfigSO>, IEnemySpaceship
     {
         private enum EnemyState { Entering, Bouncing }
@@ -58,13 +62,12 @@ namespace SpaceInvaders.Scenes.Game
 
         public void StartEntryAnimation(float entrySpeed)
         {
-            // Get screen positions
             float yPos = transform.position.y;
             Vector3 screenTop = _cameraManager.GetViewportWorldPoint(0.5f, 1f, yPos);
             Vector3 screenBottom = _cameraManager.GetViewportWorldPoint(0.5f, 0f, yPos);
             float screenHeight = screenTop.z - screenBottom.z;
 
-            // Calculate target position: current X/Y, but Z at 10% below screen top
+            // Target 10% below the screen top, clamped so the ship stays fully visible.
             Vector3 targetPosition = transform.position;
             float desiredZ = screenTop.z - (screenHeight * 0.1f);
             float maxZ = screenTop.z - _renderer.bounds.extents.z;
@@ -115,7 +118,6 @@ namespace SpaceInvaders.Scenes.Game
             float randomAngle = Random.Range(0f, 360f);
             float angleInRadians = randomAngle * Mathf.Deg2Rad;
 
-            // Convert angle to direction vector (XZ plane, Y stays 0)
             _currentDirection = new Vector3(
                 Mathf.Cos(angleInRadians),
                 0f,
@@ -129,38 +131,33 @@ namespace SpaceInvaders.Scenes.Game
         {
             Vector3 currentPosition = transform.position;
 
-            // Check if we hit X bounds (left/right walls)
             bool hitXMin = currentPosition.x <= _minBounds.x && _currentDirection.x < 0;
             bool hitXMax = currentPosition.x >= _maxBounds.x && _currentDirection.x > 0;
 
             if (hitXMin || hitXMax)
             {
-                // Reflect X direction with random angle variation
                 _currentDirection.x *= -1;
                 ApplyRandomBounce();
             }
 
-            // Check if we hit Z bounds (top/bottom walls)
             bool hitZMin = currentPosition.z <= _minBounds.z && _currentDirection.z < 0;
             bool hitZMax = currentPosition.z >= _maxBounds.z && _currentDirection.z > 0;
 
             if (hitZMin || hitZMax)
             {
-                // Reflect Z direction with random angle variation
                 _currentDirection.z *= -1;
                 ApplyRandomBounce();
             }
 
-            // Normalize to maintain consistent speed
             _currentDirection.Normalize();
         }
 
+        /// <summary>Applies a random angle variation to the reflected direction.</summary>
         private void ApplyRandomBounce()
         {
             float randomAngleVariation = UnityEngine.Random.Range(-_bounceAngleVariation, _bounceAngleVariation);
             float angleInRadians = randomAngleVariation * Mathf.Deg2Rad;
 
-            // Rotate the direction vector by the random angle around Y axis
             float cos = Mathf.Cos(angleInRadians);
             float sin = Mathf.Sin(angleInRadians);
 

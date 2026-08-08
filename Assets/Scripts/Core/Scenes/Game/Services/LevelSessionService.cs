@@ -38,6 +38,10 @@ namespace SpaceInvaders.Scenes.Game
         public int CurrentLevelNumber { get; }
     }
 
+    /// <summary>
+    /// Runs the level's waves in order, starting the next one once the current wave is cleared, and
+    /// awards stars on completion.
+    /// </summary>
     public class LevelSessionService : ILevelSessionService
     {
         [Inject] private readonly ILevelsRepository _levelsRepository;
@@ -141,6 +145,7 @@ namespace SpaceInvaders.Scenes.Game
             _levelManager.RecordLevelResult(CurrentLevelNumber, stars);
         }
 
+        /// <summary>Star rating based on total damage taken against the level's three-star threshold.</summary>
         private static int CalculateStars(int damageTaken, int threeStarMaxDamage, float twoStarDamageMultiplier)
         {
             if (damageTaken <= threeStarMaxDamage)

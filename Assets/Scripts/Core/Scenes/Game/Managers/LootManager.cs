@@ -29,6 +29,7 @@ namespace SpaceInvaders.Scenes.Game
         [Inject] private readonly IMessageBus _messageBus;
         [Inject] private readonly ISpawnService _spawnService;
 
+        /// <summary>Loot collected during the current run. Added to the inventory only on level completion.</summary>
         private readonly List<InventoryItemEntry> _pendingLoot = new();
         private IReadOnlyList<InventoryItemEntry> _lastBankedLoot = Array.Empty<InventoryItemEntry>();
 

@@ -19,6 +19,10 @@ namespace SpaceInvaders.Scenes.Game
         void Despawn<T>(T instance) where T : MonoBehaviour, IPoolableObject;
     }
 
+    /// <summary>
+    /// Creates all runtime objects through the object pool, and tracks transient ones for cleanup on
+    /// game end.
+    /// </summary>
     public class SpawnService : ISpawnService, IGameEndListener
     {
         [Inject] private readonly IShipsRepository _shipsRepository;
@@ -26,6 +30,7 @@ namespace SpaceInvaders.Scenes.Game
         [Inject] private readonly IObjectPooling _objectPooling;
         [Inject] private readonly Transform _container;
 
+        /// <summary>Transients despawned on game end. Types not registered here are never cleaned up.</summary>
         private readonly HashSet<ScreenBoundedMovingComponent> _activeObjects = new();
 
         public void Dispose()

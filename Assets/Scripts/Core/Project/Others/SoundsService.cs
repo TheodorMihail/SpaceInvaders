@@ -14,6 +14,7 @@ namespace SpaceInvaders.Project
         bool IsCategoryPlaying(SoundCategoryTypes category);
     }
 
+    /// <summary>Plays sounds in response to bus messages and lifecycle phases.</summary>
     public class SoundsService : ISoundsService
     {
         [Inject] private readonly IMessageBus _messageBus;

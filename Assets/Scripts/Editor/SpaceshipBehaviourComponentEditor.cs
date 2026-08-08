@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace SpaceInvaders.Editor
 {
+    /// <summary>Adds a read-only display of the ship's runtime stats, which are not serialized.</summary>
     [CustomEditor(typeof(BaseSpaceshipBehaviourComponent), true)]
     public class SpaceshipBehaviourComponentEditor : UnityEditor.Editor
     {

@@ -11,6 +11,7 @@ namespace SpaceInvaders.Scenes.Game
         int TotalScore { get; }
     }
 
+    /// <summary>Accumulates score from destroyed enemies and converts it to currency on game end.</summary>
     public class ScoreService : IScoreService
     {
         [Inject] private readonly IMessageBus _messageBus;
