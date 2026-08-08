@@ -7,6 +7,10 @@ using Random = System.Random;
 
 namespace SpaceInvaders.Editor
 {
+    /// <summary>
+    /// Editor window that generates level assets from per-wave enemy counts, assigning a random
+    /// formation template to each wave.
+    /// </summary>
     public class LevelGeneratorWindow : EditorWindow
     {
         private const string LevelsFolderPath = "Assets/GameAssets/Configs/Levels";
@@ -193,6 +197,8 @@ namespace SpaceInvaders.Editor
             return total;
         }
 
+        /// <summary>Keeps the drafts and their per-type counts in sync with the wave count and the
+        /// enemy type enum.</summary>
         private void ResizeWaveDrafts()
         {
             while (_waveDrafts.Count < _numberOfWaves)
@@ -237,6 +243,8 @@ namespace SpaceInvaders.Editor
 
         private void GenerateLevel()
         {
+            // The seed is stored on the asset and copied back to the window, so the level can be
+            // regenerated identically.
             int effectiveSeed = _useFixedSeed ? _seed : Environment.TickCount ^ Guid.NewGuid().GetHashCode();
             Random random = new Random(effectiveSeed);
             List<WaveConfigDTO> wavesConfigs = BuildWavesConfigs(random);
@@ -282,6 +290,8 @@ namespace SpaceInvaders.Editor
             _seed = effectiveSeed;
         }
 
+        /// <summary>Expands each draft's enemy counts into a shuffled pool and assigns it to the
+        /// slots of a formation template.</summary>
         private List<WaveConfigDTO> BuildWavesConfigs(Random random)
         {
             EnemyTypes[] enemyTypeValues = (EnemyTypes[])Enum.GetValues(typeof(EnemyTypes));

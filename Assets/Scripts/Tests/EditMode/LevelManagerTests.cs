@@ -13,7 +13,8 @@ namespace SpaceInvaders.Tests
     public class LevelManagerTests : ZenjectUnitTestFixture
     {
         private LevelSessionService _levelSessionService;
-        private IRepositoryManager _mockRepositoryManager;
+        private ILevelsRepository _mockLevelsRepository;
+        private IShipsRepository _mockShipsRepository;
         private IEnemiesManager _mockEnemiesManager;
         private IPlayerManager _mockPlayerManager;
         private ILevelManager _mockLevelManager;
@@ -30,7 +31,12 @@ namespace SpaceInvaders.Tests
 
             mockLevelConfig.WavesConfigs.Returns(waveConfigs);
             mockLevelConfig.LevelName.Returns($"Level {level}");
-            _mockRepositoryManager.GetLevelConfig(level).Returns(mockLevelConfig);
+            _mockLevelsRepository.TryGetLevelConfig(level, out LevelConfigSO _)
+                .Returns(call =>
+                {
+                    call[1] = mockLevelConfig;
+                    return true;
+                });
         }
 
         [SetUp]
@@ -38,7 +44,8 @@ namespace SpaceInvaders.Tests
         {
             base.Setup();
 
-            _mockRepositoryManager = Substitute.For<IRepositoryManager>();
+            _mockLevelsRepository = Substitute.For<ILevelsRepository>();
+            _mockShipsRepository = Substitute.For<IShipsRepository>();
             _mockEnemiesManager = Substitute.For<IEnemiesManager>();
             _mockPlayerManager = Substitute.For<IPlayerManager>();
             _mockLevelManager = Substitute.For<ILevelManager>();
@@ -46,7 +53,8 @@ namespace SpaceInvaders.Tests
 
             _mockPlayerManager.PlayerStats.Returns(new ShipStats(new ShipBaseStats()));
 
-            Container.Bind<IRepositoryManager>().FromInstance(_mockRepositoryManager);
+            Container.Bind<ILevelsRepository>().FromInstance(_mockLevelsRepository);
+            Container.Bind<IShipsRepository>().FromInstance(_mockShipsRepository);
             Container.Bind<IEnemiesManager>().FromInstance(_mockEnemiesManager);
             Container.Bind<IPlayerManager>().FromInstance(_mockPlayerManager);
             Container.Bind<ILevelManager>().FromInstance(_mockLevelManager);

@@ -18,7 +18,7 @@ namespace SpaceInvaders.Project
     public class TalentManager : ITalentManager, ITickable
     {
         [Inject] private readonly IPersistenceManager _persistenceManager;
-        [Inject] private readonly IRepositoryManager _repositoryManager;
+        [Inject] private readonly ITalentsRepository _talentsRepository;
         [Inject] private readonly ICurrencyManager _currencyManager;
 
         private TalentsSaveData _data;
@@ -35,18 +35,21 @@ namespace SpaceInvaders.Project
 
         public bool IsMaxLevel(ShipUpgradableStatTypes type)
         {
-            TalentConfigSO config = _repositoryManager.GetTalentConfig(type);
+            if (!_talentsRepository.TryGetTalentConfig(type, out TalentConfigSO config))
+            {
+                return true;
+            }
+
             return GetTalentLevel(type) >= config.MaxLevel;
         }
 
         public int GetNextLevelCost(ShipUpgradableStatTypes type)
         {
-            if (IsMaxLevel(type))
+            if (IsMaxLevel(type) || !_talentsRepository.TryGetTalentConfig(type, out TalentConfigSO config))
             {
                 return -1;
             }
 
-            TalentConfigSO config = _repositoryManager.GetTalentConfig(type);
             return config.Levels[GetTalentLevel(type)].Cost;
         }
 
@@ -75,9 +78,11 @@ namespace SpaceInvaders.Project
             return true;
         }
 
+        /// <summary>Applies the sum of the purchased level deltas for each talent, then refills
+        /// health since max health may have changed.</summary>
         public void ApplyTalentBonuses(ShipStats stats)
         {
-            foreach (TalentConfigSO config in _repositoryManager.GetAllTalentConfigs())
+            foreach (TalentConfigSO config in _talentsRepository.GetAllTalentConfigs())
             {
                 int ownedLevel = GetTalentLevel(config.TalentType);
                 if (ownedLevel <= 0)

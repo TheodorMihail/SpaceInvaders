@@ -13,7 +13,9 @@ namespace SpaceInvaders.Tests
     public class LootManagerTests : ZenjectUnitTestFixture
     {
         private LootManager _lootManager;
-        private IRepositoryManager _mockRepositoryManager;
+        private IItemsRepository _mockItemsRepository;
+        private IPowerupsRepository _mockPowerupsRepository;
+        private IDropsRepository _mockDropsRepository;
         private IInventoryManager _mockInventoryManager;
         private ISpawnService _mockSpawnService;
         private IMessageBus _messageBus;
@@ -31,18 +33,29 @@ namespace SpaceInvaders.Tests
             _rarityConfigs.Clear();
             _powerupConfigs.Clear();
 
-            _mockRepositoryManager = Substitute.For<IRepositoryManager>();
-            _mockRepositoryManager.GetAllItemConfigs().Returns(_ => _itemConfigs);
-            _mockRepositoryManager.GetAllItemRarityConfigs().Returns(_ => _rarityConfigs);
-            _mockRepositoryManager.GetAllPowerupConfigs().Returns(_ => _powerupConfigs);
-            _mockRepositoryManager.GetItemConfig(Arg.Any<string>())
-                .Returns(call => _itemConfigs.Find(config => config.ItemId == (string)call[0]));
+            _mockItemsRepository = Substitute.For<IItemsRepository>();
+            _mockItemsRepository.GetAllItemConfigs().Returns(_ => _itemConfigs);
+            _mockItemsRepository.GetAllItemRarityConfigs().Returns(_ => _rarityConfigs);
+            _mockItemsRepository.TryGetItemConfig(Arg.Any<string>(), out ItemConfigSO _)
+                .Returns(call =>
+                {
+                    var found = _itemConfigs.Find(config => config.ItemId == (string)call[0]);
+                    call[1] = found;
+                    return found != null;
+                });
+
+            _mockPowerupsRepository = Substitute.For<IPowerupsRepository>();
+            _mockPowerupsRepository.GetAllPowerupConfigs().Returns(_ => _powerupConfigs);
+
+            _mockDropsRepository = Substitute.For<IDropsRepository>();
 
             _mockInventoryManager = Substitute.For<IInventoryManager>();
             _mockSpawnService = Substitute.For<ISpawnService>();
             _messageBus = new MessageBus();
 
-            Container.Bind<IRepositoryManager>().FromInstance(_mockRepositoryManager);
+            Container.Bind<IItemsRepository>().FromInstance(_mockItemsRepository);
+            Container.Bind<IPowerupsRepository>().FromInstance(_mockPowerupsRepository);
+            Container.Bind<IDropsRepository>().FromInstance(_mockDropsRepository);
             Container.Bind<IInventoryManager>().FromInstance(_mockInventoryManager);
             Container.Bind<ISpawnService>().FromInstance(_mockSpawnService);
             Container.Bind<IMessageBus>().FromInstance(_messageBus);
@@ -101,7 +114,7 @@ namespace SpaceInvaders.Tests
         /// <summary>Stubs the category roll so only the given category can ever win.</summary>
         private void GuaranteeDropCategory(DropCategoryTypes category)
         {
-            _mockRepositoryManager.GetAllDropCategoryWeights().Returns(new List<DropCategoryWeightDTO>
+            _mockDropsRepository.GetAllDropCategoryWeights().Returns(new List<DropCategoryWeightDTO>
             {
                 new(category, 1)
             });
@@ -160,6 +173,21 @@ namespace SpaceInvaders.Tests
             _mockSpawnService.Received(1).SpawnPowerup(Arg.Any<PowerupConfigSO>(), Vector3.zero);
             _mockSpawnService.DidNotReceive().SpawnItemPickup(
                 Arg.Any<ItemRarityConfigSO>(), Arg.Any<InventoryItemEntry>(), Arg.Any<Vector3>());
+        }
+
+        [Test]
+        public void OnEnemyDestroyed_WhenPowerupCategoryWins_PublishesPowerupDroppedMessage()
+        {
+            SetupSingleNormalItem(1, Affix(ShipUpgradableStatTypes.Damage));
+            AddPowerup(PowerupTypes.Heal);
+            GuaranteeDropCategory(DropCategoryTypes.Powerup);
+
+            var droppedType = default(PowerupTypes?);
+            _messageBus.Subscribe<PowerupDroppedMessage>(message => droppedType = message.Type);
+
+            PublishEnemyDestroyed(_messageBus);
+
+            Assert.AreEqual(PowerupTypes.Heal, droppedType);
         }
 
         [Test]

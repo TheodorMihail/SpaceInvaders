@@ -5,17 +5,28 @@ using UnityEngine;
 
 namespace SpaceInvaders.Editor
 {
-    /// <summary>Keyboard-shortcut variant of ItemConfigSO's CreateAssetMenu entry, for quickly
-    /// authoring item templates without going through the Create submenu each time.</summary>
-    public static class ItemConfigSOCreator
+    /// <summary>Keyboard-shortcut variants of the config CreateAssetMenu entries, for quickly
+    /// authoring templates without going through the Create submenu each time.</summary>
+    public static class ConfigSOCreator
     {
         [MenuItem("Assets/Create/SpaceInvaders/Items/New Item Config %#i")]
         private static void CreateItemConfig()
         {
-            string folderPath = GetSelectedFolderPath();
-            string assetPath = AssetDatabase.GenerateUniqueAssetPath($"{folderPath}/ItemConfig.asset");
+            CreateConfig<ItemConfigSO>("ItemConfig");
+        }
 
-            var config = ScriptableObject.CreateInstance<ItemConfigSO>();
+        [MenuItem("Assets/Create/SpaceInvaders/Sounds/New Sound Config %#u")]
+        private static void CreateSoundConfig()
+        {
+            CreateConfig<SoundConfigSO>("SoundConfig");
+        }
+
+        private static void CreateConfig<T>(string fileName) where T : ScriptableObject
+        {
+            string folderPath = GetSelectedFolderPath();
+            string assetPath = AssetDatabase.GenerateUniqueAssetPath($"{folderPath}/{fileName}.asset");
+
+            var config = ScriptableObject.CreateInstance<T>();
             AssetDatabase.CreateAsset(config, assetPath);
             AssetDatabase.SaveAssets();
 

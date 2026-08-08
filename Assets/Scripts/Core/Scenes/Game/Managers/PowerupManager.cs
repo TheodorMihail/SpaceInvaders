@@ -12,9 +12,10 @@ namespace SpaceInvaders.Scenes.Game
         void ActivatePowerup(PowerupTypes type);
     }
 
+    /// <summary>Owns the active timed powerups, one instance per type.</summary>
     public class PowerupManager : IPowerupManager
     {
-        [Inject] private readonly IRepositoryManager _repositoryManager;
+        [Inject] private readonly IPowerupsRepository _powerupsRepository;
         [Inject] private readonly IPlayerManager _playerManager;
         [Inject] private readonly IMessageBus _messageBus;
         [Inject] private readonly ICustomFactory _factory;
@@ -32,9 +33,14 @@ namespace SpaceInvaders.Scenes.Game
             return UniTask.CompletedTask;
         }
 
+        /// <summary>Activating an already active type refreshes its timer instead of stacking the
+        /// bonus. Powerups without a duration are applied immediately and not tracked.</summary>
         public void ActivatePowerup(PowerupTypes type)
         {
-            var config = _repositoryManager.GetPowerupConfig(type);
+            if (!_powerupsRepository.TryGetPowerupConfig(type, out var config))
+            {
+                return;
+            }
 
             if (_activePowerups.TryGetValue(type, out var existing))
             {

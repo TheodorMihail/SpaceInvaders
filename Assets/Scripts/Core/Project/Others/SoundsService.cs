@@ -14,37 +14,54 @@ namespace SpaceInvaders.Project
         bool IsCategoryPlaying(SoundCategoryTypes category);
     }
 
+    /// <summary>Plays sounds in response to bus messages and lifecycle phases.</summary>
     public class SoundsService : ISoundsService
     {
         [Inject] private readonly IMessageBus _messageBus;
         [Inject] private readonly ISoundsManager _soundsManager;
-        [Inject] private readonly IRepositoryManager _repositoryManager;
+        [Inject] private readonly ISoundsRepository _soundsRepository;
 
         public void Initialize()
         {
             _messageBus.Subscribe<ButtonClickedMessage>(OnButtonClicked);
+
             _messageBus.Subscribe<ShipShotFiredMessage>(OnShipShotFired);
             _messageBus.Subscribe<ShipDamagedMessage>(OnShipDamaged);
             _messageBus.Subscribe<EnemyDestroyedMessage>(OnEnemyDestroyed);
             _messageBus.Subscribe<PlayerDestroyedMessage>(OnPlayerDestroyed);
+
+            _messageBus.Subscribe<PowerupDroppedMessage>(OnPowerupDropped);
             _messageBus.Subscribe<PowerupActivatedMessage>(OnPowerupActivated);
             _messageBus.Subscribe<PowerupExpiredMessage>(OnPowerupExpired);
-            _messageBus.Subscribe<BossSpawnedMessage>(OnBossSpawned);
+
+            _messageBus.Subscribe<ItemDroppedMessage>(OnItemDropped);
+            _messageBus.Subscribe<ItemCollectedMessage>(OnItemCollected);
+
             _messageBus.Subscribe<WaveStartedMessage>(OnWaveStarted);
+            _messageBus.Subscribe<BossSpawnedMessage>(OnBossSpawned);
+
             _messageBus.Subscribe<LevelCompletedMessage>(OnLevelCompleted);
         }
 
         public void Dispose()
         {
             _messageBus.Unsubscribe<ButtonClickedMessage>(OnButtonClicked);
+
             _messageBus.Unsubscribe<ShipShotFiredMessage>(OnShipShotFired);
             _messageBus.Unsubscribe<ShipDamagedMessage>(OnShipDamaged);
             _messageBus.Unsubscribe<EnemyDestroyedMessage>(OnEnemyDestroyed);
             _messageBus.Unsubscribe<PlayerDestroyedMessage>(OnPlayerDestroyed);
+
+            _messageBus.Unsubscribe<PowerupDroppedMessage>(OnPowerupDropped);
             _messageBus.Unsubscribe<PowerupActivatedMessage>(OnPowerupActivated);
             _messageBus.Unsubscribe<PowerupExpiredMessage>(OnPowerupExpired);
-            _messageBus.Unsubscribe<BossSpawnedMessage>(OnBossSpawned);
+
+            _messageBus.Unsubscribe<ItemDroppedMessage>(OnItemDropped);
+            _messageBus.Unsubscribe<ItemCollectedMessage>(OnItemCollected);
+
             _messageBus.Unsubscribe<WaveStartedMessage>(OnWaveStarted);
+            _messageBus.Unsubscribe<BossSpawnedMessage>(OnBossSpawned);
+
             _messageBus.Unsubscribe<LevelCompletedMessage>(OnLevelCompleted);
         }
 
@@ -68,11 +85,8 @@ namespace SpaceInvaders.Project
 
         public void PlaySound(SoundTypes type)
         {
-            var config = _repositoryManager.GetSoundConfig(type);
-
-            if(config == null)
+            if (!_soundsRepository.TryGetSoundConfig(type, out var config))
             {
-                this.LogWarning($"No sound could be found for {type}");
                 return;
             }
 
@@ -90,7 +104,12 @@ namespace SpaceInvaders.Project
 
         public bool IsPlaying(SoundTypes type)
         {
-            return _soundsManager.IsPlaying(_repositoryManager.GetSoundConfig(type).Clip);
+            if (!_soundsRepository.TryGetSoundConfig(type, out var config))
+            {
+                return false;
+            }
+
+            return _soundsManager.IsPlaying(config.Clip);
         }
 
         public bool IsCategoryPlaying(SoundCategoryTypes category)
@@ -123,6 +142,11 @@ namespace SpaceInvaders.Project
             PlaySound(SoundTypes.PlayerDestroyed);
         }
 
+        private void OnPowerupDropped(PowerupDroppedMessage message)
+        {
+            PlaySound(SoundTypes.PowerupDropped);
+        }
+
         private void OnPowerupActivated(PowerupActivatedMessage message)
         {
             PlaySound(SoundTypes.PowerupPickup);
@@ -133,19 +157,29 @@ namespace SpaceInvaders.Project
             PlaySound(SoundTypes.PowerupExpired);
         }
 
-        private void OnBossSpawned(BossSpawnedMessage message)
-        {
-            PlaySound(SoundTypes.BossSpawned);
-        }
-
         private void OnWaveStarted(WaveStartedMessage message)
         {
             PlaySound(SoundTypes.WaveStarted);
         }
 
+        private void OnBossSpawned(BossSpawnedMessage message)
+        {
+            PlaySound(SoundTypes.BossSpawned);
+        }
+
         private void OnLevelCompleted(LevelCompletedMessage message)
         {
             PlaySound(SoundTypes.LevelCompleted);
+        }
+
+        private void OnItemDropped(ItemDroppedMessage message)
+        {
+            PlaySound(SoundTypes.ItemDropped);
+        }
+
+        private void OnItemCollected(ItemCollectedMessage message)
+        {
+            PlaySound(SoundTypes.ItemCollected);
         }
     }
 }

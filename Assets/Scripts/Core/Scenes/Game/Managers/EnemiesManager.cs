@@ -27,6 +27,7 @@ namespace SpaceInvaders.Scenes.Game
         public UniTask SpawnEnemies(WaveConfigDTO wave);
     }
 
+    /// <summary>Owns the enemies of the current wave and republishes their events as bus messages.</summary>
     public class EnemiesManager : IEnemiesManager, ITickable
     {
         [Inject] private readonly ISpawnService _spawnService;
@@ -84,6 +85,7 @@ namespace SpaceInvaders.Scenes.Game
             _messageBus.Publish(new EnemyDestroyedMessage(enemy.EnemyType, enemy.Category, enemy.Position));
             DespawnEnemy(enemy);
 
+            // Triggers advancing the level
             if (_spawnedEnemies.Count == 0)
             {
                 _messageBus.Publish(new AllEnemiesDestroyedMessage());

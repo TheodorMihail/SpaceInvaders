@@ -4,6 +4,10 @@ using Zenject;
 
 namespace SpaceInvaders.Scenes.Game
 {
+    /// <summary>
+    /// Base class for objects that move in a fixed direction and despawn when leaving the screen.
+    /// Subclasses set _direction and _speed on initialization.
+    /// </summary>
     public abstract class ScreenBoundedMovingComponent : MonoBehaviour, IPoolableObject
     {
         [Inject] protected ICameraManager _cameraManager;

@@ -52,6 +52,8 @@ namespace SpaceInvaders.Scenes.Game
                             case GameOverStateResultTypes.Restart:
                                 _scenesManager.LoadScene(SceneTypes.Game.ToString(), _currentLevelNumber);
                                 break;
+                            // Re-enters gameplay without reloading the scene, so nothing is disposed
+                            // or re-initialized. Per-run state must be reset on game end.
                             case GameOverStateResultTypes.NextLevel:
                                 _currentLevelNumber++;
                                 SetState(GameStateTypes.Playing, _currentLevelNumber);

@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace SpaceInvaders.Editor
 {
+    /// <summary>Adds a read-only display of the generator seed used to build the asset.</summary>
     [CustomEditor(typeof(LevelConfigSO))]
     public class LevelConfigSOEditor : UnityEditor.Editor
     {

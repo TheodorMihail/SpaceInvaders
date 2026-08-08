@@ -17,7 +17,7 @@ namespace SpaceInvaders.Project
     {
         [Inject] private readonly IInventoryManager _inventoryManager;
         [Inject] private readonly IEquipmentManager _equipmentManager;
-        [Inject] private readonly IRepositoryManager _repositoryManager;
+        [Inject] private readonly IItemsRepository _itemsRepository;
         
         [Header("References")]
         [SerializeField] private RectTransform _rectTransform;
@@ -77,9 +77,9 @@ namespace SpaceInvaders.Project
                 return;
             }
 
-            ItemRarityConfigSO rarityConfig = _repositoryManager.GetItemRarityConfig(config.Rarity);
-            string rarityText = rarityConfig != null ? rarityConfig.DisplayName : config.Rarity.ToString();
-            _rarityText.color = rarityConfig != null ? rarityConfig.DisplayColor : Color.white;
+            bool hasRarityConfig = _itemsRepository.TryGetItemRarityConfig(config.Rarity, out ItemRarityConfigSO rarityConfig);
+            string rarityText = hasRarityConfig ? rarityConfig.DisplayName : config.Rarity.ToString();
+            _rarityText.color = hasRarityConfig ? rarityConfig.DisplayColor : Color.white;
 
             if (showActions)
             {

@@ -11,10 +11,11 @@ namespace SpaceInvaders.Scenes.Game
         int TotalScore { get; }
     }
 
+    /// <summary>Accumulates score from destroyed enemies and converts it to currency on game end.</summary>
     public class ScoreService : IScoreService
     {
         [Inject] private readonly IMessageBus _messageBus;
-        [Inject] private readonly IRepositoryManager _repositoryManager;
+        [Inject] private readonly IShipsRepository _shipsRepository;
         [Inject] private readonly ICurrencyManager _currencyManager;
 
         public int TotalScore { get; private set; }
@@ -37,7 +38,12 @@ namespace SpaceInvaders.Scenes.Game
 
         private void OnEnemyDestroyedCallback(EnemyDestroyedMessage message)
         {
-            int reward = _repositoryManager.GetEnemyConfig(message.Type).ScoreReward;
+            if (!_shipsRepository.TryGetEnemyConfig(message.Type, out var enemyConfig))
+            {
+                return;
+            }
+
+            int reward = enemyConfig.ScoreReward;
             TotalScore += reward;
             _messageBus.Publish(new ScoreChangedMessage(TotalScore, reward));
         }

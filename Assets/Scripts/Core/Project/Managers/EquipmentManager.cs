@@ -21,19 +21,21 @@ namespace SpaceInvaders.Project
     public class EquipmentManager : IEquipmentManager, ITickable
     {
         [Inject] private readonly IPersistenceManager _persistenceManager;
-        [Inject] private readonly IRepositoryManager _repositoryManager;
+        [Inject] private readonly IItemsRepository _itemsRepository;
         [Inject] private readonly IInventoryManager _inventoryManager;
         [Inject] private readonly IMessageBus _messageBus;
 
         private EquipmentSaveData _data;
 
-        public IReadOnlyList<EquipmentSlotConfigDTO> EquipmentSlotConfigs => _repositoryManager.GetAllEquipmentSlotConfigs();
+        public IReadOnlyList<EquipmentSlotConfigDTO> EquipmentSlotConfigs => _itemsRepository.GetAllEquipmentSlotConfigs();
 
         public void Initialize()
         {
             _data = _persistenceManager.Load<EquipmentSaveData>(EquipmentSaveData.SaveKey);
         }
 
+        /// <summary>Removes the slot entry if the referenced item is no longer in the inventory.
+        /// Validated on read, since save data load order is not guaranteed.</summary>
         public InventoryItemEntry GetEquippedItemForEquipmentSlotType(EquipmentSlotTypes slot)
         {
             EquippedSlotEntry slotEntry = GetEquipmentSlotEntry(slot);

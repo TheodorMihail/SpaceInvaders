@@ -17,6 +17,7 @@ namespace SpaceInvaders.Scenes.MainMenu
         public override void OnEnter(params object[] paramsList)
         {
             base.OnEnter();
+
             TriggerMenuEnter().Forget();
             ShowMenuScreen();
         }
