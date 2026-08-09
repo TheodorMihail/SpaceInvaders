@@ -19,7 +19,7 @@ namespace SpaceInvaders.Scenes.Game
         ShipStats PlayerStats { get; }
     }
 
-    public class PlayerManager : IPlayerManager, ITickable
+    public class PlayerManager : IPlayerManager, IInitializable, ITickable
     {
         [Inject] private readonly ISpawnService _spawnService;
         [Inject] private readonly IMessageBus _messageBus;
@@ -31,6 +31,19 @@ namespace SpaceInvaders.Scenes.Game
         public Vector3 PlayerPosition => _playerInstance != null ? _playerInstance.Position : Vector3.zero;
         public ShipStats PlayerStats => _playerInstance?.Stats;
 
+        public void Initialize()
+        {
+            _messageBus.Subscribe<GamePausedMessage>(OnGamePaused);
+            _messageBus.Subscribe<GameResumedMessage>(OnGameResumed);
+        }
+
+        public void Dispose()
+        {
+            _messageBus.Unsubscribe<GamePausedMessage>(OnGamePaused);
+            _messageBus.Unsubscribe<GameResumedMessage>(OnGameResumed);
+
+            DespawnPlayer();
+        }
 
         /// <summary>Spawns the player ship and applies permanent progression bonuses to its stats.
         /// Controls are enabled later, on game start.</summary>
@@ -56,9 +69,15 @@ namespace SpaceInvaders.Scenes.Game
             return UniTask.CompletedTask;
         }
 
-        public void Dispose()
+        /// <summary>Input keeps ticking while the game is paused, so controls are detached explicitly.</summary>
+        private void OnGamePaused(GamePausedMessage message)
         {
-            DespawnPlayer();
+            _playerInstance?.DisableControls();
+        }
+
+        private void OnGameResumed(GameResumedMessage message)
+        {
+            _playerInstance?.EnableControls();
         }
 
         private void OnDestroyedCallback(IPlayerSpaceship component)

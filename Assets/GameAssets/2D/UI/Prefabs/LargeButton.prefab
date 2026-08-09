@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 1209290841998988492}
   - component: {fileID: 7556801089592910907}
   m_Layer: 5
-  m_Name: Sparkle_Large_Pink_Large_Button
+  m_Name: LargeButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

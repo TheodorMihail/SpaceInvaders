@@ -8,6 +8,7 @@ namespace SpaceInvaders.Scenes.Game
     {
         [Inject] private readonly IMessageBus _messageBus;
         [Inject] private readonly IPowerupsRepository _powerupsRepository;
+        [Inject] private readonly IPauseService _pauseService;
 
         public GameplayHUDController(GameplayHUD hud, GameplayHUDModel model, GameplayHUDView view)
             : base(hud, model, view)
@@ -26,6 +27,8 @@ namespace SpaceInvaders.Scenes.Game
             _messageBus.Subscribe<PowerupExpiredMessage>(OnPowerupExpiredCallback);
             _messageBus.Subscribe<GameEndedMessage>(OnGameEnded);
 
+            _view.OnPauseButtonClicked += OnPauseButtonClicked;
+
             _view.Setup(_model.LevelNumber);
         }
 
@@ -40,6 +43,13 @@ namespace SpaceInvaders.Scenes.Game
             _messageBus.Unsubscribe<PowerupActivatedMessage>(OnPowerupActivatedCallback);
             _messageBus.Unsubscribe<PowerupExpiredMessage>(OnPowerupExpiredCallback);
             _messageBus.Unsubscribe<GameEndedMessage>(OnGameEnded);
+
+            _view.OnPauseButtonClicked -= OnPauseButtonClicked;
+        }
+
+        private void OnPauseButtonClicked()
+        {
+            _pauseService.Pause();
         }
 
         private void OnEnemyDestroyedCallback(EnemyDestroyedMessage message)

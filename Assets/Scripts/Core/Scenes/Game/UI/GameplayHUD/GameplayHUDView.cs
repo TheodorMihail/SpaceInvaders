@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using BaseArchitecture.Core;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using Zenject;
 
 namespace SpaceInvaders.Scenes.Game
@@ -22,9 +24,18 @@ namespace SpaceInvaders.Scenes.Game
         [SerializeField] private PowerupIndicatorComponent _powerupIndicatorPrefab;
         [SerializeField] private Transform _powerupIndicatorsContainer;
 
+        [SerializeField] private Button _pauseButton;
+
+        public event Action OnPauseButtonClicked;
+
         private CancellationTokenSource _scoreCancellationTokenSource;
         private readonly Dictionary<PowerupTypes, PowerupIndicatorComponent> _activePowerupIndicators = new();
         private int _currentScore = 0;
+
+        private void Awake()
+        {
+            _pauseButton.onClick.AddListener(() => OnPauseButtonClicked?.Invoke());
+        }
 
         public void Setup(int levelNumber)
         {

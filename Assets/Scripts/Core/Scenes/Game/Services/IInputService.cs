@@ -9,5 +9,6 @@ namespace SpaceInvaders.Scenes.Game
         event Action OnShoot;
         event Action<Vector3> OnMove;
         event Action OnAnyKeyPress;
+        event Action OnPause;
     }
 }
