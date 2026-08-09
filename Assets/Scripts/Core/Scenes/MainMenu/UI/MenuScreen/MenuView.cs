@@ -11,18 +11,21 @@ namespace SpaceInvaders.Scenes.MainMenu
         [SerializeField] private Button _playGameButton;
         [SerializeField] private Button _talentsButton;
         [SerializeField] private Button _inventoryButton;
+        [SerializeField] private Button _settingsButton;
         [SerializeField] private Button _quitGameButton;
 
         public event Action OnPlayGameButtonClicked;
         public event Action OnQuitGameButtonClicked;
         public event Action OnTalentsButtonClicked;
         public event Action OnInventoryButtonClicked;
+        public event Action OnSettingsButtonClicked;
 
         private void Awake()
         {
             _playGameButton.onClick.AddListener(() => OnPlayGameButtonClicked?.Invoke());
             _talentsButton.onClick.AddListener(() => OnTalentsButtonClicked?.Invoke());
             _inventoryButton.onClick.AddListener(() => OnInventoryButtonClicked?.Invoke());
+            _settingsButton.onClick.AddListener(() => OnSettingsButtonClicked?.Invoke());
             _quitGameButton.onClick.AddListener(() => OnQuitGameButtonClicked?.Invoke());
         }
     }
