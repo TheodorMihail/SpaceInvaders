@@ -39,7 +39,21 @@ namespace SpaceInvaders.Scenes.Game
                 {
                     case GameStateTypes.Playing:
                         GameplayStateResultTypes result = (GameplayStateResultTypes)finishedState.paramsList[0];
-                        SetState(GameStateTypes.GameOver, result);
+                        switch (result)
+                        {
+                            // Quitting and restarting come from the pause screen, so they skip the
+                            // game over flow entirely.
+                            case GameplayStateResultTypes.Quit:
+                                _scenesManager.LoadScene(SceneTypes.MainMenu.ToString());
+                                break;
+                            case GameplayStateResultTypes.Restart:
+                                _scenesManager.LoadScene(SceneTypes.Game.ToString(), _currentLevelNumber);
+                                break;
+                            default:
+                                SetState(GameStateTypes.GameOver, result);
+                                break;
+                        }
+
                         break;
 
                     case GameStateTypes.GameOver:

@@ -42,6 +42,7 @@ namespace SpaceInvaders.Scenes.Game
                 Container.BindInterfacesTo<KeyboardInputService>().AsSingle();
             }
 
+            Container.BindInterfacesTo<PauseService>().AsSingle();
             Container.BindInterfacesTo<SpawnService>().AsSingle().WithArguments(_gameContainer);
             Container.BindInterfacesTo<ScoreService>().AsSingle();
             Container.BindInterfacesTo<LevelSessionService>().AsSingle();

@@ -9,12 +9,22 @@ namespace SpaceInvaders.Scenes.Game
         public event Action OnShoot;
         public event Action<Vector3> OnMove;
         public event Action OnAnyKeyPress;
+        public event Action OnPause;
 
         public void Tick()
         {
             HandleAnyKeyPress();
+            HandlePauseInput();
             HandleMovementInput();
             HandleShootInput();
+        }
+
+        private void HandlePauseInput()
+        {
+            if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
+            {
+                OnPause?.Invoke();
+            }
         }
 
         private void HandleAnyKeyPress()

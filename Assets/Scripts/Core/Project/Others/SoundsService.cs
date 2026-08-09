@@ -12,6 +12,8 @@ namespace SpaceInvaders.Project
         void PlaySound(SoundTypes type);
         bool IsPlaying(SoundTypes type);
         bool IsCategoryPlaying(SoundCategoryTypes category);
+        float GetCategoryVolume(SoundCategoryTypes category);
+        void SetCategoryVolume(SoundCategoryTypes category, float volume);
     }
 
     /// <summary>Plays sounds in response to bus messages and lifecycle phases.</summary>
@@ -115,6 +117,16 @@ namespace SpaceInvaders.Project
         public bool IsCategoryPlaying(SoundCategoryTypes category)
         {
             return _soundsManager.IsChannelPlaying(category.ToString());
+        }
+
+        public float GetCategoryVolume(SoundCategoryTypes category)
+        {
+            return _soundsManager.GetChannelVolume(category.ToString());
+        }
+
+        public void SetCategoryVolume(SoundCategoryTypes category, float volume)
+        {
+            _soundsManager.SetChannelVolume(category.ToString(), volume);
         }
 
         private void OnButtonClicked(ButtonClickedMessage message)

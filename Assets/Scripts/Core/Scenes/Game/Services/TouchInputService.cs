@@ -13,12 +13,23 @@ namespace SpaceInvaders.Scenes.Game
         public event Action OnShoot;
         public event Action<Vector3> OnMove;
         public event Action OnAnyKeyPress;
+        public event Action OnPause;
 
         public void Tick()
         {
             HandleAnyTouchPress();
+            HandlePauseInput();
             HandleMovementInput();
             HandleShootInput();
+        }
+
+        /// <summary>The Android back button surfaces as the escape key.</summary>
+        private void HandlePauseInput()
+        {
+            if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
+            {
+                OnPause?.Invoke();
+            }
         }
 
         private void HandleAnyTouchPress()

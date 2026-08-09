@@ -84,6 +84,28 @@ namespace SpaceInvaders.Tests
         }
 
         [Test]
+        public void OnPlayingStateFinished_WithQuit_LoadsMainMenuScene()
+        {
+            _gameStateMachine.Initialize();
+
+            _mockPlayingState.OnStateFinished += Raise.Event<Action<(GameStateTypes, object[])>>((GameStateTypes.Playing, new object[] { GameplayStateResultTypes.Quit }));
+
+            _mockScenesManager.Received(1).LoadScene(SceneTypes.MainMenu.ToString());
+            _mockGameOverState.DidNotReceive().OnEnter(Arg.Any<object[]>());
+        }
+
+        [Test]
+        public void OnPlayingStateFinished_WithRestart_LoadsGameSceneWithCurrentLevel()
+        {
+            _gameStateMachine.Initialize();
+
+            _mockPlayingState.OnStateFinished += Raise.Event<Action<(GameStateTypes, object[])>>((GameStateTypes.Playing, new object[] { GameplayStateResultTypes.Restart }));
+
+            _mockScenesManager.Received(1).LoadScene(SceneTypes.Game.ToString(), 1);
+            _mockGameOverState.DidNotReceive().OnEnter(Arg.Any<object[]>());
+        }
+
+        [Test]
         public void OnPlayingStateFinished_UnsubscribesFromPreviousState()
         {
             _gameStateMachine.Initialize();
