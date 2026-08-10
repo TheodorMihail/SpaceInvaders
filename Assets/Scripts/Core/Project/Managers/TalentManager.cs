@@ -1,6 +1,5 @@
 using BaseArchitecture.Core;
 using SpaceInvaders.Scenes.Game;
-using UnityEngine.InputSystem;
 using Zenject;
 
 namespace SpaceInvaders.Project
@@ -15,7 +14,7 @@ namespace SpaceInvaders.Project
         void ApplyTalentBonuses(ShipStats stats);
     }
 
-    public class TalentManager : ITalentManager, ITickable
+    public partial class TalentManager : ITalentManager
     {
         [Inject] private readonly IPersistenceManager _persistenceManager;
         [Inject] private readonly ITalentsRepository _talentsRepository;
@@ -123,21 +122,5 @@ namespace SpaceInvaders.Project
         {
             _persistenceManager.Save(TalentsSaveData.SaveKey, _data);
         }
-
-        #region Debugging
-
-        public void Tick()
-        {
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-            if (Keyboard.current != null && Keyboard.current.f10Key.wasPressedThisFrame)
-            {
-                _data.Talents.Clear();
-                SaveData();
-                this.LogWarning("Debug: Talents cleared.");
-            }
-#endif
-        }
-
-        #endregion
     }
 }

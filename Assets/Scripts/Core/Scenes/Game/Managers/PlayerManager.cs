@@ -3,7 +3,6 @@ using BaseArchitecture.Core;
 using Cysharp.Threading.Tasks;
 using SpaceInvaders.Project;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using Zenject;
 
 namespace SpaceInvaders.Scenes.Game
@@ -19,7 +18,7 @@ namespace SpaceInvaders.Scenes.Game
         ShipStats PlayerStats { get; }
     }
 
-    public class PlayerManager : IPlayerManager, IInitializable, ITickable
+    public partial class PlayerManager : IPlayerManager, IInitializable
     {
         [Inject] private readonly ISpawnService _spawnService;
         [Inject] private readonly IMessageBus _messageBus;
@@ -110,20 +109,5 @@ namespace SpaceInvaders.Scenes.Game
             _spawnService.Despawn(_playerInstance as PlayerSpaceshipBehaviourComponent);
             _playerInstance = null;
         }
-
-        #region Debugging
-
-        public void Tick()
-        {
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-            if (Keyboard.current != null && Keyboard.current.f2Key.wasPressedThisFrame)
-            {
-                this.LogWarning("Debug: Destroying player");
-                _playerInstance.TakeDamage(_playerInstance.Stats.CurrentHealth);
-            }
-#endif
-        }
-
-        #endregion
     }
 }

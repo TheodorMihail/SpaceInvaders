@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using BaseArchitecture.Core;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using Zenject;
 
 namespace SpaceInvaders.Scenes.Game
@@ -28,7 +27,7 @@ namespace SpaceInvaders.Scenes.Game
     }
 
     /// <summary>Owns the enemies of the current wave and republishes their events as bus messages.</summary>
-    public class EnemiesManager : IEnemiesManager, ITickable
+    public partial class EnemiesManager : IEnemiesManager
     {
         [Inject] private readonly ISpawnService _spawnService;
         [Inject] private readonly IMessageBus _messageBus;
@@ -119,24 +118,5 @@ namespace SpaceInvaders.Scenes.Game
                 DespawnEnemy(_spawnedEnemies[i]);
             }
         }
-
-        #region Debugging
-
-        public void Tick()
-        {
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-            if (Keyboard.current != null && Keyboard.current.f1Key.wasPressedThisFrame)
-            {
-                this.LogWarning("Debug: Destroying all enemies");
-
-                for (int i = _spawnedEnemies.Count - 1; i >= 0; i--)
-                {
-                    OnEnemyDestroyedCallback(_spawnedEnemies[i]);
-                }
-            }
-#endif
-        }
-
-        #endregion
     }
 }
