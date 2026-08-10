@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using BaseArchitecture.Core;
-using UnityEngine;
-using UnityEngine.InputSystem;
 using Zenject;
 
 namespace SpaceInvaders.Project
@@ -16,7 +14,7 @@ namespace SpaceInvaders.Project
         void RemoveItem(string instanceId);
     }
 
-    public class InventoryManager : IInventoryManager, ITickable
+    public partial class InventoryManager : IInventoryManager
     {
         [Inject] private readonly IPersistenceManager _persistenceManager;
         [Inject] private readonly IItemsRepository _itemsRepository;
@@ -78,49 +76,5 @@ namespace SpaceInvaders.Project
         {
             _persistenceManager.Save(InventorySaveData.SaveKey, _data);
         }
-
-        #region Debugging
-
-        public void Tick()
-        {
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-            if (Keyboard.current == null)
-            {
-                return;
-            }
-
-            if (Keyboard.current.f4Key.wasPressedThisFrame)
-            {
-                AddRandomItem();
-            }
-
-            if (Keyboard.current.f11Key.wasPressedThisFrame)
-            {
-                _data.Items.Clear();
-                SaveData();
-                this.LogWarning("Debug: Inventory cleared.");
-            }
-#endif
-        }
-
-        private void AddRandomItem()
-        {
-            IReadOnlyList<ItemConfigSO> configs = _itemsRepository.GetAllItemConfigs();
-            if (configs.Count == 0)
-            {
-                this.LogWarning("Debug: No item configs authored, nothing to add.");
-                return;
-            }
-
-            ItemConfigSO config = configs[Random.Range(0, configs.Count)];
-            bool hasRarityConfig = _itemsRepository.TryGetItemRarityConfig(config.Rarity, out ItemRarityConfigSO rarityConfig);
-            int affixCount = hasRarityConfig ? rarityConfig.AffixCount : 1;
-            InventoryItemEntry entry = config.RollEntry(affixCount);
-
-            AddItems(new List<InventoryItemEntry> { entry });
-            this.LogWarning($"Debug: Added '{config.ItemId}' ({config.Rarity}) to inventory.");
-        }
-
-        #endregion
     }
 }

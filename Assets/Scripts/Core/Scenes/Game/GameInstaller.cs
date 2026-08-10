@@ -49,6 +49,10 @@ namespace SpaceInvaders.Scenes.Game
 
             Container.BindInterfacesTo<LevelCompletedCondition>().AsSingle();
             Container.BindInterfacesTo<PlayerDestroyedCondition>().AsSingle();
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            Container.BindInterfacesTo<DebugManager>().AsSingle();
+#endif
         }
 
         private void ManagersInstall()

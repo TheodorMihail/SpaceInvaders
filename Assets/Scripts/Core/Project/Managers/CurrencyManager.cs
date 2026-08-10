@@ -1,5 +1,4 @@
 using BaseArchitecture.Core;
-using UnityEngine.InputSystem;
 using Zenject;
 
 namespace SpaceInvaders.Project
@@ -11,10 +10,9 @@ namespace SpaceInvaders.Project
         bool TrySpend(int amount);
     }
 
-    public class CurrencyManager : ICurrencyManager, ITickable
+    public partial class CurrencyManager : ICurrencyManager
     {
         [Inject] private readonly IPersistenceManager _persistenceManager;
-        [Inject] private readonly IProjectRepository _projectRepository;
 
         private CurrencySaveData _data;
 
@@ -47,33 +45,5 @@ namespace SpaceInvaders.Project
         {
             _persistenceManager.Save(CurrencySaveData.SaveKey, _data);
         }
-
-        #region Debugging
-
-        public void Tick()
-        {
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-            if (Keyboard.current == null)
-            {
-                return;
-            }
-
-            if (Keyboard.current.f3Key.wasPressedThisFrame)
-            {
-                int amount = _projectRepository.GetProjectDataConfig().DebugAddCurrencyAmount;
-                AddCurrency(amount);
-                this.LogWarning($"Debug: Added {amount} currency. New balance: {Currency}");
-            }
-
-            if (Keyboard.current.f9Key.wasPressedThisFrame)
-            {
-                _data.Amount = 0;
-                SaveData();
-                this.LogWarning("Debug: Currency cleared.");
-            }
-#endif
-        }
-
-        #endregion
     }
 }

@@ -1,4 +1,5 @@
 using BaseArchitecture.Core;
+using SpaceInvaders.Project;
 using UnityEngine;
 using Zenject;
 
@@ -11,7 +12,15 @@ namespace SpaceInvaders.Scenes.MainMenu
         public override void InstallBindings()
         {
             ContainersInstall();
+            ServicesInstall();
             StateMachineInstall();
+        }
+
+        private void ServicesInstall()
+        {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            Container.BindInterfacesTo<DebugManager>().AsSingle();
+#endif
         }
 
         private void ContainersInstall()
