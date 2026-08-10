@@ -8,6 +8,14 @@ namespace SpaceInvaders.Scenes.Game
     {
     }
 
+    public readonly struct GamePausedMessage : IMessageObject
+    {
+    }
+
+    public readonly struct GameResumedMessage : IMessageObject
+    {
+    }
+
     public readonly struct EnemyDestroyedMessage : IMessageObject
     {
         public EnemyTypes Type { get; }

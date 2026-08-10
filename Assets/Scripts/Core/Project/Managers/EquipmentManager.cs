@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using BaseArchitecture.Core;
 using SpaceInvaders.Scenes.Game;
-using UnityEngine.InputSystem;
 using Zenject;
 
 namespace SpaceInvaders.Project
@@ -18,7 +17,7 @@ namespace SpaceInvaders.Project
         void ApplyEquipmentBonuses(ShipStats stats);
     }
 
-    public class EquipmentManager : IEquipmentManager, ITickable
+    public partial class EquipmentManager : IEquipmentManager
     {
         [Inject] private readonly IPersistenceManager _persistenceManager;
         [Inject] private readonly IItemsRepository _itemsRepository;
@@ -185,21 +184,5 @@ namespace SpaceInvaders.Project
         {
             _persistenceManager.Save(EquipmentSaveData.SaveKey, _data);
         }
-
-        #region Debugging
-
-        public void Tick()
-        {
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-            if (Keyboard.current != null && Keyboard.current.f11Key.wasPressedThisFrame)
-            {
-                _data.Slots.Clear();
-                SaveData();
-                this.LogWarning("Debug: Equipment cleared.");
-            }
-#endif
-        }
-
-        #endregion
     }
 }

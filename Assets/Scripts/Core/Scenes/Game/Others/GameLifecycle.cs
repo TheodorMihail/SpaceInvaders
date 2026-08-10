@@ -6,7 +6,9 @@ namespace SpaceInvaders.Scenes.Game
     public enum GameplayStateResultTypes
     {
         LevelFinished,
-        GameOver
+        GameOver,
+        Restart,
+        Quit
     }
 
     /// <summary>Game initialization, before any UI is shown.</summary>

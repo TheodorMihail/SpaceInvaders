@@ -27,6 +27,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Screen
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 37320afd10c6f5047a1ba261a779d3da
+    m_Address: Screens/SettingsScreenView
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Screen
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 77a40495b69721c4dad04db18bd9b915
     m_Address: Screens/SplashScreenView
     m_ReadOnly: 0
@@ -65,6 +71,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f3db63a9ebe4b0f4684e42b2ff6add96
     m_Address: Screens/GameOverScreenView
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Screen
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fd67de08c59e4cf4489b3b974b1ea83a
+    m_Address: Screens/GamePausedScreenView
     m_ReadOnly: 0
     m_SerializedLabels:
     - Screen

@@ -25,13 +25,22 @@ namespace SpaceInvaders.Scenes.Game
         [Inject] private readonly IList<IGameEndCondition> _gameEndConditions;
         [Inject] private readonly IPlatformService _platformService;
         [Inject] private readonly IProjectRepository _projectRepository;
+        [Inject] private readonly IPauseService _pauseService;
 
         public override void OnEnter(params object[] paramsList)
         {
             base.OnEnter();
-            
+
+            _messageBus.Subscribe<GamePausedMessage>(OnGamePaused);
+
             paramsList.TryGetParam(out int levelNumber, 1);
             StartGameplay(levelNumber).Forget();
+        }
+
+        public override void OnExit()
+        {
+            _messageBus.Unsubscribe<GamePausedMessage>(OnGamePaused);
+            base.OnExit();
         }
 
         #region StartGameplay
@@ -76,6 +85,33 @@ namespace SpaceInvaders.Scenes.Game
 
         #endregion
 
+        #region Pause
+
+        private void OnGamePaused(GamePausedMessage message)
+        {
+            ShowPauseScreen().Forget();
+        }
+
+        private async UniTask ShowPauseScreen()
+        {
+            var result = await _uiManager.ShowScreen<GamePausedScreen, GamePausedScreen.GamePausedScreenResult>();
+
+            // Resumed first on every path, so the time scale is restored before anything else runs.
+            _pauseService.Resume();
+
+            switch (result.Result)
+            {
+                case GamePausedScreen.ResultTypes.Restart:
+                    TriggerEndGame(GameplayStateResultTypes.Restart).Forget();
+                    break;
+                case GamePausedScreen.ResultTypes.Quit:
+                    TriggerEndGame(GameplayStateResultTypes.Quit).Forget();
+                    break;
+            }
+        }
+
+        #endregion
+
         #region EndGameplay
 
         private void OnGameEndConditionMet(GameplayStateResultTypes result)
@@ -92,8 +128,12 @@ namespace SpaceInvaders.Scenes.Game
                 condition.ConditionMet -= OnGameEndConditionMet;
             }
 
-            float delay = _projectRepository.GetProjectDataConfig().GameEndTransitionDelay;
-            await UniTask.Delay(TimeSpan.FromSeconds(delay));
+            // The transition delay only exists to let the death or victory beat land.
+            if (result == GameplayStateResultTypes.LevelFinished || result == GameplayStateResultTypes.GameOver)
+            {
+                float delay = _projectRepository.GetProjectDataConfig().GameEndTransitionDelay;
+                await UniTask.Delay(TimeSpan.FromSeconds(delay));
+            }
 
             await UniTask.WhenAll(_gameEndListeners.Select(handler => handler.GameEnd()));
 
