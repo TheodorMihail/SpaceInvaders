@@ -29,6 +29,9 @@ namespace SpaceInvaders.Scenes.Game
 
         [SerializeField] private float _bounceAngleVariation = 30;
 
+        /// <summary>Blocks damage until the entry animation completes.</summary>
+        protected virtual bool IsInvulnerableWhileEntering => false;
+
         private EnemyState _currentState = EnemyState.Entering;
         private Vector3 _currentDirection;
         private Vector3 _minBounds;
@@ -77,6 +80,12 @@ namespace SpaceInvaders.Scenes.Game
             float duration = distance / entrySpeed;
 
             _currentState = EnemyState.Entering;
+
+            if (IsInvulnerableWhileEntering)
+            {
+                Stats.SetInvincible(true);
+            }
+
             _entryTween = transform.DOMove(targetPosition, duration)
                 .SetEase(Ease.Linear)
                 .OnComplete(OnEntryComplete);
@@ -85,6 +94,12 @@ namespace SpaceInvaders.Scenes.Game
         private void OnEntryComplete()
         {
             _currentState = EnemyState.Bouncing;
+
+            if (IsInvulnerableWhileEntering)
+            {
+                Stats.SetInvincible(false);
+            }
+
             InitializeRandomDirection();
         }
 

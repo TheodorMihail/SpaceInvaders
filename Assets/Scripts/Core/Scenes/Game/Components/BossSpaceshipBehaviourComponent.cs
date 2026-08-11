@@ -13,6 +13,8 @@ namespace SpaceInvaders.Scenes.Game
 
         private int _shotCounter;
 
+        protected override bool IsInvulnerableWhileEntering => true;
+
         public override void OnDespawned()
         {
             base.OnDespawned();
