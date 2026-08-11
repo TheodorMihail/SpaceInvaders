@@ -6,11 +6,11 @@ namespace SpaceInvaders.Project
 {
     public partial class LevelManager : IDebugCommandProvider
     {
-        public IReadOnlyList<DebugCommand> GetDebugCommands()
+        public IReadOnlyList<DebugCommandDTO> GetDebugCommands()
         {
             return new[]
             {
-                new DebugCommand(DebugKeys.ClearLevelProgress, "Clear level progress", DebugClearLevelProgress)
+                new DebugCommandDTO(DebugKeys.ClearLevelProgress, "Clear level progress", DebugClearLevelProgress)
             };
         }
 

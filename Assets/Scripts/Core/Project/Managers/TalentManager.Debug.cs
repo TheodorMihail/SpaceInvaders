@@ -6,11 +6,11 @@ namespace SpaceInvaders.Project
 {
     public partial class TalentManager : IDebugCommandProvider
     {
-        public IReadOnlyList<DebugCommand> GetDebugCommands()
+        public IReadOnlyList<DebugCommandDTO> GetDebugCommands()
         {
             return new[]
             {
-                new DebugCommand(DebugKeys.ClearTalents, "Clear talents", DebugClearTalents)
+                new DebugCommandDTO(DebugKeys.ClearTalents, "Clear talents", DebugClearTalents)
             };
         }
 

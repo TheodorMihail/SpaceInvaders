@@ -10,12 +10,12 @@ namespace SpaceInvaders.Project
         // Only the cheats need the config, so the dependency lives here rather than on the manager.
         [Inject] private readonly IProjectRepository _projectRepository;
 
-        public IReadOnlyList<DebugCommand> GetDebugCommands()
+        public IReadOnlyList<DebugCommandDTO> GetDebugCommands()
         {
             return new[]
             {
-                new DebugCommand(DebugKeys.AddCurrency, "Add currency", DebugAddCurrency),
-                new DebugCommand(DebugKeys.ClearCurrency, "Clear currency", DebugClearCurrency)
+                new DebugCommandDTO(DebugKeys.AddCurrency, "Add currency", DebugAddCurrency),
+                new DebugCommandDTO(DebugKeys.ClearCurrency, "Clear currency", DebugClearCurrency)
             };
         }
 

@@ -7,11 +7,11 @@ namespace SpaceInvaders.Scenes.Game
 {
     public partial class EnemiesManager : IDebugCommandProvider
     {
-        public IReadOnlyList<DebugCommand> GetDebugCommands()
+        public IReadOnlyList<DebugCommandDTO> GetDebugCommands()
         {
             return new[]
             {
-                new DebugCommand(DebugKeys.DestroyAllEnemies, "Destroy all enemies", DebugDestroyAllEnemies)
+                new DebugCommandDTO(DebugKeys.DestroyAllEnemies, "Destroy all enemies", DebugDestroyAllEnemies)
             };
         }
 
