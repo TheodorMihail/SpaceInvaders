@@ -1,11 +1,15 @@
 using NUnit.Framework;
 using SpaceInvaders.Scenes.Game;
+using UnityEngine;
 
 namespace SpaceInvaders.Tests
 {
     [TestFixture]
     public class ShipStatsTests
     {
+        private const float FloatTolerance = 0.0001f;
+        private const int RollSampleCount = 20;
+
         private static ShipStats CreateStats()
         {
             return new ShipStats(new ShipBaseStats());
@@ -106,6 +110,68 @@ namespace SpaceInvaders.Tests
             ShipStats stats = CreateStats();
 
             Assert.AreEqual(stats.BaseProjectileDamage, stats.CurrentProjectileDamage);
+        }
+
+        [Test]
+        public void CritStats_WithoutBonuses_UseTheirDefaults()
+        {
+            ShipStats stats = CreateStats();
+
+            Assert.AreEqual(0.1f, stats.CurrentCritChance, FloatTolerance);
+            Assert.AreEqual(2f, stats.CurrentCritDamage, FloatTolerance);
+        }
+
+        [Test]
+        public void ApplyStatBonus_CritChance_WithFlatBonus_AddsFlatAmountToBase()
+        {
+            ShipStats stats = CreateStats();
+            stats.ApplyStatBonus(ShipUpgradableStatTypes.CritChance, 0.15f, ShipStatValueTypes.Flat);
+
+            Assert.AreEqual(0.25f, stats.CurrentCritChance, FloatTolerance);
+        }
+
+        [Test]
+        public void ApplyStatBonus_CritDamage_WithPercentageBonus_ScalesBase()
+        {
+            ShipStats stats = CreateStats();
+            stats.ApplyStatBonus(ShipUpgradableStatTypes.CritDamage, 0.5f, ShipStatValueTypes.Percentage);
+
+            Assert.AreEqual(3f, stats.CurrentCritDamage, FloatTolerance);
+        }
+
+        [Test]
+        public void CurrentCritChance_WithHugeBonus_ClampsToOne()
+        {
+            ShipStats stats = CreateStats();
+            stats.ApplyStatBonus(ShipUpgradableStatTypes.CritChance, 5f, ShipStatValueTypes.Flat);
+
+            Assert.AreEqual(1f, stats.CurrentCritChance, FloatTolerance);
+        }
+
+        [Test]
+        public void CurrentCritDamage_WithSevereMalus_NeverDropsBelowOne()
+        {
+            ShipStats stats = CreateStats();
+            stats.ApplyStatBonus(ShipUpgradableStatTypes.CritDamage, -100f, ShipStatValueTypes.Flat);
+
+            Assert.AreEqual(1f, stats.CurrentCritDamage, FloatTolerance);
+        }
+
+        [Test]
+        public void RollOutgoingDamage_WithGuaranteedCrit_MultipliesDamage()
+        {
+            ShipStats stats = CreateStats();
+            stats.ApplyStatBonus(ShipUpgradableStatTypes.CritChance, 1f, ShipStatValueTypes.Flat);
+
+            int expectedDamage = Mathf.RoundToInt(stats.CurrentProjectileDamage * stats.CurrentCritDamage);
+
+            for (int i = 0; i < RollSampleCount; i++)
+            {
+                int damage = stats.RollOutgoingDamage(out bool isCritical);
+
+                Assert.IsTrue(isCritical);
+                Assert.AreEqual(expectedDamage, damage);
+            }
         }
     }
 }

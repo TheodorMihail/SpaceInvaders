@@ -12,7 +12,7 @@ namespace SpaceInvaders.Scenes.Game
     {
         UniTask<IPlayerSpaceship> SpawnPlayer();
         UniTask<List<IEnemySpaceship>> SpawnEnemies(WaveConfigDTO waveConfig);
-        ProjectileBehaviourComponent SpawnProjectile(ProjectileBehaviourComponent prefab, Vector3 position, Vector3 direction, int damage, float speed);
+        ProjectileBehaviourComponent SpawnProjectile(ProjectileBehaviourComponent prefab, Vector3 position, Vector3 direction, ShipStats attackerStats);
         PowerupBehaviourComponent SpawnPowerup(PowerupConfigSO config, Vector3 position);
         ItemPickupBehaviourComponent SpawnItemPickup(ItemRarityConfigSO rarityConfig, InventoryItemEntry item, Vector3 position);
         VFXBehaviourComponent SpawnVFX(VFXBehaviourComponent prefab, Vector3 position);
@@ -101,8 +101,8 @@ namespace SpaceInvaders.Scenes.Game
             _objectPooling.Return(instance);
         }
 
-        public ProjectileBehaviourComponent SpawnProjectile(ProjectileBehaviourComponent prefab, 
-            Vector3 position, Vector3 direction, int damage, float speed)
+        public ProjectileBehaviourComponent SpawnProjectile(ProjectileBehaviourComponent prefab,
+            Vector3 position, Vector3 direction, ShipStats attackerStats)
         {
             var projectile = Spawn(prefab, position, Quaternion.identity);
 
@@ -111,7 +111,7 @@ namespace SpaceInvaders.Scenes.Game
                 return null;
             }
 
-            projectile.Initialize(damage, speed, direction);
+            projectile.Initialize(attackerStats, direction);
             _activeObjects.Add(projectile);
 
             return projectile;

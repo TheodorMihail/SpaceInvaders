@@ -183,11 +183,13 @@ namespace SpaceInvaders.Scenes.Game
     {
         public int CurrentHealth { get; }
         public int Damage { get; }
+        public bool IsCritical { get; }
 
-        public ShipDamagedMessage(int currentHealth, int damage)
+        public ShipDamagedMessage(int currentHealth, int damage, bool isCritical)
         {
             CurrentHealth = currentHealth;
             Damage = damage;
+            IsCritical = isCritical;
         }
     }
 }

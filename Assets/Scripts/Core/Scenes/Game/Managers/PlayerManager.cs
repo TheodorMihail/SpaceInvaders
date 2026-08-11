@@ -91,9 +91,9 @@ namespace SpaceInvaders.Scenes.Game
             _messageBus.Publish(new ShipShotFiredMessage(spaceship.Position));
         }
 
-        private void OnDamagedCallback(ISpaceship spaceship, int damage)
+        private void OnDamagedCallback(ISpaceship spaceship, int damage, bool isCritical)
         {
-            _messageBus.Publish(new ShipDamagedMessage(spaceship.Stats.CurrentHealth, damage));
+            _messageBus.Publish(new ShipDamagedMessage(spaceship.Stats.CurrentHealth, damage, isCritical));
         }
 
         private void DespawnPlayer()
