@@ -6,11 +6,11 @@ namespace SpaceInvaders.Project
 {
     public partial class EquipmentManager : IDebugCommandProvider
     {
-        public IReadOnlyList<DebugCommandDTO> GetDebugCommands()
+        public IReadOnlyList<DebugCommand> GetDebugCommands()
         {
             return new[]
             {
-                new DebugCommandDTO(DebugKeys.ClearEquipment, "Clear equipment", DebugClearEquipment)
+                new DebugCommand(DebugKeys.ClearEquipment, "Clear equipment", DebugClearEquipment)
             };
         }
 

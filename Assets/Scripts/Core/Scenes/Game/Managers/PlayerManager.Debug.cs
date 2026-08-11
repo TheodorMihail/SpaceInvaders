@@ -7,11 +7,11 @@ namespace SpaceInvaders.Scenes.Game
 {
     public partial class PlayerManager : IDebugCommandProvider
     {
-        public IReadOnlyList<DebugCommandDTO> GetDebugCommands()
+        public IReadOnlyList<DebugCommand> GetDebugCommands()
         {
             return new[]
             {
-                new DebugCommandDTO(DebugKeys.KillPlayer, "Kill player", DebugKillPlayer)
+                new DebugCommand(DebugKeys.KillPlayer, "Kill player", DebugKillPlayer)
             };
         }
 

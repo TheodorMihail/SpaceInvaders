@@ -7,12 +7,12 @@ namespace SpaceInvaders.Project
 {
     public partial class InventoryManager : IDebugCommandProvider
     {
-        public IReadOnlyList<DebugCommandDTO> GetDebugCommands()
+        public IReadOnlyList<DebugCommand> GetDebugCommands()
         {
             return new[]
             {
-                new DebugCommandDTO(DebugKeys.AddRandomItem, "Add random item", DebugAddRandomItem),
-                new DebugCommandDTO(DebugKeys.ClearInventory, "Clear inventory", DebugClearInventory)
+                new DebugCommand(DebugKeys.AddRandomItem, "Add random item", DebugAddRandomItem),
+                new DebugCommand(DebugKeys.ClearInventory, "Clear inventory", DebugClearInventory)
             };
         }
 
