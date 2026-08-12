@@ -29,12 +29,6 @@ namespace SpaceInvaders.Scenes.Game
         public event Action OnNextLevelButtonClicked;
         public event Action OnMainMenuButtonClicked;
 
-        private void Awake()
-        {
-            _nextLevelButton.onClick.AddListener(() => OnNextLevelButtonClicked?.Invoke());
-            _mainMenuButton.onClick.AddListener(() => OnMainMenuButtonClicked?.Invoke());
-        }
-
         public void Initialize(bool allLevelsComplete, int starsEarned, int score,
             IEnumerable<(InventoryItemEntry entry, ItemConfigSO config, ItemRarityConfigSO rarity)> collectedItems)
         {
@@ -49,6 +43,12 @@ namespace SpaceInvaders.Scenes.Game
 
             _tooltip.Hide();
             InitializeCollectedItems(collectedItems);
+        }
+
+        private void Awake()
+        {
+            _nextLevelButton.onClick.AddListener(() => OnNextLevelButtonClicked?.Invoke());
+            _mainMenuButton.onClick.AddListener(() => OnMainMenuButtonClicked?.Invoke());
         }
 
         private void InitializeCollectedItems(IEnumerable<(InventoryItemEntry entry, ItemConfigSO config, ItemRarityConfigSO rarity)> collectedItems)

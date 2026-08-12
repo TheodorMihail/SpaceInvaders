@@ -21,12 +21,6 @@ namespace SpaceInvaders.Scenes.Game
         
         public new event Action<IPlayerSpaceship> OnDestroyed;
 
-        protected override void Destroy()
-        {
-            SpawnDestroyVFX();
-            OnDestroyed?.Invoke(this);
-        }
-
         public override void OnSpawned()
         {
             base.OnSpawned();
@@ -49,6 +43,12 @@ namespace SpaceInvaders.Scenes.Game
         {
             _inputService.OnShoot -= OnPlayerShoot;
             _inputService.OnMove -= OnPlayerMove;
+        }
+
+        protected override void Destroy()
+        {
+            SpawnDestroyVFX();
+            OnDestroyed?.Invoke(this);
         }
 
         private void OnPlayerShoot()

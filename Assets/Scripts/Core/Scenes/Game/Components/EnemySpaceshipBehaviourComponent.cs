@@ -120,6 +120,11 @@ namespace SpaceInvaders.Scenes.Game
                 .OnComplete(OnEntryComplete);
         }
 
+        protected override Vector3 GetProjectileDirection()
+        {
+            return Vector3.back; // Enemies shoot downward (toward player)
+        }
+
         private void OnEntryComplete()
         {
             _currentState = EnemyState.Bouncing;
@@ -140,11 +145,6 @@ namespace SpaceInvaders.Scenes.Game
                 UpdateBouncingMovement();
                 Shoot(); // Continuously attempt to shoot (fire rate cooldown handled in base)
             }
-        }
-
-        protected override Vector3 GetProjectileDirection()
-        {
-            return Vector3.back; // Enemies shoot downward (toward player)
         }
 
         private void UpdateBouncingMovement()

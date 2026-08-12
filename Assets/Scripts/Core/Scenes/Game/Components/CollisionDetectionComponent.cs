@@ -8,14 +8,14 @@ namespace SpaceInvaders.Scenes.Game
     {
         public event Action<Collider> OnTriggerEntered;
 
-        private void OnTriggerEnter(Collider other)
-        {
-            OnTriggerEntered?.Invoke(other);
-        }
-
         private void OnDestroy()
         {
             OnTriggerEntered = null;
+        }
+
+        private void OnTriggerEnter(Collider other)
+        {
+            OnTriggerEntered?.Invoke(other);
         }
     }
 }

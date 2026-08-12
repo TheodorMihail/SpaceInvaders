@@ -11,8 +11,6 @@ namespace SpaceInvaders.Editor
     /// </summary>
     internal static class LevelConfigAssetWriter
     {
-        private const BindingFlags PrivateInstance = BindingFlags.NonPublic | BindingFlags.Instance;
-
         private static readonly FieldInfo LevelIndexField = RequireField(typeof(LevelConfigSO), "_levelIndex");
         private static readonly FieldInfo LevelTypeField = RequireField(typeof(LevelConfigSO), "_levelType");
         private static readonly FieldInfo WavesConfigsField = RequireField(typeof(LevelConfigSO), "_wavesConfigs");
@@ -21,6 +19,8 @@ namespace SpaceInvaders.Editor
         private static readonly FieldInfo WavesFormationField = RequireField(typeof(WaveConfigDTO), "_wavesFormation");
         private static readonly FieldInfo TimeBetweenSpawnsField = RequireField(typeof(WaveConfigDTO), "_timeBetweenSpawns");
         private static readonly FieldInfo EntrySpeedField = RequireField(typeof(WaveConfigDTO), "_entrySpeed");
+
+        private const BindingFlags PrivateInstance = BindingFlags.NonPublic | BindingFlags.Instance;
 
         public static void ApplyToAsset(LevelConfigSO asset, int levelIndex, LevelTypes levelType, List<WaveConfigDTO> wavesConfigs, int generatorSeed)
         {

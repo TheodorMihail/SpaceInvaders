@@ -17,16 +17,6 @@ namespace SpaceInvaders.Scenes.MainMenu
         private int _levelNumber;
         public event Action<int> OnLevelButtonClicked;
 
-        private string BossLevelName()
-        {
-            return "BOSS";
-        }
-
-        private string NormalLevelName(LevelConfigSO level)
-        {
-            return level.Index.ToString();
-        }
-
         private void Awake()
         {
             _button.onClick.AddListener(() => OnLevelButtonClicked?.Invoke(_levelNumber));
@@ -45,6 +35,16 @@ namespace SpaceInvaders.Scenes.MainMenu
             {
                 _starIcons[i].SetActive(i < starsEarned);
             }
+        }
+
+        private string BossLevelName()
+        {
+            return "BOSS";
+        }
+
+        private string NormalLevelName(LevelConfigSO level)
+        {
+            return level.Index.ToString();
         }
 
         /// <summary>Hidden rather than left blank when the type has no icon authored.</summary>

@@ -51,6 +51,9 @@ namespace SpaceInvaders.Scenes.Game
             _cts?.Cancel();
         }
 
+        protected abstract void OnApply();
+        protected abstract void OnRemove();
+
         private void StartTimer()
         {
             _cts = new CancellationTokenSource();
@@ -69,9 +72,6 @@ namespace SpaceInvaders.Scenes.Game
             OnRemove();
             Ended?.Invoke(this);
         }
-
-        protected abstract void OnApply();
-        protected abstract void OnRemove();
     }
 
     public class InvincibilityPowerup : PowerupBaseBehaviour

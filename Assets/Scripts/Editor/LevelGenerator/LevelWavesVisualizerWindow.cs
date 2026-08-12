@@ -12,14 +12,14 @@ namespace SpaceInvaders.Editor
     /// </summary>
     public class LevelWavesVisualizerWindow : EditorWindow
     {
-        private const float WaveHeight = 150f;
-        private const float SlotSize = 9f;
-        private const float BoundsMargin = 40f;
-
         private static readonly Color BackgroundColor = new Color(0.13f, 0.13f, 0.18f);
         private static readonly Color ArrivalLineColor = new Color(0.35f, 0.75f, 0.45f, 0.7f);
         private static readonly Color ScreenEdgeColor = new Color(0.9f, 0.9f, 0.4f, 0.35f);
         private static readonly Color OffScreenColor = new Color(1f, 0.3f, 0.3f);
+
+        private const float WaveHeight = 150f;
+        private const float SlotSize = 9f;
+        private const float BoundsMargin = 40f;
 
         [SerializeField] private float _orthographicSize = 150f;
         [SerializeField] private float _aspectRatio = 16f / 9f;
@@ -30,17 +30,17 @@ namespace SpaceInvaders.Editor
 
         private float ScreenHalfWidth => _orthographicSize * _aspectRatio;
 
+        private void OnEnable()
+        {
+            ReloadLevels();
+        }
+
         [MenuItem("SpaceInvaders/Level Waves Visualizer")]
         private static void ShowWindow()
         {
             LevelWavesVisualizerWindow window = GetWindow<LevelWavesVisualizerWindow>("Level Waves");
             window.minSize = new Vector2(520f, 480f);
             window.Show();
-        }
-
-        private void OnEnable()
-        {
-            ReloadLevels();
         }
 
         private void OnFocus()

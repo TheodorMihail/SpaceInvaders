@@ -36,6 +36,13 @@ namespace SpaceInvaders.Scenes.Game
             _attackerStats = null;
         }
 
+        /// <summary>Raises the destroy event before despawning, so the owner always releases its
+        /// reference.</summary>
+        protected override void Despawn()
+        {
+            TriggerDestroy();
+        }
+
         private void HandleTriggerEnter(Collider other)
         {
             // Matching tags mean the same team, so friendly ships are ignored.
@@ -49,13 +56,6 @@ namespace SpaceInvaders.Scenes.Game
                 target.TakeDamage(_attackerStats);
             }
 
-            TriggerDestroy();
-        }
-
-        /// <summary>Raises the destroy event before despawning, so the owner always releases its
-        /// reference.</summary>
-        protected override void Despawn()
-        {
             TriggerDestroy();
         }
 

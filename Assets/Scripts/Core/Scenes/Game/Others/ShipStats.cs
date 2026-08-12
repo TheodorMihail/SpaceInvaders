@@ -136,9 +136,6 @@ namespace SpaceInvaders.Scenes.Game
 
     public class ShipStats
     {
-        public event Action<int, int> HealthChanged; // currentHealth, baseHealth
-        public event Action<int, int> AmmoChanged; // currentAmmo, maxAmmo
-
         private readonly StatValue _healthStat;
         private readonly StatValue _damageStat;
         private readonly StatValue _moveSpeedStat;
@@ -195,6 +192,9 @@ namespace SpaceInvaders.Scenes.Game
         public bool HasUnlimitedAmmo => CurrentMaxAmmo <= 0;
 
         public bool IsOutOfAmmo => !HasUnlimitedAmmo && CurrentAmmo <= 0;
+
+        public event Action<int, int> HealthChanged; // currentHealth, baseHealth
+        public event Action<int, int> AmmoChanged; // currentAmmo, maxAmmo
 
         public ShipStats(ShipBaseStats baseStats)
         {
@@ -380,15 +380,15 @@ namespace SpaceInvaders.Scenes.Game
             return value.ToString("0.##");
         }
 
-        private static bool IsRatioStat(ShipUpgradableStatTypes statType)
-        {
-            return statType == ShipUpgradableStatTypes.CritChance || statType == ShipUpgradableStatTypes.CritDamage;
-        }
-
         public static string FormatStatDelta(ShipUpgradableStatTypes statType, float delta)
         {
             string sign = delta >= 0f ? "+" : string.Empty; // negative values already print their own "-"
             return $"{sign}{FormatStatValue(statType, delta)}";
+        }
+
+        private static bool IsRatioStat(ShipUpgradableStatTypes statType)
+        {
+            return statType == ShipUpgradableStatTypes.CritChance || statType == ShipUpgradableStatTypes.CritDamage;
         }
 
         private static string FormatPercent(float bonus)

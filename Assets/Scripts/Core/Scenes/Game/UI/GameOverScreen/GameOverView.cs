@@ -18,15 +18,15 @@ namespace SpaceInvaders.Scenes.Game
         public event Action OnRestartButtonClicked;
         public event Action OnMainMenuButtonClicked;
 
+        public void Initialize(int score)
+        {
+            _scoreText.text = string.Format(_scoreString, score);
+        }
+
         private void Awake()
         {
             _restartButton.onClick.AddListener(() => OnRestartButtonClicked?.Invoke());
             _mainMenuButton.onClick.AddListener(() => OnMainMenuButtonClicked?.Invoke());
-        }
-
-        public void Initialize(int score)
-        {
-            _scoreText.text = string.Format(_scoreString, score);
         }
     }
 }

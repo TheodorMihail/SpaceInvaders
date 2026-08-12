@@ -37,16 +37,22 @@ namespace SpaceInvaders.Scenes.Game
 
         [SerializeField] private Button _pauseButton;
 
-        public event Action OnPauseButtonClicked;
-
         private CancellationTokenSource _scoreCancellationTokenSource;
         private CancellationTokenSource _reloadCancellationTokenSource;
         private readonly Dictionary<PowerupTypes, PowerupIndicatorUIComponent> _activePowerupIndicators = new();
         private int _currentScore = 0;
 
+        public event Action OnPauseButtonClicked;
+
         private void Awake()
         {
             _pauseButton.onClick.AddListener(() => OnPauseButtonClicked?.Invoke());
+        }
+
+        private void OnDestroy()
+        {
+            _scoreCancellationTokenSource?.CancelAndDispose();
+            _reloadCancellationTokenSource?.CancelAndDispose();
         }
 
         public void Setup(int levelNumber)
@@ -94,16 +100,13 @@ namespace SpaceInvaders.Scenes.Game
             await _ammoText.CountdownAsync(duration, 0, duration, null, _reloadCancellationTokenSource);
         }
 
-        /// <summary>Hidden rather than left as a blank box when no sprite is authored.</summary>
-        private void SetAmmoIcon(Sprite sprite)
+        public async void UpdateScore(int score)
         {
-            if (_ammoIcon == null)
-            {
-                return;
-            }
+            _scoreCancellationTokenSource?.CancelAndDispose();
+            _scoreCancellationTokenSource = new CancellationTokenSource();
 
-            _ammoIcon.sprite = sprite;
-            _ammoIcon.enabled = sprite != null;
+            await _scoreText.CountdownAsync(_currentScore, score, 0.5f, FormatScore, _scoreCancellationTokenSource);
+            _currentScore = score;
         }
 
         public void InitializeBossHealthBar(int maxHealth)
@@ -122,20 +125,6 @@ namespace SpaceInvaders.Scenes.Game
             _bossHealthBar.gameObject.SetActive(show);
         }
 
-        public async void UpdateScore(int score)
-        {
-            _scoreCancellationTokenSource?.CancelAndDispose();
-            _scoreCancellationTokenSource = new CancellationTokenSource();
-
-            await _scoreText.CountdownAsync(_currentScore, score, 0.5f, FormatScore, _scoreCancellationTokenSource);
-            _currentScore = score;
-        }
-
-        private void FormatScore(int score)
-        {
-            _scoreText.text = string.Format(_scoreString, score);
-        }
-
         public void ShowPowerupActivated(PowerupTypes type, Sprite icon, float duration)
         {
             if (!_activePowerupIndicators.TryGetValue(type, out var indicator))
@@ -145,6 +134,17 @@ namespace SpaceInvaders.Scenes.Game
             }
 
             indicator.Initialize(icon, duration);
+        }
+
+        public void HidePowerupIndicator(PowerupTypes type)
+        {
+            if (!_activePowerupIndicators.TryGetValue(type, out var indicator))
+            {
+                return;
+            }
+
+            _activePowerupIndicators.Remove(type);
+            _objectPooling.Return(indicator);
         }
 
         /// <summary>Position is in screen pixels, which a screen space overlay canvas takes directly.</summary>
@@ -160,27 +160,27 @@ namespace SpaceInvaders.Scenes.Game
             indicator.Initialize(_critIndicatorString, screenPosition, duration);
         }
 
-        private void OnCritIndicatorFinished(CritIndicatorUIComponent indicator)
+        private void FormatScore(int score)
         {
-            indicator.OnFinished -= OnCritIndicatorFinished;
-            _objectPooling.Return(indicator);
+            _scoreText.text = string.Format(_scoreString, score);
         }
 
-        public void HidePowerupIndicator(PowerupTypes type)
+        /// <summary>Hidden rather than left as a blank box when no sprite is authored.</summary>
+        private void SetAmmoIcon(Sprite sprite)
         {
-            if (!_activePowerupIndicators.TryGetValue(type, out var indicator))
+            if (_ammoIcon == null)
             {
                 return;
             }
 
-            _activePowerupIndicators.Remove(type);
-            _objectPooling.Return(indicator);
+            _ammoIcon.sprite = sprite;
+            _ammoIcon.enabled = sprite != null;
         }
 
-        private void OnDestroy()
+        private void OnCritIndicatorFinished(CritIndicatorUIComponent indicator)
         {
-            _scoreCancellationTokenSource?.CancelAndDispose();
-            _reloadCancellationTokenSource?.CancelAndDispose();
+            indicator.OnFinished -= OnCritIndicatorFinished;
+            _objectPooling.Return(indicator);
         }
     }
 }

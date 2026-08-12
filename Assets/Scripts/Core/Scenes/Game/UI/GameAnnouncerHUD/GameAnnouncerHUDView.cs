@@ -21,6 +21,11 @@ namespace SpaceInvaders.Scenes.Game
             _textCanvasGroup.alpha = 0f;
         }
 
+        private void OnDestroy()
+        {
+            _cancellationTokenSource?.CancelAndDispose();
+        }
+
         public void SetDisplayText(string text)
         {
             _displayText.text = text;
@@ -36,11 +41,6 @@ namespace SpaceInvaders.Scenes.Game
                 await _textCanvasGroup.FadeToAsync(0f, animationDuration, _cancellationTokenSource);
             }
             catch {}
-        }
-
-        private void OnDestroy()
-        {
-            _cancellationTokenSource?.CancelAndDispose();
         }
     }
 }
