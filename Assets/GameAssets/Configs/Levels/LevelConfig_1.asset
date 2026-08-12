@@ -16,24 +16,24 @@ MonoBehaviour:
   _levelType: 0
   _wavesConfigs:
   - _wavesFormation:
+    - GridPosition: {x: -70, y: 120}
+      EnemyType: 0
     - GridPosition: {x: 0, y: 120}
       EnemyType: 0
-    - GridPosition: {x: -80, y: 120}
-      EnemyType: 0
-    - GridPosition: {x: 80, y: 120}
+    - GridPosition: {x: 70, y: 120}
       EnemyType: 0
     _timeBetweenSpawns: 1
     _entrySpeed: 100
   - _wavesFormation:
+    - GridPosition: {x: -140, y: 120}
+      EnemyType: 0
+    - GridPosition: {x: -70, y: 120}
+      EnemyType: 0
     - GridPosition: {x: 0, y: 120}
       EnemyType: 0
-    - GridPosition: {x: -80, y: 120}
+    - GridPosition: {x: 70, y: 120}
       EnemyType: 0
-    - GridPosition: {x: 80, y: 120}
-      EnemyType: 0
-    - GridPosition: {x: -160, y: 200}
-      EnemyType: 0
-    - GridPosition: {x: 160, y: 200}
+    - GridPosition: {x: 140, y: 120}
       EnemyType: 0
     _timeBetweenSpawns: 1
     _entrySpeed: 100

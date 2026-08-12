@@ -16,51 +16,51 @@ MonoBehaviour:
   _levelType: 0
   _wavesConfigs:
   - _wavesFormation:
-    - GridPosition: {x: -200, y: 120}
+    - GridPosition: {x: 175, y: 120}
       EnemyType: 0
-    - GridPosition: {x: -80, y: 120}
+    - GridPosition: {x: 105, y: 204}
       EnemyType: 0
-    - GridPosition: {x: 80, y: 120}
-      EnemyType: 0
-    - GridPosition: {x: 200, y: 120}
-      EnemyType: 0
-    - GridPosition: {x: -140, y: 220}
+    - GridPosition: {x: 35, y: 288}
       EnemyType: 1
-    - GridPosition: {x: 140, y: 220}
-      EnemyType: 1
-    _timeBetweenSpawns: 1
-    _entrySpeed: 120
-  - _wavesFormation:
-    - GridPosition: {x: 0, y: 120}
+    - GridPosition: {x: -35, y: 372}
       EnemyType: 0
-    - GridPosition: {x: -160, y: 120}
+    - GridPosition: {x: -105, y: 456}
       EnemyType: 0
-    - GridPosition: {x: 160, y: 120}
-      EnemyType: 0
-    - GridPosition: {x: -240, y: 220}
-      EnemyType: 1
-    - GridPosition: {x: -80, y: 220}
-      EnemyType: 1
-    - GridPosition: {x: 80, y: 220}
-      EnemyType: 1
-    - GridPosition: {x: 240, y: 220}
+    - GridPosition: {x: -175, y: 540}
       EnemyType: 1
     _timeBetweenSpawns: 1
     _entrySpeed: 120
   - _wavesFormation:
-    - GridPosition: {x: -120, y: 120}
-      EnemyType: 1
-    - GridPosition: {x: 120, y: 120}
-      EnemyType: 1
-    - GridPosition: {x: 0, y: 200}
+    - GridPosition: {x: -140, y: 120}
       EnemyType: 0
-    - GridPosition: {x: -200, y: 200}
-      EnemyType: 0
-    - GridPosition: {x: 200, y: 200}
-      EnemyType: 0
-    - GridPosition: {x: -60, y: 300}
+    - GridPosition: {x: -100, y: 120}
       EnemyType: 1
-    - GridPosition: {x: 60, y: 300}
+    - GridPosition: {x: 100, y: 120}
+      EnemyType: 0
+    - GridPosition: {x: 140, y: 120}
+      EnemyType: 1
+    - GridPosition: {x: -120, y: 200}
+      EnemyType: 1
+    - GridPosition: {x: 100, y: 200}
+      EnemyType: 1
+    - GridPosition: {x: 140, y: 200}
+      EnemyType: 0
+    _timeBetweenSpawns: 1
+    _entrySpeed: 120
+  - _wavesFormation:
+    - GridPosition: {x: -68, y: 120}
+      EnemyType: 0
+    - GridPosition: {x: -138, y: 210}
+      EnemyType: 1
+    - GridPosition: {x: -68, y: 210}
+      EnemyType: 0
+    - GridPosition: {x: 2, y: 210}
+      EnemyType: 1
+    - GridPosition: {x: -138, y: 300}
+      EnemyType: 0
+    - GridPosition: {x: -68, y: 300}
+      EnemyType: 1
+    - GridPosition: {x: 2, y: 300}
       EnemyType: 1
     _timeBetweenSpawns: 1
     _entrySpeed: 120
