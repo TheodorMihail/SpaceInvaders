@@ -21,8 +21,8 @@ MonoBehaviour:
   _possibleAffixes:
   - _statType: 0
     _valueType: 1
-    _minBonus: 1
-    _maxBonus: 10
+    _minBonus: 10
+    _maxBonus: 20
   - _statType: 1
     _valueType: 1
     _minBonus: 1
