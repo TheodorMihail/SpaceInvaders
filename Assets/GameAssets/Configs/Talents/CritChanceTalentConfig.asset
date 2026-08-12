@@ -15,7 +15,7 @@ MonoBehaviour:
   _talentType: 5
   _valueType: 0
   _displayName: Crit Chance
-  _icon: {fileID: 0}
+  _icon: {fileID: 1146449724, guid: 5be90912f33c39649b363237f4946af9, type: 3}
   _levels:
   - _cost: 50
     _bonusDelta: 0.01

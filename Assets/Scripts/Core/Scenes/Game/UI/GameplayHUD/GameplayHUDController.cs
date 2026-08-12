@@ -9,6 +9,7 @@ namespace SpaceInvaders.Scenes.Game
         [Inject] private readonly IMessageBus _messageBus;
         [Inject] private readonly IPowerupsRepository _powerupsRepository;
         [Inject] private readonly IPauseService _pauseService;
+        [Inject] private readonly ICameraManager _cameraManager;
 
         public GameplayHUDController(GameplayHUD hud, GameplayHUDModel model, GameplayHUDView view)
             : base(hud, model, view)
@@ -26,6 +27,7 @@ namespace SpaceInvaders.Scenes.Game
             _messageBus.Subscribe<PowerupActivatedMessage>(OnPowerupActivatedCallback);
             _messageBus.Subscribe<PowerupExpiredMessage>(OnPowerupExpiredCallback);
             _messageBus.Subscribe<GameEndedMessage>(OnGameEnded);
+            _messageBus.Subscribe<ShipDamagedMessage>(OnShipDamagedCallback);
 
             _view.OnPauseButtonClicked += OnPauseButtonClicked;
 
@@ -43,6 +45,7 @@ namespace SpaceInvaders.Scenes.Game
             _messageBus.Unsubscribe<PowerupActivatedMessage>(OnPowerupActivatedCallback);
             _messageBus.Unsubscribe<PowerupExpiredMessage>(OnPowerupExpiredCallback);
             _messageBus.Unsubscribe<GameEndedMessage>(OnGameEnded);
+            _messageBus.Unsubscribe<ShipDamagedMessage>(OnShipDamagedCallback);
 
             _view.OnPauseButtonClicked -= OnPauseButtonClicked;
         }
@@ -92,6 +95,18 @@ namespace SpaceInvaders.Scenes.Game
         private void OnPowerupExpiredCallback(PowerupExpiredMessage message)
         {
             _view.HidePowerupIndicator(message.Type);
+        }
+
+        private void OnShipDamagedCallback(ShipDamagedMessage message)
+        {
+            if (!message.IsCritical)
+            {
+                return;
+            }
+
+            _view.ShowCritIndicator(
+                _cameraManager.GetScreenPoint(message.WorldPosition),
+                _model.CritIndicatorDuration);
         }
 
         private void OnGameEnded(GameEndedMessage message)

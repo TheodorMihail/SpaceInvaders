@@ -29,6 +29,7 @@ namespace SpaceInvaders.Project
         ItemCollected = 26,
         ItemDropped = 27,
         PowerupDropped = 28,
+        ShipCriticalDamaged = 29,
 
         //Level
         BossSpawned = 40,

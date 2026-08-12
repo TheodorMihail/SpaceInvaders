@@ -81,7 +81,7 @@ namespace SpaceInvaders.Scenes.Game
 
         private void OnEnemyDestroyedCallback(IEnemySpaceship enemy)
         {
-            _messageBus.Publish(new EnemyDestroyedMessage(enemy.EnemyType, enemy.Category, enemy.Position));
+            _messageBus.Publish(new EnemyDestroyedMessage(enemy.EnemyType, enemy.Category, enemy.LocalPosition));
             DespawnEnemy(enemy);
 
             // Triggers advancing the level
@@ -93,12 +93,12 @@ namespace SpaceInvaders.Scenes.Game
 
         private void OnEnemyShotFiredCallback(ISpaceship spaceship)
         {
-            _messageBus.Publish(new ShipShotFiredMessage(spaceship.Position));
+            _messageBus.Publish(new ShipShotFiredMessage(spaceship.LocalPosition));
         }
 
         private void OnEnemyDamagedCallback(ISpaceship spaceship, int damage, bool isCritical)
         {
-            _messageBus.Publish(new ShipDamagedMessage(spaceship.Stats.CurrentHealth, damage, isCritical));
+            _messageBus.Publish(new ShipDamagedMessage(spaceship.Stats.CurrentHealth, damage, isCritical, spaceship.WorldPosition));
         }
 
         private void DespawnEnemy(IEnemySpaceship enemy)

@@ -10,7 +10,12 @@ namespace SpaceInvaders.Scenes.Game
     {
         ShipStats Stats { get; }
         string SpaceshipID { get; }
-        Vector3 Position { get; }
+
+        /// <summary>Local to the spawn container, which is what every spawn call expects.</summary>
+        Vector3 LocalPosition { get; }
+
+        /// <summary>For anything leaving the spawn container's space, such as projecting to screen.</summary>
+        Vector3 WorldPosition { get; }
         event Action<ISpaceship> OnDestroyed;
         event Action<int, int> OnHealthChanged;
         event Action<ISpaceship> OnShotFired;
@@ -36,7 +41,8 @@ namespace SpaceInvaders.Scenes.Game
 
         public virtual ShipStats Stats { get; protected set; }
         public virtual string SpaceshipID {get; protected set; }
-        public virtual Vector3 Position => transform.localPosition;
+        public virtual Vector3 LocalPosition => transform.localPosition;
+        public virtual Vector3 WorldPosition => transform.position;
         public virtual event Action<ISpaceship> OnDestroyed;
         public virtual event Action<int, int> OnHealthChanged;
         public virtual event Action<ISpaceship> OnShotFired;
@@ -107,11 +113,6 @@ namespace SpaceInvaders.Scenes.Game
             }
 
             RaiseHealthChanged(currentHealth, maxHealth);
-
-            if (currentHealth == 0)
-            {
-                Destroy();
-            }
         }
 
         public override void OnDespawned()
@@ -134,7 +135,7 @@ namespace SpaceInvaders.Scenes.Game
                 return;
             }
 
-            _spawnService.SpawnVFX(_shipConfig.DestroyVFXPrefab, Position);
+            _spawnService.SpawnVFX(_shipConfig.DestroyVFXPrefab, LocalPosition);
         }
 
         protected void SpawnHitVFX()
@@ -145,7 +146,7 @@ namespace SpaceInvaders.Scenes.Game
                 return;
             }
 
-            _spawnService.SpawnVFX(_shipConfig.HitVFXPrefab, Position);
+            _spawnService.SpawnVFX(_shipConfig.HitVFXPrefab, LocalPosition);
         }
 
         public override void Shoot()
@@ -192,11 +193,18 @@ namespace SpaceInvaders.Scenes.Game
             return !Stats.IsInvincible && Stats.CurrentHealth > 0;
         }
 
+        /// <summary>Destruction comes last, since it despawns the ship and drops the listeners that
+        /// the hit feedback above still needs.</summary>
         private void ApplyDamage(int damage, bool isCritical)
         {
             Stats.ApplyDamage(damage);
             SpawnHitVFX();
             RaiseDamaged(damage, isCritical);
+
+            if (Stats.CurrentHealth == 0)
+            {
+                Destroy();
+            }
         }
 
         public override void Move(Vector3 direction, Vector3 minBounds, Vector3 maxBounds)
@@ -256,7 +264,7 @@ namespace SpaceInvaders.Scenes.Game
                 return;
             }
 
-            Vector3 spawnPosition = Position + _projectileOffset;
+            Vector3 spawnPosition = LocalPosition + _projectileOffset;
 
             var projectile = _spawnService.SpawnProjectile(
                 _shipConfig.ProjectilePrefab,

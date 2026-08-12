@@ -20,13 +20,13 @@ namespace SpaceInvaders.Scenes.Game
     {
         public EnemyTypes Type { get; }
         public EnemyCategoryTypes Category { get; }
-        public Vector3 Position { get; }
+        public Vector3 LocalPosition { get; }
 
-        public EnemyDestroyedMessage(EnemyTypes type, EnemyCategoryTypes category, Vector3 position)
+        public EnemyDestroyedMessage(EnemyTypes type, EnemyCategoryTypes category, Vector3 localPosition)
         {
             Type = type;
             Category = category;
-            Position = position;
+            LocalPosition = localPosition;
         }
     }
 
@@ -121,24 +121,24 @@ namespace SpaceInvaders.Scenes.Game
     public readonly struct PowerupDroppedMessage : IMessageObject
     {
         public PowerupTypes Type { get; }
-        public Vector3 Position { get; }
+        public Vector3 LocalPosition { get; }
 
-        public PowerupDroppedMessage(PowerupTypes type, Vector3 position)
+        public PowerupDroppedMessage(PowerupTypes type, Vector3 localPosition)
         {
             Type = type;
-            Position = position;
+            LocalPosition = localPosition;
         }
     }
 
     public readonly struct ItemDroppedMessage : IMessageObject
     {
         public string InstanceId { get; }
-        public Vector3 Position { get; }
+        public Vector3 LocalPosition { get; }
 
-        public ItemDroppedMessage(string instanceId, Vector3 position)
+        public ItemDroppedMessage(string instanceId, Vector3 localPosition)
         {
             InstanceId = instanceId;
-            Position = position;
+            LocalPosition = localPosition;
         }
     }
 
@@ -171,11 +171,11 @@ namespace SpaceInvaders.Scenes.Game
 
     public readonly struct ShipShotFiredMessage : IMessageObject
     {
-        public Vector3 Position { get; }
+        public Vector3 LocalPosition { get; }
 
-        public ShipShotFiredMessage(Vector3 position)
+        public ShipShotFiredMessage(Vector3 localPosition)
         {
-            Position = position;
+            LocalPosition = localPosition;
         }
     }
 
@@ -184,12 +184,14 @@ namespace SpaceInvaders.Scenes.Game
         public int CurrentHealth { get; }
         public int Damage { get; }
         public bool IsCritical { get; }
+        public Vector3 WorldPosition { get; }
 
-        public ShipDamagedMessage(int currentHealth, int damage, bool isCritical)
+        public ShipDamagedMessage(int currentHealth, int damage, bool isCritical, Vector3 worldPosition)
         {
             CurrentHealth = currentHealth;
             Damage = damage;
             IsCritical = isCritical;
+            WorldPosition = worldPosition;
         }
     }
 }

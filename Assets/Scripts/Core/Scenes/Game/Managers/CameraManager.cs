@@ -15,6 +15,7 @@ namespace SpaceInvaders.Scenes.Game
     {
         (Vector3 min, Vector3 max) GetScreenBounds(Renderer renderer, ScreenRegionTypes regionType, float buffer = 0f);
         Vector3 GetViewportWorldPoint(float viewportX, float viewportY, float yPosition);
+        Vector3 GetScreenPoint(Vector3 worldPosition);
     }
 
     public class CameraManager : ICameraManager
@@ -131,6 +132,17 @@ namespace SpaceInvaders.Scenes.Game
             }
 
             return _mainCamera.ViewportToWorldPoint(new Vector3(viewportX, viewportY, yPosition));
+        }
+
+        /// <summary>Projects a world position to screen pixels, for placing UI over gameplay.</summary>
+        public Vector3 GetScreenPoint(Vector3 worldPosition)
+        {
+            if (_mainCamera == null)
+            {
+                return Vector3.zero;
+            }
+
+            return _mainCamera.WorldToScreenPoint(worldPosition);
         }
     }
 }

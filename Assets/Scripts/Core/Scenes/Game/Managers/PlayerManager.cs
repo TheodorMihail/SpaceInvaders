@@ -14,7 +14,7 @@ namespace SpaceInvaders.Scenes.Game
     
     public interface IPlayerManager : IDisposable, IGameStartListener, IGameEndListener, IGameInitializeListener
     {
-        Vector3 PlayerPosition { get; }
+        Vector3 PlayerLocalPosition { get; }
         ShipStats PlayerStats { get; }
     }
 
@@ -27,7 +27,7 @@ namespace SpaceInvaders.Scenes.Game
 
         private IPlayerSpaceship _playerInstance;
 
-        public Vector3 PlayerPosition => _playerInstance != null ? _playerInstance.Position : Vector3.zero;
+        public Vector3 PlayerLocalPosition => _playerInstance != null ? _playerInstance.LocalPosition : Vector3.zero;
         public ShipStats PlayerStats => _playerInstance?.Stats;
 
         public void Initialize()
@@ -88,12 +88,12 @@ namespace SpaceInvaders.Scenes.Game
 
         private void OnShotFiredCallback(ISpaceship spaceship)
         {
-            _messageBus.Publish(new ShipShotFiredMessage(spaceship.Position));
+            _messageBus.Publish(new ShipShotFiredMessage(spaceship.LocalPosition));
         }
 
         private void OnDamagedCallback(ISpaceship spaceship, int damage, bool isCritical)
         {
-            _messageBus.Publish(new ShipDamagedMessage(spaceship.Stats.CurrentHealth, damage, isCritical));
+            _messageBus.Publish(new ShipDamagedMessage(spaceship.Stats.CurrentHealth, damage, isCritical, spaceship.WorldPosition));
         }
 
         private void DespawnPlayer()

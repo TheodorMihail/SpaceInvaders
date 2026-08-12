@@ -12,10 +12,10 @@ namespace SpaceInvaders.Scenes.Game
     {
         UniTask<IPlayerSpaceship> SpawnPlayer();
         UniTask<List<IEnemySpaceship>> SpawnEnemies(WaveConfigDTO waveConfig);
-        ProjectileBehaviourComponent SpawnProjectile(ProjectileBehaviourComponent prefab, Vector3 position, Vector3 direction, ShipStats attackerStats);
-        PowerupBehaviourComponent SpawnPowerup(PowerupConfigSO config, Vector3 position);
-        ItemPickupBehaviourComponent SpawnItemPickup(ItemRarityConfigSO rarityConfig, InventoryItemEntry item, Vector3 position);
-        VFXBehaviourComponent SpawnVFX(VFXBehaviourComponent prefab, Vector3 position);
+        ProjectileBehaviourComponent SpawnProjectile(ProjectileBehaviourComponent prefab, Vector3 localPosition, Vector3 direction, ShipStats attackerStats);
+        PowerupBehaviourComponent SpawnPowerup(PowerupConfigSO config, Vector3 localPosition);
+        ItemPickupBehaviourComponent SpawnItemPickup(ItemRarityConfigSO rarityConfig, InventoryItemEntry item, Vector3 localPosition);
+        VFXBehaviourComponent SpawnVFX(VFXBehaviourComponent prefab, Vector3 localPosition);
         void Despawn<T>(T instance) where T : MonoBehaviour, IPoolableObject;
     }
 
@@ -28,6 +28,7 @@ namespace SpaceInvaders.Scenes.Game
         [Inject] private readonly IShipsRepository _shipsRepository;
         [Inject] private readonly IAddressablesManager _addressablesManager;
         [Inject] private readonly IObjectPooling _objectPooling;
+        /// <summary>Everything spawns as a child of this, so all spawn positions are local to it.</summary>
         [Inject] private readonly Transform _container;
 
         /// <summary>Transients despawned on game end. Types not registered here are never cleaned up.</summary>
@@ -77,7 +78,7 @@ namespace SpaceInvaders.Scenes.Game
                 var prefabPath = enemyConfig.SpaceshipPrefabAddress;
 
                 var enemyPrefab = await LoadPrefabAsync<EnemySpaceshipBehaviourComponent>(prefabPath);
-                var wavePosition = new Vector3(formation.Position.x, 0, formation.Position.y);
+                var wavePosition = new Vector3(formation.GridPosition.x, 0, formation.GridPosition.y);
                 var spawnedEnemy = Spawn(enemyPrefab, enemyPrefab.transform.localPosition + wavePosition, enemyPrefab.transform.localRotation);
 
                 if (spawnedEnemy == null)
@@ -102,9 +103,9 @@ namespace SpaceInvaders.Scenes.Game
         }
 
         public ProjectileBehaviourComponent SpawnProjectile(ProjectileBehaviourComponent prefab,
-            Vector3 position, Vector3 direction, ShipStats attackerStats)
+            Vector3 localPosition, Vector3 direction, ShipStats attackerStats)
         {
-            var projectile = Spawn(prefab, position, Quaternion.identity);
+            var projectile = Spawn(prefab, localPosition, Quaternion.identity);
 
             if (projectile == null)
             {
@@ -117,9 +118,9 @@ namespace SpaceInvaders.Scenes.Game
             return projectile;
         }
 
-        public PowerupBehaviourComponent SpawnPowerup(PowerupConfigSO config, Vector3 position)
+        public PowerupBehaviourComponent SpawnPowerup(PowerupConfigSO config, Vector3 localPosition)
         {
-            var pickup = Spawn(config.PickupPrefab, position, Quaternion.identity);
+            var pickup = Spawn(config.PickupPrefab, localPosition, Quaternion.identity);
 
             if (pickup == null)
             {
@@ -132,9 +133,9 @@ namespace SpaceInvaders.Scenes.Game
             return pickup;
         }
 
-        public ItemPickupBehaviourComponent SpawnItemPickup(ItemRarityConfigSO rarityConfig, InventoryItemEntry item, Vector3 position)
+        public ItemPickupBehaviourComponent SpawnItemPickup(ItemRarityConfigSO rarityConfig, InventoryItemEntry item, Vector3 localPosition)
         {
-            var pickup = Spawn(rarityConfig.PickupPrefab, position, Quaternion.identity);
+            var pickup = Spawn(rarityConfig.PickupPrefab, localPosition, Quaternion.identity);
 
             if (pickup == null)
             {
@@ -147,12 +148,12 @@ namespace SpaceInvaders.Scenes.Game
             return pickup;
         }
 
-        public VFXBehaviourComponent SpawnVFX(VFXBehaviourComponent prefab, Vector3 position)
+        public VFXBehaviourComponent SpawnVFX(VFXBehaviourComponent prefab, Vector3 localPosition)
         {
-            return Spawn(prefab, position, Quaternion.identity);
+            return Spawn(prefab, localPosition, Quaternion.identity);
         }
 
-        private T Spawn<T>(T prefab, Vector3 position, Quaternion rotation) where T : MonoBehaviour, IPoolableObject
+        private T Spawn<T>(T prefab, Vector3 localPosition, Quaternion rotation) where T : MonoBehaviour, IPoolableObject
         {
             var instance = _objectPooling.Get(prefab, _container);
 
@@ -162,7 +163,7 @@ namespace SpaceInvaders.Scenes.Game
                 return null;
             }
 
-            instance.transform.SetLocalPositionAndRotation(position, rotation);
+            instance.transform.SetLocalPositionAndRotation(localPosition, rotation);
             return instance;
         }
 

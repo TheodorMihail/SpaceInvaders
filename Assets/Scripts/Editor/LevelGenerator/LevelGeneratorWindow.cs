@@ -318,7 +318,7 @@ namespace SpaceInvaders.Editor
                 {
                     waveFormation.Add(new WaveConfigDTO.WaveFormationDTO
                     {
-                        Position = slotPositions[i],
+                        GridPosition = slotPositions[i],
                         EnemyType = enemyPool[i]
                     });
                 }

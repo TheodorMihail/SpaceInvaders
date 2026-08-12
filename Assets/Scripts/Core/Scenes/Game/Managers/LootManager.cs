@@ -78,18 +78,18 @@ namespace SpaceInvaders.Scenes.Game
             {
                 case DropCategoryTypes.Powerup:
                 {
-                    SpawnPowerupDrop(message.Position);
+                    SpawnPowerupDrop(message.LocalPosition);
                     break;
                 }
                 case DropCategoryTypes.Item:
                 {
-                    SpawnItemDrop(message.Position);
+                    SpawnItemDrop(message.LocalPosition);
                     break;
                 }
             }
         }
 
-        private void SpawnItemDrop(Vector3 position)
+        private void SpawnItemDrop(Vector3 localPosition)
         {
             ItemRarityConfigSO rarityConfig = RollRarity();
             if (rarityConfig == null)
@@ -105,11 +105,11 @@ namespace SpaceInvaders.Scenes.Game
 
             InventoryItemEntry item = itemConfig.RollEntry(rarityConfig.AffixCount);
 
-            _spawnService.SpawnItemPickup(rarityConfig, item, position);
-            _messageBus.Publish(new ItemDroppedMessage(item.InstanceId, position));
+            _spawnService.SpawnItemPickup(rarityConfig, item, localPosition);
+            _messageBus.Publish(new ItemDroppedMessage(item.InstanceId, localPosition));
         }
 
-        private void SpawnPowerupDrop(Vector3 position)
+        private void SpawnPowerupDrop(Vector3 localPosition)
         {
             PowerupConfigSO config = GameUtils.RollWeighted(_powerupsRepository.GetAllPowerupConfigs(), candidate => candidate.DropWeight);
             if (config == null)
@@ -117,8 +117,8 @@ namespace SpaceInvaders.Scenes.Game
                 return;
             }
 
-            _spawnService.SpawnPowerup(config, position);
-            _messageBus.Publish(new PowerupDroppedMessage(config.PowerupType, position));
+            _spawnService.SpawnPowerup(config, localPosition);
+            _messageBus.Publish(new PowerupDroppedMessage(config.PowerupType, localPosition));
         }
 
         private void OnLevelCompleted(LevelCompletedMessage message)
