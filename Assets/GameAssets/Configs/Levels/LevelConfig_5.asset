@@ -18,19 +18,19 @@ MonoBehaviour:
   - _wavesFormation:
     - GridPosition: {x: 2, y: 120}
       EnemyType: 0
-    - GridPosition: {x: -59, y: 210}
+    - GridPosition: {x: -53, y: 210}
       EnemyType: 0
-    - GridPosition: {x: 62, y: 210}
+    - GridPosition: {x: 56, y: 210}
       EnemyType: 1
-    - GridPosition: {x: -119, y: 300}
+    - GridPosition: {x: -107, y: 300}
       EnemyType: 1
-    - GridPosition: {x: 123, y: 300}
+    - GridPosition: {x: 110, y: 300}
       EnemyType: 1
-    - GridPosition: {x: -180, y: 390}
+    - GridPosition: {x: -161, y: 390}
       EnemyType: 1
-    - GridPosition: {x: 183, y: 390}
+    - GridPosition: {x: 164, y: 390}
       EnemyType: 0
-    - GridPosition: {x: -240, y: 480}
+    - GridPosition: {x: -215, y: 480}
       EnemyType: 1
     _timeBetweenSpawns: 1
     _entrySpeed: 140

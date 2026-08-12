@@ -1,4 +1,5 @@
 using System;
+using SpaceInvaders.Project;
 using UnityEngine;
 using Zenject;
 
@@ -6,25 +7,33 @@ namespace SpaceInvaders.Scenes.Game
 {
     public enum ScreenRegionTypes
     {
-        Full,           // Entire screen
-        TopHalf,        // Top half (for enemies)
-        BottomHalf      // Bottom half (for player)
+        TopRegion,      // Above the divider (for enemies)
+        BottomRegion    // Below the divider (for player)
     }
 
     public interface ICameraManager : IInitializable, IDisposable
     {
-        (Vector3 min, Vector3 max) GetScreenBounds(Renderer renderer, ScreenRegionTypes regionType, float buffer = 0f);
+        /// <summary>Where ships may move: inset by the margins reserved for UI.</summary>
+        (Vector3 min, Vector3 max) GetPlayableBounds(Renderer renderer, ScreenRegionTypes regionType, float buffer = 0f);
+
+        /// <summary>Where an object is still on screen: the full view, ignoring the UI margins.</summary>
+        (Vector3 min, Vector3 max) GetVisibleBounds(Renderer renderer, float buffer = 0f);
+
         Vector3 GetViewportWorldPoint(float viewportX, float viewportY, float yPosition);
         Vector3 GetScreenPoint(Vector3 worldPosition);
     }
 
     public class CameraManager : ICameraManager
     {
+        [Inject] private readonly IGameRepository _gameRepository;
+
         private Camera _mainCamera;
+        private GameDataConfigSO _gameDataConfig;
 
         public void Initialize()
         {
             _mainCamera = Camera.main;
+            _gameDataConfig = _gameRepository.GetGameDataConfig();
 
             if (_mainCamera == null)
             {
@@ -35,15 +44,16 @@ namespace SpaceInvaders.Scenes.Game
         public void Dispose()
         {
             _mainCamera = null;
+            _gameDataConfig = null;
         }
 
         /// <summary>
         /// Returns the world-space movement bounds for a renderer within the given screen region,
-        /// inset by the renderer's extents. The buffer shrinks the half regions and expands the full one.
+        /// inset by the renderer's extents, the buffer, and the margins reserved for UI.
         /// </summary>
-        public (Vector3 min, Vector3 max) GetScreenBounds(Renderer renderer, ScreenRegionTypes regionType, float buffer = 0f)
+        public (Vector3 min, Vector3 max) GetPlayableBounds(Renderer renderer, ScreenRegionTypes regionType, float buffer = 0f)
         {
-            if (_mainCamera == null || renderer == null)
+            if (_mainCamera == null || renderer == null || _gameDataConfig == null)
             {
                 return (Vector3.zero, Vector3.zero);
             }
@@ -51,21 +61,22 @@ namespace SpaceInvaders.Scenes.Game
             Vector3 position = renderer.transform.position;
             Vector3 extents = renderer.bounds.extents;
 
-            Vector3 screenBottomLeft = _mainCamera.ViewportToWorldPoint(new Vector3(0, 0.03f, position.y));
-            Vector3 screenTopRight = _mainCamera.ViewportToWorldPoint(new Vector3(1, 1, position.y));
-            Vector3 screenCenter = _mainCamera.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, position.y));
+            float sideMargin = _gameDataConfig.SideMarginRatio;
+            Vector3 screenBottomLeft = _mainCamera.ViewportToWorldPoint(new Vector3(sideMargin, _gameDataConfig.BottomMarginRatio, position.y));
+            Vector3 screenTopRight = _mainCamera.ViewportToWorldPoint(new Vector3(1f - sideMargin, 1f - _gameDataConfig.TopMarginRatio, position.y));
+            Vector3 screenDivider = _mainCamera.ViewportToWorldPoint(new Vector3(0.5f, _gameDataConfig.RegionDividerRatio, position.y));
 
             Vector3 minBounds;
             Vector3 maxBounds;
 
             switch (regionType)
             {
-                case ScreenRegionTypes.TopHalf:
-                    // Upper half of screen (center to top)
+                case ScreenRegionTypes.TopRegion:
+                    // Above the divider, up to the top margin
                     minBounds = new Vector3(
                         screenBottomLeft.x + extents.x + buffer,
                         position.y,
-                        screenCenter.z + extents.z + buffer
+                        screenDivider.z + extents.z + buffer
                     );
                     maxBounds = new Vector3(
                         screenTopRight.x - extents.x - buffer,
@@ -74,8 +85,9 @@ namespace SpaceInvaders.Scenes.Game
                     );
                     break;
 
-                case ScreenRegionTypes.BottomHalf:
-                    // Lower half of screen (bottom to center)
+                case ScreenRegionTypes.BottomRegion:
+                default:
+                    // From the bottom margin up to the divider
                     minBounds = new Vector3(
                         screenBottomLeft.x + extents.x + buffer,
                         position.y,
@@ -84,24 +96,10 @@ namespace SpaceInvaders.Scenes.Game
                     maxBounds = new Vector3(
                         screenTopRight.x - extents.x - buffer,
                         position.y,
-                        screenCenter.z - extents.z - buffer
+                        screenDivider.z - extents.z - buffer
                     );
                     break;
 
-                case ScreenRegionTypes.Full:
-                default:
-                    // Full screen with buffer extending beyond edges
-                    minBounds = new Vector3(
-                        screenBottomLeft.x - buffer,
-                        position.y,
-                        screenBottomLeft.z - buffer
-                    );
-                    maxBounds = new Vector3(
-                        screenTopRight.x + buffer,
-                        position.y,
-                        screenTopRight.z + buffer
-                    );
-                    break;
             }
 
             // If the renderer's own extents are large relative to the region (e.g. a big boss),
@@ -120,6 +118,38 @@ namespace SpaceInvaders.Scenes.Game
                 minBounds.z = midZ;
                 maxBounds.z = midZ;
             }
+
+            return (minBounds, maxBounds);
+        }
+
+        /// <summary>
+        /// The full view, expanded by the renderer's extents so an object is only considered gone
+        /// once it has fully left the screen. Deliberately ignores the UI margins, which restrict
+        /// where ships may move rather than what is still visible.
+        /// </summary>
+        public (Vector3 min, Vector3 max) GetVisibleBounds(Renderer renderer, float buffer = 0f)
+        {
+            if (_mainCamera == null || renderer == null)
+            {
+                return (Vector3.zero, Vector3.zero);
+            }
+
+            Vector3 position = renderer.transform.position;
+            Vector3 extents = renderer.bounds.extents;
+
+            Vector3 bottomLeft = _mainCamera.ViewportToWorldPoint(new Vector3(0f, 0f, position.y));
+            Vector3 topRight = _mainCamera.ViewportToWorldPoint(new Vector3(1f, 1f, position.y));
+
+            Vector3 minBounds = new Vector3(
+                bottomLeft.x - extents.x - buffer,
+                position.y,
+                bottomLeft.z - extents.z - buffer
+            );
+            Vector3 maxBounds = new Vector3(
+                topRight.x + extents.x + buffer,
+                position.y,
+                topRight.z + extents.z + buffer
+            );
 
             return (minBounds, maxBounds);
         }

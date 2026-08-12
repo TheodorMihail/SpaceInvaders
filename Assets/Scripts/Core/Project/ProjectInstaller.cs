@@ -26,6 +26,7 @@ namespace SpaceInvaders.Project
             Container.BindInterfacesTo<PersistenceManager>().AsSingle();
 
             Container.BindInterfacesTo<ProjectRepository>().AsSingle().WithArguments(_configsContainerSO.ProjectDataConfigSO);
+            Container.BindInterfacesTo<GameRepository>().AsSingle().WithArguments(_configsContainerSO.GameDataConfigSO);
             Container.BindInterfacesTo<LevelsRepository>().AsSingle().WithArguments(_configsContainerSO.LevelsDataConfigSO);
             Container.BindInterfacesTo<ShipsRepository>().AsSingle().WithArguments(new object[]
             {

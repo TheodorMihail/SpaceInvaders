@@ -30,7 +30,7 @@ namespace SpaceInvaders.Scenes.Game
         public override void OnSpawned()
         {
             base.OnSpawned();
-            (_minBounds, _maxBounds) = _cameraManager.GetScreenBounds(_renderer, ScreenRegionTypes.BottomHalf);
+            (_minBounds, _maxBounds) = _cameraManager.GetPlayableBounds(_renderer, ScreenRegionTypes.BottomRegion);
         }
 
         public override void OnDespawned()
