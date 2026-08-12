@@ -109,6 +109,11 @@ MonoBehaviour:
   _levelButtonPrefab: {fileID: 1889779454673483157, guid: fbef5a5c0f2f874439587b32d56b6077, type: 3}
   _levelButtonsContainer: {fileID: 6495019720929794590}
   _backButton: {fileID: 2944456072842374676}
+  _levelTypeIcons:
+  - _levelType: 0
+    _icon: {fileID: 1986343100, guid: e881274ac5c8cd94fb01bddb01bb346a, type: 3}
+  - _levelType: 1
+    _icon: {fileID: -1985849908, guid: e881274ac5c8cd94fb01bddb01bb346a, type: 3}
 --- !u!1 &3305585470787601429
 GameObject:
   m_ObjectHideFlags: 0

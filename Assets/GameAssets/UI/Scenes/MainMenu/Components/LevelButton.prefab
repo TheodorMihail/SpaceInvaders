@@ -219,6 +219,7 @@ MonoBehaviour:
   - {fileID: 1499604885062875218}
   - {fileID: 6804620368800865271}
   - {fileID: 1691978773415931867}
+  _levelTypeIcon: {fileID: 3094709632672804462}
 --- !u!1 &4041761421533951450
 GameObject:
   m_ObjectHideFlags: 0
