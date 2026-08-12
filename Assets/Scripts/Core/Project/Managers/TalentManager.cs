@@ -99,6 +99,7 @@ namespace SpaceInvaders.Project
             }
 
             stats.RefillHealth();
+            stats.RefillAmmo();
         }
 
         private TalentSaveEntry GetTalent(ShipUpgradableStatTypes type)

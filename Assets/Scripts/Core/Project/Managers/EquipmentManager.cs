@@ -160,6 +160,7 @@ namespace SpaceInvaders.Project
             }
 
             stats.RefillHealth();
+            stats.RefillAmmo();
         }
 
         private EquippedSlotEntry GetEquipmentSlotEntry(EquipmentSlotTypes slot)

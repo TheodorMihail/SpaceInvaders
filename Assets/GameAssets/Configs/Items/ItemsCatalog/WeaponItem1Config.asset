@@ -39,3 +39,11 @@ MonoBehaviour:
     _valueType: 1
     _minBonus: 0.05
     _maxBonus: 0.1
+  - _statType: 7
+    _valueType: 1
+    _minBonus: 1
+    _maxBonus: 4
+  - _statType: 8
+    _valueType: 0
+    _minBonus: 0.05
+    _maxBonus: 0.15
