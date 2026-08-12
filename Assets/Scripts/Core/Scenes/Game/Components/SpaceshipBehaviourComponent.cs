@@ -70,6 +70,13 @@ namespace SpaceInvaders.Scenes.Game
             OnShotFired?.Invoke(this);
         }
 
+        /// <summary>Blocks shooting for the given delay, after which the usual fire rate cadence
+        /// resumes. Backdating the last shot keeps the cooldown check in Shoot untouched.</summary>
+        protected void DelayNextShot(float delay)
+        {
+            _lastShotTime = Time.time + delay - Stats.CurrentFireRate;
+        }
+
         protected void RaiseDamaged(int damage, bool isCritical)
         {
             OnDamaged?.Invoke(this, damage, isCritical);

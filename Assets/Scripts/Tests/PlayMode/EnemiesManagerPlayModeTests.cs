@@ -90,8 +90,10 @@ namespace SpaceInvaders.Tests
             _enemiesManager.GameInitialize().Forget();
             yield return _enemiesManager.SpawnEnemies(waveConfig).ToCoroutine();
 
-            enemyList[0].Received(1).StartEntryAnimation(waveConfig.EntrySpeed);
-            enemyList[1].Received(1).StartEntryAnimation(waveConfig.EntrySpeed);
+            enemyList[0].Received(1).PrepareEntry(Arg.Any<float>());
+            enemyList[1].Received(1).PrepareEntry(Arg.Any<float>());
+            enemyList[0].Received(1).StartEntryAnimation(Arg.Any<float>());
+            enemyList[1].Received(1).StartEntryAnimation(Arg.Any<float>());
         }
 
         [UnityTest]

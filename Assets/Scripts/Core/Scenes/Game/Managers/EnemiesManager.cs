@@ -58,13 +58,19 @@ namespace SpaceInvaders.Scenes.Game
             await UniTask.Delay((int)(waveConfig.TimeBetweenSpawns * 1000));
 
             var newEnemies = await _spawnService.SpawnEnemies(waveConfig);
+
+            (float frontZ, float backZ) = GetFormationDepthRange(newEnemies);
+            float longestDistance = 0f;
+
             foreach (var enemy in newEnemies)
             {
                 _spawnedEnemies.Add(enemy);
                 enemy.OnDestroyed += OnEnemyDestroyedCallback;
                 enemy.OnShotFired += OnEnemyShotFiredCallback;
                 enemy.OnDamaged += OnEnemyDamagedCallback;
-                enemy.StartEntryAnimation(waveConfig.EntrySpeed);
+
+                float distance = enemy.PrepareEntry(GetDepthRatio(enemy, frontZ, backZ));
+                longestDistance = Mathf.Max(longestDistance, distance);
 
                 if (enemy.Category == EnemyCategoryTypes.Boss)
                 {
@@ -72,6 +78,42 @@ namespace SpaceInvaders.Scenes.Game
                     _messageBus.Publish(new BossSpawnedMessage(enemy.EnemyType, enemy.Stats.CurrentHealth));
                 }
             }
+
+            // The furthest ship sets the pace, so entry speed still means what it always did.
+            float entryDuration = waveConfig.EntrySpeed > 0f ? longestDistance / waveConfig.EntrySpeed : 0f;
+
+            foreach (var enemy in newEnemies)
+            {
+                enemy.StartEntryAnimation(entryDuration);
+            }
+        }
+
+        /// <summary>Spawn depth spans the formation: the lowest value leads the wave in.</summary>
+        private static (float frontZ, float backZ) GetFormationDepthRange(List<IEnemySpaceship> enemies)
+        {
+            float front = float.MaxValue;
+            float back = float.MinValue;
+
+            foreach (var enemy in enemies)
+            {
+                float z = enemy.LocalPosition.z;
+                front = Mathf.Min(front, z);
+                back = Mathf.Max(back, z);
+            }
+
+            return (front, back);
+        }
+
+        /// <summary>The ship leading the wave gets 1 so it lands deepest, the rearmost gets 0.</summary>
+        private static float GetDepthRatio(IEnemySpaceship enemy, float frontZ, float backZ)
+        {
+            float span = backZ - frontZ;
+            if (span <= Mathf.Epsilon)
+            {
+                return 0f;
+            }
+
+            return (backZ - enemy.LocalPosition.z) / span;
         }
 
         private void OnBossHealthChangedCallback(int currentHealth, int maxHealth)

@@ -11,7 +11,14 @@ namespace SpaceInvaders.Scenes.Game
         new event Action<IEnemySpaceship> OnDestroyed;
         EnemyTypes EnemyType { get; }
         EnemyCategoryTypes Category { get; }
-        void StartEntryAnimation(float entrySpeed);
+
+        /// <summary>Works out where this ship lands and returns how far it has to travel. Depth ratio
+        /// places it within the formation: 0 lands at the top of the play area, 1 lands deepest.</summary>
+        float PrepareEntry(float formationDepthRatio);
+
+        /// <summary>Flies to the prepared spot. The whole wave shares one duration, so the formation
+        /// arrives together instead of trickling in.</summary>
+        void StartEntryAnimation(float duration);
     }
 
     /// <summary>
@@ -29,6 +36,12 @@ namespace SpaceInvaders.Scenes.Game
 
         [SerializeField] private float _bounceAngleVariation = 30;
 
+        [Tooltip("How much of the play area a formation may occupy in depth. Lower keeps waves nearer the top.")]
+        [SerializeField, Range(0f, 1f)] private float _formationDepthFactor = 0.6f;
+
+        [Tooltip("Upper bound of the random wait before the first shot, so a wave does not fire in unison.")]
+        [SerializeField] private float _maxFirstShotDelay = 3f;
+
         /// <summary>Blocks damage until the entry animation completes.</summary>
         protected virtual bool IsInvulnerableWhileEntering => false;
 
@@ -36,6 +49,7 @@ namespace SpaceInvaders.Scenes.Game
         private Vector3 _currentDirection;
         private Vector3 _minBounds;
         private Vector3 _maxBounds;
+        private Vector3 _entryTargetPosition;
         private Tween _entryTween;
 
         public new event Action<IEnemySpaceship> OnDestroyed;
@@ -63,7 +77,7 @@ namespace SpaceInvaders.Scenes.Game
             _currentDirection = Vector3.zero;
         }
 
-        public void StartEntryAnimation(float entrySpeed)
+        public float PrepareEntry(float formationDepthRatio)
         {
             float yPos = transform.position.y;
             Vector3 screenTop = _cameraManager.GetViewportWorldPoint(0.5f, 1f, yPos);
@@ -71,13 +85,15 @@ namespace SpaceInvaders.Scenes.Game
             float screenHeight = screenTop.z - screenBottom.z;
 
             // Target 10% below the screen top, clamped so the ship stays fully visible.
-            Vector3 targetPosition = transform.position;
+            _entryTargetPosition = transform.position;
             float desiredZ = screenTop.z - (screenHeight * 0.1f);
             float maxZ = screenTop.z - _renderer.bounds.extents.z;
-            targetPosition.z = Mathf.Min(desiredZ, maxZ);
+            float frontZ = Mathf.Min(desiredZ, maxZ);
 
-            float distance = Vector3.Distance(transform.position, targetPosition);
-            float duration = distance / entrySpeed;
+            // Ships further back in the formation land deeper, so the shape survives the entry.
+            // Lerping into the bounds keeps the whole formation inside the enemy play area.
+            float depth = Mathf.Clamp01(formationDepthRatio) * _formationDepthFactor;
+            _entryTargetPosition.z = Mathf.Clamp(Mathf.Lerp(frontZ, _minBounds.z, depth), _minBounds.z, frontZ);
 
             _currentState = EnemyState.Entering;
 
@@ -86,7 +102,21 @@ namespace SpaceInvaders.Scenes.Game
                 Stats.SetInvincible(true);
             }
 
-            _entryTween = transform.DOMove(targetPosition, duration)
+            return Vector3.Distance(transform.position, _entryTargetPosition);
+        }
+
+        /// <summary>Speed is whatever covers this ship's distance in the shared wave duration, so
+        /// ships further out simply fly faster and the formation lands as one.</summary>
+        public void StartEntryAnimation(float duration)
+        {
+            if (duration <= 0f)
+            {
+                transform.position = _entryTargetPosition;
+                OnEntryComplete();
+                return;
+            }
+
+            _entryTween = transform.DOMove(_entryTargetPosition, duration)
                 .SetEase(Ease.Linear)
                 .OnComplete(OnEntryComplete);
         }
@@ -100,6 +130,7 @@ namespace SpaceInvaders.Scenes.Game
                 Stats.SetInvincible(false);
             }
 
+            DelayNextShot(Random.Range(0f, _maxFirstShotDelay));
             InitializeRandomDirection();
         }
 
