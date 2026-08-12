@@ -15,4 +15,4 @@ MonoBehaviour:
   _duration: 10
   _dropWeight: 1
   _pickupPrefab: {fileID: 5567308644402932595, guid: ec2dd3c368bde2540937e81ee1f514b4, type: 3}
-  _icon: {fileID: 21300000, guid: bb90e5fa651b1404fa53db6dee20af12, type: 3}
+  _icon: {fileID: -364998361, guid: 25d1729ee92f65a4cbf29fc78f430f0d, type: 3}
