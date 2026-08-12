@@ -141,7 +141,7 @@ namespace SpaceInvaders.Project
 
         private void OnShipDamaged(ShipDamagedMessage message)
         {
-            PlaySound(SoundTypes.ShipDamaged);
+            PlaySound(message.IsCritical ? SoundTypes.ShipCriticalDamaged : SoundTypes.ShipDamaged);
         }
 
         private void OnEnemyDestroyed(EnemyDestroyedMessage message)

@@ -19,17 +19,21 @@ namespace SpaceInvaders.Scenes.Game
 
         [SerializeField] private string _scoreString = "Score: {0}";
         [SerializeField] private string _levelString = "Level: {0}";
+        [SerializeField] private string _critIndicatorString = "!";
 
         [SerializeField] private HealthBarUIComponent _bossHealthBar;
-        [SerializeField] private PowerupIndicatorComponent _powerupIndicatorPrefab;
+        [SerializeField] private PowerupIndicatorUIComponent _powerupIndicatorPrefab;
         [SerializeField] private Transform _powerupIndicatorsContainer;
+
+        [SerializeField] private CritIndicatorUIComponent _critIndicatorPrefab;
+        [SerializeField] private Transform _critIndicatorsContainer;
 
         [SerializeField] private Button _pauseButton;
 
         public event Action OnPauseButtonClicked;
 
         private CancellationTokenSource _scoreCancellationTokenSource;
-        private readonly Dictionary<PowerupTypes, PowerupIndicatorComponent> _activePowerupIndicators = new();
+        private readonly Dictionary<PowerupTypes, PowerupIndicatorUIComponent> _activePowerupIndicators = new();
         private int _currentScore = 0;
 
         private void Awake()
@@ -82,6 +86,25 @@ namespace SpaceInvaders.Scenes.Game
             }
 
             indicator.Initialize(icon, duration);
+        }
+
+        /// <summary>Position is in screen pixels, which a screen space overlay canvas takes directly.</summary>
+        public void ShowCritIndicator(Vector3 screenPosition, float duration)
+        {
+            if (_critIndicatorPrefab == null)
+            {
+                return;
+            }
+
+            var indicator = _objectPooling.Get(_critIndicatorPrefab, _critIndicatorsContainer);
+            indicator.OnFinished += OnCritIndicatorFinished;
+            indicator.Initialize(_critIndicatorString, screenPosition, duration);
+        }
+
+        private void OnCritIndicatorFinished(CritIndicatorUIComponent indicator)
+        {
+            indicator.OnFinished -= OnCritIndicatorFinished;
+            _objectPooling.Return(indicator);
         }
 
         public void HidePowerupIndicator(PowerupTypes type)

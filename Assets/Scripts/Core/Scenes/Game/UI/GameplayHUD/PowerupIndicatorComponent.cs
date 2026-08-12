@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public class PowerupIndicatorComponent : MonoBehaviour, IPoolableObject
+    public class PowerupIndicatorUIComponent : MonoBehaviour, IPoolableObject
     {
         [SerializeField] private Image _icon;
         [SerializeField] private TextMeshProUGUI _countdownText;

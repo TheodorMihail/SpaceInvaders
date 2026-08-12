@@ -8,14 +8,16 @@ namespace SpaceInvaders.Scenes.Game
         [SerializeField] private CollisionDetectionComponent _collisionDetection;
         [SerializeField] private Vector3 _defaultFacingDirection = Vector3.back;
 
-        private int _damage;
+        private ShipStats _attackerStats;
 
         public event Action<ProjectileBehaviourComponent> OnProjectileDestroyed;
 
-        public void Initialize(int damage, float speed, Vector3 direction)
+        /// <summary>Damage is resolved on impact from the attacker's stats, speed is snapshotted here
+        /// so a projectile already in flight keeps its velocity.</summary>
+        public void Initialize(ShipStats attackerStats, Vector3 direction)
         {
-            _damage = damage;
-            _speed = speed;
+            _attackerStats = attackerStats;
+            _speed = attackerStats.CurrentProjectileSpeed;
             _direction = direction.normalized;
             transform.rotation = Quaternion.FromToRotation(_defaultFacingDirection, _direction);
         }
@@ -31,6 +33,7 @@ namespace SpaceInvaders.Scenes.Game
             base.OnDespawned();
             _collisionDetection.OnTriggerEntered -= HandleTriggerEnter;
             OnProjectileDestroyed = null;
+            _attackerStats = null;
         }
 
         private void HandleTriggerEnter(Collider other)
@@ -43,7 +46,7 @@ namespace SpaceInvaders.Scenes.Game
 
             if (other.TryGetComponent<BaseSpaceshipBehaviourComponent>(out var target))
             {
-                target.TakeDamage(_damage);
+                target.TakeDamage(_attackerStats);
             }
 
             TriggerDestroy();

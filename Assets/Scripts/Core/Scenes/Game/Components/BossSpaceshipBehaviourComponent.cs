@@ -13,6 +13,8 @@ namespace SpaceInvaders.Scenes.Game
 
         private int _shotCounter;
 
+        protected override bool IsInvulnerableWhileEntering => true;
+
         public override void OnDespawned()
         {
             base.OnDespawned();
@@ -54,7 +56,7 @@ namespace SpaceInvaders.Scenes.Game
 
         private Vector3 GetAimedDirection()
         {
-            Vector3 toPlayer = _playerManager.PlayerPosition - transform.localPosition;
+            Vector3 toPlayer = _playerManager.PlayerLocalPosition - transform.localPosition;
             toPlayer.y = 0f;
 
             return toPlayer.sqrMagnitude > 0.0001f ? toPlayer.normalized : Vector3.back;

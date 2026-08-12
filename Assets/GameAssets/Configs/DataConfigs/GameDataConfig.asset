@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93d9f8e61f7265044a5bda2ccbbb3bec, type: 3}
+  m_Name: GameDataConfig
+  m_EditorClassIdentifier:
+  _sideMarginRatio: 0.05
+  _topMarginRatio: 0.1
+  _bottomMarginRatio: 0.03
+  _regionDividerRatio: 0.4

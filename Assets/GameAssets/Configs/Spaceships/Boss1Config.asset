@@ -19,6 +19,8 @@ MonoBehaviour:
     _fireRate: 1
     _projectileDamage: 15
     _projectileSpeed: 150
+    _critChance: 0.1
+    _critDamage: 2
   _projectilePrefab: {fileID: 5265903246518343602, guid: 63d46c87fa8df9c41b02a10e4b06814b, type: 3}
   _destroyVFXPrefab: {fileID: 2377428582029327795, guid: c3d6180de37ba1e47ac4c5e4270a3b43, type: 3}
   _hitVFXPrefab: {fileID: -7354612416647879863, guid: 21ec172f22fb9384b8de6329e9f40832, type: 3}

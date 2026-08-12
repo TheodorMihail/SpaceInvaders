@@ -16,26 +16,26 @@ MonoBehaviour:
   _levelType: 0
   _wavesConfigs:
   - _wavesFormation:
-    - Position: {x: 0, y: 0}
+    - GridPosition: {x: -70, y: 120}
       EnemyType: 0
-    - Position: {x: 50, y: 0}
+    - GridPosition: {x: 0, y: 120}
       EnemyType: 0
-    - Position: {x: -50, y: 0}
+    - GridPosition: {x: 70, y: 120}
       EnemyType: 0
     _timeBetweenSpawns: 1
     _entrySpeed: 100
   - _wavesFormation:
-    - Position: {x: 0, y: 0}
+    - GridPosition: {x: -140, y: 120}
       EnemyType: 0
-    - Position: {x: 100, y: 0}
+    - GridPosition: {x: -70, y: 120}
       EnemyType: 0
-    - Position: {x: -100, y: 0}
+    - GridPosition: {x: 0, y: 120}
       EnemyType: 0
-    - Position: {x: 200, y: 0}
+    - GridPosition: {x: 70, y: 120}
       EnemyType: 0
-    - Position: {x: -200, y: 0}
+    - GridPosition: {x: 140, y: 120}
       EnemyType: 0
     _timeBetweenSpawns: 1
     _entrySpeed: 100
   _generatorSeed: 0
-  _threeStarMaxDamage: 50
+  _threeStarMaxDamage: 30

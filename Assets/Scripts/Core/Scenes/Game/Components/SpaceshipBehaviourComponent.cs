@@ -10,14 +10,20 @@ namespace SpaceInvaders.Scenes.Game
     {
         ShipStats Stats { get; }
         string SpaceshipID { get; }
-        Vector3 Position { get; }
+
+        /// <summary>Local to the spawn container, which is what every spawn call expects.</summary>
+        Vector3 LocalPosition { get; }
+
+        /// <summary>For anything leaving the spawn container's space, such as projecting to screen.</summary>
+        Vector3 WorldPosition { get; }
         event Action<ISpaceship> OnDestroyed;
         event Action<int, int> OnHealthChanged;
         event Action<ISpaceship> OnShotFired;
-        event Action<ISpaceship, int> OnDamaged;
+        event Action<ISpaceship, int, bool> OnDamaged;
 
         void Move(Vector3 direction, Vector3 minBounds, Vector3 maxBounds);
         void Shoot();
+        void TakeDamage(ShipStats attackerStats);
         void TakeDamage(int damage);
     }
 
@@ -35,16 +41,18 @@ namespace SpaceInvaders.Scenes.Game
 
         public virtual ShipStats Stats { get; protected set; }
         public virtual string SpaceshipID {get; protected set; }
-        public virtual Vector3 Position => transform.localPosition;
+        public virtual Vector3 LocalPosition => transform.localPosition;
+        public virtual Vector3 WorldPosition => transform.position;
         public virtual event Action<ISpaceship> OnDestroyed;
         public virtual event Action<int, int> OnHealthChanged;
         public virtual event Action<ISpaceship> OnShotFired;
-        public virtual event Action<ISpaceship, int> OnDamaged;
+        public virtual event Action<ISpaceship, int, bool> OnDamaged;
 
         public abstract void OnSpawned();
         public abstract void OnDespawned();
         public abstract void Move(Vector3 direction, Vector3 minBounds, Vector3 maxBounds);
         public abstract void Shoot();
+        public abstract void TakeDamage(ShipStats attackerStats);
         public abstract void TakeDamage(int damage);
 
         protected virtual void Destroy()
@@ -62,9 +70,16 @@ namespace SpaceInvaders.Scenes.Game
             OnShotFired?.Invoke(this);
         }
 
-        protected void RaiseDamaged(int damage)
+        /// <summary>Blocks shooting for the given delay, after which the usual fire rate cadence
+        /// resumes. Backdating the last shot keeps the cooldown check in Shoot untouched.</summary>
+        protected void DelayNextShot(float delay)
         {
-            OnDamaged?.Invoke(this, damage);
+            _lastShotTime = Time.time + delay - Stats.CurrentFireRate;
+        }
+
+        protected void RaiseDamaged(int damage, bool isCritical)
+        {
+            OnDamaged?.Invoke(this, damage, isCritical);
         }
     }
     
@@ -105,11 +120,6 @@ namespace SpaceInvaders.Scenes.Game
             }
 
             RaiseHealthChanged(currentHealth, maxHealth);
-
-            if (currentHealth == 0)
-            {
-                Destroy();
-            }
         }
 
         public override void OnDespawned()
@@ -132,7 +142,7 @@ namespace SpaceInvaders.Scenes.Game
                 return;
             }
 
-            _spawnService.SpawnVFX(_shipConfig.DestroyVFXPrefab, Position);
+            _spawnService.SpawnVFX(_shipConfig.DestroyVFXPrefab, LocalPosition);
         }
 
         protected void SpawnHitVFX()
@@ -143,7 +153,7 @@ namespace SpaceInvaders.Scenes.Game
                 return;
             }
 
-            _spawnService.SpawnVFX(_shipConfig.HitVFXPrefab, Position);
+            _spawnService.SpawnVFX(_shipConfig.HitVFXPrefab, LocalPosition);
         }
 
         public override void Shoot()
@@ -163,21 +173,45 @@ namespace SpaceInvaders.Scenes.Game
             RaiseShotFired();
         }
 
+        public override void TakeDamage(ShipStats attackerStats)
+        {
+            if (!CanTakeDamage())
+            {
+                return;
+            }
+
+            int damage = attackerStats.RollOutgoingDamage(out bool isCritical);
+            ApplyDamage(damage, isCritical);
+        }
+
+        /// <summary>Unattributed damage, which cannot crit as it has no attacker to roll against.</summary>
         public override void TakeDamage(int damage)
         {
-            if (Stats.IsInvincible)
+            if (!CanTakeDamage())
             {
                 return;
             }
 
-            if (Stats.CurrentHealth <= 0)
-            {
-                return;
-            }
+            ApplyDamage(damage, false);
+        }
 
+        private bool CanTakeDamage()
+        {
+            return !Stats.IsInvincible && Stats.CurrentHealth > 0;
+        }
+
+        /// <summary>Destruction comes last, since it despawns the ship and drops the listeners that
+        /// the hit feedback above still needs.</summary>
+        private void ApplyDamage(int damage, bool isCritical)
+        {
             Stats.ApplyDamage(damage);
             SpawnHitVFX();
-            RaiseDamaged(damage);
+            RaiseDamaged(damage, isCritical);
+
+            if (Stats.CurrentHealth == 0)
+            {
+                Destroy();
+            }
         }
 
         public override void Move(Vector3 direction, Vector3 minBounds, Vector3 maxBounds)
@@ -237,14 +271,13 @@ namespace SpaceInvaders.Scenes.Game
                 return;
             }
 
-            Vector3 spawnPosition = Position + _projectileOffset;
+            Vector3 spawnPosition = LocalPosition + _projectileOffset;
 
             var projectile = _spawnService.SpawnProjectile(
                 _shipConfig.ProjectilePrefab,
                 spawnPosition,
                 direction,
-                Stats.CurrentProjectileDamage,
-                Stats.CurrentProjectileSpeed
+                Stats
             );
 
             if (projectile != null)

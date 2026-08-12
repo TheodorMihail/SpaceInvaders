@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72428aea5974ab543a312b312090f474, type: 3}
+  m_Name: CritChanceTalentConfig
+  m_EditorClassIdentifier: 
+  _talentType: 5
+  _valueType: 0
+  _displayName: Crit Chance
+  _icon: {fileID: 1146449724, guid: 5be90912f33c39649b363237f4946af9, type: 3}
+  _levels:
+  - _cost: 50
+    _bonusDelta: 0.01
+  - _cost: 100
+    _bonusDelta: 0.01
+  - _cost: 150
+    _bonusDelta: 0.02
+  - _cost: 250
+    _bonusDelta: 0.03
+  - _cost: 500
+    _bonusDelta: 0.03

@@ -84,7 +84,9 @@ namespace SpaceInvaders.Scenes.MainMenu
             builder.AppendLine(StatRowText(ShipUpgradableStatTypes.MoveSpeed, withoutEquipment.CurrentMoveSpeed, withEquipment.CurrentMoveSpeed));
             builder.AppendLine(StatRowText(ShipUpgradableStatTypes.FireRate, withoutEquipment.CurrentFireRate, withEquipment.CurrentFireRate));
             builder.AppendLine(StatRowText(ShipUpgradableStatTypes.Damage, withoutEquipment.CurrentProjectileDamage, withEquipment.CurrentProjectileDamage));
-            builder.Append(StatRowText(ShipUpgradableStatTypes.ProjectileSpeed, withoutEquipment.CurrentProjectileSpeed, withEquipment.CurrentProjectileSpeed));
+            builder.AppendLine(StatRowText(ShipUpgradableStatTypes.ProjectileSpeed, withoutEquipment.CurrentProjectileSpeed, withEquipment.CurrentProjectileSpeed));
+            builder.AppendLine(StatRowText(ShipUpgradableStatTypes.CritChance, withoutEquipment.CurrentCritChance, withEquipment.CurrentCritChance));
+            builder.Append(StatRowText(ShipUpgradableStatTypes.CritDamage, withoutEquipment.CurrentCritDamage, withEquipment.CurrentCritDamage));
 
             return builder.ToString();
         }

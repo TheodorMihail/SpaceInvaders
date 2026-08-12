@@ -1,19 +1,23 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace SpaceInvaders.Scenes.Game
 {
     /// <summary>
     /// Ship stats that permanent progression (talents, equipped items) can modify.
     /// </summary>
+    /// <summary>Values are pinned: configs serialize this enum by index.</summary>
     public enum ShipUpgradableStatTypes
     {
-        Health,
-        MoveSpeed,
-        FireRate,
-        Damage,
-        ProjectileSpeed
+        Health = 0,
+        MoveSpeed = 1,
+        FireRate = 2,
+        Damage = 3,
+        ProjectileSpeed = 4,
+        CritChance = 5,
+        CritDamage = 6
     }
 
     public enum ShipStatValueTypes
@@ -30,12 +34,16 @@ namespace SpaceInvaders.Scenes.Game
         [SerializeField] private float _fireRate = 1f;
         [SerializeField] private int _projectileDamage = 10;
         [SerializeField] private float _projectileSpeed = 150f;
+        [SerializeField] private float _critChance = 0.1f;
+        [SerializeField] private float _critDamage = 2f;
 
         public int BaseHealth => _health;
         public float BaseMoveSpeed => _moveSpeed;
         public float BaseFireRate => _fireRate;
         public int BaseProjectileDamage => _projectileDamage;
         public float BaseProjectileSpeed => _projectileSpeed;
+        public float BaseCritChance => _critChance;
+        public float BaseCritDamage => _critDamage;
     }
 
     /// <summary>
@@ -127,18 +135,24 @@ namespace SpaceInvaders.Scenes.Game
         private readonly StatValue _moveSpeedStat;
         private readonly StatValue _fireRateStat;
         private readonly StatValue _projectileSpeedStat;
+        private readonly StatValue _critChanceStat;
+        private readonly StatValue _critDamageStat;
 
         public StatValue HealthStat => _healthStat;
         public StatValue DamageStat => _damageStat;
         public StatValue MoveSpeedStat => _moveSpeedStat;
         public StatValue FireRateStat => _fireRateStat;
         public StatValue ProjectileSpeedStat => _projectileSpeedStat;
+        public StatValue CritChanceStat => _critChanceStat;
+        public StatValue CritDamageStat => _critDamageStat;
 
         public int BaseHealth => Mathf.RoundToInt(_healthStat.BaseValue);
         public float BaseMoveSpeed => _moveSpeedStat.BaseValue;
         public float BaseFireRate => _fireRateStat.BaseValue;
         public int BaseProjectileDamage => Mathf.RoundToInt(_damageStat.BaseValue);
         public float BaseProjectileSpeed => _projectileSpeedStat.BaseValue;
+        public float BaseCritChance => _critChanceStat.BaseValue;
+        public float BaseCritDamage => _critDamageStat.BaseValue;
 
         public int CurrentHealth { get; private set; }
         public int CumulativeDamageTaken { get; private set; }
@@ -152,6 +166,12 @@ namespace SpaceInvaders.Scenes.Game
         public float CurrentFireRate => _fireRateStat.CurrentValue;
         public float CurrentProjectileSpeed => _projectileSpeedStat.CurrentValue;
 
+        /// <summary>Clamped to a valid probability, since bonuses have no upper bound.</summary>
+        public float CurrentCritChance => Mathf.Clamp01(_critChanceStat.CurrentValue);
+
+        /// <summary>Floored at 1, so a critical hit can never deal less than a regular one.</summary>
+        public float CurrentCritDamage => Mathf.Max(1f, _critDamageStat.CurrentValue);
+
         public ShipStats(ShipBaseStats baseStats)
         {
             _healthStat = new StatValue(baseStats.BaseHealth);
@@ -159,8 +179,23 @@ namespace SpaceInvaders.Scenes.Game
             _moveSpeedStat = new StatValue(baseStats.BaseMoveSpeed);
             _fireRateStat = new StatValue(baseStats.BaseFireRate);
             _projectileSpeedStat = new StatValue(baseStats.BaseProjectileSpeed);
+            _critChanceStat = new StatValue(baseStats.BaseCritChance);
+            _critDamageStat = new StatValue(baseStats.BaseCritDamage);
 
             CurrentHealth = CurrentMaxHealth;
+        }
+
+        /// <summary>Rolls this ship's outgoing damage against its own crit stats.</summary>
+        public int RollOutgoingDamage(out bool isCritical)
+        {
+            isCritical = Random.value < CurrentCritChance;
+
+            if (!isCritical)
+            {
+                return CurrentProjectileDamage;
+            }
+
+            return Mathf.RoundToInt(CurrentProjectileDamage * CurrentCritDamage);
         }
 
         public void ApplyDamage(int amount)
@@ -215,6 +250,16 @@ namespace SpaceInvaders.Scenes.Game
                     _projectileSpeedStat.AddBonus(bonus, valueType);
                     break;
                 }
+                case ShipUpgradableStatTypes.CritChance:
+                {
+                    _critChanceStat.AddBonus(bonus, valueType);
+                    break;
+                }
+                case ShipUpgradableStatTypes.CritDamage:
+                {
+                    _critDamageStat.AddBonus(bonus, valueType);
+                    break;
+                }
             }
         }
 
@@ -238,6 +283,8 @@ namespace SpaceInvaders.Scenes.Game
                 ShipUpgradableStatTypes.FireRate => "Fire Rate",
                 ShipUpgradableStatTypes.Damage => "Damage",
                 ShipUpgradableStatTypes.ProjectileSpeed => "Projectile Speed",
+                ShipUpgradableStatTypes.CritChance => "Crit Chance",
+                ShipUpgradableStatTypes.CritDamage => "Crit Damage",
                 _ => statType.ToString()
             };
         }
@@ -257,7 +304,18 @@ namespace SpaceInvaders.Scenes.Game
                 return ((int)Math.Round(value, MidpointRounding.AwayFromZero)).ToString();
             }
 
+            // Crit stats are stored as ratios but read as percentages.
+            if (IsRatioStat(statType))
+            {
+                return $"{value * 100f:0.#}%";
+            }
+
             return value.ToString("0.##");
+        }
+
+        private static bool IsRatioStat(ShipUpgradableStatTypes statType)
+        {
+            return statType == ShipUpgradableStatTypes.CritChance || statType == ShipUpgradableStatTypes.CritDamage;
         }
 
         public static string FormatStatDelta(ShipUpgradableStatTypes statType, float delta)
