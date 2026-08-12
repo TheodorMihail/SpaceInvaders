@@ -21,6 +21,13 @@ namespace SpaceInvaders.Scenes.Game
         [SerializeField] private string _levelString = "Level: {0}";
         [SerializeField] private string _critIndicatorString = "!";
 
+        [SerializeField] private GameObject _ammoContainer;
+        [SerializeField] private Image _ammoIcon;
+        [SerializeField] private TextMeshProUGUI _ammoText;
+        [SerializeField] private Sprite _ammoSprite;
+        [SerializeField] private Sprite _reloadingSprite;
+        [SerializeField] private string _ammoString = "{0}/{1}";
+
         [SerializeField] private HealthBarUIComponent _bossHealthBar;
         [SerializeField] private PowerupIndicatorUIComponent _powerupIndicatorPrefab;
         [SerializeField] private Transform _powerupIndicatorsContainer;
@@ -33,6 +40,7 @@ namespace SpaceInvaders.Scenes.Game
         public event Action OnPauseButtonClicked;
 
         private CancellationTokenSource _scoreCancellationTokenSource;
+        private CancellationTokenSource _reloadCancellationTokenSource;
         private readonly Dictionary<PowerupTypes, PowerupIndicatorUIComponent> _activePowerupIndicators = new();
         private int _currentScore = 0;
 
@@ -45,6 +53,57 @@ namespace SpaceInvaders.Scenes.Game
         {
             _levelText.text = string.Format(_levelString, levelNumber);
             FormatScore(0);
+        }
+
+        public void ShowAmmo(bool show)
+        {
+            if (_ammoContainer == null)
+            {
+                return;
+            }
+
+            _ammoContainer.SetActive(show);
+        }
+
+        public void UpdateAmmo(int currentAmmo, int maxAmmo)
+        {
+            _reloadCancellationTokenSource?.CancelAndDispose();
+            _reloadCancellationTokenSource = null;
+
+            SetAmmoIcon(_ammoSprite);
+
+            if (_ammoText != null)
+            {
+                _ammoText.text = string.Format(_ammoString, currentAmmo, maxAmmo);
+            }
+        }
+
+        /// <summary>Swaps to the reload icon and counts the remaining seconds down in place of the ammo.</summary>
+        public async void ShowReloading(float duration)
+        {
+            _reloadCancellationTokenSource?.CancelAndDispose();
+            _reloadCancellationTokenSource = new CancellationTokenSource();
+
+            SetAmmoIcon(_reloadingSprite);
+
+            if (_ammoText == null)
+            {
+                return;
+            }
+
+            await _ammoText.CountdownAsync(duration, 0, duration, null, _reloadCancellationTokenSource);
+        }
+
+        /// <summary>Hidden rather than left as a blank box when no sprite is authored.</summary>
+        private void SetAmmoIcon(Sprite sprite)
+        {
+            if (_ammoIcon == null)
+            {
+                return;
+            }
+
+            _ammoIcon.sprite = sprite;
+            _ammoIcon.enabled = sprite != null;
         }
 
         public void InitializeBossHealthBar(int maxHealth)
@@ -121,6 +180,7 @@ namespace SpaceInvaders.Scenes.Game
         private void OnDestroy()
         {
             _scoreCancellationTokenSource?.CancelAndDispose();
+            _reloadCancellationTokenSource?.CancelAndDispose();
         }
     }
 }

@@ -127,18 +127,18 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 285
+        y: 209
         width: 204
-        height: 225
+        height: 209
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 83e747946e880e34a977d0b1ef20f927
+      spriteID: de8560dae3308ae4088315765b57ca09
       internalID: 684007958
       vertices: []
       indices: 
@@ -149,18 +149,18 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 204
-        y: 286
+        y: 209
         width: 204
-        height: 225
+        height: 209
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 08bc1a119a48ec642a436ef302a225a6
+      spriteID: ef89133ea9b9fef4caf766b7e83c4bd1
       internalID: -1728361991
       vertices: []
       indices: 
@@ -171,18 +171,18 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 408
-        y: 286
+        y: 209
         width: 204
-        height: 225
+        height: 209
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 58c5ddf83012db84aba9edffcfe6196b
+      spriteID: e57dab26812715546a685dbe9bb05dc1
       internalID: 396909145
       vertices: []
       indices: 
@@ -193,18 +193,18 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 612
-        y: 286
+        y: 209
         width: 204
-        height: 225
+        height: 209
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 181481d4b41b47348b2bc09bcce44d89
+      spriteID: 9ada59589949246469e564f5d57f136a
       internalID: -270264277
       vertices: []
       indices: 
@@ -215,18 +215,18 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 816
-        y: 286
+        y: 210
         width: 204
-        height: 225
+        height: 209
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 71b2d20559e9a0b48a37840fae154d18
+      spriteID: 8249f4313e1f62148bf9db24ac2e5b5c
       internalID: -410462008
       vertices: []
       indices: 
@@ -236,19 +236,19 @@ TextureImporter:
       name: talents_icons_crit_chance
       rect:
         serializedVersion: 2
-        x: 3
-        y: 65
+        x: 0
+        y: 0
         width: 204
-        height: 225
+        height: 209
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9063463029ffac0499518d2f68dfa8e6
+      spriteID: cc7fc40d69bbe884fbee43e9035072d5
       internalID: 1146449724
       vertices: []
       indices: 
@@ -258,20 +258,86 @@ TextureImporter:
       name: talents_icons_crit_damage
       rect:
         serializedVersion: 2
-        x: 207
-        y: 66
+        x: 204
+        y: 0
         width: 204
-        height: 225
+        height: 209
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4cffcd589755b4d46a22d193e45dfb5a
+      spriteID: 4470d7b2bb864b048ba9e71b9a177fc1
       internalID: -2093193459
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: talents_icons_reload_speed
+      rect:
+        serializedVersion: 2
+        x: 408
+        y: 0
+        width: 204
+        height: 209
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 91fa759934c2ca041a951441063cca2e
+      internalID: -1915633085
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: talents_icons_cooldown
+      rect:
+        serializedVersion: 2
+        x: 612
+        y: 1
+        width: 204
+        height: 209
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6f84c5fdd0c31814c8cc3a3caa7c071b
+      internalID: 1969460533
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: talents_icons_magazine_size
+      rect:
+        serializedVersion: 2
+        x: 816
+        y: 0
+        width: 204
+        height: 209
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ae6028fcaffd32044bdd0e8805828e27
+      internalID: -1151772084
       vertices: []
       indices: 
       edges: []
@@ -290,16 +356,16 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      talents_icons_7: 552233456
-      talents_icons_8: -584024836
-      talents_icons_9: -499337383
+      talents_icons_cooldown: -584024836
       talents_icons_crit_chance: 1146449724
       talents_icons_crit_damage: -2093193459
       talents_icons_damage: 684007958
       talents_icons_fire_rate: -1728361991
       talents_icons_health: 396909145
+      talents_icons_magazine_size: -499337383
       talents_icons_move_speed: -270264277
       talents_icons_projectile_speed: -410462008
+      talents_icons_reload_speed: 552233456
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

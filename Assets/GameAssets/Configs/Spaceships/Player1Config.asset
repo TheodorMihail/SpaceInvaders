@@ -21,6 +21,8 @@ MonoBehaviour:
     _projectileSpeed: 200
     _critChance: 0.1
     _critDamage: 2
+    _magazineSize: 25
+    _reloadSpeed: 2
   _projectilePrefab: {fileID: 5265903246518343602, guid: 2fb40c2b32a60434ba0a83df772c108e, type: 3}
   _destroyVFXPrefab: {fileID: 2377428582029327795, guid: 39f852c28f9c3fd45a427c24f3564ba7, type: 3}
   _hitVFXPrefab: {fileID: -7354612416647879863, guid: 47096eff328e11a418ace7db2d72aa97, type: 3}

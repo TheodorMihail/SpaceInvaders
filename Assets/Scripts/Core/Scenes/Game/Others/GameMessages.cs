@@ -96,6 +96,29 @@ namespace SpaceInvaders.Scenes.Game
     {
     }
 
+    public readonly struct PlayerAmmoChangedMessage : IMessageObject
+    {
+        public int CurrentAmmo { get; }
+        public int MaxAmmo { get; }
+
+        public PlayerAmmoChangedMessage(int currentAmmo, int maxAmmo)
+        {
+            CurrentAmmo = currentAmmo;
+            MaxAmmo = maxAmmo;
+        }
+    }
+
+    /// <summary>Reload completion arrives as a full PlayerAmmoChangedMessage, so there is no paired end message.</summary>
+    public readonly struct PlayerReloadStartedMessage : IMessageObject
+    {
+        public float Duration { get; }
+
+        public PlayerReloadStartedMessage(float duration)
+        {
+            Duration = duration;
+        }
+    }
+
     public readonly struct PowerupActivatedMessage : IMessageObject
     {
         public PowerupTypes Type { get; }

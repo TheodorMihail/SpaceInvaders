@@ -28,10 +28,13 @@ namespace SpaceInvaders.Scenes.Game
             _messageBus.Subscribe<PowerupExpiredMessage>(OnPowerupExpiredCallback);
             _messageBus.Subscribe<GameEndedMessage>(OnGameEnded);
             _messageBus.Subscribe<ShipDamagedMessage>(OnShipDamagedCallback);
+            _messageBus.Subscribe<PlayerAmmoChangedMessage>(OnPlayerAmmoChangedCallback);
+            _messageBus.Subscribe<PlayerReloadStartedMessage>(OnPlayerReloadStartedCallback);
 
             _view.OnPauseButtonClicked += OnPauseButtonClicked;
 
             _view.Setup(_model.LevelNumber);
+            SetupAmmo();
         }
 
         public override void Dispose()
@@ -46,8 +49,22 @@ namespace SpaceInvaders.Scenes.Game
             _messageBus.Unsubscribe<PowerupExpiredMessage>(OnPowerupExpiredCallback);
             _messageBus.Unsubscribe<GameEndedMessage>(OnGameEnded);
             _messageBus.Unsubscribe<ShipDamagedMessage>(OnShipDamagedCallback);
+            _messageBus.Unsubscribe<PlayerAmmoChangedMessage>(OnPlayerAmmoChangedCallback);
+            _messageBus.Unsubscribe<PlayerReloadStartedMessage>(OnPlayerReloadStartedCallback);
 
             _view.OnPauseButtonClicked -= OnPauseButtonClicked;
+        }
+
+        /// <summary>Ships with unlimited ammo have nothing to show, so the display stays hidden.</summary>
+        private void SetupAmmo()
+        {
+            bool hasAmmo = _model.TryGetAmmo(out int currentAmmo, out int maxAmmo);
+            _view.ShowAmmo(hasAmmo);
+
+            if (hasAmmo)
+            {
+                _view.UpdateAmmo(currentAmmo, maxAmmo);
+            }
         }
 
         private void OnPauseButtonClicked()
@@ -107,6 +124,16 @@ namespace SpaceInvaders.Scenes.Game
             _view.ShowCritIndicator(
                 _cameraManager.GetScreenPoint(message.WorldPosition),
                 _model.CritIndicatorDuration);
+        }
+
+        private void OnPlayerAmmoChangedCallback(PlayerAmmoChangedMessage message)
+        {
+            _view.UpdateAmmo(message.CurrentAmmo, message.MaxAmmo);
+        }
+
+        private void OnPlayerReloadStartedCallback(PlayerReloadStartedMessage message)
+        {
+            _view.ShowReloading(message.Duration);
         }
 
         private void OnGameEnded(GameEndedMessage message)

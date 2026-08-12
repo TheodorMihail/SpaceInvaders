@@ -157,6 +157,109 @@ namespace SpaceInvaders.Tests
             Assert.AreEqual(1f, stats.CurrentCritDamage, FloatTolerance);
         }
 
+        /// <summary>The default base magazine is 0 (unlimited), so ammo tests grant one the way
+        /// equipment does: a flat bonus followed by a refill.</summary>
+        private static ShipStats CreateStatsWithMagazine(int magazineSize)
+        {
+            ShipStats stats = CreateStats();
+            stats.ApplyStatBonus(ShipUpgradableStatTypes.MagazineSize, magazineSize, ShipStatValueTypes.Flat);
+            stats.RefillAmmo();
+
+            return stats;
+        }
+
+        [Test]
+        public void Ammo_WithoutMagazine_IsUnlimited()
+        {
+            ShipStats stats = CreateStats();
+
+            Assert.IsTrue(stats.HasUnlimitedAmmo);
+            Assert.IsFalse(stats.IsOutOfAmmo);
+        }
+
+        [Test]
+        public void TryConsumeAmmo_WithUnlimitedAmmo_AlwaysSucceeds()
+        {
+            ShipStats stats = CreateStats();
+
+            for (int i = 0; i < RollSampleCount; i++)
+            {
+                Assert.IsTrue(stats.TryConsumeAmmo());
+            }
+
+            Assert.IsFalse(stats.IsOutOfAmmo);
+        }
+
+        [Test]
+        public void RefillAmmo_AfterMagazineBonus_FillsToTheRaisedMaximum()
+        {
+            ShipStats stats = CreateStatsWithMagazine(20);
+
+            Assert.AreEqual(20, stats.CurrentMaxAmmo);
+            Assert.AreEqual(20, stats.CurrentAmmo);
+            Assert.IsFalse(stats.HasUnlimitedAmmo);
+        }
+
+        [Test]
+        public void TryConsumeAmmo_SpendsOneRoundPerCall_UntilTheMagazineIsEmpty()
+        {
+            ShipStats stats = CreateStatsWithMagazine(3);
+
+            Assert.IsTrue(stats.TryConsumeAmmo());
+            Assert.AreEqual(2, stats.CurrentAmmo);
+
+            Assert.IsTrue(stats.TryConsumeAmmo());
+            Assert.IsTrue(stats.TryConsumeAmmo());
+
+            Assert.IsTrue(stats.IsOutOfAmmo);
+            Assert.IsFalse(stats.TryConsumeAmmo());
+        }
+
+        [Test]
+        public void TryConsumeAmmo_RaisesAmmoChangedWithTheRemainingRounds()
+        {
+            ShipStats stats = CreateStatsWithMagazine(5);
+
+            int reportedAmmo = -1;
+            int reportedMax = -1;
+            stats.AmmoChanged += (current, max) =>
+            {
+                reportedAmmo = current;
+                reportedMax = max;
+            };
+
+            stats.TryConsumeAmmo();
+
+            Assert.AreEqual(4, reportedAmmo);
+            Assert.AreEqual(5, reportedMax);
+        }
+
+        [Test]
+        public void ReloadDuration_WithoutBonuses_UsesItsDefault()
+        {
+            ShipStats stats = CreateStats();
+
+            Assert.AreEqual(1.5f, stats.CurrentReloadDuration, FloatTolerance);
+        }
+
+        [Test]
+        public void ApplyStatBonus_ReloadSpeed_PositiveFlatBonusStillReloadsFaster()
+        {
+            ShipStats stats = CreateStats();
+            stats.ApplyStatBonus(ShipUpgradableStatTypes.ReloadSpeed, 0.5f, ShipStatValueTypes.Flat);
+
+            Assert.Less(stats.CurrentReloadDuration, stats.BaseReloadSpeed);
+        }
+
+        [Test]
+        public void ApplyStatBonus_ReloadSpeed_PositivePercentageBonusStillReloadsFaster()
+        {
+            ShipStats stats = CreateStats();
+            stats.ApplyStatBonus(ShipUpgradableStatTypes.ReloadSpeed, 0.5f, ShipStatValueTypes.Percentage);
+
+            Assert.Less(stats.CurrentReloadDuration, stats.BaseReloadSpeed);
+        }
+
         [Test]
         public void RollOutgoingDamage_WithGuaranteedCrit_MultipliesDamage()
         {

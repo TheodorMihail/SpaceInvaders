@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using BaseArchitecture.Core;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using Zenject;
 
@@ -18,6 +20,8 @@ namespace SpaceInvaders.Scenes.Game
         Vector3 WorldPosition { get; }
         event Action<ISpaceship> OnDestroyed;
         event Action<int, int> OnHealthChanged;
+        event Action<int, int> OnAmmoChanged;
+        event Action<float> OnReloadStarted;
         event Action<ISpaceship> OnShotFired;
         event Action<ISpaceship, int, bool> OnDamaged;
 
@@ -45,6 +49,8 @@ namespace SpaceInvaders.Scenes.Game
         public virtual Vector3 WorldPosition => transform.position;
         public virtual event Action<ISpaceship> OnDestroyed;
         public virtual event Action<int, int> OnHealthChanged;
+        public virtual event Action<int, int> OnAmmoChanged;
+        public virtual event Action<float> OnReloadStarted;
         public virtual event Action<ISpaceship> OnShotFired;
         public virtual event Action<ISpaceship, int, bool> OnDamaged;
 
@@ -68,6 +74,16 @@ namespace SpaceInvaders.Scenes.Game
         protected void RaiseShotFired()
         {
             OnShotFired?.Invoke(this);
+        }
+
+        protected void RaiseAmmoChanged(int currentAmmo, int maxAmmo)
+        {
+            OnAmmoChanged?.Invoke(currentAmmo, maxAmmo);
+        }
+
+        protected void RaiseReloadStarted(float duration)
+        {
+            OnReloadStarted?.Invoke(duration);
         }
 
         /// <summary>Blocks shooting for the given delay, after which the usual fire rate cadence
@@ -96,10 +112,15 @@ namespace SpaceInvaders.Scenes.Game
         protected Config ShipConfig => _shipConfig;
         public override string SpaceshipID => _shipConfig.SpaceshipID;
 
+        private CancellationTokenSource _reloadCancellationTokenSource;
+
         public override void OnSpawned()
         {
+            CancelReload();
+
             Stats = _shipConfig.CreateStats();
             Stats.HealthChanged += OnStatsHealthChanged;
+            Stats.AmmoChanged += OnStatsAmmoChanged;
             _lastShotTime = 0f;
 
             if (_healthBar == null)
@@ -122,8 +143,15 @@ namespace SpaceInvaders.Scenes.Game
             RaiseHealthChanged(currentHealth, maxHealth);
         }
 
+        private void OnStatsAmmoChanged(int currentAmmo, int maxAmmo)
+        {
+            RaiseAmmoChanged(currentAmmo, maxAmmo);
+        }
+
         public override void OnDespawned()
         {
+            CancelReload();
+
             foreach (var projectile in _activeProjectiles)
             {
                 if (projectile != null)
@@ -163,6 +191,11 @@ namespace SpaceInvaders.Scenes.Game
                 return;
             }
 
+            if (!Stats.TryConsumeAmmo())
+            {
+                return;
+            }
+
             _lastShotTime = Time.time;
 
             foreach (Vector3 direction in ApplyStatsShotSpread(GetShotDirections()))
@@ -171,6 +204,40 @@ namespace SpaceInvaders.Scenes.Game
             }
 
             RaiseShotFired();
+
+            if (Stats.IsOutOfAmmo)
+            {
+                StartReload();
+            }
+        }
+
+        /// <summary>The delay is time scaled, so a reload halts with the rest of the game while paused.</summary>
+        private void StartReload()
+        {
+            CancelReload();
+
+            _reloadCancellationTokenSource = new CancellationTokenSource();
+            RaiseReloadStarted(Stats.CurrentReloadDuration);
+            RunReload(Stats.CurrentReloadDuration, _reloadCancellationTokenSource.Token).Forget();
+        }
+
+        private async UniTaskVoid RunReload(float duration, CancellationToken token)
+        {
+            await UniTask.Delay(TimeSpan.FromSeconds(duration), cancellationToken: token);
+
+            if (token.IsCancellationRequested)
+            {
+                return;
+            }
+
+            CancelReload();
+            Stats.RefillAmmo();
+        }
+
+        private void CancelReload()
+        {
+            _reloadCancellationTokenSource?.CancelAndDispose();
+            _reloadCancellationTokenSource = null;
         }
 
         public override void TakeDamage(ShipStats attackerStats)
