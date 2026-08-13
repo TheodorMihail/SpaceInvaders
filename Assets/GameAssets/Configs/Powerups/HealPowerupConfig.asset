@@ -14,6 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _duration: 0
   _dropWeight: 1
-  _pickupPrefab: {fileID: 5567308644402932595, guid: 7ff5932535219974dad3da4b8ab0dfa7, type: 3}
   _icon: {fileID: 21300000, guid: 8e3ecb6d5ab98fc4a9ee3803a6e64fcc, type: 3}
   _healAmount: 50

@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 7295618757889451829}
   - component: {fileID: 2367461558476051977}
   m_Layer: 0
-  m_Name: Square
+  m_Name: Icon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -161,7 +161,7 @@ GameObject:
   - component: {fileID: 74979557447964406}
   - component: {fileID: 6096408359544268189}
   m_Layer: 0
-  m_Name: BaseItemDrop
+  m_Name: ItemDropPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -196,5 +196,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _renderer: {fileID: 9067287797670394603}
+  _iconRenderer: {fileID: 9067287797670394603}
   _collisionDetection: {fileID: 2367461558476051977}
   _fallSpeed: 30

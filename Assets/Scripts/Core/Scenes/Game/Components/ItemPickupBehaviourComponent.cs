@@ -9,16 +9,23 @@ namespace SpaceInvaders.Scenes.Game
     {
         [Inject] private readonly ILootManager _lootManager;
 
+        [SerializeField] private SpriteRenderer _iconRenderer;
         [SerializeField] private CollisionDetectionComponent _collisionDetection;
         [SerializeField] private float _fallSpeed = 30f;
 
         private InventoryItemEntry _item;
 
-        public void Initialize(InventoryItemEntry item)
+        /// <summary>One prefab serves every rarity, so the look comes in with the icon.</summary>
+        public void Initialize(InventoryItemEntry item, Sprite icon)
         {
             _item = item;
             _direction = Vector3.back;
             _speed = _fallSpeed;
+
+            if (_iconRenderer != null)
+            {
+                _iconRenderer.sprite = icon;
+            }
         }
 
         public override void OnSpawned()

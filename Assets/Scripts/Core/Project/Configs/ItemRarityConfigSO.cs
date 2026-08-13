@@ -1,5 +1,4 @@
 using BaseArchitecture.Core;
-using SpaceInvaders.Scenes.Game;
 using UnityEngine;
 
 namespace SpaceInvaders.Project
@@ -19,14 +18,16 @@ namespace SpaceInvaders.Project
         [Header("Presentation")]
         [SerializeField] private string _displayName;
         [SerializeField] private Color _displayColor = Color.white;
-        [SerializeField] private ItemPickupBehaviourComponent _pickupPrefab;
+
+        [Tooltip("Applied to the shared pickup prefab, so each tier still drops with its own look.")]
+        [SerializeField] private Sprite _icon;
 
         public virtual ItemRarityTypes Rarity => _rarity;
         public virtual int DropWeight => _dropWeight;
         public virtual int AffixCount => _affixCount;
         public virtual string DisplayName => _displayName;
         public virtual Color DisplayColor => _displayColor;
-        public virtual ItemPickupBehaviourComponent PickupPrefab => _pickupPrefab;
+        public virtual Sprite Icon => _icon;
 
         public virtual string ObjectID => _rarity.ToString();
     }

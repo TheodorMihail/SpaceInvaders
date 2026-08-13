@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using BaseArchitecture.Core;
+using SpaceInvaders.Scenes.Game;
 
 namespace SpaceInvaders.Project
 {
@@ -11,6 +12,7 @@ namespace SpaceInvaders.Project
         bool TryGetItemRarityConfig(ItemRarityTypes rarity, out ItemRarityConfigSO config);
         IReadOnlyList<ItemRarityConfigSO> GetAllItemRarityConfigs();
         IReadOnlyList<EquipmentSlotConfigDTO> GetAllEquipmentSlotConfigs();
+        ItemPickupBehaviourComponent GetItemPickupPrefab();
     }
 
     public class ItemsRepository : Repository, IItemsRepository
@@ -46,6 +48,12 @@ namespace SpaceInvaders.Project
         {
             TryGet(nameof(ItemsDataConfigSO), out ItemsDataConfigSO config);
             return config.SlotConfigs;
+        }
+
+        public ItemPickupBehaviourComponent GetItemPickupPrefab()
+        {
+            TryGet(nameof(ItemsDataConfigSO), out ItemsDataConfigSO config);
+            return config.ItemPickupPrefab;
         }
     }
 }

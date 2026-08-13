@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 656106487319561754}
   - component: {fileID: 7508619379324840655}
   m_Layer: 0
-  m_Name: Square
+  m_Name: Icon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -161,7 +161,7 @@ GameObject:
   - component: {fileID: 2512815868768059489}
   - component: {fileID: 7674986335918500557}
   m_Layer: 0
-  m_Name: BasePowerup
+  m_Name: PowerupDropPrefab
   m_TagString: Powerup
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -196,5 +196,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _renderer: {fileID: 6836583237792433595}
+  _iconRenderer: {fileID: 6836583237792433595}
   _collisionDetection: {fileID: 7508619379324840655}
   _fallSpeed: 30
