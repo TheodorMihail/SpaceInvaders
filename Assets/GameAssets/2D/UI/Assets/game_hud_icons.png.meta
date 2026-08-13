@@ -126,7 +126,7 @@ TextureImporter:
       name: game_hud_icons_ammo
       rect:
         serializedVersion: 2
-        x: 0
+        x: 663
         y: 0
         width: 144
         height: 179
@@ -148,9 +148,9 @@ TextureImporter:
       name: game_hud_icons_reload
       rect:
         serializedVersion: 2
-        x: 149
+        x: 807
         y: 0
-        width: 218
+        width: 217
         height: 220
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -162,6 +162,72 @@ TextureImporter:
       bones: []
       spriteID: 0ef51abaf6098ab47ab25276e5526829
       internalID: -2114626870
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_hud_icons_common_loot
+      rect:
+        serializedVersion: 2
+        x: 141
+        y: 0
+        width: 165
+        height: 165
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c7d7a7b48357eba44ad325e755f114df
+      internalID: 429773333
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_hud_icons_rare_loot
+      rect:
+        serializedVersion: 2
+        x: 313
+        y: 0
+        width: 165
+        height: 165
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ed771bee6af5aeb41918a89554843f7c
+      internalID: -2143097864
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: game_hud_icons_legendary_loot
+      rect:
+        serializedVersion: 2
+        x: 487
+        y: 0
+        width: 165
+        height: 165
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1190f69647e36f04ea258a4088f18223
+      internalID: -1912213769
       vertices: []
       indices: 
       edges: []
@@ -181,6 +247,9 @@ TextureImporter:
       entries: []
     nameFileIdTable:
       game_hud_icons_ammo: 1981228401
+      game_hud_icons_common_loot: 429773333
+      game_hud_icons_legendary_loot: -1912213769
+      game_hud_icons_rare_loot: -2143097864
       game_hud_icons_reload: -2114626870
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0

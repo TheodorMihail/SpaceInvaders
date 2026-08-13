@@ -52,10 +52,22 @@ PrefabInstance:
       propertyPath: m_Name
       value: LegendaryItemDrop
       objectReference: {fileID: 0}
-    - target: {fileID: 7931208870647011128, guid: dd4ab0693c8426f419effe3fa3358b46, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
+    - target: {fileID: 9067287797670394603, guid: dd4ab0693c8426f419effe3fa3358b46, type: 3}
+      propertyPath: m_Size.x
+      value: 1.65
+      objectReference: {fileID: 0}
+    - target: {fileID: 9067287797670394603, guid: dd4ab0693c8426f419effe3fa3358b46, type: 3}
+      propertyPath: m_Size.y
+      value: 1.65
+      objectReference: {fileID: 0}
+    - target: {fileID: 9067287797670394603, guid: dd4ab0693c8426f419effe3fa3358b46, type: 3}
+      propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 2100000, guid: 2346b15dafbfcf24e9cd255af3254852, type: 2}
+      objectReference: {fileID: -1912213769, guid: 95ba7dc04a250ec4b85d6b19ef1b8aab, type: 3}
+    - target: {fileID: 9067287797670394603, guid: dd4ab0693c8426f419effe3fa3358b46, type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

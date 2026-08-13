@@ -11,9 +11,9 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cc8114b23dd724b4fb3460eb4dc2e270, type: 3}
   m_Name: ShipReloadConfig
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   _type: 30
   _category: 1
-  _clip: {fileID: 0}
+  _clip: {fileID: 8300000, guid: 24620f8a20240964c801adb3b4002ec9, type: 3}
   _volume: 1
   _loop: 0
