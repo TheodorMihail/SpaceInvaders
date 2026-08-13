@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 2367461558476051977}
   m_Layer: 0
   m_Name: Icon
-  m_TagString: Untagged
+  m_TagString: Item
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -162,7 +162,7 @@ GameObject:
   - component: {fileID: 6096408359544268189}
   m_Layer: 0
   m_Name: ItemDropPrefab
-  m_TagString: Untagged
+  m_TagString: Item
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

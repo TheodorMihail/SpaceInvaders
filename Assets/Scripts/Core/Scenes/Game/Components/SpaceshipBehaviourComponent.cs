@@ -37,6 +37,7 @@ namespace SpaceInvaders.Scenes.Game
         [SerializeField] protected Renderer _renderer;
         [SerializeField] protected Vector3 _projectileOffset;
         [SerializeField] protected HealthBarUIComponent _healthBar;
+        [SerializeField] protected ShipFlameComponent[] _flames;
 
         protected float _lastShotTime;
 
@@ -97,6 +98,20 @@ namespace SpaceInvaders.Scenes.Game
         {
             OnDamaged?.Invoke(this, damage, isCritical);
         }
+
+        /// <summary>Ships without engines authored on them simply have nothing to drive.</summary>
+        protected void SetFlamesThrusting(bool isThrusting)
+        {
+            if (_flames == null)
+            {
+                return;
+            }
+
+            foreach (ShipFlameComponent flame in _flames)
+            {
+                flame.SetThrusting(isThrusting);
+            }
+        }
     }
     
 
@@ -122,6 +137,9 @@ namespace SpaceInvaders.Scenes.Game
             Stats.HealthChanged += OnStatsHealthChanged;
             Stats.AmmoChanged += OnStatsAmmoChanged;
             _lastShotTime = 0f;
+
+            // Pooled ships can come back mid-burn, so the engines restart idle.
+            SetFlamesThrusting(false);
 
             if (_healthBar == null)
             {
@@ -240,7 +258,8 @@ namespace SpaceInvaders.Scenes.Game
                 _shipConfig.ProjectilePrefab,
                 spawnPosition,
                 direction,
-                Stats
+                Stats,
+                gameObject.tag
             );
 
             if (projectile != null)

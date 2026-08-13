@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 938b368b93303874191d2a907a713584
+guid: 7c0165840fb706d488cf49cab025996d
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -123,12 +123,12 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: red_flame_animation_small_flame_1
+      name: blue_flame_animation_small_flame_1
       rect:
         serializedVersion: 2
-        x: 23
-        y: 676
-        width: 233
+        x: 68
+        y: 698
+        width: 140
         height: 262
       alignment: 2
       pivot: {x: 0.5, y: 1}
@@ -145,12 +145,12 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: red_flame_animation_small_flame_2
+      name: blue_flame_animation_small_flame_2
       rect:
         serializedVersion: 2
-        x: 272
-        y: 676
-        width: 240
+        x: 319
+        y: 698
+        width: 140
         height: 262
       alignment: 2
       pivot: {x: 0.5, y: 1}
@@ -167,12 +167,12 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: red_flame_animation_small_flame_3
+      name: blue_flame_animation_small_flame_3
       rect:
         serializedVersion: 2
-        x: 517
-        y: 676
-        width: 251
+        x: 573
+        y: 696
+        width: 140
         height: 262
       alignment: 2
       pivot: {x: 0.5, y: 1}
@@ -189,12 +189,12 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: red_flame_animation_small_flame_4
+      name: blue_flame_animation_small_flame_4
       rect:
         serializedVersion: 2
-        x: 764
-        y: 676
-        width: 260
+        x: 825
+        y: 697
+        width: 140
         height: 262
       alignment: 2
       pivot: {x: 0.5, y: 1}
@@ -211,12 +211,12 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: red_flame_animation_small_flame_5
+      name: blue_flame_animation_small_flame_5
       rect:
         serializedVersion: 2
-        x: 1011
-        y: 676
-        width: 269
+        x: 1078
+        y: 696
+        width: 140
         height: 262
       alignment: 2
       pivot: {x: 0.5, y: 1}
@@ -233,12 +233,12 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: red_flame_animation_small_flame_6
+      name: blue_flame_animation_small_flame_6
       rect:
         serializedVersion: 2
-        x: 1260
-        y: 676
-        width: 276
+        x: 1329
+        y: 695
+        width: 140
         height: 262
       alignment: 2
       pivot: {x: 0.5, y: 1}
@@ -255,13 +255,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: red_flame_animation_large_flame_1
+      name: blue_flame_animation_large_flame_1
       rect:
         serializedVersion: 2
-        x: 22
-        y: 95
-        width: 234
-        height: 545
+        x: 38
+        y: 94
+        width: 200
+        height: 570
       alignment: 2
       pivot: {x: 0.5, y: 1}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -277,13 +277,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: red_flame_animation_large_flame_2
+      name: blue_flame_animation_large_flame_2
       rect:
         serializedVersion: 2
-        x: 270
-        y: 95
-        width: 242
-        height: 545
+        x: 291
+        y: 93
+        width: 200
+        height: 570
       alignment: 2
       pivot: {x: 0.5, y: 1}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -299,13 +299,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: red_flame_animation_large_flame_3
+      name: blue_flame_animation_large_flame_3
       rect:
         serializedVersion: 2
-        x: 518
-        y: 95
-        width: 250
-        height: 545
+        x: 543
+        y: 93
+        width: 200
+        height: 570
       alignment: 2
       pivot: {x: 0.5, y: 1}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -321,13 +321,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: red_flame_animation_large_flame_4
+      name: blue_flame_animation_large_flame_4
       rect:
         serializedVersion: 2
-        x: 764
-        y: 95
-        width: 260
-        height: 545
+        x: 796
+        y: 93
+        width: 200
+        height: 570
       alignment: 2
       pivot: {x: 0.5, y: 1}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -343,13 +343,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: red_flame_animation_large_flame_5
+      name: blue_flame_animation_large_flame_5
       rect:
         serializedVersion: 2
-        x: 1012
-        y: 95
-        width: 268
-        height: 545
+        x: 1051
+        y: 93
+        width: 200
+        height: 570
       alignment: 2
       pivot: {x: 0.5, y: 1}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -365,13 +365,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: red_flame_animation_large_flame_6
+      name: blue_flame_animation_large_flame_6
       rect:
         serializedVersion: 2
-        x: 1261
-        y: 95
-        width: 275
-        height: 545
+        x: 1302
+        y: 93
+        width: 205
+        height: 570
       alignment: 2
       pivot: {x: 0.5, y: 1}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -401,18 +401,18 @@ TextureImporter:
       entries: []
     nameFileIdTable:
       _small_flame_1: -1314757273
-      red_flame_animation_large_flame_1: 1366614677
-      red_flame_animation_large_flame_2: 1704514017
-      red_flame_animation_large_flame_3: -652707924
-      red_flame_animation_large_flame_4: 410654651
-      red_flame_animation_large_flame_5: -319078609
-      red_flame_animation_large_flame_6: -1458541979
-      red_flame_animation_small_flame_1: -1219105398
-      red_flame_animation_small_flame_2: 1072897739
-      red_flame_animation_small_flame_3: -1404193290
-      red_flame_animation_small_flame_4: 980091241
-      red_flame_animation_small_flame_5: -1314757273
-      red_flame_animation_small_flame_6: -1149768758
+      blue_flame_animation_large_flame_1: 1366614677
+      blue_flame_animation_large_flame_2: 1704514017
+      blue_flame_animation_large_flame_3: -652707924
+      blue_flame_animation_large_flame_4: 410654651
+      blue_flame_animation_large_flame_5: -319078609
+      blue_flame_animation_large_flame_6: -1458541979
+      blue_flame_animation_small_flame_1: -1219105398
+      blue_flame_animation_small_flame_2: 1072897739
+      blue_flame_animation_small_flame_3: -1404193290
+      blue_flame_animation_small_flame_4: 980091241
+      blue_flame_animation_small_flame_5: -1314757273
+      blue_flame_animation_small_flame_6: -1149768758
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -41,7 +41,7 @@ namespace SpaceInvaders.Scenes.Game
 
         private void HandleTriggerEnter(Collider other)
         {
-            if (!other.TryGetComponent<IPlayerSpaceship>(out _))
+            if (!other.TryGetComponent(out ShipHitboxComponent hitbox) || hitbox.Ship is not IPlayerSpaceship)
             {
                 return;
             }

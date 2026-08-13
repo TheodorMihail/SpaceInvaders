@@ -115,6 +115,9 @@ namespace SpaceInvaders.Scenes.Game
                 return;
             }
 
+            // The dive into formation is the only time an enemy actually accelerates.
+            SetFlamesThrusting(true);
+
             _entryTween = transform.DOMove(_entryTargetPosition, duration)
                 .SetEase(Ease.Linear)
                 .OnComplete(OnEntryComplete);
@@ -127,6 +130,7 @@ namespace SpaceInvaders.Scenes.Game
 
         private void OnEntryComplete()
         {
+            SetFlamesThrusting(false);
             _currentState = EnemyState.Bouncing;
 
             if (IsInvulnerableWhileEntering)

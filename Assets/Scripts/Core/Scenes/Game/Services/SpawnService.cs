@@ -12,7 +12,7 @@ namespace SpaceInvaders.Scenes.Game
     {
         UniTask<IPlayerSpaceship> SpawnPlayer();
         UniTask<List<IEnemySpaceship>> SpawnEnemies(WaveConfigDTO waveConfig);
-        ProjectileBehaviourComponent SpawnProjectile(ProjectileBehaviourComponent prefab, Vector3 localPosition, Vector3 direction, ShipStats attackerStats);
+        ProjectileBehaviourComponent SpawnProjectile(ProjectileBehaviourComponent prefab, Vector3 localPosition, Vector3 direction, ShipStats attackerStats, string shooterTag);
         PowerupBehaviourComponent SpawnPowerup(PowerupConfigSO config, Vector3 localPosition);
         ItemPickupBehaviourComponent SpawnItemPickup(ItemRarityConfigSO rarityConfig, InventoryItemEntry item, Vector3 localPosition);
         VFXBehaviourComponent SpawnVFX(VFXBehaviourComponent prefab, Vector3 localPosition);
@@ -104,8 +104,10 @@ namespace SpaceInvaders.Scenes.Game
             _objectPooling.Return(instance);
         }
 
+        /// <summary>The shooter's tag travels with the shot: projectiles are pooled and shared between
+        /// ships, so the team cannot be authored on the prefab.</summary>
         public ProjectileBehaviourComponent SpawnProjectile(ProjectileBehaviourComponent prefab,
-            Vector3 localPosition, Vector3 direction, ShipStats attackerStats)
+            Vector3 localPosition, Vector3 direction, ShipStats attackerStats, string shooterTag)
         {
             var projectile = Spawn(prefab, localPosition, Quaternion.identity);
 
@@ -114,7 +116,7 @@ namespace SpaceInvaders.Scenes.Game
                 return null;
             }
 
-            projectile.Initialize(attackerStats, direction);
+            projectile.Initialize(attackerStats, direction, shooterTag);
             _activeObjects.Add(projectile);
 
             return projectile;
