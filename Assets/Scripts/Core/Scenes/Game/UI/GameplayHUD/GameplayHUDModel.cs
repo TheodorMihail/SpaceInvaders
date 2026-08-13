@@ -12,6 +12,8 @@ namespace SpaceInvaders.Scenes.Game
 
         public int Score { get; set; } = 0;
         public int LevelNumber { get; set; } = 0;
+        public int WaveNumber { get; set; } = 0;
+        public int TotalWaves { get; set; } = 0;
         public float CritIndicatorDuration { get; set; } = 0.75f;
 
         /// <summary>Collected this run, per rarity. Rarities absent from it have not dropped yet.</summary>

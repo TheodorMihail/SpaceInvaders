@@ -61,11 +61,13 @@ namespace SpaceInvaders.Scenes.Game
     public readonly struct WaveStartedMessage : IMessageObject
     {
         public int WaveNumber { get; }
+        public int TotalWaves { get; }
         public bool IsBossWave { get; }
 
-        public WaveStartedMessage(int waveNumber, bool isBossWave)
+        public WaveStartedMessage(int waveNumber, int totalWaves, bool isBossWave)
         {
             WaveNumber = waveNumber;
+            TotalWaves = totalWaves;
             IsBossWave = isBossWave;
         }
     }

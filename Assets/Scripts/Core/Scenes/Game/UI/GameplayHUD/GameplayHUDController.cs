@@ -32,6 +32,7 @@ namespace SpaceInvaders.Scenes.Game
             _messageBus.Subscribe<PlayerAmmoChangedMessage>(OnPlayerAmmoChangedCallback);
             _messageBus.Subscribe<PlayerReloadStartedMessage>(OnPlayerReloadStartedCallback);
             _messageBus.Subscribe<ItemCollectedMessage>(OnItemCollectedCallback);
+            _messageBus.Subscribe<WaveStartedMessage>(OnWaveStartedCallback);
 
             _view.OnPauseButtonClicked += OnPauseButtonClicked;
 
@@ -54,6 +55,7 @@ namespace SpaceInvaders.Scenes.Game
             _messageBus.Unsubscribe<PlayerAmmoChangedMessage>(OnPlayerAmmoChangedCallback);
             _messageBus.Unsubscribe<PlayerReloadStartedMessage>(OnPlayerReloadStartedCallback);
             _messageBus.Unsubscribe<ItemCollectedMessage>(OnItemCollectedCallback);
+            _messageBus.Unsubscribe<WaveStartedMessage>(OnWaveStartedCallback);
 
             _view.OnPauseButtonClicked -= OnPauseButtonClicked;
         }
@@ -137,6 +139,13 @@ namespace SpaceInvaders.Scenes.Game
         private void OnPlayerReloadStartedCallback(PlayerReloadStartedMessage message)
         {
             _view.ShowReloading(message.Duration);
+        }
+
+        private void OnWaveStartedCallback(WaveStartedMessage message)
+        {
+            _model.WaveNumber = message.WaveNumber;
+            _model.TotalWaves = message.TotalWaves;
+            _view.UpdateWave(message.WaveNumber, message.TotalWaves);
         }
 
         private void OnItemCollectedCallback(ItemCollectedMessage message)

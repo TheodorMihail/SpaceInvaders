@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using BaseArchitecture.Core;
 using SpaceInvaders.Project;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -15,13 +13,11 @@ namespace SpaceInvaders.Scenes.Game
     {
         [Inject] private readonly IObjectPooling _objectPooling;
 
-        [SerializeField] private TextMeshProUGUI _scoreText;
-        [SerializeField] private TextMeshProUGUI _levelText;
-
-        [SerializeField] private string _scoreString = "Score: {0}";
-        [SerializeField] private string _levelString = "Level: {0}";
         [SerializeField] private string _critIndicatorString = "!";
 
+        [SerializeField] private ScoreUIComponent _scoreUI;
+        [SerializeField] private LevelUIComponent _levelUI;
+        [SerializeField] private WaveUIComponent _waveUI;
         [SerializeField] private AmmoUIComponent _ammoUI;
 
         [SerializeField] private LootCounterUIComponent _lootCounterPrefab;
@@ -36,10 +32,8 @@ namespace SpaceInvaders.Scenes.Game
 
         [SerializeField] private Button _pauseButton;
 
-        private CancellationTokenSource _scoreCancellationTokenSource;
         private readonly Dictionary<PowerupTypes, PowerupIndicatorUIComponent> _activePowerupIndicators = new();
         private readonly Dictionary<ItemRarityTypes, LootCounterUIComponent> _activeLootCounters = new();
-        private int _currentScore = 0;
 
         public event Action OnPauseButtonClicked;
 
@@ -48,15 +42,16 @@ namespace SpaceInvaders.Scenes.Game
             _pauseButton.onClick.AddListener(() => OnPauseButtonClicked?.Invoke());
         }
 
-        private void OnDestroy()
-        {
-            _scoreCancellationTokenSource?.CancelAndDispose();
-        }
-
         public void Setup(int levelNumber)
         {
-            _levelText.text = string.Format(_levelString, levelNumber);
-            FormatScore(0);
+            _levelUI.SetLevel(levelNumber);
+            _scoreUI.Initialize(0);
+            _waveUI.Show(false);
+        }
+
+        public void UpdateWave(int waveNumber, int totalWaves)
+        {
+            _waveUI.SetWave(waveNumber, totalWaves);
         }
 
         public void ShowAmmo(bool show)
@@ -109,13 +104,9 @@ namespace SpaceInvaders.Scenes.Game
             counter.Initialize(icon, count);
         }
 
-        public async void UpdateScore(int score)
+        public void UpdateScore(int score)
         {
-            _scoreCancellationTokenSource?.CancelAndDispose();
-            _scoreCancellationTokenSource = new CancellationTokenSource();
-
-            await _scoreText.CountdownAsync(_currentScore, score, 0.5f, FormatScore, _scoreCancellationTokenSource);
-            _currentScore = score;
+            _scoreUI.UpdateScore(score);
         }
 
         public void InitializeBossHealthBar(int maxHealth)
@@ -167,11 +158,6 @@ namespace SpaceInvaders.Scenes.Game
             var indicator = _objectPooling.Get(_critIndicatorPrefab, _critIndicatorsContainer);
             indicator.OnFinished += OnCritIndicatorFinished;
             indicator.Initialize(_critIndicatorString, screenPosition, duration);
-        }
-
-        private void FormatScore(int score)
-        {
-            _scoreText.text = string.Format(_scoreString, score);
         }
 
         private void OnCritIndicatorFinished(CritIndicatorUIComponent indicator)
