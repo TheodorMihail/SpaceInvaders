@@ -8,6 +8,7 @@ namespace SpaceInvaders.Scenes.Game
     {
         [Inject] private readonly IMessageBus _messageBus;
         [Inject] private readonly IPowerupsRepository _powerupsRepository;
+        [Inject] private readonly IItemsRepository _itemsRepository;
         [Inject] private readonly IPauseService _pauseService;
         [Inject] private readonly ICameraManager _cameraManager;
 
@@ -30,6 +31,7 @@ namespace SpaceInvaders.Scenes.Game
             _messageBus.Subscribe<ShipDamagedMessage>(OnShipDamagedCallback);
             _messageBus.Subscribe<PlayerAmmoChangedMessage>(OnPlayerAmmoChangedCallback);
             _messageBus.Subscribe<PlayerReloadStartedMessage>(OnPlayerReloadStartedCallback);
+            _messageBus.Subscribe<ItemCollectedMessage>(OnItemCollectedCallback);
 
             _view.OnPauseButtonClicked += OnPauseButtonClicked;
 
@@ -51,6 +53,7 @@ namespace SpaceInvaders.Scenes.Game
             _messageBus.Unsubscribe<ShipDamagedMessage>(OnShipDamagedCallback);
             _messageBus.Unsubscribe<PlayerAmmoChangedMessage>(OnPlayerAmmoChangedCallback);
             _messageBus.Unsubscribe<PlayerReloadStartedMessage>(OnPlayerReloadStartedCallback);
+            _messageBus.Unsubscribe<ItemCollectedMessage>(OnItemCollectedCallback);
 
             _view.OnPauseButtonClicked -= OnPauseButtonClicked;
         }
@@ -134,6 +137,17 @@ namespace SpaceInvaders.Scenes.Game
         private void OnPlayerReloadStartedCallback(PlayerReloadStartedMessage message)
         {
             _view.ShowReloading(message.Duration);
+        }
+
+        private void OnItemCollectedCallback(ItemCollectedMessage message)
+        {
+            if (!_itemsRepository.TryGetItemRarityConfig(message.Rarity, out ItemRarityConfigSO rarityConfig))
+            {
+                return;
+            }
+
+            int count = _model.IncrementLootCount(message.Rarity);
+            _view.UpdateLootCounter(message.Rarity, rarityConfig.Icon, count);
         }
 
         private void OnGameEnded(GameEndedMessage message)

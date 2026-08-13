@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using BaseArchitecture.Core;
+using SpaceInvaders.Project;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -21,12 +22,10 @@ namespace SpaceInvaders.Scenes.Game
         [SerializeField] private string _levelString = "Level: {0}";
         [SerializeField] private string _critIndicatorString = "!";
 
-        [SerializeField] private GameObject _ammoContainer;
-        [SerializeField] private Image _ammoIcon;
-        [SerializeField] private TextMeshProUGUI _ammoText;
-        [SerializeField] private Sprite _ammoSprite;
-        [SerializeField] private Sprite _reloadingSprite;
-        [SerializeField] private string _ammoString = "{0}/{1}";
+        [SerializeField] private AmmoUIComponent _ammoUI;
+
+        [SerializeField] private LootCounterUIComponent _lootCounterPrefab;
+        [SerializeField] private Transform _lootCountersContainer;
 
         [SerializeField] private HealthBarUIComponent _bossHealthBar;
         [SerializeField] private PowerupIndicatorUIComponent _powerupIndicatorPrefab;
@@ -38,8 +37,8 @@ namespace SpaceInvaders.Scenes.Game
         [SerializeField] private Button _pauseButton;
 
         private CancellationTokenSource _scoreCancellationTokenSource;
-        private CancellationTokenSource _reloadCancellationTokenSource;
         private readonly Dictionary<PowerupTypes, PowerupIndicatorUIComponent> _activePowerupIndicators = new();
+        private readonly Dictionary<ItemRarityTypes, LootCounterUIComponent> _activeLootCounters = new();
         private int _currentScore = 0;
 
         public event Action OnPauseButtonClicked;
@@ -52,7 +51,6 @@ namespace SpaceInvaders.Scenes.Game
         private void OnDestroy()
         {
             _scoreCancellationTokenSource?.CancelAndDispose();
-            _reloadCancellationTokenSource?.CancelAndDispose();
         }
 
         public void Setup(int levelNumber)
@@ -63,41 +61,52 @@ namespace SpaceInvaders.Scenes.Game
 
         public void ShowAmmo(bool show)
         {
-            if (_ammoContainer == null)
+            if (_ammoUI == null)
             {
                 return;
             }
 
-            _ammoContainer.SetActive(show);
+            _ammoUI.Show(show);
         }
 
         public void UpdateAmmo(int currentAmmo, int maxAmmo)
         {
-            _reloadCancellationTokenSource?.CancelAndDispose();
-            _reloadCancellationTokenSource = null;
-
-            SetAmmoIcon(_ammoSprite);
-
-            if (_ammoText != null)
-            {
-                _ammoText.text = string.Format(_ammoString, currentAmmo, maxAmmo);
-            }
-        }
-
-        /// <summary>Swaps to the reload icon and counts the remaining seconds down in place of the ammo.</summary>
-        public async void ShowReloading(float duration)
-        {
-            _reloadCancellationTokenSource?.CancelAndDispose();
-            _reloadCancellationTokenSource = new CancellationTokenSource();
-
-            SetAmmoIcon(_reloadingSprite);
-
-            if (_ammoText == null)
+            if (_ammoUI == null)
             {
                 return;
             }
 
-            await _ammoText.CountdownAsync(duration, 0, duration, null, _reloadCancellationTokenSource);
+            _ammoUI.UpdateAmmo(currentAmmo, maxAmmo);
+        }
+
+        public void ShowReloading(float duration)
+        {
+            if (_ammoUI == null)
+            {
+                return;
+            }
+
+            _ammoUI.ShowReloading(duration);
+        }
+
+        /// <summary>The counter is created on the first pickup of its rarity, so tiers the run has
+        /// not dropped yet never take up space.</summary>
+        public void UpdateLootCounter(ItemRarityTypes rarity, Sprite icon, int count)
+        {
+            if (_lootCounterPrefab == null)
+            {
+                return;
+            }
+
+            if (_activeLootCounters.TryGetValue(rarity, out LootCounterUIComponent counter))
+            {
+                counter.SetCount(count);
+                return;
+            }
+
+            counter = _objectPooling.Get(_lootCounterPrefab, _lootCountersContainer);
+            _activeLootCounters[rarity] = counter;
+            counter.Initialize(icon, count);
         }
 
         public async void UpdateScore(int score)
@@ -163,18 +172,6 @@ namespace SpaceInvaders.Scenes.Game
         private void FormatScore(int score)
         {
             _scoreText.text = string.Format(_scoreString, score);
-        }
-
-        /// <summary>Hidden rather than left as a blank box when no sprite is authored.</summary>
-        private void SetAmmoIcon(Sprite sprite)
-        {
-            if (_ammoIcon == null)
-            {
-                return;
-            }
-
-            _ammoIcon.sprite = sprite;
-            _ammoIcon.enabled = sprite != null;
         }
 
         private void OnCritIndicatorFinished(CritIndicatorUIComponent indicator)

@@ -64,12 +64,12 @@ namespace SpaceInvaders.Scenes.Game
 
             _pendingLoot.Add(item);
 
-            if (!_itemsRepository.TryGetItemConfig(item.ItemId, out _))
+            if (!_itemsRepository.TryGetItemConfig(item.ItemId, out ItemConfigSO config))
             {
                 return;
             }
 
-            _messageBus.Publish(new ItemCollectedMessage(item.InstanceId));
+            _messageBus.Publish(new ItemCollectedMessage(item.InstanceId, config.Rarity));
         }
 
         private void OnEnemyDestroyed(EnemyDestroyedMessage message)

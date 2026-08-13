@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using BaseArchitecture.Core;
+using SpaceInvaders.Project;
 using Zenject;
 using static SpaceInvaders.Scenes.Game.GameplayHUD;
 
@@ -11,6 +13,9 @@ namespace SpaceInvaders.Scenes.Game
         public int Score { get; set; } = 0;
         public int LevelNumber { get; set; } = 0;
         public float CritIndicatorDuration { get; set; } = 0.75f;
+
+        /// <summary>Collected this run, per rarity. Rarities absent from it have not dropped yet.</summary>
+        public Dictionary<ItemRarityTypes, int> LootCounts { get; set; } = new();
 
         public void InitializeWithParameters(GameplayHUDParams parameters)
         {
@@ -34,6 +39,15 @@ namespace SpaceInvaders.Scenes.Game
             maxAmmo = stats.CurrentMaxAmmo;
 
             return true;
+        }
+
+        public int IncrementLootCount(ItemRarityTypes rarity)
+        {
+            LootCounts.TryGetValue(rarity, out int count);
+            count++;
+            LootCounts[rarity] = count;
+
+            return count;
         }
     }
 }

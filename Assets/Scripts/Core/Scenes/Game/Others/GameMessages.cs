@@ -168,10 +168,12 @@ namespace SpaceInvaders.Scenes.Game
     public readonly struct ItemCollectedMessage : IMessageObject
     {
         public string InstanceId { get; }
+        public ItemRarityTypes Rarity { get; }
 
-        public ItemCollectedMessage(string instanceId)
+        public ItemCollectedMessage(string instanceId, ItemRarityTypes rarity)
         {
             InstanceId = instanceId;
+            Rarity = rarity;
         }
     }
 

@@ -1,0 +1,57 @@
+using System.Threading;
+using BaseArchitecture.Core;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace SpaceInvaders.Scenes.Game
+{
+    /// <summary>Ammo readout that swaps to a reload icon and counts the remaining seconds down.</summary>
+    public class AmmoUIComponent : MonoBehaviour
+    {
+        [SerializeField] private Image _iconImage;
+        [SerializeField] private TextMeshProUGUI _ammoText;
+
+        [SerializeField] private Sprite _ammoSprite;
+        [SerializeField] private Sprite _reloadingSprite;
+
+        [SerializeField] private string _ammoString = "{0}/{1}";
+
+        private CancellationTokenSource _reloadCancellationTokenSource;
+
+        private void OnDestroy()
+        {
+            CancelReloadCountdown();
+        }
+
+        public void Show(bool show)
+        {
+            gameObject.SetActive(show);
+        }
+
+        public void UpdateAmmo(int currentAmmo, int maxAmmo)
+        {
+            CancelReloadCountdown();
+
+            _iconImage.sprite = _ammoSprite;
+            _ammoText.text = string.Format(_ammoString, currentAmmo, maxAmmo);
+        }
+
+        /// <summary>The countdown replaces the ammo text until the magazine is refilled.</summary>
+        public async void ShowReloading(float duration)
+        {
+            CancelReloadCountdown();
+            _reloadCancellationTokenSource = new CancellationTokenSource();
+
+            _iconImage.sprite = _reloadingSprite;
+
+            await _ammoText.CountdownAsync(duration, 0, duration, null, _reloadCancellationTokenSource);
+        }
+
+        private void CancelReloadCountdown()
+        {
+            _reloadCancellationTokenSource?.CancelAndDispose();
+            _reloadCancellationTokenSource = null;
+        }
+    }
+}
