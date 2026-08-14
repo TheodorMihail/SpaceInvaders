@@ -14,9 +14,9 @@ namespace SpaceInvaders.Scenes.Preload
             BootState
         }
 
-        protected override PreloadStateTypes DefaultStateId => PreloadStateTypes.SplashState;
-
         [Inject] private readonly IScenesManager _scenesManager;
+
+        protected override PreloadStateTypes DefaultStateId => PreloadStateTypes.SplashState;
 
         public PreloadStateMachine(IList<IState<PreloadStateTypes>> preloadStates) : base(preloadStates)
         {

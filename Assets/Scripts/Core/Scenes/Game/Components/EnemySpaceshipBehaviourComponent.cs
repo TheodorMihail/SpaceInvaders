@@ -115,13 +115,22 @@ namespace SpaceInvaders.Scenes.Game
                 return;
             }
 
+            // The dive into formation is the only time an enemy actually accelerates.
+            SetFlamesThrusting(true);
+
             _entryTween = transform.DOMove(_entryTargetPosition, duration)
                 .SetEase(Ease.Linear)
                 .OnComplete(OnEntryComplete);
         }
 
+        protected override Vector3 GetProjectileDirection()
+        {
+            return Vector3.back; // Enemies shoot downward (toward player)
+        }
+
         private void OnEntryComplete()
         {
+            SetFlamesThrusting(false);
             _currentState = EnemyState.Bouncing;
 
             if (IsInvulnerableWhileEntering)
@@ -140,11 +149,6 @@ namespace SpaceInvaders.Scenes.Game
                 UpdateBouncingMovement();
                 Shoot(); // Continuously attempt to shoot (fire rate cooldown handled in base)
             }
-        }
-
-        protected override Vector3 GetProjectileDirection()
-        {
-            return Vector3.back; // Enemies shoot downward (toward player)
         }
 
         private void UpdateBouncingMovement()

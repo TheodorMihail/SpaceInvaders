@@ -8,16 +8,23 @@ namespace SpaceInvaders.Scenes.Game
     {
         [Inject] private readonly IPowerupManager _powerupManager;
 
+        [SerializeField] private SpriteRenderer _iconRenderer;
         [SerializeField] private CollisionDetectionComponent _collisionDetection;
         [SerializeField] private float _fallSpeed = 30f;
 
         private PowerupTypes _powerupType;
 
-        public void Initialize(PowerupTypes powerupType)
+        /// <summary>One prefab serves every powerup, so the look comes in with the icon.</summary>
+        public void Initialize(PowerupTypes powerupType, Sprite icon)
         {
             _powerupType = powerupType;
             _direction = Vector3.back;
             _speed = _fallSpeed;
+
+            if (_iconRenderer != null)
+            {
+                _iconRenderer.sprite = icon;
+            }
         }
 
         public override void OnSpawned()
@@ -34,7 +41,7 @@ namespace SpaceInvaders.Scenes.Game
 
         private void HandleTriggerEnter(Collider other)
         {
-            if (!other.TryGetComponent<IPlayerSpaceship>(out _))
+            if (!other.TryGetComponent(out ShipHitboxComponent hitbox) || hitbox.Ship is not IPlayerSpaceship)
             {
                 return;
             }

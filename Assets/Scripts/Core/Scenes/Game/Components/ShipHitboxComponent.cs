@@ -1,0 +1,33 @@
+using UnityEngine;
+
+namespace SpaceInvaders.Scenes.Game
+{
+    /// <summary>
+    /// Marks a collider as belonging to a ship, so anything that hits it can reach the ship without
+    /// assuming where in the hierarchy the collider sits.
+    /// </summary>
+    [RequireComponent(typeof(Collider))]
+    public class ShipHitboxComponent : MonoBehaviour
+    {
+        [SerializeField] private BaseSpaceshipBehaviourComponent _ship;
+
+        /// <summary>Goes through Unity's null check, so a destroyed ship reads as a real null rather
+        /// than a live interface reference that throws on use.</summary>
+        public ISpaceship Ship => _ship != null ? _ship : null;
+
+        /// <summary>Resolved on the way up when left unassigned, so existing prefabs keep working.</summary>
+        private void Awake()
+        {
+            if (_ship == null)
+            {
+                _ship = GetComponentInParent<BaseSpaceshipBehaviourComponent>();
+            }
+        }
+
+        /// <summary>Reads the tag off the ship root, so the collider object never needs tagging.</summary>
+        public bool IsSameTeamAs(GameObject other)
+        {
+            return _ship != null && _ship.gameObject.CompareTag(other.tag);
+        }
+    }
+}

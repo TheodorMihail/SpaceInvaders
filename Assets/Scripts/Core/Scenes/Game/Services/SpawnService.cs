@@ -12,7 +12,7 @@ namespace SpaceInvaders.Scenes.Game
     {
         UniTask<IPlayerSpaceship> SpawnPlayer();
         UniTask<List<IEnemySpaceship>> SpawnEnemies(WaveConfigDTO waveConfig);
-        ProjectileBehaviourComponent SpawnProjectile(ProjectileBehaviourComponent prefab, Vector3 localPosition, Vector3 direction, ShipStats attackerStats);
+        ProjectileBehaviourComponent SpawnProjectile(ProjectileBehaviourComponent prefab, Vector3 localPosition, Vector3 direction, ShipStats attackerStats, string shooterTag);
         PowerupBehaviourComponent SpawnPowerup(PowerupConfigSO config, Vector3 localPosition);
         ItemPickupBehaviourComponent SpawnItemPickup(ItemRarityConfigSO rarityConfig, InventoryItemEntry item, Vector3 localPosition);
         VFXBehaviourComponent SpawnVFX(VFXBehaviourComponent prefab, Vector3 localPosition);
@@ -26,6 +26,8 @@ namespace SpaceInvaders.Scenes.Game
     public class SpawnService : ISpawnService, IGameEndListener
     {
         [Inject] private readonly IShipsRepository _shipsRepository;
+        [Inject] private readonly IItemsRepository _itemsRepository;
+        [Inject] private readonly IPowerupsRepository _powerupsRepository;
         [Inject] private readonly IAddressablesManager _addressablesManager;
         [Inject] private readonly IObjectPooling _objectPooling;
         /// <summary>Everything spawns as a child of this, so all spawn positions are local to it.</summary>
@@ -102,8 +104,10 @@ namespace SpaceInvaders.Scenes.Game
             _objectPooling.Return(instance);
         }
 
+        /// <summary>The shooter's tag travels with the shot: projectiles are pooled and shared between
+        /// ships, so the team cannot be authored on the prefab.</summary>
         public ProjectileBehaviourComponent SpawnProjectile(ProjectileBehaviourComponent prefab,
-            Vector3 localPosition, Vector3 direction, ShipStats attackerStats)
+            Vector3 localPosition, Vector3 direction, ShipStats attackerStats, string shooterTag)
         {
             var projectile = Spawn(prefab, localPosition, Quaternion.identity);
 
@@ -112,37 +116,39 @@ namespace SpaceInvaders.Scenes.Game
                 return null;
             }
 
-            projectile.Initialize(attackerStats, direction);
+            projectile.Initialize(attackerStats, direction, shooterTag);
             _activeObjects.Add(projectile);
 
             return projectile;
         }
 
+        /// <summary>Every powerup shares one pickup prefab, told apart by the config's icon.</summary>
         public PowerupBehaviourComponent SpawnPowerup(PowerupConfigSO config, Vector3 localPosition)
         {
-            var pickup = Spawn(config.PickupPrefab, localPosition, Quaternion.identity);
+            var pickup = Spawn(_powerupsRepository.GetPowerupPickupPrefab(), localPosition, Quaternion.identity);
 
             if (pickup == null)
             {
                 return null;
             }
 
-            pickup.Initialize(config.PowerupType);
+            pickup.Initialize(config.PowerupType, config.Icon);
             _activeObjects.Add(pickup);
 
             return pickup;
         }
 
+        /// <summary>Every rarity shares one pickup prefab, told apart by the rarity's icon.</summary>
         public ItemPickupBehaviourComponent SpawnItemPickup(ItemRarityConfigSO rarityConfig, InventoryItemEntry item, Vector3 localPosition)
         {
-            var pickup = Spawn(rarityConfig.PickupPrefab, localPosition, Quaternion.identity);
+            var pickup = Spawn(_itemsRepository.GetItemPickupPrefab(), localPosition, Quaternion.identity);
 
             if (pickup == null)
             {
                 return null;
             }
 
-            pickup.Initialize(item);
+            pickup.Initialize(item, rarityConfig.Icon);
             _activeObjects.Add(pickup);
 
             return pickup;

@@ -36,6 +36,11 @@ namespace SpaceInvaders.Scenes.Game
 
         public int EnemiesAlive => _spawnedEnemies.Count;
 
+        public void Dispose()
+        {
+            ClearEnemies();
+        }
+
         public UniTask GameInitialize()
         {
             _spawnedEnemies = new List<IEnemySpaceship>();
@@ -46,11 +51,6 @@ namespace SpaceInvaders.Scenes.Game
         {
             ClearEnemies();
             return UniTask.CompletedTask;
-        }
-
-        public void Dispose()
-        {
-            ClearEnemies();
         }
 
         public async UniTask SpawnEnemies(WaveConfigDTO waveConfig)

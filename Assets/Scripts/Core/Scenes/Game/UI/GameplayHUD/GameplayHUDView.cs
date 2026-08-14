@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using BaseArchitecture.Core;
-using TMPro;
+using SpaceInvaders.Project;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -14,19 +13,15 @@ namespace SpaceInvaders.Scenes.Game
     {
         [Inject] private readonly IObjectPooling _objectPooling;
 
-        [SerializeField] private TextMeshProUGUI _scoreText;
-        [SerializeField] private TextMeshProUGUI _levelText;
-
-        [SerializeField] private string _scoreString = "Score: {0}";
-        [SerializeField] private string _levelString = "Level: {0}";
         [SerializeField] private string _critIndicatorString = "!";
 
-        [SerializeField] private GameObject _ammoContainer;
-        [SerializeField] private Image _ammoIcon;
-        [SerializeField] private TextMeshProUGUI _ammoText;
-        [SerializeField] private Sprite _ammoSprite;
-        [SerializeField] private Sprite _reloadingSprite;
-        [SerializeField] private string _ammoString = "{0}/{1}";
+        [SerializeField] private ScoreUIComponent _scoreUI;
+        [SerializeField] private LevelUIComponent _levelUI;
+        [SerializeField] private WaveUIComponent _waveUI;
+        [SerializeField] private AmmoUIComponent _ammoUI;
+
+        [SerializeField] private LootCounterUIComponent _lootCounterPrefab;
+        [SerializeField] private Transform _lootCountersContainer;
 
         [SerializeField] private HealthBarUIComponent _bossHealthBar;
         [SerializeField] private PowerupIndicatorUIComponent _powerupIndicatorPrefab;
@@ -37,12 +32,10 @@ namespace SpaceInvaders.Scenes.Game
 
         [SerializeField] private Button _pauseButton;
 
-        public event Action OnPauseButtonClicked;
-
-        private CancellationTokenSource _scoreCancellationTokenSource;
-        private CancellationTokenSource _reloadCancellationTokenSource;
         private readonly Dictionary<PowerupTypes, PowerupIndicatorUIComponent> _activePowerupIndicators = new();
-        private int _currentScore = 0;
+        private readonly Dictionary<ItemRarityTypes, LootCounterUIComponent> _activeLootCounters = new();
+
+        public event Action OnPauseButtonClicked;
 
         private void Awake()
         {
@@ -51,59 +44,69 @@ namespace SpaceInvaders.Scenes.Game
 
         public void Setup(int levelNumber)
         {
-            _levelText.text = string.Format(_levelString, levelNumber);
-            FormatScore(0);
+            _levelUI.SetLevel(levelNumber);
+            _scoreUI.Initialize(0);
+            _waveUI.Show(false);
+        }
+
+        public void UpdateWave(int waveNumber, int totalWaves)
+        {
+            _waveUI.SetWave(waveNumber, totalWaves);
         }
 
         public void ShowAmmo(bool show)
         {
-            if (_ammoContainer == null)
+            if (_ammoUI == null)
             {
                 return;
             }
 
-            _ammoContainer.SetActive(show);
+            _ammoUI.Show(show);
         }
 
         public void UpdateAmmo(int currentAmmo, int maxAmmo)
         {
-            _reloadCancellationTokenSource?.CancelAndDispose();
-            _reloadCancellationTokenSource = null;
-
-            SetAmmoIcon(_ammoSprite);
-
-            if (_ammoText != null)
-            {
-                _ammoText.text = string.Format(_ammoString, currentAmmo, maxAmmo);
-            }
-        }
-
-        /// <summary>Swaps to the reload icon and counts the remaining seconds down in place of the ammo.</summary>
-        public async void ShowReloading(float duration)
-        {
-            _reloadCancellationTokenSource?.CancelAndDispose();
-            _reloadCancellationTokenSource = new CancellationTokenSource();
-
-            SetAmmoIcon(_reloadingSprite);
-
-            if (_ammoText == null)
+            if (_ammoUI == null)
             {
                 return;
             }
 
-            await _ammoText.CountdownAsync(duration, 0, duration, null, _reloadCancellationTokenSource);
+            _ammoUI.UpdateAmmo(currentAmmo, maxAmmo);
         }
 
-        /// <summary>Hidden rather than left as a blank box when no sprite is authored.</summary>
-        private void SetAmmoIcon(Sprite sprite)
+        public void ShowReloading(float duration)
         {
-            if (_ammoIcon == null)
+            if (_ammoUI == null)
             {
                 return;
             }
 
-            _ammoIcon.sprite = sprite;
-            _ammoIcon.enabled = sprite != null;
+            _ammoUI.ShowReloading(duration);
+        }
+
+        /// <summary>The counter is created on the first pickup of its rarity, so tiers the run has
+        /// not dropped yet never take up space.</summary>
+        public void UpdateLootCounter(ItemRarityTypes rarity, Sprite icon, int count)
+        {
+            if (_lootCounterPrefab == null)
+            {
+                return;
+            }
+
+            if (_activeLootCounters.TryGetValue(rarity, out LootCounterUIComponent counter))
+            {
+                counter.SetCount(count);
+                return;
+            }
+
+            counter = _objectPooling.Get(_lootCounterPrefab, _lootCountersContainer);
+            _activeLootCounters[rarity] = counter;
+            counter.Initialize(icon, count);
+        }
+
+        public void UpdateScore(int score)
+        {
+            _scoreUI.UpdateScore(score);
         }
 
         public void InitializeBossHealthBar(int maxHealth)
@@ -122,20 +125,6 @@ namespace SpaceInvaders.Scenes.Game
             _bossHealthBar.gameObject.SetActive(show);
         }
 
-        public async void UpdateScore(int score)
-        {
-            _scoreCancellationTokenSource?.CancelAndDispose();
-            _scoreCancellationTokenSource = new CancellationTokenSource();
-
-            await _scoreText.CountdownAsync(_currentScore, score, 0.5f, FormatScore, _scoreCancellationTokenSource);
-            _currentScore = score;
-        }
-
-        private void FormatScore(int score)
-        {
-            _scoreText.text = string.Format(_scoreString, score);
-        }
-
         public void ShowPowerupActivated(PowerupTypes type, Sprite icon, float duration)
         {
             if (!_activePowerupIndicators.TryGetValue(type, out var indicator))
@@ -145,6 +134,17 @@ namespace SpaceInvaders.Scenes.Game
             }
 
             indicator.Initialize(icon, duration);
+        }
+
+        public void HidePowerupIndicator(PowerupTypes type)
+        {
+            if (!_activePowerupIndicators.TryGetValue(type, out var indicator))
+            {
+                return;
+            }
+
+            _activePowerupIndicators.Remove(type);
+            _objectPooling.Return(indicator);
         }
 
         /// <summary>Position is in screen pixels, which a screen space overlay canvas takes directly.</summary>
@@ -164,23 +164,6 @@ namespace SpaceInvaders.Scenes.Game
         {
             indicator.OnFinished -= OnCritIndicatorFinished;
             _objectPooling.Return(indicator);
-        }
-
-        public void HidePowerupIndicator(PowerupTypes type)
-        {
-            if (!_activePowerupIndicators.TryGetValue(type, out var indicator))
-            {
-                return;
-            }
-
-            _activePowerupIndicators.Remove(type);
-            _objectPooling.Return(indicator);
-        }
-
-        private void OnDestroy()
-        {
-            _scoreCancellationTokenSource?.CancelAndDispose();
-            _reloadCancellationTokenSource?.CancelAndDispose();
         }
     }
 }

@@ -20,6 +20,11 @@ namespace SpaceInvaders.Scenes.Preload
             _cancellationTokenSource = new CancellationTokenSource();
         }
 
+        private void OnDestroy()
+        {
+            _cancellationTokenSource?.CancelAndDispose();
+        }
+
         public async UniTask PlayLoadingAnimation(float duration, float endDelay)
         {
             await _loadingText.CountdownAsync(0, 100, duration, (val) =>
@@ -32,11 +37,6 @@ namespace SpaceInvaders.Scenes.Preload
 
             //Adding another delay to see the loading finished text
             await UniTask.Delay((int)endDelay * 1000, cancellationToken: _cancellationTokenSource.Token);
-        }
-
-        private void OnDestroy()
-        {
-            _cancellationTokenSource?.CancelAndDispose();
         }
     }
 }

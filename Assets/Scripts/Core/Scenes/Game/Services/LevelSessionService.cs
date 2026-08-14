@@ -117,7 +117,7 @@ namespace SpaceInvaders.Scenes.Game
             _enemiesManager.SpawnEnemies(wave).Forget();
             _currentWaveNumber++;
 
-            _messageBus.Publish(new WaveStartedMessage(_currentWaveNumber, WaveContainsBoss(wave)));
+            _messageBus.Publish(new WaveStartedMessage(_currentWaveNumber, _currentLevelConfigSo.WavesConfigs.Count, WaveContainsBoss(wave)));
             this.Log($"Wave {_currentWaveNumber} started!");
         }
 

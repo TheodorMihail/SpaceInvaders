@@ -65,6 +65,12 @@ namespace SpaceInvaders.Project
             ShowInternal(anchor, instanceId, showActions: false);
         }
 
+        public void Hide()
+        {
+            gameObject.SetActive(false);
+            OnHide?.Invoke();
+        }
+
         private void ShowInternal(RectTransform anchor, string instanceId, bool showActions)
         {
             Hide();
@@ -96,13 +102,6 @@ namespace SpaceInvaders.Project
             }
 
             Show(anchor, config.DisplayName, rarityText, BuildAffixesText(entry));
-        }
-
-
-        public void Hide()
-        {
-            gameObject.SetActive(false);
-            OnHide?.Invoke();
         }
 
         private void ActionButtonClicked(bool equip)

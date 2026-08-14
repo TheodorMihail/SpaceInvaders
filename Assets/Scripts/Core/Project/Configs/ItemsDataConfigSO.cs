@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using BaseArchitecture.Core;
+using SpaceInvaders.Scenes.Game;
 using UnityEngine;
 
 namespace SpaceInvaders.Project
@@ -49,11 +50,15 @@ namespace SpaceInvaders.Project
         [SerializeField] private List<ItemConfigSO> _itemConfigs;
         [SerializeField] private List<ItemRarityConfigSO> _rarityConfigs;
 
+        [Tooltip("Shared by every rarity; the rarity's icon is applied to it on spawn.")]
+        [SerializeField] private ItemPickupBehaviourComponent _itemPickupPrefab;
+
         [Header("Equipment")]
         [SerializeField] private List<EquipmentSlotConfigDTO> _slotConfigs;
 
         public virtual List<ItemConfigSO> ItemConfigs => _itemConfigs;
         public virtual List<ItemRarityConfigSO> RarityConfigs => _rarityConfigs;
+        public virtual ItemPickupBehaviourComponent ItemPickupPrefab => _itemPickupPrefab;
         public virtual IReadOnlyList<EquipmentSlotConfigDTO> SlotConfigs => _slotConfigs ?? new List<EquipmentSlotConfigDTO>();
 
         public string ObjectID => nameof(ItemsDataConfigSO);

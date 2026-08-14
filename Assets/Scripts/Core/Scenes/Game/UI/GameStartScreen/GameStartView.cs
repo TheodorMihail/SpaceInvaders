@@ -22,6 +22,11 @@ namespace SpaceInvaders.Scenes.Game
             _pressAnyKeyText.gameObject.SetActive(true);
         }
 
+        private void OnDestroy()
+        {
+            _cancellationTokenSource?.CancelAndDispose();
+        }
+
         public async UniTask StartCountdownAnimation(int countdownValue, float endDelay)
         {
             _countdownText.gameObject.SetActive(true);
@@ -32,11 +37,6 @@ namespace SpaceInvaders.Scenes.Game
 
             _countdownText.text = _startString;
             await UniTask.Delay((int)endDelay * 1000, cancellationToken: _cancellationTokenSource.Token);
-        }
-        
-        private void OnDestroy()
-        {
-            _cancellationTokenSource?.CancelAndDispose();
         }
     }
 }

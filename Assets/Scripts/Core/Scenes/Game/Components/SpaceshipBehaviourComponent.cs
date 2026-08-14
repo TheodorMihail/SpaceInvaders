@@ -37,6 +37,7 @@ namespace SpaceInvaders.Scenes.Game
         [SerializeField] protected Renderer _renderer;
         [SerializeField] protected Vector3 _projectileOffset;
         [SerializeField] protected HealthBarUIComponent _healthBar;
+        [SerializeField] protected ShipFlameComponent[] _flames;
 
         protected float _lastShotTime;
 
@@ -97,6 +98,20 @@ namespace SpaceInvaders.Scenes.Game
         {
             OnDamaged?.Invoke(this, damage, isCritical);
         }
+
+        /// <summary>Ships without engines authored on them simply have nothing to drive.</summary>
+        protected void SetFlamesThrusting(bool isThrusting)
+        {
+            if (_flames == null)
+            {
+                return;
+            }
+
+            foreach (ShipFlameComponent flame in _flames)
+            {
+                flame.SetThrusting(isThrusting);
+            }
+        }
     }
     
 
@@ -123,6 +138,9 @@ namespace SpaceInvaders.Scenes.Game
             Stats.AmmoChanged += OnStatsAmmoChanged;
             _lastShotTime = 0f;
 
+            // Pooled ships can come back mid-burn, so the engines restart idle.
+            SetFlamesThrusting(false);
+
             if (_healthBar == null)
             {
                 return;
@@ -131,21 +149,6 @@ namespace SpaceInvaders.Scenes.Game
             _healthBar.Initialize(Stats.CurrentHealth, Stats.CurrentMaxHealth);
 
             RaiseHealthChanged(Stats.CurrentHealth, Stats.CurrentMaxHealth);
-        }
-
-        private void OnStatsHealthChanged(int currentHealth, int maxHealth)
-        {
-            if (_healthBar != null)
-            {
-                _healthBar.Initialize(currentHealth, maxHealth, false);
-            }
-
-            RaiseHealthChanged(currentHealth, maxHealth);
-        }
-
-        private void OnStatsAmmoChanged(int currentAmmo, int maxAmmo)
-        {
-            RaiseAmmoChanged(currentAmmo, maxAmmo);
         }
 
         public override void OnDespawned()
@@ -160,28 +163,6 @@ namespace SpaceInvaders.Scenes.Game
                 }
             }
             _activeProjectiles.Clear();
-        }
-
-        protected void SpawnDestroyVFX()
-        {
-            if (_shipConfig.DestroyVFXPrefab == null)
-            {
-                this.LogWarning("No destroy vfx prefab assigned!");
-                return;
-            }
-
-            _spawnService.SpawnVFX(_shipConfig.DestroyVFXPrefab, LocalPosition);
-        }
-
-        protected void SpawnHitVFX()
-        {
-            if (_shipConfig.HitVFXPrefab == null)
-            {
-                this.LogWarning("No hit vfx prefab assigned!");
-                return;
-            }
-
-            _spawnService.SpawnVFX(_shipConfig.HitVFXPrefab, LocalPosition);
         }
 
         public override void Shoot()
@@ -211,35 +192,6 @@ namespace SpaceInvaders.Scenes.Game
             }
         }
 
-        /// <summary>The delay is time scaled, so a reload halts with the rest of the game while paused.</summary>
-        private void StartReload()
-        {
-            CancelReload();
-
-            _reloadCancellationTokenSource = new CancellationTokenSource();
-            RaiseReloadStarted(Stats.CurrentReloadDuration);
-            RunReload(Stats.CurrentReloadDuration, _reloadCancellationTokenSource.Token).Forget();
-        }
-
-        private async UniTaskVoid RunReload(float duration, CancellationToken token)
-        {
-            await UniTask.Delay(TimeSpan.FromSeconds(duration), cancellationToken: token);
-
-            if (token.IsCancellationRequested)
-            {
-                return;
-            }
-
-            CancelReload();
-            Stats.RefillAmmo();
-        }
-
-        private void CancelReload()
-        {
-            _reloadCancellationTokenSource?.CancelAndDispose();
-            _reloadCancellationTokenSource = null;
-        }
-
         public override void TakeDamage(ShipStats attackerStats)
         {
             if (!CanTakeDamage())
@@ -262,25 +214,6 @@ namespace SpaceInvaders.Scenes.Game
             ApplyDamage(damage, false);
         }
 
-        private bool CanTakeDamage()
-        {
-            return !Stats.IsInvincible && Stats.CurrentHealth > 0;
-        }
-
-        /// <summary>Destruction comes last, since it despawns the ship and drops the listeners that
-        /// the hit feedback above still needs.</summary>
-        private void ApplyDamage(int damage, bool isCritical)
-        {
-            Stats.ApplyDamage(damage);
-            SpawnHitVFX();
-            RaiseDamaged(damage, isCritical);
-
-            if (Stats.CurrentHealth == 0)
-            {
-                Destroy();
-            }
-        }
-
         public override void Move(Vector3 direction, Vector3 minBounds, Vector3 maxBounds)
         {
             direction.Normalize();
@@ -295,14 +228,88 @@ namespace SpaceInvaders.Scenes.Game
             transform.position = newPosition;
         }
 
-        protected virtual Vector3 GetProjectileDirection()
+        protected void OnProjectileDestroyed(ProjectileBehaviourComponent projectile)
         {
-            return Vector3.forward;
+            projectile.OnProjectileDestroyed -= OnProjectileDestroyed;
+            _activeProjectiles.Remove(projectile);
         }
 
         protected virtual IEnumerable<Vector3> GetShotDirections()
         {
             yield return GetProjectileDirection();
+        }
+
+        protected virtual Vector3 GetProjectileDirection()
+        {
+            return Vector3.forward;
+        }
+
+        protected void FireProjectile(Vector3 direction)
+        {
+            if(_shipConfig.ProjectilePrefab == null)
+            {
+                this.LogWarning("No projectile prefab assigned!");
+                return;
+            }
+
+            Vector3 spawnPosition = LocalPosition + _projectileOffset;
+
+            var projectile = _spawnService.SpawnProjectile(
+                _shipConfig.ProjectilePrefab,
+                spawnPosition,
+                direction,
+                Stats,
+                gameObject.tag
+            );
+
+            if (projectile != null)
+            {
+                _activeProjectiles.Add(projectile);
+                projectile.OnProjectileDestroyed += OnProjectileDestroyed;
+            }
+        }
+
+        protected void SpawnHitVFX()
+        {
+            if (_shipConfig.HitVFXPrefab == null)
+            {
+                this.LogWarning("No hit vfx prefab assigned!");
+                return;
+            }
+
+            _spawnService.SpawnVFX(_shipConfig.HitVFXPrefab, LocalPosition);
+        }
+
+        protected void SpawnDestroyVFX()
+        {
+            if (_shipConfig.DestroyVFXPrefab == null)
+            {
+                this.LogWarning("No destroy vfx prefab assigned!");
+                return;
+            }
+
+            _spawnService.SpawnVFX(_shipConfig.DestroyVFXPrefab, LocalPosition);
+        }
+
+        private void CancelReload()
+        {
+            _reloadCancellationTokenSource?.CancelAndDispose();
+            _reloadCancellationTokenSource = null;
+        }
+
+        private void OnStatsHealthChanged(int currentHealth, int maxHealth)
+        {
+            if (_healthBar != null)
+            {
+                _healthBar.Initialize(currentHealth, maxHealth, false);
+            }
+
+            RaiseHealthChanged(currentHealth, maxHealth);
+        }
+
+        private void OnStatsAmmoChanged(int currentAmmo, int maxAmmo)
+        {
+            RaiseAmmoChanged(currentAmmo, maxAmmo);
         }
 
         /// <summary>Expands each direction into an evenly spread shot pattern centered on it.</summary>
@@ -330,34 +337,46 @@ namespace SpaceInvaders.Scenes.Game
             }
         }
 
-        protected void FireProjectile(Vector3 direction)
+        /// <summary>The delay is time scaled, so a reload halts with the rest of the game while paused.</summary>
+        private void StartReload()
         {
-            if(_shipConfig.ProjectilePrefab == null)
+            CancelReload();
+
+            _reloadCancellationTokenSource = new CancellationTokenSource();
+            RaiseReloadStarted(Stats.CurrentReloadDuration);
+            RunReload(Stats.CurrentReloadDuration, _reloadCancellationTokenSource.Token).Forget();
+        }
+
+        private async UniTaskVoid RunReload(float duration, CancellationToken token)
+        {
+            await UniTask.Delay(TimeSpan.FromSeconds(duration), cancellationToken: token);
+
+            if (token.IsCancellationRequested)
             {
-                this.LogWarning("No projectile prefab assigned!");
                 return;
             }
 
-            Vector3 spawnPosition = LocalPosition + _projectileOffset;
-
-            var projectile = _spawnService.SpawnProjectile(
-                _shipConfig.ProjectilePrefab,
-                spawnPosition,
-                direction,
-                Stats
-            );
-
-            if (projectile != null)
-            {
-                _activeProjectiles.Add(projectile);
-                projectile.OnProjectileDestroyed += OnProjectileDestroyed;
-            }
+            CancelReload();
+            Stats.RefillAmmo();
         }
 
-        protected void OnProjectileDestroyed(ProjectileBehaviourComponent projectile)
+        private bool CanTakeDamage()
         {
-            projectile.OnProjectileDestroyed -= OnProjectileDestroyed;
-            _activeProjectiles.Remove(projectile);
+            return !Stats.IsInvincible && Stats.CurrentHealth > 0;
+        }
+
+        /// <summary>Destruction comes last, since it despawns the ship and drops the listeners that
+        /// the hit feedback above still needs.</summary>
+        private void ApplyDamage(int damage, bool isCritical)
+        {
+            Stats.ApplyDamage(damage);
+            SpawnHitVFX();
+            RaiseDamaged(damage, isCritical);
+
+            if (Stats.CurrentHealth == 0)
+            {
+                Destroy();
+            }
         }
     }
 }

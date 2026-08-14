@@ -21,11 +21,6 @@ namespace SpaceInvaders.Scenes.Game
 
         public event Action<CritIndicatorUIComponent> OnFinished;
 
-        private void Awake()
-        {
-            _rectTransform = (RectTransform)transform;
-        }
-
         public void Initialize(string text, Vector3 screenPosition, float duration)
         {
             KillSequence();
@@ -37,6 +32,17 @@ namespace SpaceInvaders.Scenes.Game
             PlayRiseAndFade(duration);
         }
 
+        private void Awake()
+        {
+            _rectTransform = (RectTransform)transform;
+        }
+
+        /// <summary>Pooled indicators are destroyed with the HUD, which can happen mid tween.</summary>
+        private void OnDestroy()
+        {
+            KillSequence();
+        }
+
         public void OnSpawned()
         {
         }
@@ -46,10 +52,10 @@ namespace SpaceInvaders.Scenes.Game
             KillSequence();
         }
 
-        /// <summary>Pooled indicators are destroyed with the HUD, which can happen mid tween.</summary>
-        private void OnDestroy()
+        private void KillSequence()
         {
-            KillSequence();
+            _sequence?.Kill();
+            _sequence = null;
         }
 
         /// <summary>Re-anchors to the container centre first, so placement does not depend on how the
@@ -90,12 +96,6 @@ namespace SpaceInvaders.Scenes.Game
         {
             _sequence = null;
             OnFinished?.Invoke(this);
-        }
-
-        private void KillSequence()
-        {
-            _sequence?.Kill();
-            _sequence = null;
         }
     }
 }
