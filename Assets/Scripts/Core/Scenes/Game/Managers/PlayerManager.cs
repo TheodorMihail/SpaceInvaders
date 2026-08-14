@@ -15,6 +15,10 @@ namespace SpaceInvaders.Scenes.Game
     public interface IPlayerManager : IDisposable, IGameStartListener, IGameEndListener, IGameInitializeListener
     {
         Vector3 PlayerLocalPosition { get; }
+
+        /// <summary>False once the player is gone, so anything aiming falls back deliberately instead
+        /// of tracking the origin a bare position getter would hand back.</summary>
+        bool TryGetPlayerWorldPosition(out Vector3 worldPosition);
         ShipStats PlayerStats { get; }
     }
 
@@ -34,12 +38,14 @@ namespace SpaceInvaders.Scenes.Game
         {
             _messageBus.Subscribe<GamePausedMessage>(OnGamePaused);
             _messageBus.Subscribe<GameResumedMessage>(OnGameResumed);
+            _messageBus.Subscribe<AllEnemiesDestroyedMessage>(OnAllEnemiesDestroyed);
         }
 
         public void Dispose()
         {
             _messageBus.Unsubscribe<GamePausedMessage>(OnGamePaused);
             _messageBus.Unsubscribe<GameResumedMessage>(OnGameResumed);
+            _messageBus.Unsubscribe<AllEnemiesDestroyedMessage>(OnAllEnemiesDestroyed);
 
             DespawnPlayer();
         }
@@ -64,6 +70,18 @@ namespace SpaceInvaders.Scenes.Game
             return UniTask.CompletedTask;
         }
 
+        public bool TryGetPlayerWorldPosition(out Vector3 worldPosition)
+        {
+            if (_playerInstance == null)
+            {
+                worldPosition = Vector3.zero;
+                return false;
+            }
+
+            worldPosition = _playerInstance.WorldPosition;
+            return true;
+        }
+
         public UniTask GameEnd()
         {
             DespawnPlayer();
@@ -79,6 +97,13 @@ namespace SpaceInvaders.Scenes.Game
         private void OnGameResumed(GameResumedMessage message)
         {
             _playerInstance?.EnableControls();
+        }
+
+        /// <summary>The lull between waves is free time, so the player starts the next one topped up
+        /// rather than having to burn the opening seconds reloading.</summary>
+        private void OnAllEnemiesDestroyed(AllEnemiesDestroyedMessage message)
+        {
+            _playerInstance?.Reload();
         }
 
         private void OnDestroyedCallback(IPlayerSpaceship component)

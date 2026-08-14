@@ -87,6 +87,10 @@ PrefabInstance:
       propertyPath: m_Size.y
       value: 1.64
       objectReference: {fileID: 0}
+    - target: {fileID: 1006700097852818370, guid: f806ef99d4d454442bb14f47f6bff2b6, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 20.65
+      objectReference: {fileID: 0}
     - target: {fileID: 1385997206333636258, guid: f806ef99d4d454442bb14f47f6bff2b6, type: 3}
       propertyPath: m_Mesh
       value: 

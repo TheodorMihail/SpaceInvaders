@@ -106,11 +106,6 @@ namespace SpaceInvaders.Scenes.Game
                 .OnComplete(OnEntryComplete);
         }
 
-        protected override Vector3 GetProjectileDirection()
-        {
-            return Vector3.back; // Enemies shoot downward (toward player)
-        }
-
         private void OnEntryComplete()
         {
             SetFlamesThrusting(false);
@@ -121,7 +116,7 @@ namespace SpaceInvaders.Scenes.Game
                 Stats.SetInvincible(false);
             }
 
-            DelayNextShot(Random.Range(0f, _maxFirstShotDelay));
+            _weapon.DelayNextShot(Random.Range(0f, _maxFirstShotDelay));
             _movement.StartMoving();
         }
 

@@ -17,7 +17,7 @@ namespace SpaceInvaders.Scenes.Game
         {
             get
             {
-                EnsureBounds();
+                CalculateBounds();
                 return _minBounds;
             }
         }
@@ -26,10 +26,14 @@ namespace SpaceInvaders.Scenes.Game
         {
             get
             {
-                EnsureBounds();
+                CalculateBounds();
                 return _maxBounds;
             }
         }
+
+        /// <summary>The hull this drives. Movement is authored as a child object, so it must never
+        /// move its own transform: that would slide the component around inside a stationary ship.</summary>
+        protected Transform ShipTransform => _shipTransform;
 
         [Tooltip("Measured for the bounds query, so it must be the renderer that defines the hull's size.")]
         [SerializeField] private Renderer _renderer;
@@ -38,13 +42,15 @@ namespace SpaceInvaders.Scenes.Game
         [SerializeField] private ScreenRegionTypes _region = ScreenRegionTypes.BottomRegion;
 
         private ShipStats _stats;
+        private Transform _shipTransform;
         private Vector3 _minBounds;
         private Vector3 _maxBounds;
         private bool _hasBounds;
 
-        public virtual void Initialize(ShipStats stats)
+        public virtual void Initialize(ShipStats stats, Transform shipTransform)
         {
             _stats = stats;
+            _shipTransform = shipTransform;
 
             // Pooling calls OnSpawned before the ship is positioned, so bounds wait for first use.
             _hasBounds = false;
@@ -53,29 +59,30 @@ namespace SpaceInvaders.Scenes.Game
         public virtual void Dispose()
         {
             _stats = null;
+            _shipTransform = null;
             _hasBounds = false;
         }
 
         /// <summary>Travels one frame's worth along the given direction, clamped to the bounds.</summary>
         public void Move(Vector3 direction)
         {
-            if (_stats == null)
+            if (_stats == null || _shipTransform == null)
             {
                 return;
             }
 
-            EnsureBounds();
+            CalculateBounds();
 
             direction.Normalize();
 
             Vector3 movement = direction * (_stats.CurrentMoveSpeed * Time.deltaTime);
-            Vector3 newPosition = transform.position + movement;
+            Vector3 newPosition = _shipTransform.position + movement;
 
             newPosition.x = Mathf.Clamp(newPosition.x, _minBounds.x, _maxBounds.x);
-            newPosition.y = transform.position.y;
+            newPosition.y = _shipTransform.position.y;
             newPosition.z = Mathf.Clamp(newPosition.z, _minBounds.z, _maxBounds.z);
 
-            transform.position = newPosition;
+            _shipTransform.position = newPosition;
         }
 
         /// <summary>Hands control over to whatever steers this ship, once it is free to move.</summary>
@@ -87,7 +94,7 @@ namespace SpaceInvaders.Scenes.Game
 
         /// <summary>Resolved on first use rather than on spawn, because a pooled ship is still sitting
         /// where it died when the pool wakes it and would measure its bounds from there.</summary>
-        private void EnsureBounds()
+        private void CalculateBounds()
         {
             if (_hasBounds)
             {

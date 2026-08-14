@@ -54,7 +54,7 @@ namespace SpaceInvaders.Scenes.Game
 
         private void DetectAndBounce()
         {
-            Vector3 currentPosition = transform.position;
+            Vector3 currentPosition = ShipTransform.position;
             Vector3 minBounds = MinBounds;
             Vector3 maxBounds = MaxBounds;
 

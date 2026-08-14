@@ -1,8 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Threading;
 using BaseArchitecture.Core;
-using Cysharp.Threading.Tasks;
 using UnityEngine;
 using Zenject;
 
@@ -27,6 +24,9 @@ namespace SpaceInvaders.Scenes.Game
 
         void Move(Vector3 direction);
         void Shoot();
+
+        /// <summary>Tops the magazine up early, such as when a wave has been cleared.</summary>
+        void Reload();
         void TakeDamage(AttackSourceDTO source);
         void TakeDamage(int damage);
     }
@@ -35,14 +35,9 @@ namespace SpaceInvaders.Scenes.Game
     {
         [Inject] protected ISpawnService _spawnService;
         [SerializeField] protected BaseShipMovementComponent _movement;
-        [SerializeField] protected Vector3 _projectileOffset;
+        [SerializeField] protected ShipWeaponComponent _weapon;
         [SerializeField] protected HealthBarUIComponent _healthBar;
         [SerializeField] protected ShipFlameComponent[] _flames;
-
-        protected float _lastShotTime;
-
-        /// <summary>Kept only to unsubscribe from projectile events on despawn.</summary>
-        protected readonly List<ProjectileBehaviourComponent> _activeProjectiles = new();
 
         public virtual ShipStats Stats { get; protected set; }
         public virtual string SpaceshipID {get; protected set; }
@@ -59,6 +54,7 @@ namespace SpaceInvaders.Scenes.Game
         public abstract void OnDespawned();
         public abstract void Move(Vector3 direction);
         public abstract void Shoot();
+        public abstract void Reload();
         public abstract void TakeDamage(AttackSourceDTO source);
         public abstract void TakeDamage(int damage);
 
@@ -85,13 +81,6 @@ namespace SpaceInvaders.Scenes.Game
         protected void RaiseReloadStarted(float duration)
         {
             OnReloadStarted?.Invoke(duration);
-        }
-
-        /// <summary>Blocks shooting for the given delay, after which the usual fire rate cadence
-        /// resumes. Backdating the last shot keeps the cooldown check in Shoot untouched.</summary>
-        protected void DelayNextShot(float delay)
-        {
-            _lastShotTime = Time.time + delay - Stats.CurrentFireRate;
         }
 
         protected void RaiseDamaged(int damage, bool isCritical)
@@ -126,18 +115,16 @@ namespace SpaceInvaders.Scenes.Game
         protected Config ShipConfig => _shipConfig;
         public override string SpaceshipID => _shipConfig.SpaceshipID;
 
-        private CancellationTokenSource _reloadCancellationTokenSource;
-
         public override void OnSpawned()
         {
-            CancelReload();
-
             Stats = _shipConfig.CreateStats();
             Stats.HealthChanged += OnStatsHealthChanged;
             Stats.AmmoChanged += OnStatsAmmoChanged;
-            _lastShotTime = 0f;
 
-            _movement.Initialize(Stats);
+            _movement.Initialize(Stats, transform);
+            _weapon.Initialize(Stats, gameObject.tag);
+            _weapon.ShotFired += OnWeaponShotFired;
+            _weapon.ReloadStarted += OnWeaponReloadStarted;
 
             // Pooled ships can come back mid-burn, so the engines restart idle.
             SetFlamesThrusting(false);
@@ -154,44 +141,26 @@ namespace SpaceInvaders.Scenes.Game
 
         public override void OnDespawned()
         {
-            CancelReload();
-            _movement.Dispose();
+            _weapon.ShotFired -= OnWeaponShotFired;
+            _weapon.ReloadStarted -= OnWeaponReloadStarted;
 
-            foreach (var projectile in _activeProjectiles)
-            {
-                if (projectile != null)
-                {
-                    projectile.OnProjectileDestroyed -= OnProjectileDestroyed;
-                }
-            }
-            _activeProjectiles.Clear();
+            _movement.Dispose();
+            _weapon.Dispose();
         }
 
         public override void Shoot()
         {
-            if (Time.time - _lastShotTime < Stats.CurrentFireRate)
+            BaseShipAttackComponent attack = SelectAttack();
+
+            if (_weapon.TryFire(attack))
             {
-                return;
+                OnAttackFired(attack);
             }
+        }
 
-            if (!Stats.TryConsumeAmmo())
-            {
-                return;
-            }
-
-            _lastShotTime = Time.time;
-
-            foreach (Vector3 direction in ApplyStatsShotSpread(GetShotDirections()))
-            {
-                FireProjectile(direction);
-            }
-
-            RaiseShotFired();
-
-            if (Stats.IsOutOfAmmo)
-            {
-                StartReload();
-            }
+        public override void Reload()
+        {
+            _weapon.Reload();
         }
 
         public override void TakeDamage(AttackSourceDTO source)
@@ -221,45 +190,18 @@ namespace SpaceInvaders.Scenes.Game
             _movement.Move(direction);
         }
 
-        protected void OnProjectileDestroyed(ProjectileBehaviourComponent projectile)
+        /// <summary>Which attack fires now. The default ship has one and always uses it; bosses
+        /// override this to rotate through theirs, or override Shoot to run several at once.
+        /// Called every frame a ship tries to shoot, so it must have no side effects.</summary>
+        protected virtual BaseShipAttackComponent SelectAttack()
         {
-            projectile.OnProjectileDestroyed -= OnProjectileDestroyed;
-            _activeProjectiles.Remove(projectile);
+            return _weapon.PrimaryAttack;
         }
 
-        protected virtual IEnumerable<Vector3> GetShotDirections()
+        /// <summary>Called only when a volley actually left the barrel, which is where a rotation
+        /// through several attacks should advance.</summary>
+        protected virtual void OnAttackFired(BaseShipAttackComponent attack)
         {
-            yield return GetProjectileDirection();
-        }
-
-        protected virtual Vector3 GetProjectileDirection()
-        {
-            return Vector3.forward;
-        }
-
-        protected void FireProjectile(Vector3 direction)
-        {
-            if(_shipConfig.ProjectilePrefab == null)
-            {
-                this.LogWarning("No projectile prefab assigned!");
-                return;
-            }
-
-            Vector3 spawnPosition = LocalPosition + _projectileOffset;
-
-            var projectile = _spawnService.SpawnProjectile(
-                _shipConfig.ProjectilePrefab,
-                spawnPosition,
-                direction,
-                AttackSourceDTO.FromStats(Stats),
-                gameObject.tag
-            );
-
-            if (projectile != null)
-            {
-                _activeProjectiles.Add(projectile);
-                projectile.OnProjectileDestroyed += OnProjectileDestroyed;
-            }
         }
 
         protected void SpawnHitVFX()
@@ -284,10 +226,14 @@ namespace SpaceInvaders.Scenes.Game
             _spawnService.SpawnVFX(_shipConfig.DestroyVFXPrefab, LocalPosition);
         }
 
-        private void CancelReload()
+        private void OnWeaponShotFired()
         {
-            _reloadCancellationTokenSource?.CancelAndDispose();
-            _reloadCancellationTokenSource = null;
+            RaiseShotFired();
+        }
+
+        private void OnWeaponReloadStarted(float duration)
+        {
+            RaiseReloadStarted(duration);
         }
 
         private void OnStatsHealthChanged(int currentHealth, int maxHealth)
@@ -303,54 +249,6 @@ namespace SpaceInvaders.Scenes.Game
         private void OnStatsAmmoChanged(int currentAmmo, int maxAmmo)
         {
             RaiseAmmoChanged(currentAmmo, maxAmmo);
-        }
-
-        /// <summary>Expands each direction into an evenly spread shot pattern centered on it.</summary>
-        private IEnumerable<Vector3> ApplyStatsShotSpread(IEnumerable<Vector3> baseDirections)
-        {
-            if (Stats.ExtraShotCount <= 0)
-            {
-                foreach (var direction in baseDirections)
-                {
-                    yield return direction;
-                }
-                yield break;
-            }
-
-            int totalShots = Stats.ExtraShotCount + 1;
-            float startAngle = -(Stats.SpreadAngleDegrees * (totalShots - 1)) / 2f;
-
-            foreach (var baseDirection in baseDirections)
-            {
-                for (int i = 0; i < totalShots; i++)
-                {
-                    float angle = startAngle + i * Stats.SpreadAngleDegrees;
-                    yield return Quaternion.Euler(0f, angle, 0f) * baseDirection;
-                }
-            }
-        }
-
-        /// <summary>The delay is time scaled, so a reload halts with the rest of the game while paused.</summary>
-        private void StartReload()
-        {
-            CancelReload();
-
-            _reloadCancellationTokenSource = new CancellationTokenSource();
-            RaiseReloadStarted(Stats.CurrentReloadDuration);
-            RunReload(Stats.CurrentReloadDuration, _reloadCancellationTokenSource.Token).Forget();
-        }
-
-        private async UniTaskVoid RunReload(float duration, CancellationToken token)
-        {
-            await UniTask.Delay(TimeSpan.FromSeconds(duration), cancellationToken: token);
-
-            if (token.IsCancellationRequested)
-            {
-                return;
-            }
-
-            CancelReload();
-            Stats.RefillAmmo();
         }
 
         private bool CanTakeDamage()

@@ -23,7 +23,6 @@ MonoBehaviour:
     _critDamage: 2
     _magazineSize: 0
     _reloadSpeed: 0
-  _projectilePrefab: {fileID: 3870392855142719174, guid: c26ae4f84614a70419f45a9c2927520b, type: 3}
   _destroyVFXPrefab: {fileID: 2377428582029327795, guid: c3d6180de37ba1e47ac4c5e4270a3b43, type: 3}
   _hitVFXPrefab: {fileID: -7354612416647879863, guid: 21ec172f22fb9384b8de6329e9f40832, type: 3}
   _scoreReward: 150

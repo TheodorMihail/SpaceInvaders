@@ -12,7 +12,7 @@ namespace SpaceInvaders.Scenes.Game
     {
         UniTask<IPlayerSpaceship> SpawnPlayer();
         UniTask<List<IEnemySpaceship>> SpawnEnemies(WaveConfigDTO waveConfig);
-        ProjectileBehaviourComponent SpawnProjectile(ProjectileBehaviourComponent prefab, Vector3 localPosition, Vector3 direction, AttackSourceDTO source, string shooterTag);
+        ProjectileBehaviourComponent SpawnProjectile(ProjectileBehaviourComponent prefab, Vector3 muzzleWorldPosition, Vector3 direction, AttackSourceDTO source, string shooterTag);
         PowerupBehaviourComponent SpawnPowerup(PowerupConfigSO config, Vector3 localPosition);
         ItemPickupBehaviourComponent SpawnItemPickup(ItemRarityConfigSO rarityConfig, InventoryItemEntry item, Vector3 localPosition);
         VFXBehaviourComponent SpawnVFX(VFXBehaviourComponent prefab, Vector3 localPosition);
@@ -107,8 +107,12 @@ namespace SpaceInvaders.Scenes.Game
         /// <summary>The shooter's tag travels with the shot: projectiles are pooled and shared between
         /// ships, so the team cannot be authored on the prefab.</summary>
         public ProjectileBehaviourComponent SpawnProjectile(ProjectileBehaviourComponent prefab,
-            Vector3 localPosition, Vector3 direction, AttackSourceDTO source, string shooterTag)
+            Vector3 muzzleWorldPosition, Vector3 direction, AttackSourceDTO source, string shooterTag)
         {
+            // A muzzle is a transform somewhere under the ship, so the spawn point arrives in world
+            // space and has to come back into the container's, which is offset from it.
+            Vector3 localPosition = _container.InverseTransformPoint(muzzleWorldPosition);
+
             var projectile = Spawn(prefab, localPosition, Quaternion.identity);
 
             if (projectile == null)
