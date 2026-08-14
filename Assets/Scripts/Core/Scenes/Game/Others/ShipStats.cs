@@ -6,6 +6,46 @@ using Random = UnityEngine.Random;
 namespace SpaceInvaders.Scenes.Game
 {
     /// <summary>
+    /// What fired a shot: the attacker's live stats plus the multipliers of the attack that produced
+    /// it. The stats stay a live reference so a buff landing mid-flight still counts, while the
+    /// multipliers are per-attack constants and are safe to carry by value.
+    /// </summary>
+    public readonly struct AttackSourceDTO
+    {
+        public ShipStats AttackerStats { get; }
+        public float DamageMultiplier { get; }
+        public float ProjectileSpeedMultiplier { get; }
+
+        public float ProjectileSpeed => AttackerStats != null
+            ? AttackerStats.CurrentProjectileSpeed * ProjectileSpeedMultiplier
+            : 0f;
+
+        public AttackSourceDTO(ShipStats attackerStats, float damageMultiplier, float projectileSpeedMultiplier)
+        {
+            AttackerStats = attackerStats;
+            DamageMultiplier = damageMultiplier;
+            ProjectileSpeedMultiplier = projectileSpeedMultiplier;
+        }
+
+        /// <summary>Unscaled source, for damage that has no attack behind it.</summary>
+        public static AttackSourceDTO FromStats(ShipStats attackerStats)
+        {
+            return new AttackSourceDTO(attackerStats, 1f, 1f);
+        }
+
+        public int RollDamage(out bool isCritical)
+        {
+            if (AttackerStats == null)
+            {
+                isCritical = false;
+                return 0;
+            }
+
+            return AttackerStats.RollOutgoingDamage(DamageMultiplier, out isCritical);
+        }
+    }
+
+    /// <summary>
     /// Ship stats that permanent progression (talents, equipped items) can modify.
     /// </summary>
     /// <summary>Values are pinned: configs serialize this enum by index.</summary>
@@ -215,14 +255,24 @@ namespace SpaceInvaders.Scenes.Game
         /// <summary>Rolls this ship's outgoing damage against its own crit stats.</summary>
         public int RollOutgoingDamage(out bool isCritical)
         {
+            return RollOutgoingDamage(1f, out isCritical);
+        }
+
+        /// <summary>The multiplier is the firing attack's own damage scaling, layered over this ship's
+        /// stats. It scales the rounded projectile damage, so a multiplier of 1 rolls exactly as an
+        /// unscaled shot does.</summary>
+        public int RollOutgoingDamage(float damageMultiplier, out bool isCritical)
+        {
             isCritical = Random.value < CurrentCritChance;
 
-            if (!isCritical)
+            float damage = CurrentProjectileDamage * damageMultiplier;
+
+            if (isCritical)
             {
-                return CurrentProjectileDamage;
+                damage *= CurrentCritDamage;
             }
 
-            return Mathf.RoundToInt(CurrentProjectileDamage * CurrentCritDamage);
+            return Mathf.RoundToInt(damage);
         }
 
         public void ApplyDamage(int amount)

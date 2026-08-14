@@ -27,7 +27,7 @@ MonoBehaviour:
     m_SerializedLabels:
     - Spaceships
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 59682f8daab61fa4bba77178e8622c8b
+  - m_GUID: 5290e04894fef774bb90f039f115744e
     m_Address: Spaceships/Boss1
     m_ReadOnly: 0
     m_SerializedLabels:

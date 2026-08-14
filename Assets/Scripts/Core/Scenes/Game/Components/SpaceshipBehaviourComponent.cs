@@ -25,16 +25,16 @@ namespace SpaceInvaders.Scenes.Game
         event Action<ISpaceship> OnShotFired;
         event Action<ISpaceship, int, bool> OnDamaged;
 
-        void Move(Vector3 direction, Vector3 minBounds, Vector3 maxBounds);
+        void Move(Vector3 direction);
         void Shoot();
-        void TakeDamage(ShipStats attackerStats);
+        void TakeDamage(AttackSourceDTO source);
         void TakeDamage(int damage);
     }
 
     public abstract class BaseSpaceshipBehaviourComponent : MonoBehaviour, ISpaceship
     {
         [Inject] protected ISpawnService _spawnService;
-        [SerializeField] protected Renderer _renderer;
+        [SerializeField] protected BaseShipMovementComponent _movement;
         [SerializeField] protected Vector3 _projectileOffset;
         [SerializeField] protected HealthBarUIComponent _healthBar;
         [SerializeField] protected ShipFlameComponent[] _flames;
@@ -57,9 +57,9 @@ namespace SpaceInvaders.Scenes.Game
 
         public abstract void OnSpawned();
         public abstract void OnDespawned();
-        public abstract void Move(Vector3 direction, Vector3 minBounds, Vector3 maxBounds);
+        public abstract void Move(Vector3 direction);
         public abstract void Shoot();
-        public abstract void TakeDamage(ShipStats attackerStats);
+        public abstract void TakeDamage(AttackSourceDTO source);
         public abstract void TakeDamage(int damage);
 
         protected virtual void Destroy()
@@ -119,8 +119,7 @@ namespace SpaceInvaders.Scenes.Game
     /// Config-driven spaceship behaviour: stat creation, shooting, damage handling and bounded
     /// movement. Stats are recreated on spawn, so pooled instances start clean.
     /// </summary>
-    public abstract class BaseSpaceshipBehaviourComponent<T, Config> : BaseSpaceshipBehaviourComponent
-        where T : BaseSpaceshipBehaviourComponent<T, Config>
+    public abstract class BaseSpaceshipBehaviourComponent<Config> : BaseSpaceshipBehaviourComponent
         where Config : SpaceshipConfigSO
     {
         [SerializeField] protected Config _shipConfig;
@@ -138,6 +137,8 @@ namespace SpaceInvaders.Scenes.Game
             Stats.AmmoChanged += OnStatsAmmoChanged;
             _lastShotTime = 0f;
 
+            _movement.Initialize(Stats);
+
             // Pooled ships can come back mid-burn, so the engines restart idle.
             SetFlamesThrusting(false);
 
@@ -154,6 +155,7 @@ namespace SpaceInvaders.Scenes.Game
         public override void OnDespawned()
         {
             CancelReload();
+            _movement.Dispose();
 
             foreach (var projectile in _activeProjectiles)
             {
@@ -192,14 +194,14 @@ namespace SpaceInvaders.Scenes.Game
             }
         }
 
-        public override void TakeDamage(ShipStats attackerStats)
+        public override void TakeDamage(AttackSourceDTO source)
         {
             if (!CanTakeDamage())
             {
                 return;
             }
 
-            int damage = attackerStats.RollOutgoingDamage(out bool isCritical);
+            int damage = source.RollDamage(out bool isCritical);
             ApplyDamage(damage, isCritical);
         }
 
@@ -214,18 +216,9 @@ namespace SpaceInvaders.Scenes.Game
             ApplyDamage(damage, false);
         }
 
-        public override void Move(Vector3 direction, Vector3 minBounds, Vector3 maxBounds)
+        public override void Move(Vector3 direction)
         {
-            direction.Normalize();
-
-            Vector3 movement = direction * (Stats.CurrentMoveSpeed * Time.deltaTime);
-            Vector3 newPosition = transform.position + movement;
-
-            newPosition.x = Mathf.Clamp(newPosition.x, minBounds.x, maxBounds.x);
-            newPosition.y = transform.position.y;
-            newPosition.z = Mathf.Clamp(newPosition.z, minBounds.z, maxBounds.z);
-
-            transform.position = newPosition;
+            _movement.Move(direction);
         }
 
         protected void OnProjectileDestroyed(ProjectileBehaviourComponent projectile)
@@ -258,7 +251,7 @@ namespace SpaceInvaders.Scenes.Game
                 _shipConfig.ProjectilePrefab,
                 spawnPosition,
                 direction,
-                Stats,
+                AttackSourceDTO.FromStats(Stats),
                 gameObject.tag
             );
 

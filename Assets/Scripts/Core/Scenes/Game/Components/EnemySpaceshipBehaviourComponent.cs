@@ -1,8 +1,6 @@
 using System;
-using BaseArchitecture.Core;
 using DG.Tweening;
 using UnityEngine;
-using Zenject;
 using Random = UnityEngine.Random;
 
 namespace SpaceInvaders.Scenes.Game
@@ -26,21 +24,12 @@ namespace SpaceInvaders.Scenes.Game
     /// Enemy ship with two movement phases: a tweened entry towards the top of the screen, followed
     /// by bouncing movement within the top half bounds.
     /// </summary>
-    public class EnemySpaceshipBehaviourComponent : BaseSpaceshipBehaviourComponent<EnemySpaceshipBehaviourComponent, EnemySpaceshipConfigSO>, IEnemySpaceship
+    public class EnemySpaceshipBehaviourComponent : BaseSpaceshipBehaviourComponent<EnemySpaceshipConfigSO>, IEnemySpaceship
     {
-        /// <summary>Bounds are tested with a tolerance: ships are parented under an offset container,
-        /// so the world position does not round trip exactly and an equality test can miss the wall,
-        /// leaving the ship clamped against it and sliding along instead of bouncing.</summary>
-        private const float BoundsTolerance = 0.01f;
-
         private enum EnemyState { Entering, Bouncing }
 
         public EnemyTypes EnemyType => ShipConfig.EnemyType;
         public EnemyCategoryTypes Category => ShipConfig.Category;
-
-        [Inject] private readonly ICameraManager _cameraManager;
-
-        [SerializeField] private float _bounceAngleVariation = 30;
 
         [Tooltip("How much of the play area a formation may occupy in depth. Lower keeps waves nearer the top.")]
         [SerializeField, Range(0f, 1f)] private float _formationDepthFactor = 0.6f;
@@ -52,9 +41,6 @@ namespace SpaceInvaders.Scenes.Game
         protected virtual bool IsInvulnerableWhileEntering => false;
 
         private EnemyState _currentState = EnemyState.Entering;
-        private Vector3 _currentDirection;
-        private Vector3 _minBounds;
-        private Vector3 _maxBounds;
         private Vector3 _entryTargetPosition;
         private Tween _entryTween;
 
@@ -66,12 +52,6 @@ namespace SpaceInvaders.Scenes.Game
             OnDestroyed?.Invoke(this);
         }
 
-        public override void OnSpawned()
-        {
-            base.OnSpawned();
-            (_minBounds, _maxBounds) = _cameraManager.GetPlayableBounds(_renderer, ScreenRegionTypes.TopRegion);
-        }
-
         public override void OnDespawned()
         {
             base.OnDespawned();
@@ -79,20 +59,23 @@ namespace SpaceInvaders.Scenes.Game
             _entryTween?.Kill();
             _entryTween = null;
 
+            // The movement's own Dispose, run by the base, is what clears the bounce direction.
             _currentState = EnemyState.Entering;
-            _currentDirection = Vector3.zero;
         }
 
         public float PrepareEntry(float formationDepthRatio)
         {
+            Vector3 minBounds = _movement.MinBounds;
+            Vector3 maxBounds = _movement.MaxBounds;
+
             // Landing straight onto the movement bounds keeps the formation inside the playable
             // area, including the margins reserved for UI.
             _entryTargetPosition = transform.position;
-            _entryTargetPosition.x = Mathf.Clamp(_entryTargetPosition.x, _minBounds.x, _maxBounds.x);
+            _entryTargetPosition.x = Mathf.Clamp(_entryTargetPosition.x, minBounds.x, maxBounds.x);
 
             // Ships further back in the formation land deeper, so the shape survives the entry.
             float depth = Mathf.Clamp01(formationDepthRatio) * _formationDepthFactor;
-            _entryTargetPosition.z = Mathf.Lerp(_maxBounds.z, _minBounds.z, depth);
+            _entryTargetPosition.z = Mathf.Lerp(maxBounds.z, minBounds.z, depth);
 
             _currentState = EnemyState.Entering;
 
@@ -139,83 +122,16 @@ namespace SpaceInvaders.Scenes.Game
             }
 
             DelayNextShot(Random.Range(0f, _maxFirstShotDelay));
-            InitializeRandomDirection();
+            _movement.StartMoving();
         }
 
         private void Update()
         {
             if (_currentState == EnemyState.Bouncing)
             {
-                UpdateBouncingMovement();
+                _movement.Tick();
                 Shoot(); // Continuously attempt to shoot (fire rate cooldown handled in base)
             }
         }
-
-        private void UpdateBouncingMovement()
-        {
-            if (_currentDirection == Vector3.zero)
-            {
-                return;
-            }
-
-            Move(_currentDirection, _minBounds, _maxBounds);
-            DetectAndBounce();
-        }
-
-        private void InitializeRandomDirection()
-        {
-            float randomAngle = Random.Range(0f, 360f);
-            float angleInRadians = randomAngle * Mathf.Deg2Rad;
-
-            _currentDirection = new Vector3(
-                Mathf.Cos(angleInRadians),
-                0f,
-                Mathf.Sin(angleInRadians)
-            );
-
-            _currentDirection.Normalize();
-        }
-
-        private void DetectAndBounce()
-        {
-            Vector3 currentPosition = transform.position;
-
-            bool hitXMin = currentPosition.x <= _minBounds.x + BoundsTolerance && _currentDirection.x < 0;
-            bool hitXMax = currentPosition.x >= _maxBounds.x - BoundsTolerance && _currentDirection.x > 0;
-
-            if (hitXMin || hitXMax)
-            {
-                _currentDirection.x *= -1;
-                ApplyRandomBounce();
-            }
-
-            bool hitZMin = currentPosition.z <= _minBounds.z + BoundsTolerance && _currentDirection.z < 0;
-            bool hitZMax = currentPosition.z >= _maxBounds.z - BoundsTolerance && _currentDirection.z > 0;
-
-            if (hitZMin || hitZMax)
-            {
-                _currentDirection.z *= -1;
-                ApplyRandomBounce();
-            }
-
-            _currentDirection.Normalize();
-        }
-
-        /// <summary>Applies a random angle variation to the reflected direction.</summary>
-        private void ApplyRandomBounce()
-        {
-            float randomAngleVariation = UnityEngine.Random.Range(-_bounceAngleVariation, _bounceAngleVariation);
-            float angleInRadians = randomAngleVariation * Mathf.Deg2Rad;
-
-            float cos = Mathf.Cos(angleInRadians);
-            float sin = Mathf.Sin(angleInRadians);
-
-            float newX = _currentDirection.x * cos - _currentDirection.z * sin;
-            float newZ = _currentDirection.x * sin + _currentDirection.z * cos;
-
-            _currentDirection.x = newX;
-            _currentDirection.z = newZ;
-        }
-
     }
 }

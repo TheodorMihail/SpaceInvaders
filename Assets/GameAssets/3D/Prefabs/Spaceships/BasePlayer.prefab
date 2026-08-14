@@ -317,6 +317,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2996160477665614555, guid: 34751f36bc4bae34cb9e597a9c2277ad, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8268218529817987952}
+    - targetCorrespondingSourceObject: {fileID: 2996160477665614555, guid: 34751f36bc4bae34cb9e597a9c2277ad, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6859048413572594827}
   m_SourcePrefab: {fileID: 100100000, guid: 34751f36bc4bae34cb9e597a9c2277ad, type: 3}
 --- !u!1 &1482985585801961973 stripped
 GameObject:
@@ -335,12 +338,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e9a65943dd12644b86ff8d77f5c6c0b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _renderer: {fileID: 3190807267319232738}
+  _movement: {fileID: 6859048413572594827}
   _projectileOffset: {x: 0, y: 1, z: 25}
   _healthBar: {fileID: 7620821064175596640}
   _flames:
   - {fileID: 7346615124248880058}
   _shipConfig: {fileID: 0}
+--- !u!114 &6859048413572594827
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1482985585801961973}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eae009d2a644f234aae83bfa90c44962, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _renderer: {fileID: 3190807267319232738}
+  _region: 1
 --- !u!212 &3190807267319232738 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 1245273683126043596, guid: 34751f36bc4bae34cb9e597a9c2277ad, type: 3}

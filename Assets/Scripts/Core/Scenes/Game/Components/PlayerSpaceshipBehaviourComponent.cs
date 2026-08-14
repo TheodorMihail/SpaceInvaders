@@ -11,25 +11,15 @@ namespace SpaceInvaders.Scenes.Game
         void DisableControls();
     }
     
-    public class PlayerSpaceshipBehaviourComponent : BaseSpaceshipBehaviourComponent<PlayerSpaceshipBehaviourComponent, PlayerSpaceshipConfigSO>, IPlayerSpaceship
+    public class PlayerSpaceshipBehaviourComponent : BaseSpaceshipBehaviourComponent<PlayerSpaceshipConfigSO>, IPlayerSpaceship
     {
         [Inject] private readonly IInputService _inputService;
-        [Inject] private readonly ICameraManager _cameraManager;
 
         /// <summary>Input only reports movement, never the lack of it, so each frame starts unset and
         /// is resolved once every tick has been delivered.</summary>
         private bool _isThrustingThisFrame;
 
-        private Vector3 _minBounds;
-        private Vector3 _maxBounds;
-        
         public new event Action<IPlayerSpaceship> OnDestroyed;
-
-        public override void OnSpawned()
-        {
-            base.OnSpawned();
-            (_minBounds, _maxBounds) = _cameraManager.GetPlayableBounds(_renderer, ScreenRegionTypes.BottomRegion);
-        }
 
         public override void OnDespawned()
         {
@@ -77,7 +67,7 @@ namespace SpaceInvaders.Scenes.Game
                 _isThrustingThisFrame = true;
             }
 
-            Move(direction, _minBounds, _maxBounds);
+            Move(direction);
         }
 
         #endregion
