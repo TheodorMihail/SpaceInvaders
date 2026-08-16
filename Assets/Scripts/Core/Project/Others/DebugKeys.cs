@@ -11,7 +11,7 @@ namespace SpaceInvaders.Project
         public const Key DestroyAllEnemies = Key.F1;
         public const Key KillPlayer = Key.F2;
 
-        //In menu
+        //Everywhere
         public const Key AddCurrency = Key.F5;
         public const Key AddRandomItem = Key.F6;
         public const Key ClearCurrency = Key.F8;
@@ -19,6 +19,7 @@ namespace SpaceInvaders.Project
         public const Key ClearInventory = Key.F10;
         public const Key ClearTalents = Key.F11;
         public const Key ClearLevelProgress = Key.F12;
+        public const Key TakeScreenshot = Key.Backquote;
     }
 }
 #endif

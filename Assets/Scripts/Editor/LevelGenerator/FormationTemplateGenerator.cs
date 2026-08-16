@@ -12,7 +12,11 @@ namespace SpaceInvaders.Editor
         Line,
         Diamond,
         Circle,
-        Cluster
+        Cluster,
+        Echelon,
+        Split,
+        Plus,
+        XShape
     }
 
     /// <summary>
@@ -42,6 +46,14 @@ namespace SpaceInvaders.Editor
                     return GenerateCircle(enemyCount, spacingX, spacingY, random);
                 case FormationTemplateTypes.Cluster:
                     return GenerateCluster(enemyCount, spacingX, spacingY, random);
+                case FormationTemplateTypes.Echelon:
+                    return GenerateEchelon(enemyCount, spacingX, spacingY, random);
+                case FormationTemplateTypes.Split:
+                    return GenerateSplit(enemyCount, spacingX, spacingY);
+                case FormationTemplateTypes.Plus:
+                    return GenerateCross(enemyCount, spacingX, spacingY, false);
+                case FormationTemplateTypes.XShape:
+                    return GenerateCross(enemyCount, spacingX, spacingY, true);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, "Unhandled formation template type.");
             }
@@ -191,6 +203,96 @@ namespace SpaceInvaders.Editor
             }
 
             return positions;
+        }
+
+        /// <summary>Diagonal staircase sweeping in from one side, so the leading enemy sits on a
+        /// screen edge rather than the centre. The side it leads from is randomised.</summary>
+        private static List<Vector2Int> GenerateEchelon(int count, int spacingX, int spacingY, Random random)
+        {
+            List<Vector2Int> positions = new List<Vector2Int>();
+            int direction = random.Next(2) == 0 ? -1 : 1;
+            float centerOffset = (count - 1) / 2f;
+
+            for (int i = 0; i < count; i++)
+            {
+                int x = Mathf.RoundToInt((i - centerOffset) * spacingX) * direction;
+                positions.Add(new Vector2Int(x, i * spacingY));
+            }
+
+            return positions;
+        }
+
+        /// <summary>Two flanking groups with an open centre, arriving down both screen sides.</summary>
+        private static List<Vector2Int> GenerateSplit(int count, int spacingX, int spacingY)
+        {
+            List<Vector2Int> positions = new List<Vector2Int>();
+            int leftCount = count / 2;
+            int flankOffset = spacingX * 3;
+
+            foreach (Vector2Int slot in GenerateGrid(leftCount, spacingX, spacingY))
+            {
+                positions.Add(new Vector2Int(slot.x - flankOffset, slot.y));
+            }
+
+            foreach (Vector2Int slot in GenerateGrid(count - leftCount, spacingX, spacingY))
+            {
+                positions.Add(new Vector2Int(slot.x + flankOffset, slot.y));
+            }
+
+            return positions;
+        }
+
+        /// <summary>
+        /// Four arms growing outward from a centre slot, straight for a plus and diagonal for an X.
+        /// Complete at 1, 5, 9, 13 and so on; counts in between fill the outermost ring one arm at a
+        /// time, so the shape stays as balanced as the count allows.
+        /// </summary>
+        private static List<Vector2Int> GenerateCross(int count, int spacingX, int spacingY, bool diagonal)
+        {
+            List<Vector2Int> positions = new List<Vector2Int> { Vector2Int.zero };
+            int ring = 1;
+
+            while (positions.Count < count)
+            {
+                foreach (Vector2Int arm in BuildCrossRing(ring, spacingX, spacingY, diagonal))
+                {
+                    if (positions.Count >= count)
+                    {
+                        break;
+                    }
+
+                    positions.Add(arm);
+                }
+
+                ring++;
+            }
+
+            return positions;
+        }
+
+        private static List<Vector2Int> BuildCrossRing(int ring, int spacingX, int spacingY, bool diagonal)
+        {
+            int x = ring * spacingX;
+            int y = ring * spacingY;
+
+            if (diagonal)
+            {
+                return new List<Vector2Int>
+                {
+                    new Vector2Int(-x, -y),
+                    new Vector2Int(x, -y),
+                    new Vector2Int(-x, y),
+                    new Vector2Int(x, y)
+                };
+            }
+
+            return new List<Vector2Int>
+            {
+                new Vector2Int(-x, 0),
+                new Vector2Int(x, 0),
+                new Vector2Int(0, -y),
+                new Vector2Int(0, y)
+            };
         }
 
         private static int[] SplitEvenly(int total, int parts, Random random)

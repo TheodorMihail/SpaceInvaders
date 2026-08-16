@@ -17,12 +17,12 @@ namespace SpaceInvaders.Scenes.Game
         [Header("Powerup Settings")]
         [SerializeField] private float _duration;
         [SerializeField] private int _dropWeight = 1;
-        [SerializeField] private PowerupBehaviourComponent _pickupPrefab;
+
+        [Tooltip("Shown on the HUD indicator, and applied to the shared pickup prefab on spawn.")]
         [SerializeField] private Sprite _icon;
 
         public virtual float Duration => _duration;
         public virtual int DropWeight => _dropWeight;
-        public virtual PowerupBehaviourComponent PickupPrefab => _pickupPrefab;
         public virtual Sprite Icon => _icon;
         public virtual string ObjectID => PowerupType.ToString();
 

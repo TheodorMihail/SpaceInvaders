@@ -4,6 +4,7 @@ using BaseArchitecture.Core;
 using Cysharp.Threading.Tasks;
 using SpaceInvaders.Project;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Zenject;
 
 namespace SpaceInvaders.Scenes.Game
@@ -28,7 +29,9 @@ namespace SpaceInvaders.Scenes.Game
         [Serializable]
         public struct WaveFormationDTO
         {
-            public Vector2Int Position;
+            /// <summary>Formation grid cell, offset into the spawn container on spawn.</summary>
+            [FormerlySerializedAs("Position")]
+            public Vector2Int GridPosition;
             public EnemyTypes EnemyType;
         }
     }
@@ -114,7 +117,7 @@ namespace SpaceInvaders.Scenes.Game
             _enemiesManager.SpawnEnemies(wave).Forget();
             _currentWaveNumber++;
 
-            _messageBus.Publish(new WaveStartedMessage(_currentWaveNumber, WaveContainsBoss(wave)));
+            _messageBus.Publish(new WaveStartedMessage(_currentWaveNumber, _currentLevelConfigSo.WavesConfigs.Count, WaveContainsBoss(wave)));
             this.Log($"Wave {_currentWaveNumber} started!");
         }
 

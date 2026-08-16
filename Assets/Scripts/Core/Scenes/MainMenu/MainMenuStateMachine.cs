@@ -13,9 +13,9 @@ namespace SpaceInvaders.Scenes.MainMenu
             Menu
         }
 
-        protected override MainMenuStateTypes DefaultStateId => MainMenuStateTypes.Menu;
-
         [Inject] private readonly IScenesManager _scenesManager;
+
+        protected override MainMenuStateTypes DefaultStateId => MainMenuStateTypes.Menu;
 
         public MainMenuStateMachine(IList<IState<MainMenuStateTypes>> mainMenuStates) : base(mainMenuStates)
         {

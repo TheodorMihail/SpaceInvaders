@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _duration: 10
   _dropWeight: 1
-  _pickupPrefab: {fileID: 5567308644402932595, guid: c826178857df409468e5af7e415146fd, type: 3}
-  _icon: {fileID: 21300000, guid: f17a2b763d179a04ca63dc34ffe717d4, type: 3}
-  _fireRateMultiplierBonus: -0.5
+  _icon: {fileID: 921843265, guid: 25d1729ee92f65a4cbf29fc78f430f0d, type: 3}
+  _bonus: -0.5
+  _valueType: 0

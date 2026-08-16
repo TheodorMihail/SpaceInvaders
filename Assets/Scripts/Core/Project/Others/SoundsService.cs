@@ -31,6 +31,7 @@ namespace SpaceInvaders.Project
             _messageBus.Subscribe<ShipDamagedMessage>(OnShipDamaged);
             _messageBus.Subscribe<EnemyDestroyedMessage>(OnEnemyDestroyed);
             _messageBus.Subscribe<PlayerDestroyedMessage>(OnPlayerDestroyed);
+            _messageBus.Subscribe<PlayerReloadStartedMessage>(OnPlayerReloadStarted);
 
             _messageBus.Subscribe<PowerupDroppedMessage>(OnPowerupDropped);
             _messageBus.Subscribe<PowerupActivatedMessage>(OnPowerupActivated);
@@ -53,6 +54,7 @@ namespace SpaceInvaders.Project
             _messageBus.Unsubscribe<ShipDamagedMessage>(OnShipDamaged);
             _messageBus.Unsubscribe<EnemyDestroyedMessage>(OnEnemyDestroyed);
             _messageBus.Unsubscribe<PlayerDestroyedMessage>(OnPlayerDestroyed);
+            _messageBus.Unsubscribe<PlayerReloadStartedMessage>(OnPlayerReloadStarted);
 
             _messageBus.Unsubscribe<PowerupDroppedMessage>(OnPowerupDropped);
             _messageBus.Unsubscribe<PowerupActivatedMessage>(OnPowerupActivated);
@@ -141,7 +143,7 @@ namespace SpaceInvaders.Project
 
         private void OnShipDamaged(ShipDamagedMessage message)
         {
-            PlaySound(SoundTypes.ShipDamaged);
+            PlaySound(message.IsCritical ? SoundTypes.ShipCriticalDamaged : SoundTypes.ShipDamaged);
         }
 
         private void OnEnemyDestroyed(EnemyDestroyedMessage message)
@@ -152,6 +154,11 @@ namespace SpaceInvaders.Project
         private void OnPlayerDestroyed(PlayerDestroyedMessage message)
         {
             PlaySound(SoundTypes.PlayerDestroyed);
+        }
+
+        private void OnPlayerReloadStarted(PlayerReloadStartedMessage message)
+        {
+            PlaySound(SoundTypes.ShipReload);
         }
 
         private void OnPowerupDropped(PowerupDroppedMessage message)

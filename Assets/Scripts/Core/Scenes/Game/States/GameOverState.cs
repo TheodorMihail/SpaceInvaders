@@ -17,9 +17,9 @@ namespace SpaceInvaders.Scenes.Game
             NextLevel
         }
 
-        public override GameStateTypes Id => GameStateTypes.GameOver;
-
         [Inject] private readonly IUIManager _uiManager;
+
+        public override GameStateTypes Id => GameStateTypes.GameOver;
 
         public override void OnEnter(params object[] paramsList)
         {

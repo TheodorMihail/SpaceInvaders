@@ -1,0 +1,126 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01a7b35da76fa034da9811e74b84d3f9, type: 3}
+  m_Name: LevelConfig_9
+  m_EditorClassIdentifier: 
+  _levelIndex: 9
+  _levelType: 0
+  _wavesConfigs:
+  - _wavesFormation:
+    - GridPosition: {x: -14, y: 120}
+      EnemyType: 0
+    - GridPosition: {x: -64, y: 210}
+      EnemyType: 1
+    - GridPosition: {x: 36, y: 210}
+      EnemyType: 1
+    - GridPosition: {x: -115, y: 300}
+      EnemyType: 0
+    - GridPosition: {x: 86, y: 300}
+      EnemyType: 1
+    - GridPosition: {x: -165, y: 390}
+      EnemyType: 0
+    - GridPosition: {x: 136, y: 390}
+      EnemyType: 1
+    - GridPosition: {x: -215, y: 480}
+      EnemyType: 1
+    - GridPosition: {x: 186, y: 480}
+      EnemyType: 1
+    _timeBetweenSpawns: 1
+    _entrySpeed: 160
+  - _wavesFormation:
+    - GridPosition: {x: -155, y: 120}
+      EnemyType: 0
+    - GridPosition: {x: -85, y: 120}
+      EnemyType: 1
+    - GridPosition: {x: -15, y: 120}
+      EnemyType: 1
+    - GridPosition: {x: -155, y: 210}
+      EnemyType: 1
+    - GridPosition: {x: -85, y: 210}
+      EnemyType: 1
+    - GridPosition: {x: -15, y: 210}
+      EnemyType: 0
+    - GridPosition: {x: -155, y: 300}
+      EnemyType: 0
+    - GridPosition: {x: -85, y: 300}
+      EnemyType: 1
+    - GridPosition: {x: -15, y: 300}
+      EnemyType: 1
+    _timeBetweenSpawns: 1
+    _entrySpeed: 160
+  - _wavesFormation:
+    - GridPosition: {x: 0, y: 120}
+      EnemyType: 0
+    - GridPosition: {x: 0, y: 220}
+      EnemyType: 1
+    - GridPosition: {x: -180, y: 320}
+      EnemyType: 1
+    - GridPosition: {x: -90, y: 320}
+      EnemyType: 1
+    - GridPosition: {x: 0, y: 320}
+      EnemyType: 0
+    - GridPosition: {x: 90, y: 320}
+      EnemyType: 1
+    - GridPosition: {x: 180, y: 320}
+      EnemyType: 1
+    - GridPosition: {x: 0, y: 420}
+      EnemyType: 1
+    - GridPosition: {x: 0, y: 520}
+      EnemyType: 1
+    _timeBetweenSpawns: 1
+    _entrySpeed: 160
+  - _wavesFormation:
+    - GridPosition: {x: -140, y: 120}
+      EnemyType: 0
+    - GridPosition: {x: -100, y: 120}
+      EnemyType: 1
+    - GridPosition: {x: 80, y: 120}
+      EnemyType: 1
+    - GridPosition: {x: 120, y: 120}
+      EnemyType: 0
+    - GridPosition: {x: 160, y: 120}
+      EnemyType: 1
+    - GridPosition: {x: -140, y: 200}
+      EnemyType: 1
+    - GridPosition: {x: -100, y: 200}
+      EnemyType: 1
+    - GridPosition: {x: 100, y: 200}
+      EnemyType: 0
+    - GridPosition: {x: 140, y: 200}
+      EnemyType: 1
+    _timeBetweenSpawns: 1
+    _entrySpeed: 160
+  - _wavesFormation:
+    - GridPosition: {x: -84, y: 120}
+      EnemyType: 0
+    - GridPosition: {x: -44, y: 120}
+      EnemyType: 1
+    - GridPosition: {x: -4, y: 120}
+      EnemyType: 1
+    - GridPosition: {x: 76, y: 120}
+      EnemyType: 0
+    - GridPosition: {x: 116, y: 120}
+      EnemyType: 1
+    - GridPosition: {x: 156, y: 120}
+      EnemyType: 1
+    - GridPosition: {x: -64, y: 200}
+      EnemyType: 1
+    - GridPosition: {x: -24, y: 200}
+      EnemyType: 1
+    - GridPosition: {x: 96, y: 200}
+      EnemyType: 1
+    - GridPosition: {x: 136, y: 200}
+      EnemyType: 0
+    _timeBetweenSpawns: 1
+    _entrySpeed: 160
+  _generatorSeed: 0
+  _threeStarMaxDamage: 110

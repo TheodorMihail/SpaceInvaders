@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public class PowerupIndicatorComponent : MonoBehaviour, IPoolableObject
+    public class PowerupIndicatorUIComponent : MonoBehaviour, IPoolableObject
     {
         [SerializeField] private Image _icon;
         [SerializeField] private TextMeshProUGUI _countdownText;
@@ -29,11 +29,6 @@ namespace SpaceInvaders.Scenes.Game
             RunCountdown(duration, _cts).Forget();
         }
 
-        private async UniTaskVoid RunCountdown(float duration, CancellationTokenSource cts)
-        {
-            await _countdownText.CountdownAsync(duration, 0, duration, null, cts);
-        }
-
         public void OnSpawned()
         {
         }
@@ -42,6 +37,11 @@ namespace SpaceInvaders.Scenes.Game
         {
             _cts?.CancelAndDispose();
             _cts = null;
+        }
+
+        private async UniTaskVoid RunCountdown(float duration, CancellationTokenSource cts)
+        {
+            await _countdownText.CountdownAsync(duration, 0, duration, null, cts);
         }
     }
 }

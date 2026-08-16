@@ -45,9 +45,21 @@ namespace SpaceInvaders.Project
             return GetLevelProgress(levelIndex)?.Stars ?? 0;
         }
 
+        /// <summary>Falls back to the previous level's completion, so levels added after a save was
+        /// written still unlock without replaying.</summary>
         public bool IsLevelUnlocked(int levelIndex)
         {
-            return GetLevelProgress(levelIndex)?.Unlocked ?? false;
+            if (levelIndex <= 1)
+            {
+                return true;
+            }
+
+            if (GetLevelProgress(levelIndex)?.Unlocked ?? false)
+            {
+                return true;
+            }
+
+            return GetLevelStars(levelIndex - 1) > 0;
         }
 
         public void SetLevelUnlocked(int levelIndex, bool unlocked)

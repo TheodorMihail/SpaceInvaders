@@ -40,17 +40,17 @@ namespace SpaceInvaders.Editor
             public int[] EnemyTypeCounts;
         }
 
+        private void OnEnable()
+        {
+            ResizeWaveDrafts();
+        }
+
         [MenuItem("SpaceInvaders/Level Generator")]
         private static void ShowWindow()
         {
             LevelGeneratorWindow window = GetWindow<LevelGeneratorWindow>("Level Generator");
             window.minSize = new Vector2(420f, 420f);
             window.Show();
-        }
-
-        private void OnEnable()
-        {
-            ResizeWaveDrafts();
         }
 
         private void OnGUI()
@@ -318,7 +318,7 @@ namespace SpaceInvaders.Editor
                 {
                     waveFormation.Add(new WaveConfigDTO.WaveFormationDTO
                     {
-                        Position = slotPositions[i],
+                        GridPosition = slotPositions[i],
                         EnemyType = enemyPool[i]
                     });
                 }

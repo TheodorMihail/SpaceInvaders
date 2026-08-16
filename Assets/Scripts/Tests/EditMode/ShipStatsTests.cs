@@ -1,11 +1,15 @@
 using NUnit.Framework;
 using SpaceInvaders.Scenes.Game;
+using UnityEngine;
 
 namespace SpaceInvaders.Tests
 {
     [TestFixture]
     public class ShipStatsTests
     {
+        private const float FloatTolerance = 0.0001f;
+        private const int RollSampleCount = 20;
+
         private static ShipStats CreateStats()
         {
             return new ShipStats(new ShipBaseStats());
@@ -106,6 +110,196 @@ namespace SpaceInvaders.Tests
             ShipStats stats = CreateStats();
 
             Assert.AreEqual(stats.BaseProjectileDamage, stats.CurrentProjectileDamage);
+        }
+
+        [Test]
+        public void CritStats_WithoutBonuses_UseTheirDefaults()
+        {
+            ShipStats stats = CreateStats();
+
+            Assert.AreEqual(0.1f, stats.CurrentCritChance, FloatTolerance);
+            Assert.AreEqual(2f, stats.CurrentCritDamage, FloatTolerance);
+        }
+
+        [Test]
+        public void ApplyStatBonus_CritChance_WithFlatBonus_AddsFlatAmountToBase()
+        {
+            ShipStats stats = CreateStats();
+            stats.ApplyStatBonus(ShipUpgradableStatTypes.CritChance, 0.15f, ShipStatValueTypes.Flat);
+
+            Assert.AreEqual(0.25f, stats.CurrentCritChance, FloatTolerance);
+        }
+
+        [Test]
+        public void ApplyStatBonus_CritDamage_WithPercentageBonus_ScalesBase()
+        {
+            ShipStats stats = CreateStats();
+            stats.ApplyStatBonus(ShipUpgradableStatTypes.CritDamage, 0.5f, ShipStatValueTypes.Percentage);
+
+            Assert.AreEqual(3f, stats.CurrentCritDamage, FloatTolerance);
+        }
+
+        [Test]
+        public void CurrentCritChance_WithHugeBonus_ClampsToOne()
+        {
+            ShipStats stats = CreateStats();
+            stats.ApplyStatBonus(ShipUpgradableStatTypes.CritChance, 5f, ShipStatValueTypes.Flat);
+
+            Assert.AreEqual(1f, stats.CurrentCritChance, FloatTolerance);
+        }
+
+        [Test]
+        public void CurrentCritDamage_WithSevereMalus_NeverDropsBelowOne()
+        {
+            ShipStats stats = CreateStats();
+            stats.ApplyStatBonus(ShipUpgradableStatTypes.CritDamage, -100f, ShipStatValueTypes.Flat);
+
+            Assert.AreEqual(1f, stats.CurrentCritDamage, FloatTolerance);
+        }
+
+        /// <summary>The default base magazine is 0 (unlimited), so ammo tests grant one the way
+        /// equipment does: a flat bonus followed by a refill.</summary>
+        private static ShipStats CreateStatsWithMagazine(int magazineSize)
+        {
+            ShipStats stats = CreateStats();
+            stats.ApplyStatBonus(ShipUpgradableStatTypes.MagazineSize, magazineSize, ShipStatValueTypes.Flat);
+            stats.RefillAmmo();
+
+            return stats;
+        }
+
+        [Test]
+        public void Ammo_WithoutMagazine_IsUnlimited()
+        {
+            ShipStats stats = CreateStats();
+
+            Assert.IsTrue(stats.HasUnlimitedAmmo);
+            Assert.IsFalse(stats.IsOutOfAmmo);
+        }
+
+        [Test]
+        public void TryConsumeAmmo_WithUnlimitedAmmo_AlwaysSucceeds()
+        {
+            ShipStats stats = CreateStats();
+
+            for (int i = 0; i < RollSampleCount; i++)
+            {
+                Assert.IsTrue(stats.TryConsumeAmmo());
+            }
+
+            Assert.IsFalse(stats.IsOutOfAmmo);
+        }
+
+        [Test]
+        public void RefillAmmo_AfterMagazineBonus_FillsToTheRaisedMaximum()
+        {
+            ShipStats stats = CreateStatsWithMagazine(20);
+
+            Assert.AreEqual(20, stats.CurrentMaxAmmo);
+            Assert.AreEqual(20, stats.CurrentAmmo);
+            Assert.IsFalse(stats.HasUnlimitedAmmo);
+        }
+
+        [Test]
+        public void TryConsumeAmmo_SpendsOneRoundPerCall_UntilTheMagazineIsEmpty()
+        {
+            ShipStats stats = CreateStatsWithMagazine(3);
+
+            Assert.IsTrue(stats.TryConsumeAmmo());
+            Assert.AreEqual(2, stats.CurrentAmmo);
+
+            Assert.IsTrue(stats.TryConsumeAmmo());
+            Assert.IsTrue(stats.TryConsumeAmmo());
+
+            Assert.IsTrue(stats.IsOutOfAmmo);
+            Assert.IsFalse(stats.TryConsumeAmmo());
+        }
+
+        [Test]
+        public void TryConsumeAmmo_RaisesAmmoChangedWithTheRemainingRounds()
+        {
+            ShipStats stats = CreateStatsWithMagazine(5);
+
+            int reportedAmmo = -1;
+            int reportedMax = -1;
+            stats.AmmoChanged += (current, max) =>
+            {
+                reportedAmmo = current;
+                reportedMax = max;
+            };
+
+            stats.TryConsumeAmmo();
+
+            Assert.AreEqual(4, reportedAmmo);
+            Assert.AreEqual(5, reportedMax);
+        }
+
+        [Test]
+        public void ReloadDuration_WithoutBonuses_UsesItsDefault()
+        {
+            ShipStats stats = CreateStats();
+
+            Assert.AreEqual(1.5f, stats.CurrentReloadDuration, FloatTolerance);
+        }
+
+        [Test]
+        public void ApplyStatBonus_ReloadSpeed_PositiveFlatBonusStillReloadsFaster()
+        {
+            ShipStats stats = CreateStats();
+            stats.ApplyStatBonus(ShipUpgradableStatTypes.ReloadSpeed, 0.5f, ShipStatValueTypes.Flat);
+
+            Assert.Less(stats.CurrentReloadDuration, stats.BaseReloadSpeed);
+        }
+
+        [Test]
+        public void ApplyStatBonus_ReloadSpeed_PositivePercentageBonusStillReloadsFaster()
+        {
+            ShipStats stats = CreateStats();
+            stats.ApplyStatBonus(ShipUpgradableStatTypes.ReloadSpeed, 0.5f, ShipStatValueTypes.Percentage);
+
+            Assert.Less(stats.CurrentReloadDuration, stats.BaseReloadSpeed);
+        }
+
+        [Test]
+        public void RollOutgoingDamage_WithDamageMultiplier_ScalesTheRoll()
+        {
+            ShipStats stats = CreateStats();
+            stats.ApplyStatBonus(ShipUpgradableStatTypes.CritChance, -1f, ShipStatValueTypes.Flat);
+
+            int unscaled = stats.RollOutgoingDamage(out _);
+            int doubled = stats.RollOutgoingDamage(2f, out _);
+
+            Assert.AreEqual(unscaled * 2, doubled);
+        }
+
+        /// <summary>Guards the bit-for-bit equivalence the unscaled overload forwards to.</summary>
+        [Test]
+        public void RollOutgoingDamage_WithMultiplierOfOne_MatchesTheUnscaledRoll()
+        {
+            ShipStats stats = CreateStats();
+            stats.ApplyStatBonus(ShipUpgradableStatTypes.CritChance, 1f, ShipStatValueTypes.Flat);
+
+            for (int i = 0; i < RollSampleCount; i++)
+            {
+                Assert.AreEqual(stats.RollOutgoingDamage(out _), stats.RollOutgoingDamage(1f, out _));
+            }
+        }
+
+        [Test]
+        public void RollOutgoingDamage_WithGuaranteedCrit_MultipliesDamage()
+        {
+            ShipStats stats = CreateStats();
+            stats.ApplyStatBonus(ShipUpgradableStatTypes.CritChance, 1f, ShipStatValueTypes.Flat);
+
+            int expectedDamage = Mathf.RoundToInt(stats.CurrentProjectileDamage * stats.CurrentCritDamage);
+
+            for (int i = 0; i < RollSampleCount; i++)
+            {
+                int damage = stats.RollOutgoingDamage(out bool isCritical);
+
+                Assert.IsTrue(isCritical);
+                Assert.AreEqual(expectedDamage, damage);
+            }
         }
     }
 }

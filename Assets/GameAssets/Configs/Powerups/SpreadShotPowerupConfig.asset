@@ -14,7 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _duration: 10
   _dropWeight: 1
-  _pickupPrefab: {fileID: 5567308644402932595, guid: b77b1f37f6276f74da9056641e485b62, type: 3}
-  _icon: {fileID: 21300000, guid: 2be418c2561b8ad4689366ccd5653720, type: 3}
+  _icon: {fileID: 118613148, guid: 25d1729ee92f65a4cbf29fc78f430f0d, type: 3}
   _extraShotCount: 2
   _spreadAngleDegrees: 15

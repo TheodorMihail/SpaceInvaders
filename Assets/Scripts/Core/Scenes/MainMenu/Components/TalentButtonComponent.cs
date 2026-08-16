@@ -37,7 +37,7 @@ namespace SpaceInvaders.Scenes.MainMenu
             _displayNameText.text = config.DisplayName;
 
             float currentBonus = SumBonusDelta(config, currentLevel);
-            _currentMultiplierText.text = string.Format(_currentMultiplierFormat, FormatPercent(currentBonus));
+            _currentMultiplierText.text = string.Format(_currentMultiplierFormat, FormatBonus(config, currentBonus));
 
             if (isMaxed)
             {
@@ -47,7 +47,7 @@ namespace SpaceInvaders.Scenes.MainMenu
             else
             {
                 float nextBonus = SumBonusDelta(config, currentLevel + 1);
-                _nextMultiplierText.text = string.Format(_nextMultiplierFormat, FormatPercent(nextBonus));
+                _nextMultiplierText.text = string.Format(_nextMultiplierFormat, FormatBonus(config, nextBonus));
                 _costText.text = string.Format(_costFormat, nextCost);
             }
 
@@ -65,8 +65,14 @@ namespace SpaceInvaders.Scenes.MainMenu
             return total;
         }
 
-        private static string FormatPercent(float bonus)
+        /// <summary>Routed through the shared stat formatting so flat talents don't render as percentages.</summary>
+        private static string FormatBonus(TalentConfigSO config, float bonus)
         {
+            if (config.ValueType == ShipStatValueTypes.Flat)
+            {
+                return ShipStats.FormatStatDelta(config.TalentType, bonus);
+            }
+
             return $"{bonus * 100f:0.#}%";
         }
     }

@@ -11,8 +11,9 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ff84f95b993ceb12c3e68a947eb93562, type: 3}
   m_Name: EnemyDataConfig
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   _enemyConfigs:
   - {fileID: 11400000, guid: 116dad5eec8a4a743919133197feab8f, type: 2}
   - {fileID: 11400000, guid: d5d1fd86a7b15e14f829a7858a0d6d04, type: 2}
   - {fileID: 11400000, guid: 1fcc9f6c545818346a663e9ea7bf7548, type: 2}
+  - {fileID: 11400000, guid: c85fce17918c97d4b85cefcbfe96fa63, type: 2}

@@ -6,9 +6,9 @@ namespace SpaceInvaders.Scenes.Preload
 {
     public class BootState : BaseState<PreloadStateTypes>
     {
-        public override PreloadStateTypes Id => PreloadStateTypes.BootState;
-
         [Inject] private readonly IUIManager _uiManager;
+
+        public override PreloadStateTypes Id => PreloadStateTypes.BootState;
 
         public override async void OnEnter(params object[] paramsList)
         {

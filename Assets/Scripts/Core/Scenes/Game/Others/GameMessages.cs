@@ -20,13 +20,13 @@ namespace SpaceInvaders.Scenes.Game
     {
         public EnemyTypes Type { get; }
         public EnemyCategoryTypes Category { get; }
-        public Vector3 Position { get; }
+        public Vector3 LocalPosition { get; }
 
-        public EnemyDestroyedMessage(EnemyTypes type, EnemyCategoryTypes category, Vector3 position)
+        public EnemyDestroyedMessage(EnemyTypes type, EnemyCategoryTypes category, Vector3 localPosition)
         {
             Type = type;
             Category = category;
-            Position = position;
+            LocalPosition = localPosition;
         }
     }
 
@@ -61,11 +61,13 @@ namespace SpaceInvaders.Scenes.Game
     public readonly struct WaveStartedMessage : IMessageObject
     {
         public int WaveNumber { get; }
+        public int TotalWaves { get; }
         public bool IsBossWave { get; }
 
-        public WaveStartedMessage(int waveNumber, bool isBossWave)
+        public WaveStartedMessage(int waveNumber, int totalWaves, bool isBossWave)
         {
             WaveNumber = waveNumber;
+            TotalWaves = totalWaves;
             IsBossWave = isBossWave;
         }
     }
@@ -96,6 +98,29 @@ namespace SpaceInvaders.Scenes.Game
     {
     }
 
+    public readonly struct PlayerAmmoChangedMessage : IMessageObject
+    {
+        public int CurrentAmmo { get; }
+        public int MaxAmmo { get; }
+
+        public PlayerAmmoChangedMessage(int currentAmmo, int maxAmmo)
+        {
+            CurrentAmmo = currentAmmo;
+            MaxAmmo = maxAmmo;
+        }
+    }
+
+    /// <summary>Reload completion arrives as a full PlayerAmmoChangedMessage, so there is no paired end message.</summary>
+    public readonly struct PlayerReloadStartedMessage : IMessageObject
+    {
+        public float Duration { get; }
+
+        public PlayerReloadStartedMessage(float duration)
+        {
+            Duration = duration;
+        }
+    }
+
     public readonly struct PowerupActivatedMessage : IMessageObject
     {
         public PowerupTypes Type { get; }
@@ -121,34 +146,36 @@ namespace SpaceInvaders.Scenes.Game
     public readonly struct PowerupDroppedMessage : IMessageObject
     {
         public PowerupTypes Type { get; }
-        public Vector3 Position { get; }
+        public Vector3 LocalPosition { get; }
 
-        public PowerupDroppedMessage(PowerupTypes type, Vector3 position)
+        public PowerupDroppedMessage(PowerupTypes type, Vector3 localPosition)
         {
             Type = type;
-            Position = position;
+            LocalPosition = localPosition;
         }
     }
 
     public readonly struct ItemDroppedMessage : IMessageObject
     {
         public string InstanceId { get; }
-        public Vector3 Position { get; }
+        public Vector3 LocalPosition { get; }
 
-        public ItemDroppedMessage(string instanceId, Vector3 position)
+        public ItemDroppedMessage(string instanceId, Vector3 localPosition)
         {
             InstanceId = instanceId;
-            Position = position;
+            LocalPosition = localPosition;
         }
     }
 
     public readonly struct ItemCollectedMessage : IMessageObject
     {
         public string InstanceId { get; }
+        public ItemRarityTypes Rarity { get; }
 
-        public ItemCollectedMessage(string instanceId)
+        public ItemCollectedMessage(string instanceId, ItemRarityTypes rarity)
         {
             InstanceId = instanceId;
+            Rarity = rarity;
         }
     }
 
@@ -171,11 +198,11 @@ namespace SpaceInvaders.Scenes.Game
 
     public readonly struct ShipShotFiredMessage : IMessageObject
     {
-        public Vector3 Position { get; }
+        public Vector3 LocalPosition { get; }
 
-        public ShipShotFiredMessage(Vector3 position)
+        public ShipShotFiredMessage(Vector3 localPosition)
         {
-            Position = position;
+            LocalPosition = localPosition;
         }
     }
 
@@ -183,11 +210,15 @@ namespace SpaceInvaders.Scenes.Game
     {
         public int CurrentHealth { get; }
         public int Damage { get; }
+        public bool IsCritical { get; }
+        public Vector3 WorldPosition { get; }
 
-        public ShipDamagedMessage(int currentHealth, int damage)
+        public ShipDamagedMessage(int currentHealth, int damage, bool isCritical, Vector3 worldPosition)
         {
             CurrentHealth = currentHealth;
             Damage = damage;
+            IsCritical = isCritical;
+            WorldPosition = worldPosition;
         }
     }
 }
