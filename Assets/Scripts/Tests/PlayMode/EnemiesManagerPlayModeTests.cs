@@ -190,6 +190,23 @@ namespace SpaceInvaders.Tests
         }
 
         [UnityTest]
+        public IEnumerator OnGameEnded_WithWaveStillPending_NeverSpawnsIt()
+        {
+            var enemyList = CreateMockEnemies(new List<EnemyTypes> { EnemyTypes.Enemy1 });
+            _mockSpawnService.SpawnEnemies(Arg.Any<WaveConfigDTO>()).Returns(UniTask.FromResult(enemyList));
+
+            _enemiesManager.GameInitialize().Forget();
+            _enemiesManager.SpawnEnemies(new WaveConfigDTO()).Forget();
+
+            _enemiesManager.GameEnd().Forget();
+            yield return null;
+            yield return null;
+
+            _mockSpawnService.DidNotReceive().SpawnEnemies(Arg.Any<WaveConfigDTO>());
+            Assert.AreEqual(0, _enemiesManager.EnemiesAlive);
+        }
+
+        [UnityTest]
         public IEnumerator Dispose_ClearsAllEnemies()
         {
             var enemy1 = CreateMockEnemy(EnemyTypes.Enemy1);

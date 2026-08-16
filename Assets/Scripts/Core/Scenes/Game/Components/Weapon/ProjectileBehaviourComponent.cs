@@ -11,17 +11,17 @@ namespace SpaceInvaders.Scenes.Game
 
         [SerializeField] private CollisionDetectionComponent _collisionDetection;
 
-        private ShipStats _attackerStats;
+        private AttackSourceDTO _source;
 
         public event Action<ProjectileBehaviourComponent> OnProjectileDestroyed;
 
-        /// <summary>Damage is resolved on impact from the attacker's stats, speed is snapshotted here
-        /// so a projectile already in flight keeps its velocity, and the tag is restamped every time
-        /// because pooled projectiles get reissued to the other team.</summary>
-        public void Initialize(ShipStats attackerStats, Vector3 direction, string shooterTag)
+        /// <summary>Damage is resolved on impact from the firing attack's source, speed is snapshotted
+        /// here so a projectile already in flight keeps its velocity, and the tag is restamped every
+        /// time because pooled projectiles get reissued to the other team.</summary>
+        public void Initialize(AttackSourceDTO source, Vector3 direction, string shooterTag)
         {
-            _attackerStats = attackerStats;
-            _speed = attackerStats.CurrentProjectileSpeed;
+            _source = source;
+            _speed = source.ProjectileSpeed;
             _direction = direction.normalized;
 
             gameObject.tag = shooterTag;
@@ -39,7 +39,7 @@ namespace SpaceInvaders.Scenes.Game
             base.OnDespawned();
             _collisionDetection.OnTriggerEntered -= HandleTriggerEnter;
             OnProjectileDestroyed = null;
-            _attackerStats = null;
+            _source = default;
         }
 
         /// <summary>Raises the destroy event before despawning, so the owner always releases its
@@ -59,7 +59,7 @@ namespace SpaceInvaders.Scenes.Game
                     return;
                 }
 
-                hitbox.Ship.TakeDamage(_attackerStats);
+                hitbox.Ship.TakeDamage(_source);
                 TriggerDestroy();
 
                 return;

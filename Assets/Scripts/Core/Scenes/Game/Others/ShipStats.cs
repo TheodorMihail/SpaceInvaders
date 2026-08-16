@@ -215,14 +215,24 @@ namespace SpaceInvaders.Scenes.Game
         /// <summary>Rolls this ship's outgoing damage against its own crit stats.</summary>
         public int RollOutgoingDamage(out bool isCritical)
         {
+            return RollOutgoingDamage(1f, out isCritical);
+        }
+
+        /// <summary>The multiplier is the firing attack's own damage scaling, layered over this ship's
+        /// stats. It scales the rounded projectile damage, so a multiplier of 1 rolls exactly as an
+        /// unscaled shot does.</summary>
+        public int RollOutgoingDamage(float damageMultiplier, out bool isCritical)
+        {
             isCritical = Random.value < CurrentCritChance;
 
-            if (!isCritical)
+            float damage = CurrentProjectileDamage * damageMultiplier;
+
+            if (isCritical)
             {
-                return CurrentProjectileDamage;
+                damage *= CurrentCritDamage;
             }
 
-            return Mathf.RoundToInt(CurrentProjectileDamage * CurrentCritDamage);
+            return Mathf.RoundToInt(damage);
         }
 
         public void ApplyDamage(int amount)

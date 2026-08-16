@@ -19,6 +19,7 @@ namespace SpaceInvaders.Project
         public const Key ClearInventory = Key.F10;
         public const Key ClearTalents = Key.F11;
         public const Key ClearLevelProgress = Key.F12;
+        public const Key TakeScreenshot = Key.Backquote;
     }
 }
 #endif

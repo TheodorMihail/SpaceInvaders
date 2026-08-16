@@ -261,6 +261,31 @@ namespace SpaceInvaders.Tests
         }
 
         [Test]
+        public void RollOutgoingDamage_WithDamageMultiplier_ScalesTheRoll()
+        {
+            ShipStats stats = CreateStats();
+            stats.ApplyStatBonus(ShipUpgradableStatTypes.CritChance, -1f, ShipStatValueTypes.Flat);
+
+            int unscaled = stats.RollOutgoingDamage(out _);
+            int doubled = stats.RollOutgoingDamage(2f, out _);
+
+            Assert.AreEqual(unscaled * 2, doubled);
+        }
+
+        /// <summary>Guards the bit-for-bit equivalence the unscaled overload forwards to.</summary>
+        [Test]
+        public void RollOutgoingDamage_WithMultiplierOfOne_MatchesTheUnscaledRoll()
+        {
+            ShipStats stats = CreateStats();
+            stats.ApplyStatBonus(ShipUpgradableStatTypes.CritChance, 1f, ShipStatValueTypes.Flat);
+
+            for (int i = 0; i < RollSampleCount; i++)
+            {
+                Assert.AreEqual(stats.RollOutgoingDamage(out _), stats.RollOutgoingDamage(1f, out _));
+            }
+        }
+
+        [Test]
         public void RollOutgoingDamage_WithGuaranteedCrit_MultipliesDamage()
         {
             ShipStats stats = CreateStats();
