@@ -23,7 +23,7 @@ namespace SpaceInvaders.Scenes.Game
     /// Creates all runtime objects through the object pool, and tracks transient ones for cleanup on
     /// game end.
     /// </summary>
-    public class SpawnService : ISpawnService, IGameEndListener
+    public class SpawnService : ISpawnService, IGameInitializeListener, IGameEndListener
     {
         [Inject] private readonly IShipsRepository _shipsRepository;
         [Inject] private readonly IItemsRepository _itemsRepository;
@@ -36,13 +36,25 @@ namespace SpaceInvaders.Scenes.Game
         /// <summary>Transients despawned on game end. Types not registered here are never cleaned up.</summary>
         private readonly HashSet<ScreenBoundedMovingComponent> _activeObjects = new();
 
+        /// <summary>Whether a run is live. Only awaited spawns consult it, so nothing depends on when
+        /// this is set relative to the other initialize listeners.</summary>
+        private bool _isRunActive;
+
         public void Dispose()
         {
             _objectPooling.ClearAll();
         }
 
+        public UniTask GameInitialize()
+        {
+            _isRunActive = true;
+            return UniTask.CompletedTask;
+        }
+
         public UniTask GameEnd()
         {
+            _isRunActive = false;
+
             var pendingDespawns = new List<ScreenBoundedMovingComponent>(_activeObjects);
             foreach (var obj in pendingDespawns)
             {
@@ -66,6 +78,9 @@ namespace SpaceInvaders.Scenes.Game
             return spawnedPlayer;
         }
 
+        /// <summary>Abandons the wave where it stands once the run ends, leaving whatever already
+        /// spawned to the caller: a prefab load spans frames, and a ship built after the run ended
+        /// resolves against a container that no longer holds the game bindings.</summary>
         public async UniTask<List<IEnemySpaceship>> SpawnEnemies(WaveConfigDTO waveConfig)
         {
             var spawnedEnemies = new List<IEnemySpaceship>();
@@ -80,6 +95,12 @@ namespace SpaceInvaders.Scenes.Game
                 var prefabPath = enemyConfig.SpaceshipPrefabAddress;
 
                 var enemyPrefab = await LoadPrefabAsync<EnemySpaceshipBehaviourComponent>(prefabPath);
+
+                if (!_isRunActive)
+                {
+                    return spawnedEnemies;
+                }
+
                 var wavePosition = new Vector3(formation.GridPosition.x, 0, formation.GridPosition.y);
                 var spawnedEnemy = Spawn(enemyPrefab, enemyPrefab.transform.localPosition + wavePosition, enemyPrefab.transform.localRotation);
 

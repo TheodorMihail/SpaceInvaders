@@ -50,6 +50,10 @@ namespace SpaceInvaders.Project
         {
             Container.BindInterfacesTo<PlatformService>().AsSingle();
             Container.BindInterfacesTo<SoundsService>().AsSingle();
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            Container.BindInterfacesTo<ScreenshotService>().AsSingle();
+#endif
         }
     }
 }

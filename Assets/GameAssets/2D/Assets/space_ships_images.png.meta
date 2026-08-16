@@ -131,7 +131,7 @@ TextureImporter:
         width: 152
         height: 141
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -153,7 +153,7 @@ TextureImporter:
         width: 157
         height: 132
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -175,7 +175,7 @@ TextureImporter:
         width: 175
         height: 161
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -197,7 +197,7 @@ TextureImporter:
         width: 190
         height: 190
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -216,10 +216,10 @@ TextureImporter:
         serializedVersion: 2
         x: 4
         y: 115
-        width: 390
+        width: 385
         height: 554
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -228,6 +228,28 @@ TextureImporter:
       bones: []
       spriteID: 8bb03492c9c0a90468c280f2d6aa4c79
       internalID: 35200423
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: space_ships_images_boss2
+      rect:
+        serializedVersion: 2
+        x: 388
+        y: 154
+        width: 370
+        height: 474
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8d429d3eba1d4114f8bfee25a26c025f
+      internalID: 417125618
       vertices: []
       indices: 
       edges: []
@@ -256,6 +278,7 @@ TextureImporter:
       space_ships_images_8: -608962239
       space_ships_images_9: 1503356495
       space_ships_images_boss1: 35200423
+      space_ships_images_boss2: 417125618
       space_ships_images_enemy1: 1298173353
       space_ships_images_enemy2: -1538850073
       space_ships_images_player1: 558828597

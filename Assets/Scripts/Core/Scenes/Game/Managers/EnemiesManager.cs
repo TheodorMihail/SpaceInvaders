@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using BaseArchitecture.Core;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -9,9 +10,10 @@ namespace SpaceInvaders.Scenes.Game
 {
     public enum EnemyTypes
     {
-        Enemy1,
-        Enemy2,
-        Boss1
+        Enemy1 = 0,
+        Enemy2 = 1,
+        Boss1 = 50,
+        Boss2 = 51
     }
 
     public enum EnemyCategoryTypes
@@ -33,31 +35,58 @@ namespace SpaceInvaders.Scenes.Game
         [Inject] private readonly IMessageBus _messageBus;
 
         private List<IEnemySpaceship> _spawnedEnemies;
+        private CancellationTokenSource _spawnCancellationTokenSource;
 
         public int EnemiesAlive => _spawnedEnemies.Count;
 
         public void Dispose()
         {
+            CancelSpawning();
             ClearEnemies();
         }
 
         public UniTask GameInitialize()
         {
+            // The next level re-initializes without disposing, so a previous run's source can still be here.
+            CancelSpawning();
+
             _spawnedEnemies = new List<IEnemySpaceship>();
+            _spawnCancellationTokenSource = new CancellationTokenSource();
             return UniTask.CompletedTask;
         }
 
         public UniTask GameEnd()
         {
+            CancelSpawning();
             ClearEnemies();
             return UniTask.CompletedTask;
         }
 
         public async UniTask SpawnEnemies(WaveConfigDTO waveConfig)
         {
-            await UniTask.Delay((int)(waveConfig.TimeBetweenSpawns * 1000));
+            if (_spawnCancellationTokenSource == null)
+            {
+                return;
+            }
+
+            // Held locally: the source is disposed on cancellation, while the token stays readable.
+            CancellationToken token = _spawnCancellationTokenSource.Token;
+
+            await UniTask.Delay((int)(waveConfig.TimeBetweenSpawns * 1000), cancellationToken: token);
+
+            if (token.IsCancellationRequested)
+            {
+                return;
+            }
 
             var newEnemies = await _spawnService.SpawnEnemies(waveConfig);
+
+            // A wave that lands after the run ended belongs to nothing, so it goes straight back.
+            if (token.IsCancellationRequested)
+            {
+                DespawnEnemies(newEnemies);
+                return;
+            }
 
             (float frontZ, float backZ) = GetFormationDepthRange(newEnemies);
             float longestDistance = 0f;
@@ -153,12 +182,28 @@ namespace SpaceInvaders.Scenes.Game
             _spawnService.Despawn(enemy as EnemySpaceshipBehaviourComponent);
         }
 
+        private void DespawnEnemies(List<IEnemySpaceship> enemies)
+        {
+            foreach (var enemy in enemies)
+            {
+                DespawnEnemy(enemy);
+            }
+        }
+
         private void ClearEnemies()
         {
             for (int i = _spawnedEnemies.Count - 1; i >= 0; i--)
             {
                 DespawnEnemy(_spawnedEnemies[i]);
             }
+        }
+
+        /// <summary>A wave in flight outlives the run that asked for it: the delay between waves is
+        /// time scaled, so pausing freezes a pending spawn until long after the level ended.</summary>
+        private void CancelSpawning()
+        {
+            _spawnCancellationTokenSource?.CancelAndDispose();
+            _spawnCancellationTokenSource = null;
         }
     }
 }

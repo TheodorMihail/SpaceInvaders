@@ -66,7 +66,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd26f8f8259810140a1402e9730e68ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _ship: {fileID: 371456533434140779}
+  _ship: {fileID: 0}
 --- !u!1 &4392049154927856628
 GameObject:
   m_ObjectHideFlags: 0
@@ -443,7 +443,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd26f8f8259810140a1402e9730e68ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _ship: {fileID: 371456533434140779}
+  _ship: {fileID: 0}
 --- !u!1001 &8991964418232332321
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -588,10 +588,6 @@ PrefabInstance:
       propertyPath: '_attacks.Array.data[1]'
       value: 
       objectReference: {fileID: 6113197442233964144}
-    - target: {fileID: 4689515958753205055, guid: 34751f36bc4bae34cb9e597a9c2277ad, type: 3}
-      propertyPath: _ship
-      value: 
-      objectReference: {fileID: 371456533434140779}
     - target: {fileID: 4813773334962998743, guid: 34751f36bc4bae34cb9e597a9c2277ad, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.07
@@ -657,9 +653,6 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 6265288208487803114}
     m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 2996160477665614555, guid: 34751f36bc4bae34cb9e597a9c2277ad, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 371456533434140779}
     - targetCorrespondingSourceObject: {fileID: 8063150195502524374, guid: 34751f36bc4bae34cb9e597a9c2277ad, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6763157683657476003}
@@ -722,57 +715,6 @@ MonoBehaviour:
   _fireRateMultiplier: 1
   _projectileSpeedMultiplier: 1
   _allowsStatsShotSpread: 1
---- !u!114 &2611432388013566133 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6409875803060770964, guid: 34751f36bc4bae34cb9e597a9c2277ad, type: 3}
-  m_PrefabInstance: {fileID: 8991964418232332321}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a8965ce444c20de43a6506e6ff357e48, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &5546304788309894616 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3472751602949084665, guid: 34751f36bc4bae34cb9e597a9c2277ad, type: 3}
-  m_PrefabInstance: {fileID: 8991964418232332321}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d3f63e9e0db38f04aace49060e8692eb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!1 &6151178132014656250 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2996160477665614555, guid: 34751f36bc4bae34cb9e597a9c2277ad, type: 3}
-  m_PrefabInstance: {fileID: 8991964418232332321}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &371456533434140779
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6151178132014656250}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f46e56ef02ecc8642b4403edf6bd4c01, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _movement: {fileID: 4546130133382269535}
-  _weapon: {fileID: 5546304788309894616}
-  _healthBar: {fileID: 0}
-  _flames:
-  - {fileID: 2611432388013566133}
-  - {fileID: 1562183859767232743}
-  - {fileID: 6956589032596868191}
-  _shipConfig: {fileID: 0}
-  _formationDepthFactor: 0.6
-  _maxFirstShotDelay: 3
-  _spreadAttack: {fileID: 0}
-  _aimedAttack: {fileID: 0}
 --- !u!212 &7890805923527947245 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 1245273683126043596, guid: 34751f36bc4bae34cb9e597a9c2277ad, type: 3}

@@ -124,8 +124,8 @@ MonoBehaviour:
     _timeBetweenSpawns: 2
     _entrySpeed: 165
   - _wavesFormation:
-    - GridPosition: {x: 0, y: 300}
-      EnemyType: 2
+    - GridPosition: {x: 0, y: 200}
+      EnemyType: 51
     _timeBetweenSpawns: 1
     _entrySpeed: 50
   _generatorSeed: 0
