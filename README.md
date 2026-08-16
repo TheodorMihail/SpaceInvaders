@@ -107,13 +107,13 @@ To use BaseArchitecture in your own project, add to `Packages/manifest.json`:
     }
   ],
   "dependencies": {
-    "com.theodormihail.basearchitecture": "https://github.com/TheodorMihail/BaseArchitecture.git?path=Assets/UnityPackages/BaseArchitecture#v1.4.0"
+    "com.theodormihail.basearchitecture": "https://github.com/TheodorMihail/BaseArchitecture.git?path=Assets/UnityPackages/BaseArchitecture#v1.5.1"
   },
   "testables": [ "com.svermeulen.extenject" ]
 }
 ```
 
-The `#v1.4.0` pins the version, matching this project's own manifest. Bump it to pull a newer [release tag](https://github.com/TheodorMihail/BaseArchitecture/tags). The scoped registry resolves the package's dependencies (Zenject, UniTask) from OpenUPM. `testables` enables Zenject's test fixtures. See the [BaseArchitecture README](https://github.com/TheodorMihail/BaseArchitecture#-installation) for its own requirements.
+The `#v1.5.1` pins the version, matching this project's own manifest. Bump it to pull a newer [release tag](https://github.com/TheodorMihail/BaseArchitecture/tags). The scoped registry resolves the package's dependencies (Zenject, UniTask) from OpenUPM. `testables` enables Zenject's test fixtures. See the [BaseArchitecture README](https://github.com/TheodorMihail/BaseArchitecture#-installation) for its own requirements.
 
 ---
 

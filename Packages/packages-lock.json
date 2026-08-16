@@ -15,7 +15,7 @@
       "url": "https://package.openupm.com"
     },
     "com.theodormihail.basearchitecture": {
-      "version": "https://github.com/TheodorMihail/BaseArchitecture.git?path=Assets/UnityPackages/BaseArchitecture#v1.5.0",
+      "version": "https://github.com/TheodorMihail/BaseArchitecture.git?path=Assets/UnityPackages/BaseArchitecture#v1.5.1",
       "depth": 0,
       "source": "git",
       "dependencies": {
@@ -24,7 +24,8 @@
         "com.unity.addressables": "2.7.4",
         "com.unity.nuget.newtonsoft-json": "3.2.1",
         "com.unity.inputsystem": "1.14.2"
-      }
+      },
+      "hash": "0916e7654d6f4b6d15f13a3b5e78d79407786175"
     },
     "com.unity.2d.sprite": {
       "version": "1.0.0",
