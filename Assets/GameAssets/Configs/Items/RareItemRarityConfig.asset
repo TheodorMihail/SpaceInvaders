@@ -15,6 +15,7 @@ MonoBehaviour:
   _rarity: 1
   _dropWeight: 3
   _affixCount: 2
+  _sellValue: 75
   _displayName: Rare
   _displayColor: {r: 0, g: 0.5332718, b: 1, a: 1}
   _icon: {fileID: -2143097864, guid: 95ba7dc04a250ec4b85d6b19ef1b8aab, type: 3}

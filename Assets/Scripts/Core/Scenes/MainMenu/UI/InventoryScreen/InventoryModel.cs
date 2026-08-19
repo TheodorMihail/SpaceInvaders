@@ -14,8 +14,11 @@ namespace SpaceInvaders.Scenes.MainMenu
         [Inject] private readonly ITalentManager _talentManager;
         [Inject] private readonly IItemsRepository _itemsRepository;
         [Inject] private readonly IShipsRepository _shipsRepository;
+        [Inject] private readonly ICurrencyManager _currencyManager;
         
         public string EmptyInventoryText { get; } = "No items collected yet.";
+
+        public int Currency => _currencyManager.Currency;
 
         public IEnumerable<(InventoryItemEntry entry, ItemConfigSO config)> GetInventoryItems()
         {
@@ -72,7 +75,7 @@ namespace SpaceInvaders.Scenes.MainMenu
             float delta = withEquipmentValue - baseValue;
             string baseText = ShipStats.FormatStatValue(statType, baseValue);
             string deltaText = delta == 0 ? "" : ShipStats.FormatStatDelta(statType, delta);
-            return $"{ShipStats.StatDisplayName(statType)}: <color=white>{baseText}</color> <color=green>{deltaText}</color>";
+            return $"• {ShipStats.StatDisplayName(statType)}: <color=white>{baseText}</color> <color=green>{deltaText}</color>";
         }
 
         public string GetStatsPanel()

@@ -15,6 +15,7 @@ MonoBehaviour:
   _rarity: 2
   _dropWeight: 1
   _affixCount: 3
+  _sellValue: 150
   _displayName: Legendary
   _displayColor: {r: 1, g: 0.66177595, b: 0, a: 1}
   _icon: {fileID: -1912213769, guid: 95ba7dc04a250ec4b85d6b19ef1b8aab, type: 3}

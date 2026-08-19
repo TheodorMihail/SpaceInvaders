@@ -15,6 +15,9 @@ namespace SpaceInvaders.Project
         [SerializeField] private int _dropWeight = 1;
         [SerializeField] private int _affixCount = 1;
 
+        [Tooltip("Currency paid out for selling an item of this tier.")]
+        [SerializeField] private int _sellValue = 25;
+
         [Header("Presentation")]
         [SerializeField] private string _displayName;
         [SerializeField] private Color _displayColor = Color.white;
@@ -25,6 +28,7 @@ namespace SpaceInvaders.Project
         public virtual ItemRarityTypes Rarity => _rarity;
         public virtual int DropWeight => _dropWeight;
         public virtual int AffixCount => _affixCount;
+        public virtual int SellValue => _sellValue;
         public virtual string DisplayName => _displayName;
         public virtual Color DisplayColor => _displayColor;
         public virtual Sprite Icon => _icon;
