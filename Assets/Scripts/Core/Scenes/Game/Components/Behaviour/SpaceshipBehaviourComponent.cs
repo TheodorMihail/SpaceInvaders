@@ -5,7 +5,7 @@ using Zenject;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public interface ISpaceship : IPoolableObject
+    public interface ISpaceship : IPoolableObject, IDamageableTarget
     {
         ShipStats Stats { get; }
         string SpaceshipID { get; }
@@ -27,7 +27,6 @@ namespace SpaceInvaders.Scenes.Game
 
         /// <summary>Tops the magazine up early, such as when a wave has been cleared.</summary>
         void Reload();
-        void TakeDamage(AttackSourceDTO source);
         void TakeDamage(int damage);
     }
 
@@ -111,13 +110,25 @@ namespace SpaceInvaders.Scenes.Game
     public abstract class BaseSpaceshipBehaviourComponent<Config> : BaseSpaceshipBehaviourComponent
         where Config : SpaceshipConfigSO
     {
-        [SerializeField] protected Config _shipConfig;
-        protected Config ShipConfig => _shipConfig;
-        public override string SpaceshipID => _shipConfig.SpaceshipID;
+        /// <summary>Handed over by the spawner rather than authored on the prefab, so the repository
+        /// that resolved this ship is the only thing that decides what it is.</summary>
+        private Config _shipConfig;
 
+        protected Config ShipConfig => _shipConfig;
+        public override string SpaceshipID => _shipConfig != null ? _shipConfig.SpaceshipID : string.Empty;
+
+        /// <summary>Pooled ships can come back mid-burn, so the engines restart idle. Everything else
+        /// waits for Initialize, which is when this ship learns what it is.</summary>
         public override void OnSpawned()
         {
-            Stats = _shipConfig.CreateStats();
+            SetFlamesThrusting(false);
+        }
+
+        /// <summary>Builds the ship from the config the spawner already resolved to find its prefab.</summary>
+        public virtual void Initialize(Config config)
+        {
+            _shipConfig = config;
+            Stats = config.CreateStats();
             Stats.HealthChanged += OnStatsHealthChanged;
             Stats.AmmoChanged += OnStatsAmmoChanged;
 
@@ -125,9 +136,6 @@ namespace SpaceInvaders.Scenes.Game
             _weapon.Initialize(Stats, gameObject.tag);
             _weapon.ShotFired += OnWeaponShotFired;
             _weapon.ReloadStarted += OnWeaponReloadStarted;
-
-            // Pooled ships can come back mid-burn, so the engines restart idle.
-            SetFlamesThrusting(false);
 
             if (_healthBar == null)
             {

@@ -37,6 +37,7 @@ namespace SpaceInvaders.Project
             Container.BindInterfacesTo<SoundsRepository>().AsSingle().WithArguments(_configsContainerSO.SoundsDataConfigSO);
             Container.BindInterfacesTo<TalentsRepository>().AsSingle().WithArguments(_configsContainerSO.TalentsDataConfigSO);
             Container.BindInterfacesTo<ItemsRepository>().AsSingle().WithArguments(_configsContainerSO.ItemsDataConfigSO);
+            Container.BindInterfacesTo<HazardsRepository>().AsSingle().WithArguments(_configsContainerSO.HazardsDataConfigSO);
 
             Container.BindInterfacesTo<SoundsManager>().AsSingle();
             Container.BindInterfacesTo<LevelManager>().AsSingle();
@@ -50,6 +51,7 @@ namespace SpaceInvaders.Project
         {
             Container.BindInterfacesTo<PlatformService>().AsSingle();
             Container.BindInterfacesTo<SoundsService>().AsSingle();
+            Container.BindInterfacesTo<ItemSellService>().AsSingle();
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             Container.BindInterfacesTo<ScreenshotService>().AsSingle();

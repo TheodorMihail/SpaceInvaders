@@ -23,16 +23,14 @@ MonoBehaviour:
     - GridPosition: {x: -180, y: 320}
       EnemyType: 1
     - GridPosition: {x: -90, y: 320}
-      EnemyType: 0
+      EnemyType: 2
     - GridPosition: {x: 0, y: 320}
-      EnemyType: 1
+      EnemyType: 0
     - GridPosition: {x: 90, y: 320}
       EnemyType: 1
     - GridPosition: {x: 180, y: 320}
       EnemyType: 0
     - GridPosition: {x: 0, y: 420}
-      EnemyType: 1
-    - GridPosition: {x: 0, y: 520}
       EnemyType: 1
     _timeBetweenSpawns: 1
     _entrySpeed: 150
@@ -44,22 +42,25 @@ MonoBehaviour:
     - GridPosition: {x: 140, y: 161}
       EnemyType: 1
     - GridPosition: {x: -116, y: 239}
-      EnemyType: 0
+      EnemyType: 2
     - GridPosition: {x: 189, y: 255}
-      EnemyType: 1
+      EnemyType: 0
     - GridPosition: {x: -103, y: 344}
       EnemyType: 1
     - GridPosition: {x: 165, y: 358}
       EnemyType: 0
     - GridPosition: {x: -25, y: 416}
       EnemyType: 1
-    - GridPosition: {x: 80, y: 422}
-      EnemyType: 1
     _timeBetweenSpawns: 1
     _entrySpeed: 150
+    _waveHazards:
+    - HazardType: 0
+      FirstSpawnDelay: 6
+      MinSpawnInterval: 9
+      MaxSpawnInterval: 13
   - _wavesFormation:
     - GridPosition: {x: 215, y: 120}
-      EnemyType: 0
+      EnemyType: 2
     - GridPosition: {x: 168, y: 167}
       EnemyType: 1
     - GridPosition: {x: 119, y: 213}
@@ -69,14 +70,12 @@ MonoBehaviour:
     - GridPosition: {x: 24, y: 307}
       EnemyType: 1
     - GridPosition: {x: -24, y: 353}
-      EnemyType: 1
-    - GridPosition: {x: -72, y: 400}
       EnemyType: 0
+    - GridPosition: {x: -72, y: 400}
+      EnemyType: 2
     - GridPosition: {x: -119, y: 447}
       EnemyType: 1
     - GridPosition: {x: -168, y: 493}
-      EnemyType: 1
-    - GridPosition: {x: -215, y: 540}
       EnemyType: 1
     _timeBetweenSpawns: 1
     _entrySpeed: 150
@@ -88,20 +87,23 @@ MonoBehaviour:
     - GridPosition: {x: -80, y: 120}
       EnemyType: 1
     - GridPosition: {x: 80, y: 120}
-      EnemyType: 0
+      EnemyType: 2
     - GridPosition: {x: 120, y: 120}
       EnemyType: 1
     - GridPosition: {x: 160, y: 120}
-      EnemyType: 1
+      EnemyType: 0
     - GridPosition: {x: -140, y: 200}
       EnemyType: 1
     - GridPosition: {x: -100, y: 200}
-      EnemyType: 1
-    - GridPosition: {x: 100, y: 200}
       EnemyType: 1
     - GridPosition: {x: 140, y: 200}
       EnemyType: 0
     _timeBetweenSpawns: 1
     _entrySpeed: 150
+    _waveHazards:
+    - HazardType: 0
+      FirstSpawnDelay: 4
+      MinSpawnInterval: 7
+      MaxSpawnInterval: 11
   _generatorSeed: 0
   _threeStarMaxDamage: 90

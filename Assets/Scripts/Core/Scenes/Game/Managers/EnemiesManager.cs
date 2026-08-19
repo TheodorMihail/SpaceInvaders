@@ -12,6 +12,8 @@ namespace SpaceInvaders.Scenes.Game
     {
         Enemy1 = 0,
         Enemy2 = 1,
+        Enemy3 = 2,
+        Enemy4 = 3,
         Boss1 = 50,
         Boss2 = 51
     }
@@ -37,6 +39,10 @@ namespace SpaceInvaders.Scenes.Game
         private List<IEnemySpaceship> _spawnedEnemies;
         private CancellationTokenSource _spawnCancellationTokenSource;
 
+        /// <summary>Reinforcements asked for but not yet loaded. A wave is only clear once these land,
+        /// otherwise a splitting enemy dying last would advance the level before its children exist.</summary>
+        private int _pendingSpawnRequests;
+
         public int EnemiesAlive => _spawnedEnemies.Count;
 
         public void Dispose()
@@ -52,6 +58,7 @@ namespace SpaceInvaders.Scenes.Game
 
             _spawnedEnemies = new List<IEnemySpaceship>();
             _spawnCancellationTokenSource = new CancellationTokenSource();
+            _pendingSpawnRequests = 0;
             return UniTask.CompletedTask;
         }
 
@@ -59,6 +66,7 @@ namespace SpaceInvaders.Scenes.Game
         {
             CancelSpawning();
             ClearEnemies();
+            _pendingSpawnRequests = 0;
             return UniTask.CompletedTask;
         }
 
@@ -93,19 +101,10 @@ namespace SpaceInvaders.Scenes.Game
 
             foreach (var enemy in newEnemies)
             {
-                _spawnedEnemies.Add(enemy);
-                enemy.OnDestroyed += OnEnemyDestroyedCallback;
-                enemy.OnShotFired += OnEnemyShotFiredCallback;
-                enemy.OnDamaged += OnEnemyDamagedCallback;
+                RegisterEnemy(enemy);
 
                 float distance = enemy.PrepareEntry(GetDepthRatio(enemy, frontZ, backZ));
                 longestDistance = Mathf.Max(longestDistance, distance);
-
-                if (enemy.Category == EnemyCategoryTypes.Boss)
-                {
-                    enemy.OnHealthChanged += OnBossHealthChangedCallback;
-                    _messageBus.Publish(new BossSpawnedMessage(enemy.EnemyType, enemy.Stats.CurrentHealth));
-                }
             }
 
             // The furthest ship sets the pace, so entry speed still means what it always did.
@@ -115,6 +114,23 @@ namespace SpaceInvaders.Scenes.Game
             {
                 enemy.StartEntryAnimation(entryDuration);
             }
+        }
+
+        private void RegisterEnemy(IEnemySpaceship enemy)
+        {
+            _spawnedEnemies.Add(enemy);
+            enemy.OnDestroyed += OnEnemyDestroyedCallback;
+            enemy.OnShotFired += OnEnemyShotFiredCallback;
+            enemy.OnDamaged += OnEnemyDamagedCallback;
+            enemy.OnSpawnRequested += OnEnemySpawnRequestedCallback;
+
+            if (enemy.Category != EnemyCategoryTypes.Boss)
+            {
+                return;
+            }
+
+            enemy.OnHealthChanged += OnBossHealthChangedCallback;
+            _messageBus.Publish(new BossSpawnedMessage(enemy.EnemyType, enemy.Stats.CurrentHealth));
         }
 
         /// <summary>Spawn depth spans the formation: the lowest value leads the wave in.</summary>
@@ -155,8 +171,64 @@ namespace SpaceInvaders.Scenes.Game
             _messageBus.Publish(new EnemyDestroyedMessage(enemy.EnemyType, enemy.Category, enemy.LocalPosition));
             DespawnEnemy(enemy);
 
-            // Triggers advancing the level
-            if (_spawnedEnemies.Count == 0)
+            NotifyIfWaveCleared();
+        }
+
+        /// <summary>A ship asking for reinforcements. Counted before the load starts, so the wave
+        /// cannot be reported clear in the frames the new ships are still being built.</summary>
+        private void OnEnemySpawnRequestedCallback(IEnemySpaceship requester, EnemySpawnRequestDTO request)
+        {
+            if (request.Spawn.Count <= 0 || _spawnCancellationTokenSource == null)
+            {
+                return;
+            }
+
+            _pendingSpawnRequests++;
+            SpawnRequestedEnemies(request, _spawnCancellationTokenSource.Token).Forget();
+        }
+
+        private async UniTaskVoid SpawnRequestedEnemies(EnemySpawnRequestDTO request, CancellationToken token)
+        {
+            var requestedEnemies = new List<IEnemySpaceship>();
+
+            for (int i = 0; i < request.Spawn.Count; i++)
+            {
+                // Centred on the origin, so the ships fan out evenly either side of where they were asked for.
+                float offsetX = (i - (request.Spawn.Count - 1) * 0.5f) * request.Spawn.Spread;
+                var enemy = await _spawnService.SpawnEnemy(request.Spawn.EnemyType, request.LocalPosition + new Vector3(offsetX, 0f, 0f));
+
+                if (enemy != null)
+                {
+                    requestedEnemies.Add(enemy);
+                }
+            }
+
+            _pendingSpawnRequests--;
+
+            // Reinforcements that land after the run ended belong to nothing, so they go straight back.
+            if (token.IsCancellationRequested)
+            {
+                foreach (var enemy in requestedEnemies)
+                {
+                    _spawnService.Despawn(enemy as EnemySpaceshipBehaviourComponent);
+                }
+
+                return;
+            }
+
+            foreach (var enemy in requestedEnemies)
+            {
+                RegisterEnemy(enemy);
+                enemy.SkipEntry();
+            }
+
+            NotifyIfWaveCleared();
+        }
+
+        /// <summary>Triggers advancing the level.</summary>
+        private void NotifyIfWaveCleared()
+        {
+            if (_spawnedEnemies.Count == 0 && _pendingSpawnRequests == 0)
             {
                 _messageBus.Publish(new AllEnemiesDestroyedMessage());
             }
@@ -178,6 +250,7 @@ namespace SpaceInvaders.Scenes.Game
             enemy.OnHealthChanged -= OnBossHealthChangedCallback;
             enemy.OnShotFired -= OnEnemyShotFiredCallback;
             enemy.OnDamaged -= OnEnemyDamagedCallback;
+            enemy.OnSpawnRequested -= OnEnemySpawnRequestedCallback;
             _spawnedEnemies.Remove(enemy);
             _spawnService.Despawn(enemy as EnemySpaceshipBehaviourComponent);
         }

@@ -33,6 +33,9 @@ namespace SpaceInvaders.Scenes.MainMenu
         [SerializeField] private TextMeshProUGUI _statSheetText;
         [SerializeField] private Button _backButton;
 
+        [Header("Currency")]
+        [SerializeField] private TextMeshProUGUI _currencyText;
+
         private readonly Dictionary<EquipmentSlotTypes, List<ItemSlotComponent>> _equipmentItemsDic = new();
         private readonly Dictionary<string, ItemSlotComponent> _inventoryItemsDic = new();
 
@@ -51,6 +54,7 @@ namespace SpaceInvaders.Scenes.MainMenu
         public void Setup()
         {
             InitializeInventory();
+            RefreshCurrencyDisplay();
             _tooltip.Hide();
         }
 
@@ -64,6 +68,11 @@ namespace SpaceInvaders.Scenes.MainMenu
         public void RefreshStatsPanel(string stats)
         {
             _statSheetText.text = stats;
+        }
+
+        public void RefreshCurrencyDisplay()
+        {
+            _currencyText.text = _model.Currency.ToString();
         }
 
         public void ApplyEquipChange(string equippedInstanceId, string unequippedInstanceId)
@@ -119,6 +128,21 @@ namespace SpaceInvaders.Scenes.MainMenu
 
             _emptyInventoryText.gameObject.SetActive(_inventoryItemsDic.Count == 0);
             _emptyInventoryText.text = _model.EmptyInventoryText;
+        }
+
+        /// <summary>Cells are created outright rather than pooled, since object pooling is only
+        /// bound in the game scene.</summary>
+        public void RemoveItem(string instanceId)
+        {
+            if (!_inventoryItemsDic.TryGetValue(instanceId, out ItemSlotComponent cell))
+            {
+                return;
+            }
+
+            _inventoryItemsDic.Remove(instanceId);
+            Destroy(cell.gameObject);
+
+            _emptyInventoryText.gameObject.SetActive(_inventoryItemsDic.Count == 0);
         }
 
         private void HandleEquipmentSlotClicked(EquipmentSlotTypes slot, ItemSlotComponent component)

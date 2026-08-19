@@ -13,4 +13,16 @@ namespace SpaceInvaders.Project
             UnequippedInstanceId = unequippedInstanceId;
         }
     }
+
+    public readonly struct ItemSoldMessage : IMessageObject
+    {
+        public string InstanceId { get; }
+        public int Value { get; }
+
+        public ItemSoldMessage(string instanceId, int value)
+        {
+            InstanceId = instanceId;
+            Value = value;
+        }
+    }
 }

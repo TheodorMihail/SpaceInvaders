@@ -12,6 +12,8 @@ namespace SpaceInvaders.Scenes.Game
     {
         UniTask<IPlayerSpaceship> SpawnPlayer();
         UniTask<List<IEnemySpaceship>> SpawnEnemies(WaveConfigDTO waveConfig);
+        UniTask<IEnemySpaceship> SpawnEnemy(EnemyTypes enemyType, Vector3 localPosition);
+        BaseHazardBehaviourComponent SpawnHazard(HazardConfigSO config, Vector3 direction, float entryRatio);
         ProjectileBehaviourComponent SpawnProjectile(ProjectileBehaviourComponent prefab, Vector3 muzzleWorldPosition, Vector3 direction, AttackSourceDTO source, string shooterTag);
         PowerupBehaviourComponent SpawnPowerup(PowerupConfigSO config, Vector3 localPosition);
         ItemPickupBehaviourComponent SpawnItemPickup(ItemRarityConfigSO rarityConfig, InventoryItemEntry item, Vector3 localPosition);
@@ -75,6 +77,13 @@ namespace SpaceInvaders.Scenes.Game
 
             var prefab = await LoadPrefabAsync<PlayerSpaceshipBehaviourComponent>(prefabPath);
             var spawnedPlayer = Spawn(prefab, prefab.transform.localPosition, prefab.transform.localRotation);
+
+            if (spawnedPlayer == null)
+            {
+                return null;
+            }
+
+            spawnedPlayer.Initialize(playerConfig);
             return spawnedPlayer;
         }
 
@@ -109,10 +118,58 @@ namespace SpaceInvaders.Scenes.Game
                     continue;
                 }
 
+                spawnedEnemy.Initialize(enemyConfig);
                 spawnedEnemies.Add(spawnedEnemy);
             }
 
             return spawnedEnemies;
+        }
+
+        /// <summary>One ship at a spot that is already known, for reinforcements that appear in place
+        /// rather than flying a formation in.</summary>
+        public async UniTask<IEnemySpaceship> SpawnEnemy(EnemyTypes enemyType, Vector3 localPosition)
+        {
+            if (!_shipsRepository.TryGetEnemyConfig(enemyType, out var enemyConfig))
+            {
+                return null;
+            }
+
+            var enemyPrefab = await LoadPrefabAsync<EnemySpaceshipBehaviourComponent>(enemyConfig.SpaceshipPrefabAddress);
+
+            if (!_isRunActive || enemyPrefab == null)
+            {
+                return null;
+            }
+
+            // The caller knows where on the board the ship belongs, the prefab knows which plane it flies on.
+            localPosition.y = enemyPrefab.transform.localPosition.y;
+
+            var spawnedEnemy = Spawn(enemyPrefab, localPosition, enemyPrefab.transform.localRotation);
+
+            if (spawnedEnemy == null)
+            {
+                return null;
+            }
+
+            spawnedEnemy.Initialize(enemyConfig);
+            return spawnedEnemy;
+        }
+
+        /// <summary>Spawned on the prefab's own plane and left to place itself: where it enters is
+        /// picked by the caller, but only the hazard knows its own extents.</summary>
+        public BaseHazardBehaviourComponent SpawnHazard(HazardConfigSO config, Vector3 direction, float entryRatio)
+        {
+            var hazard = Spawn(config.HazardPrefab, config.HazardPrefab.transform.localPosition, Quaternion.identity);
+
+            if (hazard == null)
+            {
+                return null;
+            }
+
+            hazard.Initialize(config, direction, entryRatio);
+            _activeObjects.Add(hazard);
+
+            return hazard;
         }
 
         public void Despawn<T>(T instance) where T : MonoBehaviour, IPoolableObject

@@ -18,15 +18,24 @@ namespace SpaceInvaders.Project
         [Inject] private readonly IInventoryManager _inventoryManager;
         [Inject] private readonly IEquipmentManager _equipmentManager;
         [Inject] private readonly IItemsRepository _itemsRepository;
+        [Inject] private readonly IItemSellService _itemSellService;
         
         [Header("References")]
         [SerializeField] private RectTransform _rectTransform;
         [SerializeField] private TextMeshProUGUI _titleText;
         [SerializeField] private TextMeshProUGUI _rarityText;
         [SerializeField] private TextMeshProUGUI _bodyText;
+        [Tooltip("Equips or unequips depending on what the shown item currently is.")]
         [SerializeField] private Button _equipButton;
-        [SerializeField] private Button _unequipButton;
+        [SerializeField] private TextMeshProUGUI _equipButtonText;
+        [SerializeField] private Button _sellButton;
+        [SerializeField] private TextMeshProUGUI _sellButtonText;
         [SerializeField] private List<Button> _closeBackgroundBtnList;
+
+        [Header("Strings")]
+        [SerializeField] private string _equipString = "EQUIP";
+        [SerializeField] private string _unequipString = "UNEQUIP";
+        [SerializeField] private string _sellButtonString = "Sell ({0})";
 
         [Header("Placement")]
         [SerializeField] private Vector2 _localOffset = new Vector2(-50f, 0);
@@ -44,8 +53,8 @@ namespace SpaceInvaders.Project
             _canvas = GetComponentInParent<Canvas>().rootCanvas;
             _canvasRect = _canvas.GetComponent<RectTransform>();
 
-            _equipButton.onClick.AddListener(() => ActionButtonClicked(true));
-            _unequipButton.onClick.AddListener(() => ActionButtonClicked(false));
+            _equipButton.onClick.AddListener(EquipButtonClicked);
+            _sellButton.onClick.AddListener(SellButtonClicked);
 
             foreach (var btn in _closeBackgroundBtnList)
             {
@@ -90,36 +99,57 @@ namespace SpaceInvaders.Project
             if (showActions)
             {
                 _currentInstanceId = instanceId;
-                bool isEquipped = _equipmentManager.IsEquipped(instanceId);
-                _equipButton.gameObject.SetActive(!isEquipped);
-                _unequipButton.gameObject.SetActive(isEquipped);
+                _equipButton.gameObject.SetActive(true);
+                _equipButtonText.text = _equipmentManager.IsEquipped(instanceId) ? _unequipString : _equipString;
+
+                bool canSell = _itemSellService.TryGetSellValue(instanceId, out int sellValue);
+                _sellButton.gameObject.SetActive(canSell);
+
+                if (canSell)
+                {
+                    _sellButtonText.text = string.Format(_sellButtonString, sellValue);
+                }
             }
             else
             {
                 _currentInstanceId = null;
                 _equipButton.gameObject.SetActive(false);
-                _unequipButton.gameObject.SetActive(false);
+                _sellButton.gameObject.SetActive(false);
             }
 
             Show(anchor, config.DisplayName, rarityText, BuildAffixesText(entry));
         }
 
-        private void ActionButtonClicked(bool equip)
+        /// <summary>Reads the equipped state when clicked rather than when wired, so the action can
+        /// never disagree with the label the button is showing.</summary>
+        private void EquipButtonClicked()
         {
-            if(_currentInstanceId == null)
+            if (_currentInstanceId == null)
             {
                 return;
             }
 
-            if (equip)
-            {
-                _equipmentManager.Equip(_currentInstanceId);
-            }
-            else
+            if (_equipmentManager.IsEquipped(_currentInstanceId))
             {
                 _equipmentManager.Unequip(_currentInstanceId);
             }
+            else
+            {
+                _equipmentManager.Equip(_currentInstanceId);
+            }
 
+            Hide();
+        }
+
+        /// <summary>Selling unequips first, so a worn item can go without being taken off by hand.</summary>
+        private void SellButtonClicked()
+        {
+            if (_currentInstanceId == null)
+            {
+                return;
+            }
+
+            _itemSellService.TrySellItem(_currentInstanceId);
             Hide();
         }
 

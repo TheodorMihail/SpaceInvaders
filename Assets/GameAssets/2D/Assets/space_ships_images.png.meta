@@ -254,6 +254,28 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: space_ships_images_enemy3
+      rect:
+        serializedVersion: 2
+        x: 1296
+        y: 717
+        width: 238
+        height: 224
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 33e5490a21eb2aa48a6451a49485903c
+      internalID: 1049561756
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
@@ -281,6 +303,7 @@ TextureImporter:
       space_ships_images_boss2: 417125618
       space_ships_images_enemy1: 1298173353
       space_ships_images_enemy2: -1538850073
+      space_ships_images_enemy3: 1049561756
       space_ships_images_player1: 558828597
       space_ships_images_player2: 1122627021
   mipmapLimitGroupName: 
