@@ -34,6 +34,18 @@ namespace SpaceInvaders.Scenes.Game
     {
     }
 
+    public readonly struct HazardDestroyedMessage : IMessageObject
+    {
+        public HazardTypes HazardType { get; }
+        public Vector3 LocalPosition { get; }
+
+        public HazardDestroyedMessage(HazardTypes hazardType, Vector3 localPosition)
+        {
+            HazardType = hazardType;
+            LocalPosition = localPosition;
+        }
+    }
+
     public readonly struct BossSpawnedMessage : IMessageObject
     {
         public EnemyTypes Type { get; }
