@@ -13,7 +13,9 @@ MonoBehaviour:
   m_Name: EnemyDataConfig
   m_EditorClassIdentifier: 
   _enemyConfigs:
-  - {fileID: 11400000, guid: 116dad5eec8a4a743919133197feab8f, type: 2}
-  - {fileID: 11400000, guid: d5d1fd86a7b15e14f829a7858a0d6d04, type: 2}
   - {fileID: 11400000, guid: 1fcc9f6c545818346a663e9ea7bf7548, type: 2}
   - {fileID: 11400000, guid: c85fce17918c97d4b85cefcbfe96fa63, type: 2}
+  - {fileID: 11400000, guid: 116dad5eec8a4a743919133197feab8f, type: 2}
+  - {fileID: 11400000, guid: d5d1fd86a7b15e14f829a7858a0d6d04, type: 2}
+  - {fileID: 11400000, guid: 869dac4346646604c9c5b5505333426c, type: 2}
+  - {fileID: 11400000, guid: 35e6027377c598544b7beeb7a287a898, type: 2}

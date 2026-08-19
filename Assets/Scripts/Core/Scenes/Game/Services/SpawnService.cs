@@ -12,6 +12,7 @@ namespace SpaceInvaders.Scenes.Game
     {
         UniTask<IPlayerSpaceship> SpawnPlayer();
         UniTask<List<IEnemySpaceship>> SpawnEnemies(WaveConfigDTO waveConfig);
+        UniTask<IEnemySpaceship> SpawnEnemy(EnemyTypes enemyType, Vector3 localPosition);
         BaseHazardBehaviourComponent SpawnHazard(HazardConfigSO config, Vector3 direction, float entryRatio);
         ProjectileBehaviourComponent SpawnProjectile(ProjectileBehaviourComponent prefab, Vector3 muzzleWorldPosition, Vector3 direction, AttackSourceDTO source, string shooterTag);
         PowerupBehaviourComponent SpawnPowerup(PowerupConfigSO config, Vector3 localPosition);
@@ -114,6 +115,28 @@ namespace SpaceInvaders.Scenes.Game
             }
 
             return spawnedEnemies;
+        }
+
+        /// <summary>One ship at a spot that is already known, for reinforcements that appear in place
+        /// rather than flying a formation in.</summary>
+        public async UniTask<IEnemySpaceship> SpawnEnemy(EnemyTypes enemyType, Vector3 localPosition)
+        {
+            if (!_shipsRepository.TryGetEnemyConfig(enemyType, out var enemyConfig))
+            {
+                return null;
+            }
+
+            var enemyPrefab = await LoadPrefabAsync<EnemySpaceshipBehaviourComponent>(enemyConfig.SpaceshipPrefabAddress);
+
+            if (!_isRunActive || enemyPrefab == null)
+            {
+                return null;
+            }
+
+            // The caller knows where on the board the ship belongs, the prefab knows which plane it flies on.
+            localPosition.y = enemyPrefab.transform.localPosition.y;
+
+            return Spawn(enemyPrefab, localPosition, enemyPrefab.transform.localRotation);
         }
 
         /// <summary>Spawned on the prefab's own plane and left to place itself: where it enters is

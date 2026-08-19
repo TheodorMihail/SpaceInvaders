@@ -5,9 +5,37 @@ using Random = UnityEngine.Random;
 
 namespace SpaceInvaders.Scenes.Game
 {
+    /// <summary>Reinforcements a ship can call for, as authored on the ship itself.</summary>
+    [Serializable]
+    public struct EnemySpawnDTO
+    {
+        public EnemyTypes EnemyType;
+
+        [Tooltip("Ships spawned per request. 0 opts out.")]
+        public int Count;
+
+        [Tooltip("Sideways gap between them, so they fan out instead of stacking up.")]
+        public float Spread;
+    }
+
+    /// <summary>One call for reinforcements and where they belong. The owning manager does the
+    /// spawning, so they end up tracked like any other enemy.</summary>
+    public readonly struct EnemySpawnRequestDTO
+    {
+        public EnemySpawnDTO Spawn { get; }
+        public Vector3 LocalPosition { get; }
+
+        public EnemySpawnRequestDTO(EnemySpawnDTO spawn, Vector3 localPosition)
+        {
+            Spawn = spawn;
+            LocalPosition = localPosition;
+        }
+    }
+
     public interface IEnemySpaceship : ISpaceship
     {
         new event Action<IEnemySpaceship> OnDestroyed;
+        event Action<IEnemySpaceship, EnemySpawnRequestDTO> OnSpawnRequested;
         EnemyTypes EnemyType { get; }
         EnemyCategoryTypes Category { get; }
 
@@ -18,6 +46,9 @@ namespace SpaceInvaders.Scenes.Game
         /// <summary>Flies to the prepared spot. The whole wave shares one duration, so the formation
         /// arrives together instead of trickling in.</summary>
         void StartEntryAnimation(float duration);
+
+        /// <summary>Starts fighting straight away, for ships that appear in place rather than flying in.</summary>
+        void SkipEntry();
     }
 
     /// <summary>
@@ -45,6 +76,7 @@ namespace SpaceInvaders.Scenes.Game
         private Tween _entryTween;
 
         public new event Action<IEnemySpaceship> OnDestroyed;
+        public event Action<IEnemySpaceship, EnemySpawnRequestDTO> OnSpawnRequested;
 
         protected override void Destroy()
         {
@@ -104,6 +136,21 @@ namespace SpaceInvaders.Scenes.Game
             _entryTween = transform.DOMove(_entryTargetPosition, duration)
                 .SetEase(Ease.Linear)
                 .OnComplete(OnEntryComplete);
+        }
+
+        /// <summary>Split and summoned ships are placed where they are needed, so there is no entry
+        /// to fly and nothing to be invulnerable through.</summary>
+        public void SkipEntry()
+        {
+            _entryTween?.Kill();
+            _entryTween = null;
+
+            OnEntryComplete();
+        }
+
+        protected void RaiseSpawnRequest(EnemySpawnRequestDTO request)
+        {
+            OnSpawnRequested?.Invoke(this, request);
         }
 
         private void OnEntryComplete()
