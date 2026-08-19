@@ -38,12 +38,14 @@ namespace SpaceInvaders.Scenes.Game
         public void Initialize()
         {
             _messageBus.Subscribe<EnemyDestroyedMessage>(OnEnemyDestroyed);
+            _messageBus.Subscribe<HazardDestroyedMessage>(OnHazardDestroyed);
             _messageBus.Subscribe<LevelCompletedMessage>(OnLevelCompleted);
         }
 
         public void Dispose()
         {
             _messageBus.Unsubscribe<EnemyDestroyedMessage>(OnEnemyDestroyed);
+            _messageBus.Unsubscribe<HazardDestroyedMessage>(OnHazardDestroyed);
             _messageBus.Unsubscribe<LevelCompletedMessage>(OnLevelCompleted);
             _pendingLoot.Clear();
         }
@@ -74,16 +76,27 @@ namespace SpaceInvaders.Scenes.Game
 
         private void OnEnemyDestroyed(EnemyDestroyedMessage message)
         {
-            switch (RollDropCategory())
+            SpawnDrop(RollDropCategory(), message.LocalPosition);
+        }
+
+        /// <summary>A hazard costs the player something to break, so it always pays out.</summary>
+        private void OnHazardDestroyed(HazardDestroyedMessage message)
+        {
+            SpawnDrop(RollGuaranteedDropCategory(), message.LocalPosition);
+        }
+
+        private void SpawnDrop(DropCategoryTypes category, Vector3 localPosition)
+        {
+            switch (category)
             {
                 case DropCategoryTypes.Powerup:
                 {
-                    SpawnPowerupDrop(message.LocalPosition);
+                    SpawnPowerupDrop(localPosition);
                     break;
                 }
                 case DropCategoryTypes.Item:
                 {
-                    SpawnItemDrop(message.LocalPosition);
+                    SpawnItemDrop(localPosition);
                     break;
                 }
             }
@@ -140,6 +153,24 @@ namespace SpaceInvaders.Scenes.Game
         {
             IReadOnlyList<DropCategoryWeightDTO> weights = _dropsRepository.GetAllDropCategoryWeights();
             DropCategoryWeightDTO winner = GameUtils.RollWeighted(weights, weight => weight.Weight);
+
+            return winner?.Category ?? DropCategoryTypes.None;
+        }
+
+        /// <summary>The same table, with the "nothing" entry left out, so a category always wins.</summary>
+        private DropCategoryTypes RollGuaranteedDropCategory()
+        {
+            var candidates = new List<DropCategoryWeightDTO>();
+
+            foreach (DropCategoryWeightDTO weight in _dropsRepository.GetAllDropCategoryWeights())
+            {
+                if (weight.Category != DropCategoryTypes.None)
+                {
+                    candidates.Add(weight);
+                }
+            }
+
+            DropCategoryWeightDTO winner = GameUtils.RollWeighted(candidates, weight => weight.Weight);
 
             return winner?.Category ?? DropCategoryTypes.None;
         }

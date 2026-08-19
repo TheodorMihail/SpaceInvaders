@@ -5,7 +5,7 @@ using Zenject;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public interface ISpaceship : IPoolableObject
+    public interface ISpaceship : IPoolableObject, IDamageableTarget
     {
         ShipStats Stats { get; }
         string SpaceshipID { get; }
@@ -27,7 +27,6 @@ namespace SpaceInvaders.Scenes.Game
 
         /// <summary>Tops the magazine up early, such as when a wave has been cleared.</summary>
         void Reload();
-        void TakeDamage(AttackSourceDTO source);
         void TakeDamage(int damage);
     }
 

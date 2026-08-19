@@ -51,15 +51,15 @@ namespace SpaceInvaders.Scenes.Game
 
         private void HandleTriggerEnter(Collider other)
         {
-            if (other.TryGetComponent(out ShipHitboxComponent hitbox) && hitbox.Ship != null)
+            if (other.TryGetComponent(out BaseHitboxComponent hitbox) && hitbox.Target != null)
             {
-                // The hitbox answers for its ship, whose tag decides the team.
+                // The hitbox answers for whatever owns it, and decides whether this shot lands.
                 if (hitbox.IsSameTeamAs(gameObject))
                 {
                     return;
                 }
 
-                hitbox.Ship.TakeDamage(_source);
+                hitbox.Target.TakeDamage(_source);
                 TriggerDestroy();
 
                 return;

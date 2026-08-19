@@ -12,6 +12,7 @@ namespace SpaceInvaders.Scenes.Game
     {
         UniTask<IPlayerSpaceship> SpawnPlayer();
         UniTask<List<IEnemySpaceship>> SpawnEnemies(WaveConfigDTO waveConfig);
+        BaseHazardBehaviourComponent SpawnHazard(HazardConfigSO config, Vector3 direction, float entryRatio);
         ProjectileBehaviourComponent SpawnProjectile(ProjectileBehaviourComponent prefab, Vector3 muzzleWorldPosition, Vector3 direction, AttackSourceDTO source, string shooterTag);
         PowerupBehaviourComponent SpawnPowerup(PowerupConfigSO config, Vector3 localPosition);
         ItemPickupBehaviourComponent SpawnItemPickup(ItemRarityConfigSO rarityConfig, InventoryItemEntry item, Vector3 localPosition);
@@ -113,6 +114,23 @@ namespace SpaceInvaders.Scenes.Game
             }
 
             return spawnedEnemies;
+        }
+
+        /// <summary>Spawned on the prefab's own plane and left to place itself: where it enters is
+        /// picked by the caller, but only the hazard knows its own extents.</summary>
+        public BaseHazardBehaviourComponent SpawnHazard(HazardConfigSO config, Vector3 direction, float entryRatio)
+        {
+            var hazard = Spawn(config.HazardPrefab, config.HazardPrefab.transform.localPosition, Quaternion.identity);
+
+            if (hazard == null)
+            {
+                return null;
+            }
+
+            hazard.Initialize(config, direction, entryRatio);
+            _activeObjects.Add(hazard);
+
+            return hazard;
         }
 
         public void Despawn<T>(T instance) where T : MonoBehaviour, IPoolableObject

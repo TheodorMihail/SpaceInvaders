@@ -21,10 +21,12 @@ namespace SpaceInvaders.Scenes.Game
         [SerializeField] private List<WaveFormationDTO> _wavesFormation;
         [SerializeField] private float _timeBetweenSpawns;
         [SerializeField] private float _entrySpeed;
+        [SerializeField] private List<WaveHazardDTO> _waveHazards;
 
         public List<WaveFormationDTO> WavesFormation => _wavesFormation ?? new List<WaveFormationDTO>();
         public float TimeBetweenSpawns => _timeBetweenSpawns;
         public float EntrySpeed => _entrySpeed;
+        public List<WaveHazardDTO> WaveHazards => _waveHazards ?? new List<WaveHazardDTO>();
 
         [Serializable]
         public struct WaveFormationDTO
@@ -33,6 +35,20 @@ namespace SpaceInvaders.Scenes.Game
             [FormerlySerializedAs("Position")]
             public Vector2Int GridPosition;
             public EnemyTypes EnemyType;
+        }
+
+        /// <summary>One hazard this wave keeps sending in, and how often.</summary>
+        [Serializable]
+        public struct WaveHazardDTO
+        {
+            public HazardTypes HazardType;
+
+            [Tooltip("Wait before the first one arrives, so a wave never opens on a hazard.")]
+            public float FirstSpawnDelay;
+
+            [Tooltip("Seconds between arrivals, rolled per hazard. A max of 0 sends exactly one.")]
+            public float MinSpawnInterval;
+            public float MaxSpawnInterval;
         }
     }
 
@@ -50,6 +66,7 @@ namespace SpaceInvaders.Scenes.Game
         [Inject] private readonly ILevelsRepository _levelsRepository;
         [Inject] private readonly IShipsRepository _shipsRepository;
         [Inject] private readonly IEnemiesManager _enemiesManager;
+        [Inject] private readonly IHazardsService _hazardsService;
         [Inject] private readonly IPlayerManager _playerManager;
         [Inject] private readonly ILevelManager _levelManager;
         [Inject] private readonly IMessageBus _messageBus;
@@ -108,6 +125,9 @@ namespace SpaceInvaders.Scenes.Game
         {
             if (_currentWaveNumber >= _currentLevelConfigSo.WavesConfigs.Count)
             {
+                // Nothing left to survive, so the level should not keep throwing hazards during the
+                // delay before the run actually ends.
+                _hazardsService.StopHazards();
                 AwardLevelStars();
                 _messageBus.Publish(new LevelCompletedMessage(CurrentLevelNumber));
                 return;
@@ -115,6 +135,7 @@ namespace SpaceInvaders.Scenes.Game
 
             WaveConfigDTO wave = _currentLevelConfigSo.WavesConfigs[_currentWaveNumber];
             _enemiesManager.SpawnEnemies(wave).Forget();
+            _hazardsService.StartWaveHazards(wave);
             _currentWaveNumber++;
 
             _messageBus.Publish(new WaveStartedMessage(_currentWaveNumber, _currentLevelConfigSo.WavesConfigs.Count, WaveContainsBoss(wave)));

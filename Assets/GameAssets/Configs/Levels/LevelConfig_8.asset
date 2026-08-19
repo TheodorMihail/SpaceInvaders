@@ -34,6 +34,11 @@ MonoBehaviour:
       EnemyType: 1
     _timeBetweenSpawns: 1
     _entrySpeed: 155
+    _waveHazards:
+    - HazardType: 0
+      FirstSpawnDelay: 8
+      MinSpawnInterval: 11
+      MaxSpawnInterval: 15
   - _wavesFormation:
     - GridPosition: {x: -81, y: 120}
       EnemyType: 0
@@ -72,6 +77,11 @@ MonoBehaviour:
       EnemyType: 0
     _timeBetweenSpawns: 1
     _entrySpeed: 155
+    _waveHazards:
+    - HazardType: 0
+      FirstSpawnDelay: 5
+      MinSpawnInterval: 8
+      MaxSpawnInterval: 12
   - _wavesFormation:
     - GridPosition: {x: 73, y: 120}
       EnemyType: 0
@@ -114,5 +124,10 @@ MonoBehaviour:
       EnemyType: 1
     _timeBetweenSpawns: 1
     _entrySpeed: 155
+    _waveHazards:
+    - HazardType: 0
+      FirstSpawnDelay: 4
+      MinSpawnInterval: 7
+      MaxSpawnInterval: 10
   _generatorSeed: 0
   _threeStarMaxDamage: 100
