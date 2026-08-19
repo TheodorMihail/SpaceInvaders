@@ -77,6 +77,13 @@ namespace SpaceInvaders.Scenes.Game
 
             var prefab = await LoadPrefabAsync<PlayerSpaceshipBehaviourComponent>(prefabPath);
             var spawnedPlayer = Spawn(prefab, prefab.transform.localPosition, prefab.transform.localRotation);
+
+            if (spawnedPlayer == null)
+            {
+                return null;
+            }
+
+            spawnedPlayer.Initialize(playerConfig);
             return spawnedPlayer;
         }
 
@@ -111,6 +118,7 @@ namespace SpaceInvaders.Scenes.Game
                     continue;
                 }
 
+                spawnedEnemy.Initialize(enemyConfig);
                 spawnedEnemies.Add(spawnedEnemy);
             }
 
@@ -136,7 +144,15 @@ namespace SpaceInvaders.Scenes.Game
             // The caller knows where on the board the ship belongs, the prefab knows which plane it flies on.
             localPosition.y = enemyPrefab.transform.localPosition.y;
 
-            return Spawn(enemyPrefab, localPosition, enemyPrefab.transform.localRotation);
+            var spawnedEnemy = Spawn(enemyPrefab, localPosition, enemyPrefab.transform.localRotation);
+
+            if (spawnedEnemy == null)
+            {
+                return null;
+            }
+
+            spawnedEnemy.Initialize(enemyConfig);
+            return spawnedEnemy;
         }
 
         /// <summary>Spawned on the prefab's own plane and left to place itself: where it enters is

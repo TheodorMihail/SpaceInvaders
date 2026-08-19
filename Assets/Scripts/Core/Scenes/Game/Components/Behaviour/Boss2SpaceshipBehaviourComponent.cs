@@ -17,11 +17,12 @@ namespace SpaceInvaders.Scenes.Game
 
         private int _nextThresholdIndex;
 
-        public override void OnSpawned()
+        public override void Initialize(EnemySpaceshipConfigSO config)
         {
-            base.OnSpawned();
+            base.Initialize(config);
 
-            // Stats are rebuilt on every spawn, so the hook goes on the instance the base just made.
+            // Stats are rebuilt from the config every spawn, so the hook goes on the instance the
+            // base has just made rather than on anything held from the previous life.
             _nextThresholdIndex = 0;
             Stats.HealthChanged += OnStatsHealthChangedForSummon;
         }

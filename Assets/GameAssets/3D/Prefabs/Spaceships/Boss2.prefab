@@ -859,9 +859,16 @@ MonoBehaviour:
   _flames:
   - {fileID: 3792426679190927273}
   - {fileID: 374135094687455227}
-  _shipConfig: {fileID: 11400000, guid: c85fce17918c97d4b85cefcbfe96fa63, type: 2}
   _formationDepthFactor: 0.6
   _maxFirstShotDelay: 1
+  _summonSpawn:
+    EnemyType: 3
+    Count: 4
+    Spread: 60
+  _summonHealthThresholds:
+  - 0.75
+  - 0.5
+  - 0.25
 --- !u!4 &5075005363049723894 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6265288208487803114, guid: 59682f8daab61fa4bba77178e8622c8b, type: 3}
