@@ -20,6 +20,7 @@ namespace SpaceInvaders.Scenes.MainMenu
             _view.OnItemClicked += OnItemClicked;
             _view.OnBackClicked += OnBackClicked;
             _messageBus.Subscribe<ItemEquipChangedMessage>(OnItemEquipChanged);
+            _messageBus.Subscribe<ItemSoldMessage>(OnItemSold);
 
             _view.Setup();
             _view.RefreshStatsPanel(_model.GetStatsPanel());
@@ -30,6 +31,7 @@ namespace SpaceInvaders.Scenes.MainMenu
             _view.OnItemClicked -= OnItemClicked;
             _view.OnBackClicked -= OnBackClicked;
             _messageBus.Unsubscribe<ItemEquipChangedMessage>(OnItemEquipChanged);
+            _messageBus.Unsubscribe<ItemSoldMessage>(OnItemSold);
             base.Dispose();
         }
 
@@ -42,6 +44,13 @@ namespace SpaceInvaders.Scenes.MainMenu
         {
             _view.ApplyEquipChange(message.EquippedInstanceId, message.UnequippedInstanceId);
             _view.RefreshStatsPanel(_model.GetStatsPanel());
+        }
+
+        private void OnItemSold(ItemSoldMessage message)
+        {
+            _view.RemoveItem(message.InstanceId);
+            _view.RefreshStatsPanel(_model.GetStatsPanel());
+            _view.RefreshCurrencyDisplay();
         }
 
         private void OnBackClicked()

@@ -367,7 +367,7 @@ namespace SpaceInvaders.Scenes.Game
         public static string AffixFormat(ShipUpgradableStatTypes statType, float bonus, ShipStatValueTypes valueType)
         {
             string valueText = valueType == ShipStatValueTypes.Flat ? FormatStatDelta(statType, bonus) : FormatPercent(bonus);
-            return $"{StatDisplayName(statType)} {valueText}";
+            return $"• {StatDisplayName(statType)} {valueText}";
         }
 
         public static string FormatStatValue(ShipUpgradableStatTypes statType, float value)
