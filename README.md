@@ -53,19 +53,21 @@ These hold across the whole codebase, and everything below depends on them:
 **Player Progression**
 - **Talents**: permanent, currency-purchased stat upgrades, authored per-level as flat or percentage bonuses
 - **Equippable items**: rarity-tiered loot with randomly-rolled stat affixes, dropped on enemy kills and equipped across ship slots from a dedicated Inventory screen
-- **Loot system**: a single weighted roll per enemy kill decides whether a powerup, an item, or nothing drops, so a kill can never grant more than one reward
+- **Loot system**: a single weighted roll per enemy kill decides whether a powerup, an item, or nothing drops
+- **Salvage**: unwanted loot sells back for currency at a per-rarity rate
 - **Powerups**: timed or instant pickups applied as temporary `ShipStats` bonuses, with their own HUD indicator/timer
-- A shared flat/percentage stat-bonus model (`ShipStats`) used consistently by talents, items, and powerups, with a guaranteed floor so no stacked malus can zero out or invert a stat
+- A shared flat/percentage stat-bonus model (`ShipStats`) used consistently by talents, items, and powerups
 
 **Level & Combat Structure**
 - Levels are composed of multiple enemy waves, laid out from a set of procedural formation templates, with boss waves flagged separately and announced via a dedicated HUD callout
-- Waves are formed of different enemy types, each with their own behaviour and stats
-- Boss enemies switch between several shooting behaviours, with health broadcast over the message bus to a dedicated boss health bar
+- Waves are formed of different enemy types, each with their own behaviour and stats, including ones that break apart into smaller ships when destroyed
+- **Environmental hazards**: obstacles that cross the play area alongside the waves, authored per wave so each level sets its own mix and frequency
+- Boss enemies switch between several shooting behaviours and can call in reinforcements as they lose health, with health broadcast over the message bus to a dedicated boss health bar
 - A star rating is awarded per level based on damage taken versus per-level thresholds, gating progression to the next level
 
 **Core Systems**
 - **Managers**: own the persistent concerns, such as progression, currency, inventory and the player/enemy lifecycle
-- **Services**: take the responsibilities managers delegate, such as spawning, input, scoring and session flow, plus sound wiring (`SoundsService` translates message-bus events into `SoundsManager` playback)
+- **Services**: take the responsibilities managers delegate, such as spawning, input, scoring, session flow and sound wiring
 - **Components**: interface-driven spaceship hierarchy, projectiles, collision detection, pooled VFX and world-space health bars
 
 **Data Management**
@@ -75,6 +77,7 @@ These hold across the whole codebase, and everything below depends on them:
 
 **Developer Tools**
 - Level Generator editor window (`SpaceInvaders > Level Generator`) for authoring level configs, including a formation-template generator and a custom inspector showing each level's generator seed
+- Animation tools (`SpaceInvaders > Animations`) for turning a sliced sprite sheet into looping clips and their controllers
 - Keyboard shortcuts for quickly creating new config assets in the selected folder
 - Custom spaceship inspector that live-displays runtime `ShipStats` while playing
 - Debug shortcuts for granting/clearing progression while testing, gated to the Editor and development builds
