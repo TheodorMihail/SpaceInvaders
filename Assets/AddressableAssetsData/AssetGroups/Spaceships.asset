@@ -15,6 +15,12 @@ MonoBehaviour:
   m_GroupName: Spaceships
   m_GUID: a17f6ea565c249c40b9772b9de2de651
   m_SerializeEntries:
+  - m_GUID: 02ca3d3694df10149b7a98f895657c98
+    m_Address: Spaceships/Enemy3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Spaceships
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 2168ae8066f231747962d79849a702ed
     m_Address: Spaceships/Enemy2
     m_ReadOnly: 0
@@ -35,6 +41,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 5290e04894fef774bb90f039f115744e
     m_Address: Spaceships/Boss1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Spaceships
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9826d8f03a30b6641826e19a4d77d393
+    m_Address: Spaceships/Enemy4
     m_ReadOnly: 0
     m_SerializedLabels:
     - Spaceships
