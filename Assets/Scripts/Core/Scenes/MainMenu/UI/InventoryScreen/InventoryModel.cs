@@ -16,8 +16,6 @@ namespace SpaceInvaders.Scenes.MainMenu
         [Inject] private readonly IShipsRepository _shipsRepository;
         [Inject] private readonly ICurrencyManager _currencyManager;
         
-        public string EmptyInventoryText { get; } = "No items collected yet.";
-
         public int Currency => _currencyManager.Currency;
 
         public IEnumerable<(InventoryItemEntry entry, ItemConfigSO config)> GetInventoryItems()
