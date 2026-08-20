@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using BaseArchitecture.Core;
+using SpaceInvaders.Project;
 using SpaceInvaders.Scenes.Game;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -16,7 +16,7 @@ namespace SpaceInvaders.Scenes.MainMenu
 
         [SerializeField] private TalentButtonComponent _talentButtonPrefab;
         [SerializeField] private Transform _talentButtonsContainer;
-        [SerializeField] private TextMeshProUGUI _currencyText;
+        [SerializeField] private CurrencyUIComponent _currency;
         [SerializeField] private Button _backButton;
 
         private readonly Dictionary<ShipUpgradableStatTypes, TalentButtonComponent> _talentButtons = new();
@@ -51,7 +51,7 @@ namespace SpaceInvaders.Scenes.MainMenu
                 RefreshButtonDisplay(talent.TalentType);
             }
 
-            UpdateCurrencyDisplay();
+            _currency.Initialize(_model.Currency);
         }
 
         public void RefreshAllTalentButtons()
@@ -61,7 +61,7 @@ namespace SpaceInvaders.Scenes.MainMenu
                 RefreshButtonDisplay(type);
             }
 
-            UpdateCurrencyDisplay();
+            _currency.UpdateCurrency(_model.Currency);
         }
 
         private void RefreshButtonDisplay(ShipUpgradableStatTypes type)
@@ -79,9 +79,5 @@ namespace SpaceInvaders.Scenes.MainMenu
                 _model.CanAfford(type));
         }
 
-        private void UpdateCurrencyDisplay()
-        {
-            _currencyText.text = _model.Currency.ToString();
-        }
     }
 }
