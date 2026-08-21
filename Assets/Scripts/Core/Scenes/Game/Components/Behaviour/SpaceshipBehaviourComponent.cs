@@ -38,6 +38,9 @@ namespace SpaceInvaders.Scenes.Game
         [SerializeField] protected HealthBarUIComponent _healthBar;
         [SerializeField] protected ShipFlameComponent[] _flames;
 
+        [Tooltip("Optional. Ships without one simply do not react visually to being hit.")]
+        [SerializeField] protected HitFlashComponent _hitFlash;
+
         public virtual ShipStats Stats { get; protected set; }
         public virtual string SpaceshipID {get; protected set; }
         public virtual Vector3 LocalPosition => transform.localPosition;
@@ -212,6 +215,17 @@ namespace SpaceInvaders.Scenes.Game
         {
         }
 
+        /// <summary>Ships without a flash authored just skip it, so no prefab has to carry one.</summary>
+        private void FlashHull()
+        {
+            if (_hitFlash == null)
+            {
+                return;
+            }
+
+            _hitFlash.Flash();
+        }
+
         protected void SpawnHitVFX()
         {
             if (_shipConfig.HitVFXPrefab == null)
@@ -270,6 +284,7 @@ namespace SpaceInvaders.Scenes.Game
         {
             Stats.ApplyDamage(damage);
             SpawnHitVFX();
+            FlashHull();
             RaiseDamaged(damage, isCritical);
 
             if (Stats.CurrentHealth == 0)

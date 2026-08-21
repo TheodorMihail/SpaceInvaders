@@ -11,8 +11,21 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 93d9f8e61f7265044a5bda2ccbbb3bec, type: 3}
   m_Name: GameDataConfig
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   _sideMarginRatio: 0.05
   _topMarginRatio: 0.1
   _bottomMarginRatio: 0.03
   _regionDividerRatio: 0.4
+  _impactFeedback:
+    _maxShakeOffset: 15
+    _traumaDecayRate: 2
+    _shakeFrequency: 22
+    _playerDamagedTrauma: 0.65
+    _playerDestroyedTrauma: 1
+    _bossEnteredTrauma: 0.8
+    _bossDestroyedTrauma: 1
+    _hazardDestroyedTrauma: 0.65
+    _slowMotionTimeScale: 0.3
+    _playerDestroyedSlowMotion: 2
+    _levelCompletedSlowMotion: 2
+    _bossEnteredSlowMotion: 2

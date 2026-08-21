@@ -16,7 +16,7 @@ MonoBehaviour:
   _baseStats:
     _health: 2000
     _moveSpeed: 50
-    _fireRate: 0.85
+    _fireRate: 1
     _projectileDamage: 25
     _projectileSpeed: 150
     _critChance: 0.25

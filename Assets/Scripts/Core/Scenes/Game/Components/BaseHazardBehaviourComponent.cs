@@ -15,6 +15,9 @@ namespace SpaceInvaders.Scenes.Game
 
         [SerializeField] private CollisionDetectionComponent _collisionDetection;
 
+        [Tooltip("Optional. Hazards without one simply do not react visually to being hit.")]
+        [SerializeField] private HitFlashComponent _hitFlash;
+
         private HazardConfigSO _config;
 
         /// <summary>Recreated on every spawn, so a pooled hazard comes back whole.</summary>
@@ -58,6 +61,7 @@ namespace SpaceInvaders.Scenes.Game
             if (!Stats.IsDestructible)
             {
                 SpawnVFX(_config.HitVFXPrefab);
+                Flash();
                 return;
             }
 
@@ -68,6 +72,7 @@ namespace SpaceInvaders.Scenes.Game
 
             Stats.ApplyDamage(source.RollDamage(out _));
             SpawnVFX(_config.HitVFXPrefab);
+            Flash();
 
             if (Stats.IsDestroyed)
             {
@@ -108,6 +113,17 @@ namespace SpaceInvaders.Scenes.Game
             }
 
             Despawn();
+        }
+
+        /// <summary>Hazards without a flash authored just skip it, so no prefab has to carry one.</summary>
+        private void Flash()
+        {
+            if (_hitFlash == null)
+            {
+                return;
+            }
+
+            _hitFlash.Flash();
         }
 
         private void SpawnVFX(VFXBehaviourComponent prefab)

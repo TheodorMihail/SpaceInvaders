@@ -113,6 +113,13 @@ namespace SpaceInvaders.Scenes.Game
             foreach (var enemy in newEnemies)
             {
                 enemy.StartEntryAnimation(entryDuration);
+
+                // Announced as it starts its run in rather than when it was built, so the arrival and
+                // whatever plays off it line up with the boss actually moving into view.
+                if (enemy.Category == EnemyCategoryTypes.Boss)
+                {
+                    _messageBus.Publish(new BossSpawnedMessage(enemy.EnemyType, enemy.Stats.CurrentHealth));
+                }
             }
         }
 
@@ -123,14 +130,24 @@ namespace SpaceInvaders.Scenes.Game
             enemy.OnShotFired += OnEnemyShotFiredCallback;
             enemy.OnDamaged += OnEnemyDamagedCallback;
             enemy.OnSpawnRequested += OnEnemySpawnRequestedCallback;
+            enemy.OnEnteredView += OnEnemyEnteredViewCallback;
 
+            if (enemy.Category == EnemyCategoryTypes.Boss)
+            {
+                enemy.OnHealthChanged += OnBossHealthChangedCallback;
+            }
+        }
+
+        /// <summary>Only a boss is worth announcing as it comes into view: it is the one ship whose
+        /// arrival is a moment in its own right rather than a wave filing into place.</summary>
+        private void OnEnemyEnteredViewCallback(IEnemySpaceship enemy)
+        {
             if (enemy.Category != EnemyCategoryTypes.Boss)
             {
                 return;
             }
 
-            enemy.OnHealthChanged += OnBossHealthChangedCallback;
-            _messageBus.Publish(new BossSpawnedMessage(enemy.EnemyType, enemy.Stats.CurrentHealth));
+            _messageBus.Publish(new BossEnteredMessage(enemy.EnemyType));
         }
 
         /// <summary>Spawn depth spans the formation: the lowest value leads the wave in.</summary>
@@ -241,7 +258,7 @@ namespace SpaceInvaders.Scenes.Game
 
         private void OnEnemyDamagedCallback(ISpaceship spaceship, int damage, bool isCritical)
         {
-            _messageBus.Publish(new ShipDamagedMessage(spaceship.Stats.CurrentHealth, damage, isCritical, spaceship.WorldPosition));
+            _messageBus.Publish(new ShipDamagedMessage(spaceship.Stats.CurrentHealth, damage, isCritical, spaceship.WorldPosition, isPlayer: false));
         }
 
         private void DespawnEnemy(IEnemySpaceship enemy)
@@ -251,6 +268,7 @@ namespace SpaceInvaders.Scenes.Game
             enemy.OnShotFired -= OnEnemyShotFiredCallback;
             enemy.OnDamaged -= OnEnemyDamagedCallback;
             enemy.OnSpawnRequested -= OnEnemySpawnRequestedCallback;
+            enemy.OnEnteredView -= OnEnemyEnteredViewCallback;
             _spawnedEnemies.Remove(enemy);
             _spawnService.Despawn(enemy as EnemySpaceshipBehaviourComponent);
         }
