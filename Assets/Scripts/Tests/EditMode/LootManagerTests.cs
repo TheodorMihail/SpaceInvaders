@@ -60,6 +60,10 @@ namespace SpaceInvaders.Tests
             Container.Bind<ISpawnService>().FromInstance(_mockSpawnService);
             Container.Bind<IMessageBus>().FromInstance(_messageBus);
 
+            // The real roller over the mocked repositories, so these tests keep exercising the drop
+            // tables end to end rather than asserting against a stubbed result.
+            Container.Bind<IDropRollService>().To<DropRollService>().AsSingle();
+
             _lootManager = Container.Instantiate<LootManager>();
             _lootManager.Initialize();
         }

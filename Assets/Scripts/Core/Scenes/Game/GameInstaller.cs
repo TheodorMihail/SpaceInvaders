@@ -53,6 +53,8 @@ namespace SpaceInvaders.Scenes.Game
             Container.BindInterfacesTo<PlayerDestroyedCondition>().AsSingle();
 
             Container.Bind<IScreenShakeService>().To<ScreenShakeService>().AsSingle().WhenInjectedInto<CameraManager>();
+            Container.Bind<IDropRollService>().To<DropRollService>().AsSingle().WhenInjectedInto<LootManager>();
+
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             Container.BindInterfacesTo<DebugManager>().AsSingle();
 #endif

@@ -12,6 +12,7 @@ namespace SpaceInvaders.Project
 
         public override void InstallBindings()
         {
+            RepositoriesInstall();
             ManagersInstall();
             ServicesInstall();
         }
@@ -25,6 +26,16 @@ namespace SpaceInvaders.Project
             Container.BindInterfacesTo<AddressablesManager>().AsSingle();
             Container.BindInterfacesTo<PersistenceManager>().AsSingle();
 
+            Container.BindInterfacesTo<SoundsManager>().AsSingle();
+            Container.BindInterfacesTo<LevelManager>().AsSingle();
+            Container.BindInterfacesTo<CurrencyManager>().AsSingle();
+            Container.BindInterfacesTo<TalentManager>().AsSingle();
+            Container.BindInterfacesTo<InventoryManager>().AsSingle();
+            Container.BindInterfacesTo<EquipmentManager>().AsSingle();
+        }
+
+        private void RepositoriesInstall()
+        {
             Container.BindInterfacesTo<ProjectRepository>().AsSingle().WithArguments(_configsContainerSO.ProjectDataConfigSO);
             Container.BindInterfacesTo<GameRepository>().AsSingle().WithArguments(_configsContainerSO.GameDataConfigSO);
             Container.BindInterfacesTo<LevelsRepository>().AsSingle().WithArguments(_configsContainerSO.LevelsDataConfigSO);
@@ -38,13 +49,6 @@ namespace SpaceInvaders.Project
             Container.BindInterfacesTo<TalentsRepository>().AsSingle().WithArguments(_configsContainerSO.TalentsDataConfigSO);
             Container.BindInterfacesTo<ItemsRepository>().AsSingle().WithArguments(_configsContainerSO.ItemsDataConfigSO);
             Container.BindInterfacesTo<HazardsRepository>().AsSingle().WithArguments(_configsContainerSO.HazardsDataConfigSO);
-
-            Container.BindInterfacesTo<SoundsManager>().AsSingle();
-            Container.BindInterfacesTo<LevelManager>().AsSingle();
-            Container.BindInterfacesTo<CurrencyManager>().AsSingle();
-            Container.BindInterfacesTo<TalentManager>().AsSingle();
-            Container.BindInterfacesTo<InventoryManager>().AsSingle();
-            Container.BindInterfacesTo<EquipmentManager>().AsSingle();
         }
 
         private void ServicesInstall()
