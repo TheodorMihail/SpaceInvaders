@@ -47,10 +47,12 @@ namespace SpaceInvaders.Scenes.Game
             Container.BindInterfacesTo<ScoreService>().AsSingle();
             Container.BindInterfacesTo<LevelSessionService>().AsSingle();
             Container.BindInterfacesTo<HazardsService>().AsSingle();
+            Container.BindInterfacesTo<ImpactFeedbackService>().AsSingle();
 
             Container.BindInterfacesTo<LevelCompletedCondition>().AsSingle();
             Container.BindInterfacesTo<PlayerDestroyedCondition>().AsSingle();
 
+            Container.Bind<IScreenShakeService>().To<ScreenShakeService>().AsSingle().WhenInjectedInto<CameraManager>();
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             Container.BindInterfacesTo<DebugManager>().AsSingle();
 #endif

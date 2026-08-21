@@ -58,6 +58,18 @@ namespace SpaceInvaders.Scenes.Game
         }
     }
 
+    /// <summary>The boss has finished flying in and is on its mark. Separate from being spawned, which
+    /// happens while it is still off screen with a long entry ahead of it.</summary>
+    public readonly struct BossEnteredMessage : IMessageObject
+    {
+        public EnemyTypes Type { get; }
+
+        public BossEnteredMessage(EnemyTypes type)
+        {
+            Type = type;
+        }
+    }
+
     public readonly struct LevelStartedMessage : IMessageObject
     {
         public int LevelNumber { get; }
@@ -225,12 +237,17 @@ namespace SpaceInvaders.Scenes.Game
         public bool IsCritical { get; }
         public Vector3 WorldPosition { get; }
 
-        public ShipDamagedMessage(int currentHealth, int damage, bool isCritical, Vector3 worldPosition)
+        /// <summary>Both teams raise this, so anything that should only answer to the player taking a
+        /// hit has to filter on it.</summary>
+        public bool IsPlayer { get; }
+
+        public ShipDamagedMessage(int currentHealth, int damage, bool isCritical, Vector3 worldPosition, bool isPlayer)
         {
             CurrentHealth = currentHealth;
             Damage = damage;
             IsCritical = isCritical;
             WorldPosition = worldPosition;
+            IsPlayer = isPlayer;
         }
     }
 }

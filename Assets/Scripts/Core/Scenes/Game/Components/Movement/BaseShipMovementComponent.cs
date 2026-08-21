@@ -35,6 +35,10 @@ namespace SpaceInvaders.Scenes.Game
         /// move its own transform: that would slide the component around inside a stationary ship.</summary>
         protected Transform ShipTransform => _shipTransform;
 
+        /// <summary>Exposed for anything else needing the hull's size, such as working out how much of
+        /// the ship has come into view.</summary>
+        public Renderer Renderer => _renderer;
+
         [Tooltip("Measured for the bounds query, so it must be the renderer that defines the hull's size.")]
         [SerializeField] private Renderer _renderer;
 

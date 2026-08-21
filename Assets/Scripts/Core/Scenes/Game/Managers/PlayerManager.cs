@@ -120,7 +120,7 @@ namespace SpaceInvaders.Scenes.Game
 
         private void OnDamagedCallback(ISpaceship spaceship, int damage, bool isCritical)
         {
-            _messageBus.Publish(new ShipDamagedMessage(spaceship.Stats.CurrentHealth, damage, isCritical, spaceship.WorldPosition));
+            _messageBus.Publish(new ShipDamagedMessage(spaceship.Stats.CurrentHealth, damage, isCritical, spaceship.WorldPosition, isPlayer: true));
         }
 
         private void OnAmmoChangedCallback(int currentAmmo, int maxAmmo)
