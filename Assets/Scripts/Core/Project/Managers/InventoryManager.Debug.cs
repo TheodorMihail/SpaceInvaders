@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using BaseArchitecture.Core;
 using UnityEngine;
+using Zenject;
 
 namespace SpaceInvaders.Project
 {
     public partial class InventoryManager : IDebugCommandProvider
     {
+        [Inject] private readonly IItemsRepository _itemsRepository;
+
         public IReadOnlyList<DebugCommandDTO> GetDebugCommands()
         {
             return new[]
@@ -36,8 +39,7 @@ namespace SpaceInvaders.Project
 
         private void DebugClearInventory()
         {
-            _data.Items.Clear();
-            SaveData();
+            _itemStorage.ClearAll();
             this.LogWarning("Debug: Inventory cleared.");
         }
     }

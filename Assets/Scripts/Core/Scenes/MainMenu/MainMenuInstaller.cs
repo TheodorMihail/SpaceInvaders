@@ -11,15 +11,8 @@ namespace SpaceInvaders.Scenes.MainMenu
         public override void InstallBindings()
         {
             ContainersInstall();
-            ServicesInstall();
+            ManagersInstall();
             StateMachineInstall();
-        }
-
-        private void ServicesInstall()
-        {
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-            Container.BindInterfacesTo<DebugManager>().AsSingle();
-#endif
         }
 
         private void ContainersInstall()
@@ -29,6 +22,13 @@ namespace SpaceInvaders.Scenes.MainMenu
 
             Container.Resolve<ICustomFactory>().UpdateDIContainer(Container);
             Container.Resolve<IUIManager>().UpdateDIContainer(Container);
+        }
+
+        private void ManagersInstall()
+        {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            Container.BindInterfacesTo<DebugManager>().AsSingle();
+#endif
         }
 
         private void StateMachineInstall()

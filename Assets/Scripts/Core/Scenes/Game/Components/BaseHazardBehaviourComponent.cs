@@ -1,5 +1,5 @@
+using System;
 using UnityEngine;
-using Zenject;
 
 namespace SpaceInvaders.Scenes.Game
 {
@@ -11,14 +11,15 @@ namespace SpaceInvaders.Scenes.Game
     /// </summary>
     public abstract class BaseHazardBehaviourComponent : ScreenBoundedMovingComponent, IDamageableTarget
     {
-        [Inject] private readonly IHazardsService _hazardsService;
-
         [SerializeField] private CollisionDetectionComponent _collisionDetection;
 
         [Tooltip("Optional. Hazards without one simply do not react visually to being hit.")]
         [SerializeField] private HitFlashComponent _hitFlash;
 
         private HazardConfigSO _config;
+
+        /// <summary>Raised only when the player shot it down.</summary>
+        public event Action<HazardTypes, Vector3> OnDestroyed;
 
         /// <summary>Recreated on every spawn, so a pooled hazard comes back whole.</summary>
         public HazardStats Stats { get; private set; }
@@ -44,6 +45,10 @@ namespace SpaceInvaders.Scenes.Game
         {
             base.OnDespawned();
             _collisionDetection.OnTriggerEntered -= HandleTriggerEnter;
+
+            // Cleared here too: one that drifts off screen is never destroyed, so the spawner would
+            // otherwise stack a listener on every reuse of this instance.
+            OnDestroyed = null;
 
             _config = null;
             Stats = null;
@@ -109,7 +114,7 @@ namespace SpaceInvaders.Scenes.Game
 
             if (paysOut)
             {
-                _hazardsService.NotifyHazardDestroyed(_config.HazardType, transform.localPosition);
+                OnDestroyed?.Invoke(_config.HazardType, transform.localPosition);
             }
 
             Despawn();
@@ -133,7 +138,7 @@ namespace SpaceInvaders.Scenes.Game
                 return;
             }
 
-            _spawnService.SpawnVFX(prefab, transform.localPosition);
+            _spawnManager.SpawnVFX(prefab, transform.localPosition);
         }
     }
 }

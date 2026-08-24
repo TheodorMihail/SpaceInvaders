@@ -8,7 +8,7 @@ using Zenject;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public interface ISpawnService : IDisposable
+    public interface ISpawnManager : IDisposable
     {
         UniTask<IPlayerSpaceship> SpawnPlayer();
         UniTask<List<IEnemySpaceship>> SpawnEnemies(WaveConfigDTO waveConfig);
@@ -25,7 +25,7 @@ namespace SpaceInvaders.Scenes.Game
     /// Creates all runtime objects through the object pool, and tracks transient ones for cleanup on
     /// game end.
     /// </summary>
-    public class SpawnService : ISpawnService, IGameInitializeListener, IGameEndListener
+    public class SpawnManager : ISpawnManager, IGameInitializeListener, IGameEndListener
     {
         [Inject] private readonly IShipsRepository _shipsRepository;
         [Inject] private readonly IItemsRepository _itemsRepository;

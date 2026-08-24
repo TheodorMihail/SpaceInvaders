@@ -4,7 +4,7 @@ using BaseArchitecture.Core;
 
 namespace SpaceInvaders.Project
 {
-    public partial class LevelManager : IDebugCommandProvider
+    public partial class LevelProgressManager : IDebugCommandProvider
     {
         public IReadOnlyList<DebugCommandDTO> GetDebugCommands()
         {

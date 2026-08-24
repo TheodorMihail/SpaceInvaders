@@ -40,8 +40,9 @@ This project consumes BaseArchitecture as a **UPM package** (via Git URL), provi
 These hold across the whole codebase, and everything below depends on them:
 
 - **No singletons, no static state and no dependency lookups inside the scene.** Every dependency is injected, so nothing has hidden coupling to scene layout
-- **Managers expose no C# events**, so no system can bind itself to another's internals. Facts travel as past-tense messages on the message bus; commands and queries are direct calls on injected interfaces
+- **Facts are past-tense messages on the message bus**, so a publisher never knows who reacts to it. Commands and queries are direct calls on injected interfaces; C# events cover the direct links with few subscribers
 - **Managers are split by scope.** Project-scoped ones persist across scenes, scene-scoped ones are bound to their own state machine
+- **A manager's services are private to it.** Each owner binds its helpers in its own DI subcontainer and drives their lifecycle, so a service is reachable only through the manager that owns it. Encapsulation is enforced by the container, not by convention
 - **Interfaces throughout**, so every system is substitutable, including under test
 
 ### 🎮 Game-Specific Implementation
@@ -66,8 +67,8 @@ These hold across the whole codebase, and everything below depends on them:
 - A star rating is awarded per level based on damage taken versus per-level thresholds, gating progression to the next level
 
 **Core Systems**
-- **Managers**: own the persistent concerns, such as progression, currency, inventory and the player/enemy lifecycle
-- **Services**: take the responsibilities managers delegate, such as spawning, input, scoring, session flow and sound wiring
+- **Managers**: own the vital concerns, such as progression, currency, inventory, spawning, input, time and the level session
+- **Services**: focused helpers owned outright by one manager, such as drop rolls, score accumulation, hazard cadence and sound wiring
 - **Components**: interface-driven spaceship hierarchy, projectiles, collision detection, pooled VFX and world-space health bars
 
 **Data Management**

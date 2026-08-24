@@ -5,7 +5,7 @@ namespace SpaceInvaders.Scenes.Game
 {
     public class GamePausedController : Controller<GamePausedScreen, GamePausedModel, GamePausedView>
     {
-        [Inject] private readonly IInputService _inputService;
+        [Inject] private readonly IInputManager _inputManager;
 
         public GamePausedController(GamePausedScreen screen, GamePausedModel model, GamePausedView view) : base(screen, model, view)
         {
@@ -22,7 +22,7 @@ namespace SpaceInvaders.Scenes.Game
             _view.OnMusicVolumeChanged += HandleMusicVolumeChanged;
             _view.OnSfxVolumeChanged += HandleSfxVolumeChanged;
 
-            _inputService.OnPause += HandleResumeButtonClicked;
+            _inputManager.OnPause += HandleResumeButtonClicked;
         }
 
         public override void Dispose()
@@ -33,7 +33,7 @@ namespace SpaceInvaders.Scenes.Game
             _view.OnMusicVolumeChanged -= HandleMusicVolumeChanged;
             _view.OnSfxVolumeChanged -= HandleSfxVolumeChanged;
 
-            _inputService.OnPause -= HandleResumeButtonClicked;
+            _inputManager.OnPause -= HandleResumeButtonClicked;
             base.Dispose();
         }
 

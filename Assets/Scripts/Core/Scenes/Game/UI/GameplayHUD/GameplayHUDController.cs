@@ -9,7 +9,7 @@ namespace SpaceInvaders.Scenes.Game
         [Inject] private readonly IMessageBus _messageBus;
         [Inject] private readonly IPowerupsRepository _powerupsRepository;
         [Inject] private readonly IItemsRepository _itemsRepository;
-        [Inject] private readonly IPauseService _pauseService;
+        [Inject] private readonly ITimeManager _timeManager;
         [Inject] private readonly ICameraManager _cameraManager;
 
         public GameplayHUDController(GameplayHUD hud, GameplayHUDModel model, GameplayHUDView view)
@@ -74,7 +74,7 @@ namespace SpaceInvaders.Scenes.Game
 
         private void OnPauseButtonClicked()
         {
-            _pauseService.Pause();
+            _timeManager.Pause();
         }
 
         private void OnEnemyDestroyedCallback(EnemyDestroyedMessage message)

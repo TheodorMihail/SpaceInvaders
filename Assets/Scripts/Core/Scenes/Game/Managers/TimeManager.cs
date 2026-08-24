@@ -7,9 +7,10 @@ using Zenject;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public interface IPauseService : IGameStartListener, IGameEndListener
+    public interface ITimeManager : IGameStartListener, IGameEndListener
     {
         bool IsPaused { get; }
+
         void Pause();
         void Resume();
 
@@ -20,10 +21,10 @@ namespace SpaceInvaders.Scenes.Game
 
     /// <summary>Owns the paused flag and the time scale for a run. Pausing is only possible between
     /// game start and game end.</summary>
-    public class PauseService : IPauseService, IInitializable, IDisposable
+    public class TimeManager : ITimeManager, IInitializable, IDisposable
     {
         [Inject] private readonly IMessageBus _messageBus;
-        [Inject] private readonly IInputService _inputService;
+        [Inject] private readonly IInputManager _inputManager;
 
         private bool _canPause;
         private CancellationTokenSource _slowMotionCancellationTokenSource;
@@ -32,13 +33,13 @@ namespace SpaceInvaders.Scenes.Game
 
         public void Initialize()
         {
-            _inputService.OnPause += OnPauseInput;
+            _inputManager.OnPause += OnPauseInput;
             Application.focusChanged += OnApplicationFocusChanged;
         }
 
         public void Dispose()
         {
-            _inputService.OnPause -= OnPauseInput;
+            _inputManager.OnPause -= OnPauseInput;
             Application.focusChanged -= OnApplicationFocusChanged;
 
             CancelSlowMotion();

@@ -1,14 +1,15 @@
-using System;
 using UnityEngine;
-using Zenject;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public interface IInputService : ITickable
+    /// <summary>Reads one platform's devices. Raising anything from it is the manager's job.</summary>
+    public interface IInputService
     {
-        event Action OnShoot;
-        event Action<Vector3> OnMove;
-        event Action OnAnyKeyPress;
-        event Action OnPause;
+        bool AnyKeyPressed { get; }
+        bool PausePressed { get; }
+        bool ShootPressed { get; }
+
+        /// <summary>Zero while the player is not steering.</summary>
+        Vector3 MoveDirection { get; }
     }
 }

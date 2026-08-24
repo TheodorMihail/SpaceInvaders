@@ -8,10 +8,10 @@ using Zenject;
 namespace SpaceInvaders.Tests
 {
     [TestFixture]
-    public class PauseServiceTests : ZenjectUnitTestFixture
+    public class TimeManagerTests : ZenjectUnitTestFixture
     {
-        private PauseService _pauseService;
-        private IInputService _mockInputService;
+        private TimeManager _timeManager;
+        private IInputManager _mockInputManager;
         private IMessageBus _messageBus;
 
         private int _pausedCount;
@@ -25,14 +25,14 @@ namespace SpaceInvaders.Tests
             _pausedCount = 0;
             _resumedCount = 0;
 
-            _mockInputService = Substitute.For<IInputService>();
+            _mockInputManager = Substitute.For<IInputManager>();
             _messageBus = new MessageBus();
 
-            Container.Bind<IInputService>().FromInstance(_mockInputService);
+            Container.Bind<IInputManager>().FromInstance(_mockInputManager);
             Container.Bind<IMessageBus>().FromInstance(_messageBus);
 
-            _pauseService = Container.Instantiate<PauseService>();
-            _pauseService.Initialize();
+            _timeManager = Container.Instantiate<TimeManager>();
+            _timeManager.Initialize();
 
             _messageBus.Subscribe<GamePausedMessage>(OnGamePaused);
             _messageBus.Subscribe<GameResumedMessage>(OnGameResumed);
@@ -44,7 +44,7 @@ namespace SpaceInvaders.Tests
             _messageBus.Unsubscribe<GamePausedMessage>(OnGamePaused);
             _messageBus.Unsubscribe<GameResumedMessage>(OnGameResumed);
 
-            _pauseService.Dispose();
+            _timeManager.Dispose();
             _messageBus.Dispose();
 
             Time.timeScale = 1f;
@@ -54,9 +54,9 @@ namespace SpaceInvaders.Tests
         [Test]
         public void Pause_BeforeGameStart_DoesNothing()
         {
-            _pauseService.Pause();
+            _timeManager.Pause();
 
-            Assert.IsFalse(_pauseService.IsPaused);
+            Assert.IsFalse(_timeManager.IsPaused);
             Assert.AreEqual(1f, Time.timeScale);
             Assert.AreEqual(0, _pausedCount);
         }
@@ -64,11 +64,11 @@ namespace SpaceInvaders.Tests
         [Test]
         public void Pause_AfterGameStart_FreezesTimeAndPublishesMessage()
         {
-            _pauseService.GameStart(1);
+            _timeManager.GameStart(1);
 
-            _pauseService.Pause();
+            _timeManager.Pause();
 
-            Assert.IsTrue(_pauseService.IsPaused);
+            Assert.IsTrue(_timeManager.IsPaused);
             Assert.AreEqual(0f, Time.timeScale);
             Assert.AreEqual(1, _pausedCount);
         }
@@ -76,10 +76,10 @@ namespace SpaceInvaders.Tests
         [Test]
         public void Pause_WhileAlreadyPaused_PublishesOnce()
         {
-            _pauseService.GameStart(1);
+            _timeManager.GameStart(1);
 
-            _pauseService.Pause();
-            _pauseService.Pause();
+            _timeManager.Pause();
+            _timeManager.Pause();
 
             Assert.AreEqual(1, _pausedCount);
         }
@@ -87,12 +87,12 @@ namespace SpaceInvaders.Tests
         [Test]
         public void Resume_WhilePaused_RestoresTimeAndPublishesMessage()
         {
-            _pauseService.GameStart(1);
-            _pauseService.Pause();
+            _timeManager.GameStart(1);
+            _timeManager.Pause();
 
-            _pauseService.Resume();
+            _timeManager.Resume();
 
-            Assert.IsFalse(_pauseService.IsPaused);
+            Assert.IsFalse(_timeManager.IsPaused);
             Assert.AreEqual(1f, Time.timeScale);
             Assert.AreEqual(1, _resumedCount);
         }
@@ -100,9 +100,9 @@ namespace SpaceInvaders.Tests
         [Test]
         public void Resume_WhileNotPaused_DoesNothing()
         {
-            _pauseService.GameStart(1);
+            _timeManager.GameStart(1);
 
-            _pauseService.Resume();
+            _timeManager.Resume();
 
             Assert.AreEqual(0, _resumedCount);
         }
@@ -110,12 +110,12 @@ namespace SpaceInvaders.Tests
         [Test]
         public void GameEnd_WhilePaused_Resumes()
         {
-            _pauseService.GameStart(1);
-            _pauseService.Pause();
+            _timeManager.GameStart(1);
+            _timeManager.Pause();
 
-            _pauseService.GameEnd();
+            _timeManager.GameEnd();
 
-            Assert.IsFalse(_pauseService.IsPaused);
+            Assert.IsFalse(_timeManager.IsPaused);
             Assert.AreEqual(1f, Time.timeScale);
             Assert.AreEqual(1, _resumedCount);
         }
@@ -123,58 +123,58 @@ namespace SpaceInvaders.Tests
         [Test]
         public void Pause_AfterGameEnd_DoesNothing()
         {
-            _pauseService.GameStart(1);
-            _pauseService.GameEnd();
+            _timeManager.GameStart(1);
+            _timeManager.GameEnd();
 
-            _pauseService.Pause();
+            _timeManager.Pause();
 
-            Assert.IsFalse(_pauseService.IsPaused);
+            Assert.IsFalse(_timeManager.IsPaused);
             Assert.AreEqual(0, _pausedCount);
         }
 
         [Test]
         public void Pause_OnNextGameStartAfterGameEnd_IsAllowedAgain()
         {
-            _pauseService.GameStart(1);
-            _pauseService.GameEnd();
+            _timeManager.GameStart(1);
+            _timeManager.GameEnd();
 
-            _pauseService.GameStart(2);
-            _pauseService.Pause();
+            _timeManager.GameStart(1);
+            _timeManager.Pause();
 
-            Assert.IsTrue(_pauseService.IsPaused);
+            Assert.IsTrue(_timeManager.IsPaused);
             Assert.AreEqual(1, _pausedCount);
         }
 
         [Test]
         public void PauseInput_WhenNotPaused_Pauses()
         {
-            _pauseService.GameStart(1);
+            _timeManager.GameStart(1);
 
-            _mockInputService.OnPause += Raise.Event<System.Action>();
+            _mockInputManager.OnPause += Raise.Event<System.Action>();
 
-            Assert.IsTrue(_pauseService.IsPaused);
+            Assert.IsTrue(_timeManager.IsPaused);
             Assert.AreEqual(1, _pausedCount);
         }
 
         [Test]
         public void PauseInput_WhilePaused_DoesNotResume()
         {
-            _pauseService.GameStart(1);
-            _pauseService.Pause();
+            _timeManager.GameStart(1);
+            _timeManager.Pause();
 
-            _mockInputService.OnPause += Raise.Event<System.Action>();
+            _mockInputManager.OnPause += Raise.Event<System.Action>();
 
-            Assert.IsTrue(_pauseService.IsPaused);
+            Assert.IsTrue(_timeManager.IsPaused);
             Assert.AreEqual(0, _resumedCount);
         }
 
         [Test]
         public void Dispose_RestoresTimeScale()
         {
-            _pauseService.GameStart(1);
-            _pauseService.Pause();
+            _timeManager.GameStart(1);
+            _timeManager.Pause();
 
-            _pauseService.Dispose();
+            _timeManager.Dispose();
 
             Assert.AreEqual(1f, Time.timeScale);
         }

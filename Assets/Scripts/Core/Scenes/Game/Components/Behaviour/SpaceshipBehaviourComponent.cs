@@ -32,7 +32,7 @@ namespace SpaceInvaders.Scenes.Game
 
     public abstract class BaseSpaceshipBehaviourComponent : MonoBehaviour, ISpaceship
     {
-        [Inject] protected ISpawnService _spawnService;
+        [Inject] protected ISpawnManager _spawnManager;
         [SerializeField] protected BaseShipMovementComponent _movement;
         [SerializeField] protected ShipWeaponComponent _weapon;
         [SerializeField] protected HealthBarUIComponent _healthBar;
@@ -234,7 +234,7 @@ namespace SpaceInvaders.Scenes.Game
                 return;
             }
 
-            _spawnService.SpawnVFX(_shipConfig.HitVFXPrefab, LocalPosition);
+            _spawnManager.SpawnVFX(_shipConfig.HitVFXPrefab, LocalPosition);
         }
 
         protected void SpawnDestroyVFX()
@@ -245,7 +245,7 @@ namespace SpaceInvaders.Scenes.Game
                 return;
             }
 
-            _spawnService.SpawnVFX(_shipConfig.DestroyVFXPrefab, LocalPosition);
+            _spawnManager.SpawnVFX(_shipConfig.DestroyVFXPrefab, LocalPosition);
         }
 
         private void OnWeaponShotFired()

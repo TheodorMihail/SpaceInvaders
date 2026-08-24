@@ -12,9 +12,9 @@ namespace SpaceInvaders.Tests
     public class EquipmentManagerTests : ZenjectUnitTestFixture
     {
         private EquipmentManager _equipmentManager;
+        private IInventoryManager _mockInventoryManager;
         private IPersistenceManager _mockPersistenceManager;
         private IItemsRepository _mockItemsRepository;
-        private IInventoryManager _mockInventoryManager;
         private IMessageBus _messageBus;
 
         private readonly Dictionary<string, InventoryItemEntry> _ownedItems = new();
@@ -39,12 +39,17 @@ namespace SpaceInvaders.Tests
                 new(EquipmentSlotTypes.Weapon, ItemSlotTypes.Weapon, "Head"),
                 new(EquipmentSlotTypes.Core, ItemSlotTypes.Core, "Center")
             });
+            _mockItemsRepository.TryGetItemConfig(Arg.Any<string>(), out ItemConfigSO _)
+                .Returns(call =>
+                {
+                    ItemConfigSO config = GetConfigForItemId((string)call[0]);
+                    call[1] = config;
+                    return config != null;
+                });
 
             _mockInventoryManager = Substitute.For<IInventoryManager>();
             _mockInventoryManager.GetItem(Arg.Any<string>())
                 .Returns(call => GetOwnedItem((string)call[0]));
-            _mockInventoryManager.GetItemConfig(Arg.Any<string>())
-                .Returns(call => GetConfigForItemId((string)call[0]));
 
             _messageBus = new MessageBus();
 

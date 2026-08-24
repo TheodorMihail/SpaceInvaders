@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using BaseArchitecture.Core;
@@ -10,12 +9,15 @@ using Random = UnityEngine.Random;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public interface IHazardsService : IDisposable, IGameEndListener
+    public interface IHazardsService
     {
         /// <summary>Replaces whatever the previous wave was sending in with this wave's own hazards.</summary>
         void StartWaveHazards(WaveConfigDTO waveConfig);
         void StopHazards();
-        void NotifyHazardDestroyed(HazardTypes hazardType, Vector3 localPosition);
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        void DebugSpawnFirstHazard();
+#endif
     }
 
     /// <summary>
@@ -25,22 +27,11 @@ namespace SpaceInvaders.Scenes.Game
     public partial class HazardsService : IHazardsService
     {
         [Inject] private readonly IHazardsRepository _hazardsRepository;
-        [Inject] private readonly ISpawnService _spawnService;
+        [Inject] private readonly ISpawnManager _spawnManager;
         [Inject] private readonly IMessageBus _messageBus;
 
         /// <summary>Scoped to the current wave, so starting the next one drops the previous cadence.</summary>
         private CancellationTokenSource _spawnCancellationTokenSource;
-
-        public void Dispose()
-        {
-            StopHazards();
-        }
-
-        public UniTask GameEnd()
-        {
-            StopHazards();
-            return UniTask.CompletedTask;
-        }
 
         public void StartWaveHazards(WaveConfigDTO waveConfig)
         {
@@ -66,9 +57,7 @@ namespace SpaceInvaders.Scenes.Game
             _spawnCancellationTokenSource = null;
         }
 
-        /// <summary>Published rather than dropped on directly, so the loot manager stays the single
-        /// authority on what a kill pays out.</summary>
-        public void NotifyHazardDestroyed(HazardTypes hazardType, Vector3 localPosition)
+        private void OnHazardDestroyedCallback(HazardTypes hazardType, Vector3 localPosition)
         {
             _messageBus.Publish(new HazardDestroyedMessage(hazardType, localPosition));
         }
@@ -110,7 +99,15 @@ namespace SpaceInvaders.Scenes.Game
             float lateralDrift = Random.Range(config.BaseStats.MinLateralDrift, config.BaseStats.MaxLateralDrift);
             float lateralSign = entryRatio < 0.5f ? 1f : -1f;
 
-            _spawnService.SpawnHazard(config, new Vector3(lateralSign * lateralDrift, 0f, -1f), entryRatio);
+            BaseHazardBehaviourComponent hazard =
+                _spawnManager.SpawnHazard(config, new Vector3(lateralSign * lateralDrift, 0f, -1f), entryRatio);
+
+            if (hazard == null)
+            {
+                return;
+            }
+
+            hazard.OnDestroyed += OnHazardDestroyedCallback;
         }
     }
 }
