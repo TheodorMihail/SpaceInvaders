@@ -9,7 +9,7 @@ namespace SpaceInvaders.Scenes.Game
 {
     public class VFXBehaviourComponent : MonoBehaviour, IPoolableObject
     {
-        [Inject] private readonly ISpawnService _spawnService;
+        [Inject] private readonly ISpawnManager _spawnManager;
 
         [SerializeField] private ParticleSystem _particleSystem;
         [SerializeField] private float _lifetime = 2f;
@@ -41,7 +41,7 @@ namespace SpaceInvaders.Scenes.Game
                 return;
             }
 
-            _spawnService.Despawn(this);
+            _spawnManager.Despawn(this);
         }
     }
 }

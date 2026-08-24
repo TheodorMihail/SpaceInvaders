@@ -9,6 +9,7 @@ namespace SpaceInvaders.Project
     public interface IEquipmentManager : IInitializable
     {
         IReadOnlyList<EquipmentSlotConfigDTO> EquipmentSlotConfigs { get; }
+
         InventoryItemEntry GetEquippedItemForEquipmentSlotType(EquipmentSlotTypes slot);
         EquipmentSlotTypes? GetEquipmentSlotTypeForItem(string instanceId);
         bool IsEquipped(string instanceId);
@@ -17,12 +18,13 @@ namespace SpaceInvaders.Project
         void ApplyEquipmentBonuses(ShipStats stats);
     }
 
+    /// <summary>Holds which item occupies each equipment slot and applies their bonuses.</summary>
     public partial class EquipmentManager : IEquipmentManager
     {
         [Inject] private readonly IPersistenceManager _persistenceManager;
         [Inject] private readonly IItemsRepository _itemsRepository;
-        [Inject] private readonly IInventoryManager _inventoryManager;
         [Inject] private readonly IMessageBus _messageBus;
+        [Inject] private readonly IInventoryManager _inventoryManager;
 
         private EquipmentSaveData _data;
 
@@ -33,8 +35,8 @@ namespace SpaceInvaders.Project
             _data = _persistenceManager.Load<EquipmentSaveData>(EquipmentSaveData.SaveKey);
         }
 
-        /// <summary>Removes the slot entry if the referenced item is no longer in the inventory.
-        /// Validated on read, since save data load order is not guaranteed.</summary>
+        /// <summary>Removes the slot entry if the referenced item is no longer owned. Validated on
+        /// read, since save load order is not fixed.</summary>
         public InventoryItemEntry GetEquippedItemForEquipmentSlotType(EquipmentSlotTypes slot)
         {
             EquippedSlotEntry slotEntry = GetEquipmentSlotEntry(slot);
@@ -62,8 +64,7 @@ namespace SpaceInvaders.Project
                 return null;
             }
 
-            ItemConfigSO config = _inventoryManager.GetItemConfig(item.ItemId);
-            if (config == null)
+            if (!_itemsRepository.TryGetItemConfig(item.ItemId, out ItemConfigSO config))
             {
                 return null;
             }

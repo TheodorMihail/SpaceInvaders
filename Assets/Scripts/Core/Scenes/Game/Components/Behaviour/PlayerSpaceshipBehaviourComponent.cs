@@ -13,7 +13,7 @@ namespace SpaceInvaders.Scenes.Game
     
     public class PlayerSpaceshipBehaviourComponent : BaseSpaceshipBehaviourComponent<PlayerSpaceshipConfigSO>, IPlayerSpaceship
     {
-        [Inject] private readonly IInputService _inputService;
+        [Inject] private readonly IInputManager _inputManager;
 
         /// <summary>Input only reports movement, never the lack of it, so each frame starts unset and
         /// is resolved once every tick has been delivered.</summary>
@@ -29,14 +29,14 @@ namespace SpaceInvaders.Scenes.Game
 
         public void EnableControls()
         {
-            _inputService.OnShoot += OnPlayerShoot;
-            _inputService.OnMove += OnPlayerMove;
+            _inputManager.OnShoot += OnPlayerShoot;
+            _inputManager.OnMove += OnPlayerMove;
         }
 
         public void DisableControls()
         {
-            _inputService.OnShoot -= OnPlayerShoot;
-            _inputService.OnMove -= OnPlayerMove;
+            _inputManager.OnShoot -= OnPlayerShoot;
+            _inputManager.OnMove -= OnPlayerMove;
         }
 
         protected override void Destroy()

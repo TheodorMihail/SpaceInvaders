@@ -22,8 +22,7 @@ namespace SpaceInvaders.Scenes.MainMenu
         {
             foreach (InventoryItemEntry entry in _inventoryManager.Items)
             {
-                ItemConfigSO config = _inventoryManager.GetItemConfig(entry.ItemId);
-                if (config == null)
+                if (!_itemsRepository.TryGetItemConfig(entry.ItemId, out ItemConfigSO config))
                 {
                     continue;
                 }
@@ -35,9 +34,17 @@ namespace SpaceInvaders.Scenes.MainMenu
         public bool TryGetInventoryItem(string instanceId, out (InventoryItemEntry entry, ItemConfigSO config) item)
         {
             item.entry = _inventoryManager.GetItem(instanceId);
-            item.config = item.entry != null ? _inventoryManager.GetItemConfig(item.entry.ItemId) : null;
+            item.config = null;
 
-            return item.entry != null && item.config != null;
+            if (item.entry == null)
+            {
+                return false;
+            }
+
+            _itemsRepository.TryGetItemConfig(item.entry.ItemId, out ItemConfigSO config);
+            item.config = config;
+
+            return item.config != null;
         }
 
         public bool TryGetEquippedItemForEquipmentSlotType(EquipmentSlotTypes slot, out InventoryItemEntry item)

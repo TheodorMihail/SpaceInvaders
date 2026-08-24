@@ -6,16 +6,16 @@ namespace SpaceInvaders.Scenes.MainMenu
 {
     public class LevelSelectionModel : Model
     {
-        [Inject] private readonly ILevelManager _levelManager;
+        [Inject] private readonly ILevelProgressManager _levelProgressManager;
 
         public bool IsLevelUnlocked(int levelIndex)
         {
-            return _levelManager.IsLevelUnlocked(levelIndex);
+            return _levelProgressManager.IsLevelUnlocked(levelIndex);
         }
 
         public int GetLevelStars(int levelIndex)
         {
-            return _levelManager.GetLevelStars(levelIndex);
+            return _levelProgressManager.GetLevelStars(levelIndex);
         }
     }
 }

@@ -24,16 +24,23 @@ namespace SpaceInvaders.Scenes.Game
         Boss
     }
 
-    public interface IEnemiesManager : IDisposable, IGameInitializeListener, IGameEndListener
+    public interface IEnemiesService
     {
         int EnemiesAlive { get; }
-        public UniTask SpawnEnemies(WaveConfigDTO wave);
+
+        void GameInitialize();
+        void GameEnd();
+        UniTask SpawnEnemies(WaveConfigDTO wave);
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        void DebugDestroyAllEnemies();
+#endif
     }
 
     /// <summary>Owns the enemies of the current wave and republishes their events as bus messages.</summary>
-    public partial class EnemiesManager : IEnemiesManager
+    public partial class EnemiesService : IEnemiesService
     {
-        [Inject] private readonly ISpawnService _spawnService;
+        [Inject] private readonly ISpawnManager _spawnManager;
         [Inject] private readonly IMessageBus _messageBus;
 
         private List<IEnemySpaceship> _spawnedEnemies;
@@ -45,13 +52,7 @@ namespace SpaceInvaders.Scenes.Game
 
         public int EnemiesAlive => _spawnedEnemies.Count;
 
-        public void Dispose()
-        {
-            CancelSpawning();
-            ClearEnemies();
-        }
-
-        public UniTask GameInitialize()
+        public void GameInitialize()
         {
             // The next level re-initializes without disposing, so a previous run's source can still be here.
             CancelSpawning();
@@ -59,15 +60,13 @@ namespace SpaceInvaders.Scenes.Game
             _spawnedEnemies = new List<IEnemySpaceship>();
             _spawnCancellationTokenSource = new CancellationTokenSource();
             _pendingSpawnRequests = 0;
-            return UniTask.CompletedTask;
         }
 
-        public UniTask GameEnd()
+        public void GameEnd()
         {
             CancelSpawning();
             ClearEnemies();
             _pendingSpawnRequests = 0;
-            return UniTask.CompletedTask;
         }
 
         public async UniTask SpawnEnemies(WaveConfigDTO waveConfig)
@@ -87,7 +86,7 @@ namespace SpaceInvaders.Scenes.Game
                 return;
             }
 
-            var newEnemies = await _spawnService.SpawnEnemies(waveConfig);
+            var newEnemies = await _spawnManager.SpawnEnemies(waveConfig);
 
             // A wave that lands after the run ended belongs to nothing, so it goes straight back.
             if (token.IsCancellationRequested)
@@ -212,7 +211,7 @@ namespace SpaceInvaders.Scenes.Game
             {
                 // Centred on the origin, so the ships fan out evenly either side of where they were asked for.
                 float offsetX = (i - (request.Spawn.Count - 1) * 0.5f) * request.Spawn.Spread;
-                var enemy = await _spawnService.SpawnEnemy(request.Spawn.EnemyType, request.LocalPosition + new Vector3(offsetX, 0f, 0f));
+                var enemy = await _spawnManager.SpawnEnemy(request.Spawn.EnemyType, request.LocalPosition + new Vector3(offsetX, 0f, 0f));
 
                 if (enemy != null)
                 {
@@ -227,7 +226,7 @@ namespace SpaceInvaders.Scenes.Game
             {
                 foreach (var enemy in requestedEnemies)
                 {
-                    _spawnService.Despawn(enemy as EnemySpaceshipBehaviourComponent);
+                    _spawnManager.Despawn(enemy as EnemySpaceshipBehaviourComponent);
                 }
 
                 return;
@@ -270,7 +269,7 @@ namespace SpaceInvaders.Scenes.Game
             enemy.OnSpawnRequested -= OnEnemySpawnRequestedCallback;
             enemy.OnEnteredView -= OnEnemyEnteredViewCallback;
             _spawnedEnemies.Remove(enemy);
-            _spawnService.Despawn(enemy as EnemySpaceshipBehaviourComponent);
+            _spawnManager.Despawn(enemy as EnemySpaceshipBehaviourComponent);
         }
 
         private void DespawnEnemies(List<IEnemySpaceship> enemies)

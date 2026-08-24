@@ -4,7 +4,7 @@ using Zenject;
 
 namespace SpaceInvaders.Project
 {
-    public interface ILevelManager : IInitializable
+    public interface ILevelProgressManager : IInitializable
     {
         int MaxLevelNumber { get; }
         int CurrentLevelNumber { get; }
@@ -15,17 +15,17 @@ namespace SpaceInvaders.Project
         void SetLevelUnlocked(int levelIndex, bool unlocked);
         void RecordLevelResult(int levelIndex, int stars);
 
-        void RegisterSession(ILevelSessionService session);
-        void UnregisterSession(ILevelSessionService session);
+        void RegisterSession(ILevelSessionManager session);
+        void UnregisterSession(ILevelSessionManager session);
     }
 
-    public partial class LevelManager : ILevelManager
+    public partial class LevelProgressManager : ILevelProgressManager
     {
         [Inject] private readonly IPersistenceManager _persistenceManager;
         [Inject] private readonly ILevelsRepository _levelsRepository;
 
         private LevelsSaveData _data;
-        private ILevelSessionService _activeSession;
+        private ILevelSessionManager _activeSession;
 
         public int MaxLevelNumber => _levelsRepository.GetLevelsCount();
         public int CurrentLevelNumber => _activeSession?.CurrentLevelNumber ?? 0;
@@ -90,12 +90,12 @@ namespace SpaceInvaders.Project
 
         /// <summary>Registers the active gameplay session. CurrentLevelNumber returns 0 while none
         /// is registered.</summary>
-        public void RegisterSession(ILevelSessionService session)
+        public void RegisterSession(ILevelSessionManager session)
         {
             _activeSession = session;
         }
 
-        public void UnregisterSession(ILevelSessionService session)
+        public void UnregisterSession(ILevelSessionManager session)
         {
             if (_activeSession == session)
             {

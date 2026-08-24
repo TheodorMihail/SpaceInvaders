@@ -5,17 +5,9 @@ using SpaceInvaders.Project;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public partial class EnemiesManager : IDebugCommandProvider
+    public partial class EnemiesService
     {
-        public IReadOnlyList<DebugCommandDTO> GetDebugCommands()
-        {
-            return new[]
-            {
-                new DebugCommandDTO(DebugKeys.DestroyAllEnemies, "Destroy all enemies", DebugDestroyAllEnemies)
-            };
-        }
-
-        private void DebugDestroyAllEnemies()
+        public void DebugDestroyAllEnemies()
         {
             // The list only exists once the game has initialized.
             if (_spawnedEnemies == null)

@@ -15,7 +15,6 @@ namespace SpaceInvaders.Scenes.Game
         public override void InstallBindings()
         {
             ContainersInstall();
-            ServicesInstall();
             ManagersInstall();
             StateMachineInstall();
         }
@@ -31,50 +30,94 @@ namespace SpaceInvaders.Scenes.Game
             Container.Resolve<IUIManager>().UpdateDIContainer(Container);
         }
 
-        private void ServicesInstall()
+        private void ManagersInstall()
         {
-            if (Container.Resolve<IPlatformService>().IsTouchPlatform)
-            {
-                Container.BindInterfacesTo<TouchInputService>().AsSingle();
-            }
-            else
-            {
-                Container.BindInterfacesTo<KeyboardInputService>().AsSingle();
-            }
+            Container.BindInterfacesTo<ObjectPooling>().AsSingle().WithArguments(_objectPoolingContainer);
+            Container.BindInterfacesTo<SpawnManager>().AsSingle().WithArguments(_gameContainer);
+            Container.BindInterfacesTo<PlayerManager>().AsSingle();
+            Container.BindInterfacesTo<PowerupManager>().AsSingle();
 
-            Container.BindInterfacesTo<PauseService>().AsSingle();
-            Container.BindInterfacesTo<SpawnService>().AsSingle().WithArguments(_gameContainer);
-            Container.BindInterfacesTo<ScoreService>().AsSingle();
-            Container.BindInterfacesTo<LevelSessionService>().AsSingle();
-            Container.BindInterfacesTo<HazardsService>().AsSingle();
-            Container.BindInterfacesTo<ImpactFeedbackService>().AsSingle();
-
-            Container.BindInterfacesTo<LevelCompletedCondition>().AsSingle();
-            Container.BindInterfacesTo<PlayerDestroyedCondition>().AsSingle();
-
-            Container.Bind<IScreenShakeService>().To<ScreenShakeService>().AsSingle().WhenInjectedInto<CameraManager>();
-            Container.Bind<IDropRollService>().To<DropRollService>().AsSingle().WhenInjectedInto<LootManager>();
+            Container.BindInterfacesTo<InputManager>()
+                .FromSubContainerResolve().ByInstaller<InputInstaller>().AsSingle();
+            Container.BindInterfacesTo<TimeManager>().AsSingle();
+            Container.BindInterfacesTo<CameraManager>()
+                .FromSubContainerResolve().ByInstaller<CameraInstaller>().AsSingle();
+            Container.BindInterfacesTo<LevelSessionManager>()
+                .FromSubContainerResolve().ByInstaller<LevelSessionInstaller>().AsSingle();
+            Container.BindInterfacesTo<LootManager>()
+                .FromSubContainerResolve().ByInstaller<LootInstaller>().AsSingle();
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             Container.BindInterfacesTo<DebugManager>().AsSingle();
 #endif
         }
 
-        private void ManagersInstall()
-        {
-            Container.BindInterfacesTo<ObjectPooling>().AsSingle().WithArguments(_objectPoolingContainer);
-            Container.BindInterfacesTo<CameraManager>().AsSingle();
-            Container.BindInterfacesTo<PlayerManager>().AsSingle();
-            Container.BindInterfacesTo<EnemiesManager>().AsSingle();
-            Container.BindInterfacesTo<PowerupManager>().AsSingle();
-            Container.BindInterfacesTo<LootManager>().AsSingle();
-        }
-
         private void StateMachineInstall()
         {
-            Container.BindInterfacesTo<GameplayState>().AsSingle();
+            Container.BindInterfacesTo<GameplayState>()
+                .FromSubContainerResolve().ByInstaller<GameplayStateInstaller>().AsSingle();
+
             Container.BindInterfacesTo<GameOverState>().AsSingle();
             Container.BindInterfacesTo<GameStateMachine>().AsSingle();
+        }
+    }
+
+    public class InputInstaller : Installer<InputInstaller>
+    {
+        public override void InstallBindings()
+        {
+            Container.Bind<InputManager>().AsSingle();
+
+            if (Container.Resolve<IPlatformManager>().IsTouchPlatform)
+            {
+                Container.Bind<IInputService>().To<TouchInputService>().AsSingle();
+            }
+            else
+            {
+                Container.Bind<IInputService>().To<KeyboardInputService>().AsSingle();
+            }
+        }
+    }
+
+    public class CameraInstaller : Installer<CameraInstaller>
+    {
+        public override void InstallBindings()
+        {
+            // Concrete: the parent's subcontainer lookup asks for this type, not the interfaces.
+            Container.Bind<CameraManager>().AsSingle();
+            Container.Bind<IScreenShakeService>().To<ScreenShakeService>().AsSingle();
+        }
+    }
+
+    public class LevelSessionInstaller : Installer<LevelSessionInstaller>
+    {
+        public override void InstallBindings()
+        {
+            Container.Bind<LevelSessionManager>().AsSingle();
+            Container.Bind<IEnemiesService>().To<EnemiesService>().AsSingle();
+            Container.Bind<IHazardsService>().To<HazardsService>().AsSingle();
+            Container.Bind<IScoreService>().To<ScoreService>().AsSingle();
+            Container.Bind<IImpactFeedbackService>().To<ImpactFeedbackService>().AsSingle();
+        }
+    }
+
+    public class LootInstaller : Installer<LootInstaller>
+    {
+        public override void InstallBindings()
+        {
+            Container.Bind<LootManager>().AsSingle();
+            Container.Bind<IDropRollService>().To<DropRollService>().AsSingle();
+        }
+    }
+
+    public class GameplayStateInstaller : Installer<GameplayStateInstaller>
+    {
+        public override void InstallBindings()
+        {
+            Container.Bind<GameplayState>().AsSingle();
+
+            Container.Bind<IGameEndCondition>().To<LevelCompletedCondition>().AsSingle();
+            Container.Bind<IGameEndCondition>().To<PlayerDestroyedCondition>().AsSingle();
         }
     }
 }

@@ -5,7 +5,7 @@ namespace SpaceInvaders.Scenes.Game
 {
     public class GameStartController : Controller<GameStartScreen, GameStartModel, GameStartView>
     {
-        [Inject] private readonly IInputService _inputService;
+        [Inject] private readonly IInputManager _inputManager;
 
         public GameStartController(GameStartScreen screen, GameStartModel model, GameStartView view)
             : base(screen, model, view)
@@ -15,18 +15,18 @@ namespace SpaceInvaders.Scenes.Game
         public override void Initialize()
         {
             base.Initialize();
-            _inputService.OnAnyKeyPress += HandleGameStartTrigger;
+            _inputManager.OnAnyKeyPress += HandleGameStartTrigger;
         }
 
         public override void Dispose()
         {
             base.Dispose();
-            _inputService.OnAnyKeyPress -= HandleGameStartTrigger;
+            _inputManager.OnAnyKeyPress -= HandleGameStartTrigger;
         }
 
         private async void HandleGameStartTrigger()
         {
-            _inputService.OnAnyKeyPress -= HandleGameStartTrigger;
+            _inputManager.OnAnyKeyPress -= HandleGameStartTrigger;
             
             try
             {

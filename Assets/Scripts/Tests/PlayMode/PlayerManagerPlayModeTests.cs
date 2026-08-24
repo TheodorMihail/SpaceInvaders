@@ -15,7 +15,7 @@ namespace SpaceInvaders.Tests
     public class PlayerManagerPlayModeTests : ZenjectUnitTestFixture
     {
         private PlayerManager _playerManager;
-        private ISpawnService _mockSpawnService;
+        private ISpawnManager _mockSpawnManager;
         private IPlayerSpaceship _mockPlayer;
         private IMessageBus _messageBus;
         private ITalentManager _mockTalentManager;
@@ -31,15 +31,15 @@ namespace SpaceInvaders.Tests
         {
             base.Setup();
 
-            _mockSpawnService = Substitute.For<ISpawnService>();
+            _mockSpawnManager = Substitute.For<ISpawnManager>();
             _mockPlayer = Substitute.For<IPlayerSpaceship>();
             _messageBus = new MessageBus();
             _mockTalentManager = Substitute.For<ITalentManager>();
             _mockEquipmentManager = Substitute.For<IEquipmentManager>();
 
-            _mockSpawnService.SpawnPlayer().Returns(UniTask.FromResult(_mockPlayer));
+            _mockSpawnManager.SpawnPlayer().Returns(UniTask.FromResult(_mockPlayer));
 
-            Container.Bind<ISpawnService>().FromInstance(_mockSpawnService);
+            Container.Bind<ISpawnManager>().FromInstance(_mockSpawnManager);
             Container.Bind<IMessageBus>().FromInstance(_messageBus);
             Container.Bind<ITalentManager>().FromInstance(_mockTalentManager);
             Container.Bind<IEquipmentManager>().FromInstance(_mockEquipmentManager);
@@ -59,7 +59,7 @@ namespace SpaceInvaders.Tests
         public IEnumerator OnGameInitialized_SpawnsPlayer()
         {
             yield return InitializeAndSpawnPlayer();
-            _mockSpawnService.Received(1).SpawnPlayer();
+            _mockSpawnManager.Received(1).SpawnPlayer();
         }
 
         [UnityTest]

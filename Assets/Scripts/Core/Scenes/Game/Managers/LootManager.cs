@@ -23,7 +23,7 @@ namespace SpaceInvaders.Scenes.Game
         [Inject] private readonly IItemsRepository _itemsRepository;
         [Inject] private readonly IInventoryManager _inventoryManager;
         [Inject] private readonly IMessageBus _messageBus;
-        [Inject] private readonly ISpawnService _spawnService;
+        [Inject] private readonly ISpawnManager _spawnManager;
 
         /// <summary>Decides what drops; this manager decides where it lands and who hears about it.</summary>
         [Inject] private readonly IDropRollService _dropRolls;
@@ -108,7 +108,7 @@ namespace SpaceInvaders.Scenes.Game
                 return;
             }
 
-            _spawnService.SpawnItemPickup(rarityConfig, item, localPosition);
+            _spawnManager.SpawnItemPickup(rarityConfig, item, localPosition);
             _messageBus.Publish(new ItemDroppedMessage(item.InstanceId, localPosition));
         }
 
@@ -121,7 +121,7 @@ namespace SpaceInvaders.Scenes.Game
                 return;
             }
 
-            _spawnService.SpawnPowerup(config, localPosition);
+            _spawnManager.SpawnPowerup(config, localPosition);
             _messageBus.Publish(new PowerupDroppedMessage(config.PowerupType, localPosition));
         }
 

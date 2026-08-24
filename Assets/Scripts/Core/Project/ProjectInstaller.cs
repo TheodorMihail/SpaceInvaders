@@ -14,24 +14,29 @@ namespace SpaceInvaders.Project
         {
             RepositoriesInstall();
             ManagersInstall();
-            ServicesInstall();
         }
 
         private void ManagersInstall()
         {
             Container.BindInterfacesTo<MessageBus>().AsSingle();
             Container.BindInterfacesTo<CustomFactory>().AsSingle();
+            
             Container.BindInterfacesTo<ScenesManager>().AsSingle();
             Container.BindInterfacesTo<UIManager>().AsSingle();
             Container.BindInterfacesTo<AddressablesManager>().AsSingle();
             Container.BindInterfacesTo<PersistenceManager>().AsSingle();
 
-            Container.BindInterfacesTo<SoundsManager>().AsSingle();
-            Container.BindInterfacesTo<LevelManager>().AsSingle();
+            Container.BindInterfacesTo<LevelProgressManager>().AsSingle();
             Container.BindInterfacesTo<CurrencyManager>().AsSingle();
             Container.BindInterfacesTo<TalentManager>().AsSingle();
-            Container.BindInterfacesTo<InventoryManager>().AsSingle();
             Container.BindInterfacesTo<EquipmentManager>().AsSingle();
+
+            Container.BindInterfacesTo<PlatformManager>()
+                .FromSubContainerResolve().ByInstaller<PlatformInstaller>().AsSingle();
+            Container.BindInterfacesTo<GameSoundsManager>()
+                .FromSubContainerResolve().ByInstaller<SoundsInstaller>().AsSingle();
+            Container.BindInterfacesTo<InventoryManager>()
+                .FromSubContainerResolve().ByInstaller<InventoryInstaller>().AsSingle();
         }
 
         private void RepositoriesInstall()
@@ -39,27 +44,48 @@ namespace SpaceInvaders.Project
             Container.BindInterfacesTo<ProjectRepository>().AsSingle().WithArguments(_configsContainerSO.ProjectDataConfigSO);
             Container.BindInterfacesTo<GameRepository>().AsSingle().WithArguments(_configsContainerSO.GameDataConfigSO);
             Container.BindInterfacesTo<LevelsRepository>().AsSingle().WithArguments(_configsContainerSO.LevelsDataConfigSO);
-            Container.BindInterfacesTo<ShipsRepository>().AsSingle().WithArguments(new object[]
-            {
-                _configsContainerSO.PlayerDataConfigSO, _configsContainerSO.EnemyDataConfigSO
-            });
             Container.BindInterfacesTo<PowerupsRepository>().AsSingle().WithArguments(_configsContainerSO.PowerupsDataConfigSO);
             Container.BindInterfacesTo<DropsRepository>().AsSingle().WithArguments(_configsContainerSO.DropTableConfigSO);
             Container.BindInterfacesTo<SoundsRepository>().AsSingle().WithArguments(_configsContainerSO.SoundsDataConfigSO);
             Container.BindInterfacesTo<TalentsRepository>().AsSingle().WithArguments(_configsContainerSO.TalentsDataConfigSO);
             Container.BindInterfacesTo<ItemsRepository>().AsSingle().WithArguments(_configsContainerSO.ItemsDataConfigSO);
             Container.BindInterfacesTo<HazardsRepository>().AsSingle().WithArguments(_configsContainerSO.HazardsDataConfigSO);
+            Container.BindInterfacesTo<ShipsRepository>().AsSingle().WithArguments(new object[]
+           {
+                _configsContainerSO.PlayerDataConfigSO, _configsContainerSO.EnemyDataConfigSO
+           });
         }
+    }
 
-        private void ServicesInstall()
+    public class PlatformInstaller : Installer<PlatformInstaller>
+    {
+        public override void InstallBindings()
         {
-            Container.BindInterfacesTo<PlatformService>().AsSingle();
-            Container.BindInterfacesTo<SoundsService>().AsSingle();
-            Container.BindInterfacesTo<ItemSellService>().AsSingle();
+            Container.Bind<PlatformManager>().AsSingle();
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            Container.BindInterfacesTo<ScreenshotService>().AsSingle();
+            Container.Bind<IScreenshotService>().To<ScreenshotService>().AsSingle();
 #endif
+        }
+    }
+
+    public class SoundsInstaller : Installer<SoundsInstaller>
+    {
+        public override void InstallBindings()
+        {
+            Container.Bind<GameSoundsManager>().AsSingle();
+            Container.Bind<ISoundsService>().To<SoundsService>().AsSingle();
+        }
+    }
+
+    public class InventoryInstaller : Installer<InventoryInstaller>
+    {
+        public override void InstallBindings()
+        {
+            // Concrete: the parent's subcontainer lookup asks for this type, not the interfaces.
+            Container.Bind<InventoryManager>().AsSingle();
+            Container.Bind<IItemStorageService>().To<ItemStorageService>().AsSingle();
+            Container.Bind<IItemSellService>().To<ItemSellService>().AsSingle();
         }
     }
 }

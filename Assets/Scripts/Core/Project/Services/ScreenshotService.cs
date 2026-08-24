@@ -7,21 +7,18 @@ using UnityEngine;
 
 namespace SpaceInvaders.Project
 {
+    public interface IScreenshotService
+    {
+        void TakeScreenshot();
+    }
+
     /// <summary>Captures the game view straight to disk. Reaching for an external capture tool costs
     /// the application its focus, which auto pauses the run and puts the pause screen in the shot.</summary>
-    public class ScreenshotService : IDebugCommandProvider
+    public class ScreenshotService : IScreenshotService
     {
         private const string FileNameTimeFormat = "yyyy-MM-dd_HH-mm-ss";
 
-        public IReadOnlyList<DebugCommandDTO> GetDebugCommands()
-        {
-            return new[]
-            {
-                new DebugCommandDTO(DebugKeys.TakeScreenshot, "Take screenshot", TakeScreenshot)
-            };
-        }
-
-        private void TakeScreenshot()
+        public void TakeScreenshot()
         {
             // Named after the game, since the file lands loose among everything else on the desktop.
             string fileName = $"{Application.productName}_{DateTime.Now.ToString(FileNameTimeFormat)}.png";

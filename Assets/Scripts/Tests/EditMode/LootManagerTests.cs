@@ -17,7 +17,7 @@ namespace SpaceInvaders.Tests
         private IPowerupsRepository _mockPowerupsRepository;
         private IDropsRepository _mockDropsRepository;
         private IInventoryManager _mockInventoryManager;
-        private ISpawnService _mockSpawnService;
+        private ISpawnManager _mockSpawnManager;
         private IMessageBus _messageBus;
 
         private readonly List<ItemConfigSO> _itemConfigs = new();
@@ -50,14 +50,14 @@ namespace SpaceInvaders.Tests
             _mockDropsRepository = Substitute.For<IDropsRepository>();
 
             _mockInventoryManager = Substitute.For<IInventoryManager>();
-            _mockSpawnService = Substitute.For<ISpawnService>();
+            _mockSpawnManager = Substitute.For<ISpawnManager>();
             _messageBus = new MessageBus();
 
             Container.Bind<IItemsRepository>().FromInstance(_mockItemsRepository);
             Container.Bind<IPowerupsRepository>().FromInstance(_mockPowerupsRepository);
             Container.Bind<IDropsRepository>().FromInstance(_mockDropsRepository);
             Container.Bind<IInventoryManager>().FromInstance(_mockInventoryManager);
-            Container.Bind<ISpawnService>().FromInstance(_mockSpawnService);
+            Container.Bind<ISpawnManager>().FromInstance(_mockSpawnManager);
             Container.Bind<IMessageBus>().FromInstance(_messageBus);
 
             // The real roller over the mocked repositories, so these tests keep exercising the drop
@@ -132,7 +132,7 @@ namespace SpaceInvaders.Tests
         private InventoryItemEntry CaptureSpawnedItem()
         {
             InventoryItemEntry captured = null;
-            _mockSpawnService.SpawnItemPickup(
+            _mockSpawnManager.SpawnItemPickup(
                 Arg.Any<ItemRarityConfigSO>(),
                 Arg.Do<InventoryItemEntry>(entry => captured = entry),
                 Arg.Any<Vector3>());
@@ -149,7 +149,7 @@ namespace SpaceInvaders.Tests
 
             PublishEnemyDestroyed(_messageBus);
 
-            _mockSpawnService.DidNotReceive().SpawnItemPickup(
+            _mockSpawnManager.DidNotReceive().SpawnItemPickup(
                 Arg.Any<ItemRarityConfigSO>(), Arg.Any<InventoryItemEntry>(), Arg.Any<Vector3>());
         }
 
@@ -161,7 +161,7 @@ namespace SpaceInvaders.Tests
 
             PublishEnemyDestroyed(_messageBus);
 
-            _mockSpawnService.Received(1).SpawnItemPickup(
+            _mockSpawnManager.Received(1).SpawnItemPickup(
                 Arg.Any<ItemRarityConfigSO>(), Arg.Any<InventoryItemEntry>(), Arg.Any<Vector3>());
         }
 
@@ -174,8 +174,8 @@ namespace SpaceInvaders.Tests
 
             PublishEnemyDestroyed(_messageBus);
 
-            _mockSpawnService.Received(1).SpawnPowerup(Arg.Any<PowerupConfigSO>(), Vector3.zero);
-            _mockSpawnService.DidNotReceive().SpawnItemPickup(
+            _mockSpawnManager.Received(1).SpawnPowerup(Arg.Any<PowerupConfigSO>(), Vector3.zero);
+            _mockSpawnManager.DidNotReceive().SpawnItemPickup(
                 Arg.Any<ItemRarityConfigSO>(), Arg.Any<InventoryItemEntry>(), Arg.Any<Vector3>());
         }
 
@@ -203,7 +203,7 @@ namespace SpaceInvaders.Tests
 
             PublishEnemyDestroyed(_messageBus);
 
-            _mockSpawnService.DidNotReceive().SpawnPowerup(Arg.Any<PowerupConfigSO>(), Arg.Any<Vector3>());
+            _mockSpawnManager.DidNotReceive().SpawnPowerup(Arg.Any<PowerupConfigSO>(), Arg.Any<Vector3>());
         }
 
         [Test]
@@ -261,7 +261,7 @@ namespace SpaceInvaders.Tests
             GuaranteeDropCategory(DropCategoryTypes.Item);
 
             var ids = new List<string>();
-            _mockSpawnService.SpawnItemPickup(
+            _mockSpawnManager.SpawnItemPickup(
                 Arg.Any<ItemRarityConfigSO>(),
                 Arg.Do<InventoryItemEntry>(entry => ids.Add(entry.InstanceId)),
                 Arg.Any<Vector3>());
@@ -293,7 +293,7 @@ namespace SpaceInvaders.Tests
 
             PublishEnemyDestroyed(_messageBus);
 
-            _mockSpawnService.DidNotReceive().SpawnItemPickup(
+            _mockSpawnManager.DidNotReceive().SpawnItemPickup(
                 Arg.Any<ItemRarityConfigSO>(), Arg.Any<InventoryItemEntry>(), Arg.Any<Vector3>());
         }
 
@@ -394,7 +394,7 @@ namespace SpaceInvaders.Tests
             _lootManager.Dispose();
             PublishEnemyDestroyed(_messageBus);
 
-            _mockSpawnService.DidNotReceive().SpawnItemPickup(
+            _mockSpawnManager.DidNotReceive().SpawnItemPickup(
                 Arg.Any<ItemRarityConfigSO>(), Arg.Any<InventoryItemEntry>(), Arg.Any<Vector3>());
         }
     }

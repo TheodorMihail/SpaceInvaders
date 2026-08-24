@@ -52,26 +52,32 @@ namespace SpaceInvaders.Scenes.Game
         }
     }
 
-    public interface ILevelSessionService : IInitializable, IDisposable, IGameStartListener
+    public interface ILevelSessionManager : IInitializable, IDisposable, IGameInitializeListener,
+        IGameStartListener, IGameEndListener
     {
-        public int CurrentLevelNumber { get; }
+        int CurrentLevelNumber { get; }
+        int TotalScore { get; }
     }
 
     /// <summary>
     /// Runs the level's waves in order, starting the next one once the current wave is cleared, and
-    /// awards stars on completion.
+    /// awards stars on completion. Owns the hazard cadence for the wave that is running.
     /// </summary>
-    public class LevelSessionService : ILevelSessionService
+    public partial class LevelSessionManager : ILevelSessionManager
     {
         [Inject] private readonly ILevelsRepository _levelsRepository;
         [Inject] private readonly IShipsRepository _shipsRepository;
-        [Inject] private readonly IEnemiesManager _enemiesManager;
-        [Inject] private readonly IHazardsService _hazardsService;
         [Inject] private readonly IPlayerManager _playerManager;
-        [Inject] private readonly ILevelManager _levelManager;
+        [Inject] private readonly ILevelProgressManager _levelProgressManager;
         [Inject] private readonly IMessageBus _messageBus;
 
+        [Inject] private readonly IEnemiesService _enemiesService;
+        [Inject] private readonly IHazardsService _hazardsService;
+        [Inject] private readonly IScoreService _scoreService;
+        [Inject] private readonly IImpactFeedbackService _impactFeedbackService;
+
         public int CurrentLevelNumber { get; private set; }
+        public int TotalScore => _scoreService.TotalScore;
 
         private int _currentWaveNumber;
         private LevelConfigSO _currentLevelConfigSo;
@@ -79,13 +85,26 @@ namespace SpaceInvaders.Scenes.Game
         public void Initialize()
         {
             _messageBus.Subscribe<AllEnemiesDestroyedMessage>(OnAllEnemiesDestroyedCallback);
-            _levelManager.RegisterSession(this);
+            _levelProgressManager.RegisterSession(this);
+            _scoreService.Initialize();
+            _impactFeedbackService.Initialize();
         }
 
         public void Dispose()
         {
             _messageBus.Unsubscribe<AllEnemiesDestroyedMessage>(OnAllEnemiesDestroyedCallback);
-            _levelManager.UnregisterSession(this);
+            _levelProgressManager.UnregisterSession(this);
+            _hazardsService.StopHazards();
+            _enemiesService.GameEnd();
+            _scoreService.Dispose();
+            _impactFeedbackService.Dispose();
+        }
+
+        public UniTask GameInitialize()
+        {
+            _enemiesService.GameInitialize();
+            _scoreService.GameInitialize();
+            return UniTask.CompletedTask;
         }
 
         public UniTask GameStart(int levelNumber)
@@ -101,6 +120,15 @@ namespace SpaceInvaders.Scenes.Game
             return UniTask.CompletedTask;
         }
 
+        public UniTask GameEnd()
+        {
+            _hazardsService.StopHazards();
+            _enemiesService.GameEnd();
+            _scoreService.GameEnd();
+            _impactFeedbackService.GameEnd();
+            return UniTask.CompletedTask;
+        }
+
         private void OnAllEnemiesDestroyedCallback(AllEnemiesDestroyedMessage message)
         {
             StartNextWave();
@@ -108,9 +136,9 @@ namespace SpaceInvaders.Scenes.Game
 
         private void StartLevel(LevelConfigSO levelConfig)
         {
-            if (CurrentLevelNumber > _levelManager.MaxLevelNumber)
+            if (CurrentLevelNumber > _levelProgressManager.MaxLevelNumber)
             {
-                this.LogError($"Level {CurrentLevelNumber} is out of range! Max levels: {_levelManager.MaxLevelNumber}");
+                this.LogError($"Level {CurrentLevelNumber} is out of range! Max levels: {_levelProgressManager.MaxLevelNumber}");
                 return;
             }
 
@@ -134,7 +162,7 @@ namespace SpaceInvaders.Scenes.Game
             }
 
             WaveConfigDTO wave = _currentLevelConfigSo.WavesConfigs[_currentWaveNumber];
-            _enemiesManager.SpawnEnemies(wave).Forget();
+            _enemiesService.SpawnEnemies(wave).Forget();
             _hazardsService.StartWaveHazards(wave);
             _currentWaveNumber++;
 
@@ -166,7 +194,7 @@ namespace SpaceInvaders.Scenes.Game
             int stars = CalculateStars(stats.CumulativeDamageTaken, _currentLevelConfigSo.ThreeStarMaxDamage,
                     _levelsRepository.GetTwoStarDamageMultiplier());
 
-            _levelManager.RecordLevelResult(CurrentLevelNumber, stars);
+            _levelProgressManager.RecordLevelResult(CurrentLevelNumber, stars);
         }
 
         /// <summary>Star rating based on total damage taken against the level's three-star threshold.</summary>

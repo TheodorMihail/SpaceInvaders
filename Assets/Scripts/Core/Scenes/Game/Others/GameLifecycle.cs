@@ -34,5 +34,8 @@ namespace SpaceInvaders.Scenes.Game
     public interface IGameEndCondition
     {
         event Action<GameplayStateResultTypes> ConditionMet;
+
+        void GameStart();
+        void GameEnd();
     }
 }

@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -6,45 +5,21 @@ namespace SpaceInvaders.Scenes.Game
 {
     public class KeyboardInputService : IInputService
     {
-        public event Action OnShoot;
-        public event Action<Vector3> OnMove;
-        public event Action OnAnyKeyPress;
-        public event Action OnPause;
+        public bool AnyKeyPressed => Keyboard.current != null && Keyboard.current.anyKey.wasPressedThisFrame;
+        public bool PausePressed => Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame;
+        public bool ShootPressed => Keyboard.current != null && Keyboard.current.spaceKey.isPressed;
 
-        public void Tick()
-        {
-            HandleAnyKeyPress();
-            HandlePauseInput();
-            HandleMovementInput();
-            HandleShootInput();
-        }
+        public Vector3 MoveDirection => GetMoveDirection();
 
-        private void HandlePauseInput()
-        {
-            if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
-            {
-                OnPause?.Invoke();
-            }
-        }
-
-        private void HandleAnyKeyPress()
-        {
-            if (Keyboard.current != null && Keyboard.current.anyKey.wasPressedThisFrame)
-            {
-                OnAnyKeyPress?.Invoke();
-            }
-        }
-
-        private void HandleMovementInput()
+        private Vector3 GetMoveDirection()
         {
             if (Keyboard.current == null)
             {
-                return;
+                return Vector3.zero;
             }
 
             Vector3 direction = Vector3.zero;
 
-            // Horizontal input
             if (Keyboard.current.leftArrowKey.isPressed || Keyboard.current.aKey.isPressed)
             {
                 direction.x = -1f;
@@ -54,7 +29,6 @@ namespace SpaceInvaders.Scenes.Game
                 direction.x = 1f;
             }
 
-            // Vertical input
             if (Keyboard.current.upArrowKey.isPressed || Keyboard.current.wKey.isPressed)
             {
                 direction.z = 1f;
@@ -64,18 +38,7 @@ namespace SpaceInvaders.Scenes.Game
                 direction.z = -1f;
             }
 
-            if (direction != Vector3.zero)
-            {
-                OnMove?.Invoke(direction);
-            }
-        }
-
-        private void HandleShootInput()
-        {
-            if (Keyboard.current != null && Keyboard.current.spaceKey.isPressed)
-            {
-                OnShoot?.Invoke();
-            }
+            return direction;
         }
     }
 }

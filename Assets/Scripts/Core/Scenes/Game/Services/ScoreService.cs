@@ -1,14 +1,17 @@
-using System;
 using BaseArchitecture.Core;
-using Cysharp.Threading.Tasks;
 using SpaceInvaders.Project;
 using Zenject;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public interface IScoreService : IInitializable, IDisposable, IGameEndListener
+    public interface IScoreService
     {
         int TotalScore { get; }
+
+        void Initialize();
+        void Dispose();
+        void GameInitialize();
+        void GameEnd();
     }
 
     /// <summary>Accumulates score from destroyed enemies and converts it to currency on game end.</summary>
@@ -30,10 +33,15 @@ namespace SpaceInvaders.Scenes.Game
             _messageBus.Unsubscribe<EnemyDestroyedMessage>(OnEnemyDestroyedCallback);
         }
 
-        public UniTask GameEnd()
+        /// <summary>Reset here, not on game end: the result screens still read the score after that.</summary>
+        public void GameInitialize()
+        {
+            TotalScore = 0;
+        }
+
+        public void GameEnd()
         {
             _currencyManager.AddCurrency(TotalScore);
-            return UniTask.CompletedTask;
         }
 
         private void OnEnemyDestroyedCallback(EnemyDestroyedMessage message)

@@ -5,18 +5,18 @@ using Zenject;
 namespace SpaceInvaders.Scenes.Game
 {
     /// <summary>Message adapters that signal the end of the game.</summary>
-    public class LevelCompletedCondition : IGameEndCondition, IInitializable, IDisposable
+    public class LevelCompletedCondition : IGameEndCondition
     {
         [Inject] private readonly IMessageBus _messageBus;
 
         public event Action<GameplayStateResultTypes> ConditionMet;
 
-        public void Initialize()
+        public void GameStart()
         {
             _messageBus.Subscribe<LevelCompletedMessage>(OnLevelCompleted);
         }
 
-        public void Dispose()
+        public void GameEnd()
         {
             _messageBus.Unsubscribe<LevelCompletedMessage>(OnLevelCompleted);
         }
@@ -27,18 +27,18 @@ namespace SpaceInvaders.Scenes.Game
         }
     }
 
-    public class PlayerDestroyedCondition : IGameEndCondition, IInitializable, IDisposable
+    public class PlayerDestroyedCondition : IGameEndCondition
     {
         [Inject] private readonly IMessageBus _messageBus;
 
         public event Action<GameplayStateResultTypes> ConditionMet;
 
-        public void Initialize()
+        public void GameStart()
         {
             _messageBus.Subscribe<PlayerDestroyedMessage>(OnPlayerDestroyed);
         }
 
-        public void Dispose()
+        public void GameEnd()
         {
             _messageBus.Unsubscribe<PlayerDestroyedMessage>(OnPlayerDestroyed);
         }

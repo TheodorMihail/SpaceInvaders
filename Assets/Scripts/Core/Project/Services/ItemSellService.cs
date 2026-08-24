@@ -9,13 +9,10 @@ namespace SpaceInvaders.Project
         bool TrySellItem(string instanceId);
     }
 
-    /// <summary>
-    /// Turns an owned item back into currency. Owns nothing itself: it only sequences the three
-    /// managers that hold the pieces, so none of them has to know about the others.
-    /// </summary>
+    /// <summary>Turns an owned item back into currency.</summary>
     public class ItemSellService : IItemSellService
     {
-        [Inject] private readonly IInventoryManager _inventoryManager;
+        [Inject] private readonly IItemStorageService _itemStorage;
         [Inject] private readonly IEquipmentManager _equipmentManager;
         [Inject] private readonly ICurrencyManager _currencyManager;
         [Inject] private readonly IItemsRepository _itemsRepository;
@@ -26,14 +23,13 @@ namespace SpaceInvaders.Project
         {
             sellValue = 0;
 
-            InventoryItemEntry entry = _inventoryManager.GetItem(instanceId);
+            InventoryItemEntry entry = _itemStorage.GetItem(instanceId);
             if (entry == null)
             {
                 return false;
             }
 
-            ItemConfigSO itemConfig = _inventoryManager.GetItemConfig(entry.ItemId);
-            if (itemConfig == null)
+            if (!_itemsRepository.TryGetItemConfig(entry.ItemId, out ItemConfigSO itemConfig))
             {
                 return false;
             }
@@ -47,8 +43,8 @@ namespace SpaceInvaders.Project
             return true;
         }
 
-        /// <summary>Unequips before removing, since the slot can only be cleared while the item is
-        /// still resolvable through the inventory.</summary>
+        /// <summary>Unequips before removing, so the slot is cleared while the item is still
+        /// resolvable and the equip change is announced rather than silently pruned.</summary>
         public bool TrySellItem(string instanceId)
         {
             if (!TryGetSellValue(instanceId, out int sellValue))
@@ -61,7 +57,7 @@ namespace SpaceInvaders.Project
                 _equipmentManager.Unequip(instanceId);
             }
 
-            _inventoryManager.RemoveItem(instanceId);
+            _itemStorage.RemoveItem(instanceId);
             _currencyManager.AddCurrency(sellValue);
 
             _messageBus.Publish(new ItemSoldMessage(instanceId, sellValue));

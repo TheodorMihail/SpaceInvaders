@@ -8,11 +8,10 @@ using Zenject;
 namespace SpaceInvaders.Tests
 {
     [TestFixture]
-    public class InventoryManagerTests : ZenjectUnitTestFixture
+    public class ItemStorageServiceTests : ZenjectUnitTestFixture
     {
-        private InventoryManager _inventoryManager;
+        private ItemStorageService _itemStorage;
         private IPersistenceManager _mockPersistenceManager;
-        private IItemsRepository _mockItemsRepository;
         private InventorySaveData _saveData;
 
         [SetUp]
@@ -23,13 +22,11 @@ namespace SpaceInvaders.Tests
             _saveData = new InventorySaveData();
             _mockPersistenceManager = Substitute.For<IPersistenceManager>();
             _mockPersistenceManager.Load<InventorySaveData>(InventorySaveData.SaveKey).Returns(_saveData);
-            _mockItemsRepository = Substitute.For<IItemsRepository>();
 
             Container.Bind<IPersistenceManager>().FromInstance(_mockPersistenceManager);
-            Container.Bind<IItemsRepository>().FromInstance(_mockItemsRepository);
 
-            _inventoryManager = Container.Instantiate<InventoryManager>();
-            _inventoryManager.Initialize();
+            _itemStorage = Container.Instantiate<ItemStorageService>();
+            _itemStorage.Initialize();
         }
 
         private static InventoryItemEntry CreateEntry(string instanceId, string itemId = "PlasmaWing")
@@ -40,80 +37,72 @@ namespace SpaceInvaders.Tests
         [Test]
         public void AddItems_AppendsEntriesAndPersists()
         {
-            _inventoryManager.AddItems(new List<InventoryItemEntry> { CreateEntry("a"), CreateEntry("b") });
+            _itemStorage.AddItems(new List<InventoryItemEntry> { CreateEntry("a"), CreateEntry("b") });
 
-            Assert.AreEqual(2, _inventoryManager.Items.Count);
+            Assert.AreEqual(2, _itemStorage.Items.Count);
             _mockPersistenceManager.Received(1).Save(InventorySaveData.SaveKey, _saveData);
         }
 
         [Test]
         public void AddItems_WithEmptyList_DoesNotPersist()
         {
-            _inventoryManager.AddItems(new List<InventoryItemEntry>());
+            _itemStorage.AddItems(new List<InventoryItemEntry>());
 
-            Assert.AreEqual(0, _inventoryManager.Items.Count);
+            Assert.AreEqual(0, _itemStorage.Items.Count);
             _mockPersistenceManager.DidNotReceive().Save(InventorySaveData.SaveKey, Arg.Any<InventorySaveData>());
         }
 
         [Test]
         public void ContainsItem_WithKnownInstanceId_ReturnsTrue()
         {
-            _inventoryManager.AddItems(new List<InventoryItemEntry> { CreateEntry("a") });
+            _itemStorage.AddItems(new List<InventoryItemEntry> { CreateEntry("a") });
 
-            Assert.IsTrue(_inventoryManager.ContainsItem("a"));
+            Assert.IsTrue(_itemStorage.ContainsItem("a"));
         }
 
         [Test]
         public void ContainsItem_WithUnknownInstanceId_ReturnsFalse()
         {
-            Assert.IsFalse(_inventoryManager.ContainsItem("missing"));
+            Assert.IsFalse(_itemStorage.ContainsItem("missing"));
         }
 
         [Test]
         public void ContainsItem_WithNullInstanceId_ReturnsFalse()
         {
-            Assert.IsFalse(_inventoryManager.ContainsItem(null));
+            Assert.IsFalse(_itemStorage.ContainsItem(null));
         }
 
         [Test]
         public void RemoveItem_DropsEntryAndPersists()
         {
-            _inventoryManager.AddItems(new List<InventoryItemEntry> { CreateEntry("a"), CreateEntry("b") });
+            _itemStorage.AddItems(new List<InventoryItemEntry> { CreateEntry("a"), CreateEntry("b") });
             _mockPersistenceManager.ClearReceivedCalls();
 
-            _inventoryManager.RemoveItem("a");
+            _itemStorage.RemoveItem("a");
 
-            Assert.IsFalse(_inventoryManager.ContainsItem("a"));
-            Assert.IsTrue(_inventoryManager.ContainsItem("b"));
+            Assert.IsFalse(_itemStorage.ContainsItem("a"));
+            Assert.IsTrue(_itemStorage.ContainsItem("b"));
             _mockPersistenceManager.Received(1).Save(InventorySaveData.SaveKey, _saveData);
         }
 
         [Test]
         public void RemoveItem_WithUnknownInstanceId_DoesNotPersist()
         {
-            _inventoryManager.RemoveItem("missing");
+            _itemStorage.RemoveItem("missing");
 
             _mockPersistenceManager.DidNotReceive().Save(InventorySaveData.SaveKey, Arg.Any<InventorySaveData>());
         }
 
         [Test]
-        public void GetItemConfig_ResolvesTemplateFromItemId()
+        public void ClearAll_EmptiesStorageAndPersists()
         {
-            var config = Substitute.For<ItemConfigSO>();
-            _mockItemsRepository.TryGetItemConfig("PlasmaWing", out ItemConfigSO _)
-                .Returns(call =>
-                {
-                    call[1] = config;
-                    return true;
-                });
+            _itemStorage.AddItems(new List<InventoryItemEntry> { CreateEntry("a"), CreateEntry("b") });
+            _mockPersistenceManager.ClearReceivedCalls();
 
-            Assert.AreSame(config, _inventoryManager.GetItemConfig("PlasmaWing"));
-        }
+            _itemStorage.ClearAll();
 
-        [Test]
-        public void GetItemConfig_WithNullEntry_ReturnsNull()
-        {
-            Assert.IsNull(_inventoryManager.GetItemConfig(null));
+            Assert.AreEqual(0, _itemStorage.Items.Count);
+            _mockPersistenceManager.Received(1).Save(InventorySaveData.SaveKey, _saveData);
         }
     }
 }

@@ -38,9 +38,9 @@ namespace SpaceInvaders.Scenes.Game
     {
         [Inject] private readonly IGameRepository _gameRepository;
 
-        /// <summary>Handed over at bind time and reachable from nowhere else, so the camera keeps a
-        /// single owner while the shake maths lives on its own.</summary>
-        private readonly IScreenShakeService _screenShake;
+        /// <summary>Reachable from nowhere else, so the camera keeps a single owner while the shake
+        /// maths lives on its own.</summary>
+        [Inject] private readonly IScreenShakeService _screenShake;
 
         private Camera _mainCamera;
         private GameDataConfigSO _gameDataConfig;
@@ -52,11 +52,6 @@ namespace SpaceInvaders.Scenes.Game
         /// <summary>How far the camera currently sits from its mark, which every bounds query has to
         /// take back out so it answers from the resting pose.</summary>
         private Vector3 ShakeOffset => _screenShake.Offset;
-
-        public CameraManager(IScreenShakeService screenShake)
-        {
-            _screenShake = screenShake;
-        }
 
         public void Initialize()
         {

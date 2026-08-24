@@ -5,18 +5,10 @@ using SpaceInvaders.Project;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public partial class HazardsService : IDebugCommandProvider
+    public partial class HazardsService
     {
-        public IReadOnlyList<DebugCommandDTO> GetDebugCommands()
-        {
-            return new[]
-            {
-                new DebugCommandDTO(DebugKeys.SpawnHazard, "Spawn a hazard", DebugSpawnHazard)
-            };
-        }
-
         /// <summary>Sends in the first authored hazard, so a level with none still has something to look at.</summary>
-        private void DebugSpawnHazard()
+        public void DebugSpawnFirstHazard()
         {
             IReadOnlyList<HazardConfigSO> configs = _hazardsRepository.GetAllHazardConfigs();
 
