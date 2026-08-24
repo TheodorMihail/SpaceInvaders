@@ -32,11 +32,14 @@ namespace SpaceInvaders.Scenes.Game
 
     public abstract class BaseSpaceshipBehaviourComponent : MonoBehaviour, ISpaceship
     {
-        [Inject] protected ISpawnService _spawnService;
+        [Inject] protected ISpawnManager _spawnManager;
         [SerializeField] protected BaseShipMovementComponent _movement;
         [SerializeField] protected ShipWeaponComponent _weapon;
         [SerializeField] protected HealthBarUIComponent _healthBar;
         [SerializeField] protected ShipFlameComponent[] _flames;
+
+        [Tooltip("Optional. Ships without one simply do not react visually to being hit.")]
+        [SerializeField] protected HitFlashComponent _hitFlash;
 
         public virtual ShipStats Stats { get; protected set; }
         public virtual string SpaceshipID {get; protected set; }
@@ -212,6 +215,17 @@ namespace SpaceInvaders.Scenes.Game
         {
         }
 
+        /// <summary>Ships without a flash authored just skip it, so no prefab has to carry one.</summary>
+        private void FlashHull()
+        {
+            if (_hitFlash == null)
+            {
+                return;
+            }
+
+            _hitFlash.Flash();
+        }
+
         protected void SpawnHitVFX()
         {
             if (_shipConfig.HitVFXPrefab == null)
@@ -220,7 +234,7 @@ namespace SpaceInvaders.Scenes.Game
                 return;
             }
 
-            _spawnService.SpawnVFX(_shipConfig.HitVFXPrefab, LocalPosition);
+            _spawnManager.SpawnVFX(_shipConfig.HitVFXPrefab, LocalPosition);
         }
 
         protected void SpawnDestroyVFX()
@@ -231,7 +245,7 @@ namespace SpaceInvaders.Scenes.Game
                 return;
             }
 
-            _spawnService.SpawnVFX(_shipConfig.DestroyVFXPrefab, LocalPosition);
+            _spawnManager.SpawnVFX(_shipConfig.DestroyVFXPrefab, LocalPosition);
         }
 
         private void OnWeaponShotFired()
@@ -270,6 +284,7 @@ namespace SpaceInvaders.Scenes.Game
         {
             Stats.ApplyDamage(damage);
             SpawnHitVFX();
+            FlashHull();
             RaiseDamaged(damage, isCritical);
 
             if (Stats.CurrentHealth == 0)

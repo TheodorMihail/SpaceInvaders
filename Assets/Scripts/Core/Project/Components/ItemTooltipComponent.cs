@@ -18,7 +18,6 @@ namespace SpaceInvaders.Project
         [Inject] private readonly IInventoryManager _inventoryManager;
         [Inject] private readonly IEquipmentManager _equipmentManager;
         [Inject] private readonly IItemsRepository _itemsRepository;
-        [Inject] private readonly IItemSellService _itemSellService;
         
         [Header("References")]
         [SerializeField] private RectTransform _rectTransform;
@@ -85,9 +84,7 @@ namespace SpaceInvaders.Project
             Hide();
 
             InventoryItemEntry entry = _inventoryManager.GetItem(instanceId);
-            ItemConfigSO config = entry != null ? _inventoryManager.GetItemConfig(entry.ItemId) : null;
-
-            if (entry == null || config == null)
+            if (entry == null || !_itemsRepository.TryGetItemConfig(entry.ItemId, out ItemConfigSO config))
             {
                 return;
             }
@@ -102,7 +99,7 @@ namespace SpaceInvaders.Project
                 _equipButton.gameObject.SetActive(true);
                 _equipButtonText.text = _equipmentManager.IsEquipped(instanceId) ? _unequipString : _equipString;
 
-                bool canSell = _itemSellService.TryGetSellValue(instanceId, out int sellValue);
+                bool canSell = _inventoryManager.TryGetSellValue(instanceId, out int sellValue);
                 _sellButton.gameObject.SetActive(canSell);
 
                 if (canSell)
@@ -149,7 +146,7 @@ namespace SpaceInvaders.Project
                 return;
             }
 
-            _itemSellService.TrySellItem(_currentInstanceId);
+            _inventoryManager.TrySellItem(_currentInstanceId);
             Hide();
         }
 

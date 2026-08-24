@@ -11,7 +11,7 @@ namespace SpaceInvaders.Scenes.Game
     public abstract class ScreenBoundedMovingComponent : MonoBehaviour, IPoolableObject
     {
         [Inject] protected ICameraManager _cameraManager;
-        [Inject] protected ISpawnService _spawnService;
+        [Inject] protected ISpawnManager _spawnManager;
 
         [SerializeField] protected Renderer _renderer;
 
@@ -49,7 +49,7 @@ namespace SpaceInvaders.Scenes.Game
 
         protected virtual void Despawn()
         {
-            _spawnService.Despawn(this);
+            _spawnManager.Despawn(this);
         }
     }
 }

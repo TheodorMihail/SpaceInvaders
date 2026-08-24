@@ -11,13 +11,24 @@ namespace SpaceInvaders.Scenes.Game
         BottomRegion    // Below the divider (for player)
     }
 
-    public interface ICameraManager : IInitializable, IDisposable
+    public interface ICameraManager : IInitializable, IDisposable, ITickable
     {
+        /// <summary>Adds to the shake the camera is already carrying. It decays on its own, so callers
+        /// never have to stop one.</summary>
+        void AddScreenShake(float amount);
+
+        /// <summary>Drops all shake and puts the camera back on its mark.</summary>
+        void ResetShake();
+
         /// <summary>Where ships may move: inset by the margins reserved for UI.</summary>
         (Vector3 min, Vector3 max) GetPlayableBounds(Renderer renderer, ScreenRegionTypes regionType, float buffer = 0f);
 
         /// <summary>Where an object is still on screen: the full view, ignoring the UI margins.</summary>
         (Vector3 min, Vector3 max) GetVisibleBounds(Renderer renderer, float buffer = 0f);
+
+        /// <summary>How much of the renderer has come into view from above, from 0 fully hidden to 1
+        /// fully shown, for anything that should react to arriving rather than to being spawned.</summary>
+        float GetVisibleFraction(Renderer renderer);
 
         Vector3 GetViewportWorldPoint(float viewportX, float viewportY, float yPosition);
         Vector3 GetScreenPoint(Vector3 worldPosition);
@@ -27,8 +38,20 @@ namespace SpaceInvaders.Scenes.Game
     {
         [Inject] private readonly IGameRepository _gameRepository;
 
+        /// <summary>Reachable from nowhere else, so the camera keeps a single owner while the shake
+        /// maths lives on its own.</summary>
+        [Inject] private readonly IScreenShakeService _screenShake;
+
         private Camera _mainCamera;
         private GameDataConfigSO _gameDataConfig;
+
+        /// <summary>Where the camera sits when it is not being shaken. Bounds are always measured
+        /// from here, never from the shaken pose.</summary>
+        private Vector3 _restPosition;
+
+        /// <summary>How far the camera currently sits from its mark, which every bounds query has to
+        /// take back out so it answers from the resting pose.</summary>
+        private Vector3 ShakeOffset => _screenShake.Offset;
 
         public void Initialize()
         {
@@ -38,19 +61,54 @@ namespace SpaceInvaders.Scenes.Game
             if (_mainCamera == null)
             {
                 Debug.LogError("CameraManager: No main camera found!");
+                return;
             }
+
+            _restPosition = _mainCamera.transform.position;
         }
 
         public void Dispose()
         {
+            ResetShake();
             _mainCamera = null;
             _gameDataConfig = null;
+        }
+
+        public void AddScreenShake(float amount)
+        {
+            _screenShake.Add(amount);
+        }
+
+        public void ResetShake()
+        {
+            _screenShake.Reset();
+            ApplyShakeOffset();
+        }
+
+        /// <summary>Scaled time on purpose: the shake freezes with the rest of the game while paused
+        /// or held in slow motion, rather than rattling on over a still frame.</summary>
+        public void Tick()
+        {
+            _screenShake.Tick(Time.deltaTime);
+            ApplyShakeOffset();
+        }
+
+        private void ApplyShakeOffset()
+        {
+            if (_mainCamera == null)
+            {
+                return;
+            }
+
+            _mainCamera.transform.position = _restPosition + ShakeOffset;
         }
 
         /// <summary>
         /// Returns the world-space movement bounds for a renderer within the given screen region,
         /// inset by the renderer's extents, the buffer, and the margins reserved for UI.
         /// </summary>
+        /// <remarks>Answers from the camera's resting pose. Callers cache these on first use, so a
+        /// query landing mid-shake would otherwise bake the shake into a ship's playfield for life.</remarks>
         public (Vector3 min, Vector3 max) GetPlayableBounds(Renderer renderer, ScreenRegionTypes regionType, float buffer = 0f)
         {
             if (_mainCamera == null || renderer == null || _gameDataConfig == null)
@@ -119,7 +177,7 @@ namespace SpaceInvaders.Scenes.Game
                 maxBounds.z = midZ;
             }
 
-            return (minBounds, maxBounds);
+            return (minBounds - ShakeOffset, maxBounds - ShakeOffset);
         }
 
         /// <summary>
@@ -151,7 +209,32 @@ namespace SpaceInvaders.Scenes.Game
                 topRight.z + extents.z + buffer
             );
 
-            return (minBounds, maxBounds);
+            return (minBounds - ShakeOffset, maxBounds - ShakeOffset);
+        }
+
+        /// <summary>
+        /// The visible bounds already carry the renderer's extents, so their maximum is the point where
+        /// it is exactly fully hidden above the view, and two extents further in is where it is exactly
+        /// fully shown. The fraction is where it sits between the two.
+        /// </summary>
+        public float GetVisibleFraction(Renderer renderer)
+        {
+            if (_mainCamera == null || renderer == null)
+            {
+                return 0f;
+            }
+
+            float extentZ = renderer.bounds.extents.z;
+
+            if (extentZ <= 0f)
+            {
+                return 0f;
+            }
+
+            (Vector3 _, Vector3 maxBounds) = GetVisibleBounds(renderer);
+            float fullyShownZ = maxBounds.z - extentZ * 2f;
+
+            return Mathf.InverseLerp(maxBounds.z, fullyShownZ, renderer.transform.position.z);
         }
 
         public Vector3 GetViewportWorldPoint(float viewportX, float viewportY, float yPosition)
@@ -161,7 +244,7 @@ namespace SpaceInvaders.Scenes.Game
                 return Vector3.zero;
             }
 
-            return _mainCamera.ViewportToWorldPoint(new Vector3(viewportX, viewportY, yPosition));
+            return _mainCamera.ViewportToWorldPoint(new Vector3(viewportX, viewportY, yPosition)) - ShakeOffset;
         }
 
         /// <summary>Projects a world position to screen pixels, for placing UI over gameplay.</summary>

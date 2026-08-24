@@ -5,15 +5,12 @@ using SpaceInvaders.Project;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Zenject;
 
 namespace SpaceInvaders.Scenes.MainMenu
 {
     [AddressablePath("Screens/InventoryScreenView")]
     public class InventoryView : View<InventoryModel>
     {
-        [Inject] private readonly ICustomFactory _factory;
-
         [Header("Ship Slots (fixed layout)")]
         [SerializeField] private ItemSlotComponent _weaponSlot;
         [SerializeField] private ItemSlotComponent _coreSlot;
@@ -22,9 +19,7 @@ namespace SpaceInvaders.Scenes.MainMenu
         [SerializeField] private ItemSlotComponent _engineSlot;
 
         [Header("Item Grid")]
-        [SerializeField] private ItemSlotComponent _itemCellPrefab;
-        [SerializeField] private Transform _itemsContainer;
-        [SerializeField] private TextMeshProUGUI _emptyInventoryText;
+        [SerializeField] private ItemsContainerUIComponent _itemsContainer;
 
         [Header("Tooltip")]
         [SerializeField] private ItemTooltipComponent _tooltip;
@@ -34,10 +29,9 @@ namespace SpaceInvaders.Scenes.MainMenu
         [SerializeField] private Button _backButton;
 
         [Header("Currency")]
-        [SerializeField] private TextMeshProUGUI _currencyText;
+        [SerializeField] private CurrencyUIComponent _currency;
 
         private readonly Dictionary<EquipmentSlotTypes, List<ItemSlotComponent>> _equipmentItemsDic = new();
-        private readonly Dictionary<string, ItemSlotComponent> _inventoryItemsDic = new();
 
         private string _lastSelectedInstanceId;
 
@@ -48,13 +42,20 @@ namespace SpaceInvaders.Scenes.MainMenu
         {
             _tooltip.OnHide += OnTooltipHide;
             _backButton.onClick.AddListener(() => OnBackClicked?.Invoke());
+            _itemsContainer.OnItemClicked += HandleItemClicked;
             RegisterEquipmentSlots();
+        }
+
+        private void OnDestroy()
+        {
+            _tooltip.OnHide -= OnTooltipHide;
+            _itemsContainer.OnItemClicked -= HandleItemClicked;
         }
 
         public void Setup()
         {
             InitializeInventory();
-            RefreshCurrencyDisplay();
+            _currency.Initialize(_model.Currency);
             _tooltip.Hide();
         }
 
@@ -72,7 +73,7 @@ namespace SpaceInvaders.Scenes.MainMenu
 
         public void RefreshCurrencyDisplay()
         {
-            _currencyText.text = _model.Currency.ToString();
+            _currency.UpdateCurrency(_model.Currency);
         }
 
         public void ApplyEquipChange(string equippedInstanceId, string unequippedInstanceId)
@@ -111,38 +112,26 @@ namespace SpaceInvaders.Scenes.MainMenu
 
         private void InitializeInventory()
         {
+            _itemsContainer.Clear();
+
             IEnumerable<(InventoryItemEntry, ItemConfigSO)> inventoryItems = _model.GetInventoryItems();
 
             foreach ((InventoryItemEntry entry, ItemConfigSO config) item in inventoryItems)
             {
-                ItemSlotComponent cell = _factory.CreateFromPrefab(_itemCellPrefab, _itemsContainer);
+                _itemsContainer.AddItem(item.entry, item.config, _model.GetItemRarity(item.config.Rarity));
+
                 string instanceId = item.entry.InstanceId;
-                cell.OnClicked += () => HandleItemClicked(instanceId, cell);
 
-                cell.SetItem(item.config, _model.GetItemRarity(item.config.Rarity));
-                _inventoryItemsDic[instanceId] = cell;
-
-                bool isEquipped = _model.IsItemEquipped(instanceId);
-                ApplyEquipChange(isEquipped ? instanceId : null, null);
+                if (_model.IsItemEquipped(instanceId))
+                {
+                    ApplyEquipChange(instanceId, null);
+                }
             }
-
-            _emptyInventoryText.gameObject.SetActive(_inventoryItemsDic.Count == 0);
-            _emptyInventoryText.text = _model.EmptyInventoryText;
         }
 
-        /// <summary>Cells are created outright rather than pooled, since object pooling is only
-        /// bound in the game scene.</summary>
         public void RemoveItem(string instanceId)
         {
-            if (!_inventoryItemsDic.TryGetValue(instanceId, out ItemSlotComponent cell))
-            {
-                return;
-            }
-
-            _inventoryItemsDic.Remove(instanceId);
-            Destroy(cell.gameObject);
-
-            _emptyInventoryText.gameObject.SetActive(_inventoryItemsDic.Count == 0);
+            _itemsContainer.RemoveItem(instanceId);
         }
 
         private void HandleEquipmentSlotClicked(EquipmentSlotTypes slot, ItemSlotComponent component)
@@ -155,9 +144,9 @@ namespace SpaceInvaders.Scenes.MainMenu
             OnItemClicked?.Invoke(component.RectTransform, equipped.InstanceId);
         }
 
-        private void HandleItemClicked(string instanceId, ItemSlotComponent cell)
+        private void HandleItemClicked(RectTransform anchor, string instanceId)
         {
-            OnItemClicked?.Invoke(cell.RectTransform, instanceId);
+            OnItemClicked?.Invoke(anchor, instanceId);
         }
 
         private void UpdateItemToEquipmentSlots(string instanceId, bool isNowEquipped)
@@ -200,28 +189,12 @@ namespace SpaceInvaders.Scenes.MainMenu
 
         private void UpdateInventoryItemEquipped(string instanceId, bool isEquipped)
         {
-            if (instanceId == null)
-            {
-                return;
-            }
-
-            if (_inventoryItemsDic.TryGetValue(instanceId, out ItemSlotComponent itemSlot))
-            {
-                itemSlot.SetEquipped(isEquipped);
-            }
+            _itemsContainer.SetEquipped(instanceId, isEquipped);
         }
 
         private void UpdateInventoryItemSelected(string instanceId, bool isSelected)
         {
-            if(instanceId == null)
-            {
-                return;
-            }
-
-            if (_inventoryItemsDic.TryGetValue(instanceId, out ItemSlotComponent itemSlot))
-            {
-                itemSlot.SetSelected(isSelected);
-            }
+            _itemsContainer.SetSelected(instanceId, isSelected);
         }
 
         private void OnTooltipHide()

@@ -611,6 +611,10 @@ PrefabInstance:
       propertyPath: _ship
       value: 
       objectReference: {fileID: 7476088495858441970}
+    - target: {fileID: 2293901272898350498, guid: 59682f8daab61fa4bba77178e8622c8b, type: 3}
+      propertyPath: _punchScale
+      value: 0.02
+      objectReference: {fileID: 0}
     - target: {fileID: 3303837056790369110, guid: 59682f8daab61fa4bba77178e8622c8b, type: 3}
       propertyPath: m_LocalPosition.y
       value: 0.82
@@ -798,6 +802,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8965ce444c20de43a6506e6ff357e48, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1101516169064493758 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2293901272898350498, guid: 59682f8daab61fa4bba77178e8622c8b, type: 3}
+  m_PrefabInstance: {fileID: 1197055985023983388}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5026461355964528102}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93a7c120d8b6ac94cbcc5cc5188376cd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &2117897391117065438 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1006700097852818370, guid: 59682f8daab61fa4bba77178e8622c8b, type: 3}
@@ -859,6 +874,7 @@ MonoBehaviour:
   _flames:
   - {fileID: 3792426679190927273}
   - {fileID: 374135094687455227}
+  _hitFlash: {fileID: 1101516169064493758}
   _formationDepthFactor: 0.6
   _maxFirstShotDelay: 1
   _summonSpawn:

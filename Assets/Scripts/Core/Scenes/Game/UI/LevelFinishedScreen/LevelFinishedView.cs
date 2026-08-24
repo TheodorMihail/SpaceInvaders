@@ -5,15 +5,12 @@ using SpaceInvaders.Project;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Zenject;
 
 namespace SpaceInvaders.Scenes.Game
 {
     [AddressablePath("Screens/LevelFinishedScreenView")]
     public class LevelFinishedView : View
     {
-        [Inject] private readonly ICustomFactory _factory;
-
         [SerializeField] private Button _nextLevelButton;
         [SerializeField] private Button _mainMenuButton;
         [SerializeField] private GameObject[] _starIcons;
@@ -21,9 +18,7 @@ namespace SpaceInvaders.Scenes.Game
         [SerializeField] private string _scoreString = "Score: {0}";
 
         [Header("Items Collected")]
-        [SerializeField] private ItemSlotComponent _itemCellPrefab;
-        [SerializeField] private Transform _itemsContainer;
-        [SerializeField] private TextMeshProUGUI _noItemsText;
+        [SerializeField] private ItemsContainerUIComponent _itemsContainer;
         [SerializeField] private ItemTooltipComponent _tooltip;
 
         public event Action OnNextLevelButtonClicked;
@@ -49,27 +44,28 @@ namespace SpaceInvaders.Scenes.Game
         {
             _nextLevelButton.onClick.AddListener(() => OnNextLevelButtonClicked?.Invoke());
             _mainMenuButton.onClick.AddListener(() => OnMainMenuButtonClicked?.Invoke());
+            _itemsContainer.OnItemClicked += OnItemClicked;
+        }
+
+        private void OnDestroy()
+        {
+            _itemsContainer.OnItemClicked -= OnItemClicked;
         }
 
         private void InitializeCollectedItems(IEnumerable<(InventoryItemEntry entry, ItemConfigSO config, ItemRarityConfigSO rarity)> collectedItems)
         {
-            int count = 0;
+            _itemsContainer.Clear();
 
             foreach ((InventoryItemEntry entry, ItemConfigSO config, ItemRarityConfigSO rarity) item in collectedItems)
             {
-                ItemSlotComponent cell = _factory.CreateFromPrefab(_itemCellPrefab, _itemsContainer);
-                cell.SetItem(item.config, item.rarity);
-
-                string instanceId = item.entry.InstanceId;
-                cell.OnClicked += () => _tooltip.ShowReadOnly(cell.RectTransform, instanceId);
-
-                count++;
+                _itemsContainer.AddItem(item.entry, item.config, item.rarity);
             }
+        }
 
-            if (_noItemsText != null)
-            {
-                _noItemsText.gameObject.SetActive(count == 0);
-            }
+        /// <summary>Read-only here: the run is over, so loot is shown rather than managed.</summary>
+        private void OnItemClicked(RectTransform anchor, string instanceId)
+        {
+            _tooltip.ShowReadOnly(anchor, instanceId);
         }
     }
 }

@@ -14,7 +14,7 @@ namespace SpaceInvaders.Scenes.Game
     /// </summary>
     public class ShipWeaponComponent : MonoBehaviour
     {
-        [Inject] private readonly ISpawnService _spawnService;
+        [Inject] private readonly ISpawnManager _spawnManager;
 
         public IReadOnlyList<BaseShipAttackComponent> Attacks => _attacks;
         public BaseShipAttackComponent PrimaryAttack => _attacks.Length > 0 ? _attacks[0] : null;
@@ -168,7 +168,7 @@ namespace SpaceInvaders.Scenes.Game
                 return;
             }
 
-            var projectile = _spawnService.SpawnProjectile(
+            var projectile = _spawnManager.SpawnProjectile(
                 attack.ProjectilePrefab,
                 muzzleWorldPosition,
                 direction,

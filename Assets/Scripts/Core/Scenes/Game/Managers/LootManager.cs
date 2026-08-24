@@ -15,19 +15,18 @@ namespace SpaceInvaders.Scenes.Game
     }
 
     /// <summary>
-    /// Decides what, if anything, drops on an enemy kill - exactly one category (Powerup, Item,
-    /// or none) wins a weighted roll, so a single kill can never drop both. Also holds what the
-    /// player picked up this run; pending loot is only committed to the inventory when the level
-    /// is completed.
+    /// Puts drops on the board and holds what the player has picked up this run. What actually drops
+    /// is rolled elsewhere; pending loot is only committed to the inventory on level completion.
     /// </summary>
     public class LootManager : ILootManager
     {
         [Inject] private readonly IItemsRepository _itemsRepository;
-        [Inject] private readonly IPowerupsRepository _powerupsRepository;
-        [Inject] private readonly IDropsRepository _dropsRepository;
         [Inject] private readonly IInventoryManager _inventoryManager;
         [Inject] private readonly IMessageBus _messageBus;
-        [Inject] private readonly ISpawnService _spawnService;
+        [Inject] private readonly ISpawnManager _spawnManager;
+
+        /// <summary>Decides what drops; this manager decides where it lands and who hears about it.</summary>
+        [Inject] private readonly IDropRollService _dropRolls;
 
         /// <summary>Loot collected during the current run. Added to the inventory only on level completion.</summary>
         private readonly List<InventoryItemEntry> _pendingLoot = new();
@@ -76,13 +75,13 @@ namespace SpaceInvaders.Scenes.Game
 
         private void OnEnemyDestroyed(EnemyDestroyedMessage message)
         {
-            SpawnDrop(RollDropCategory(), message.LocalPosition);
+            SpawnDrop(_dropRolls.RollKillCategory(), message.LocalPosition);
         }
 
         /// <summary>A hazard costs the player something to break, so it always pays out.</summary>
         private void OnHazardDestroyed(HazardDestroyedMessage message)
         {
-            SpawnDrop(RollGuaranteedDropCategory(), message.LocalPosition);
+            SpawnDrop(_dropRolls.RollGuaranteedCategory(), message.LocalPosition);
         }
 
         private void SpawnDrop(DropCategoryTypes category, Vector3 localPosition)
@@ -104,33 +103,25 @@ namespace SpaceInvaders.Scenes.Game
 
         private void SpawnItemDrop(Vector3 localPosition)
         {
-            ItemRarityConfigSO rarityConfig = RollRarity();
-            if (rarityConfig == null)
+            if (!_dropRolls.TryRollItem(out ItemRarityConfigSO rarityConfig, out InventoryItemEntry item))
             {
                 return;
             }
 
-            ItemConfigSO itemConfig = RollItem(rarityConfig.Rarity);
-            if (itemConfig == null)
-            {
-                return;
-            }
-
-            InventoryItemEntry item = itemConfig.RollEntry(rarityConfig.AffixCount);
-
-            _spawnService.SpawnItemPickup(rarityConfig, item, localPosition);
+            _spawnManager.SpawnItemPickup(rarityConfig, item, localPosition);
             _messageBus.Publish(new ItemDroppedMessage(item.InstanceId, localPosition));
         }
 
         private void SpawnPowerupDrop(Vector3 localPosition)
         {
-            PowerupConfigSO config = GameUtils.RollWeighted(_powerupsRepository.GetAllPowerupConfigs(), candidate => candidate.DropWeight);
+            PowerupConfigSO config = _dropRolls.RollPowerup();
+
             if (config == null)
             {
                 return;
             }
 
-            _spawnService.SpawnPowerup(config, localPosition);
+            _spawnManager.SpawnPowerup(config, localPosition);
             _messageBus.Publish(new PowerupDroppedMessage(config.PowerupType, localPosition));
         }
 
@@ -146,61 +137,5 @@ namespace SpaceInvaders.Scenes.Game
             _lastBankedLoot = bankedLoot;
             _inventoryManager.AddItems(bankedLoot);
         }
-
-        #region Drop Rolls
-
-        private DropCategoryTypes RollDropCategory()
-        {
-            IReadOnlyList<DropCategoryWeightDTO> weights = _dropsRepository.GetAllDropCategoryWeights();
-            DropCategoryWeightDTO winner = GameUtils.RollWeighted(weights, weight => weight.Weight);
-
-            return winner?.Category ?? DropCategoryTypes.None;
-        }
-
-        /// <summary>The same table, with the "nothing" entry left out, so a category always wins.</summary>
-        private DropCategoryTypes RollGuaranteedDropCategory()
-        {
-            var candidates = new List<DropCategoryWeightDTO>();
-
-            foreach (DropCategoryWeightDTO weight in _dropsRepository.GetAllDropCategoryWeights())
-            {
-                if (weight.Category != DropCategoryTypes.None)
-                {
-                    candidates.Add(weight);
-                }
-            }
-
-            DropCategoryWeightDTO winner = GameUtils.RollWeighted(candidates, weight => weight.Weight);
-
-            return winner?.Category ?? DropCategoryTypes.None;
-        }
-
-        private ItemRarityConfigSO RollRarity()
-        {
-            return GameUtils.RollWeighted(_itemsRepository.GetAllItemRarityConfigs(), candidate => candidate.DropWeight);
-        }
-
-        private ItemConfigSO RollItem(ItemRarityTypes rarity)
-        {
-            var candidates = new List<ItemConfigSO>();
-
-            foreach (ItemConfigSO config in _itemsRepository.GetAllItemConfigs())
-            {
-                if (config.Rarity == rarity)
-                {
-                    candidates.Add(config);
-                }
-            }
-
-            if (candidates.Count == 0)
-            {
-                this.LogWarning($"No item configs authored for rarity '{rarity}'. Skipping drop.");
-                return null;
-            }
-
-            return GameUtils.RollWeighted(candidates, candidate => candidate.DropWeight);
-        }
-
-        #endregion
     }
 }

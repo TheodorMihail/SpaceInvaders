@@ -23,9 +23,9 @@ namespace SpaceInvaders.Scenes.Game
         [Inject] private readonly IList<IGameEndListener> _gameEndListeners;
         [Inject] private readonly IList<IGameInitializeListener> _gameInitializeListeners;
         [Inject] private readonly IList<IGameEndCondition> _gameEndConditions;
-        [Inject] private readonly IPlatformService _platformService;
+        [Inject] private readonly IPlatformManager _platformManager;
         [Inject] private readonly IProjectRepository _projectRepository;
-        [Inject] private readonly IPauseService _pauseService;
+        [Inject] private readonly ITimeManager _timeManager;
 
         public override void OnEnter(params object[] paramsList)
         {
@@ -59,7 +59,7 @@ namespace SpaceInvaders.Scenes.Game
             _uiManager.ShowHUD<GameplayHUD, GameplayHUD.GameplayHUDParams>(new GameplayHUD.GameplayHUDParams { LevelNumber = levelNumber });
             _uiManager.ShowHUD<GameAnnouncerHUD>();
 
-            if (_platformService.IsTouchPlatform)
+            if (_platformManager.IsTouchPlatform)
             {
                 _uiManager.ShowHUD<MobileControlsHUD>();
             }
@@ -77,6 +77,7 @@ namespace SpaceInvaders.Scenes.Game
         {
             foreach (var condition in _gameEndConditions)
             {
+                condition.GameStart();
                 condition.ConditionMet += OnGameEndConditionMet;
             }
 
@@ -97,7 +98,7 @@ namespace SpaceInvaders.Scenes.Game
             var result = await _uiManager.ShowScreen<GamePausedScreen, GamePausedScreen.GamePausedScreenResult>();
 
             // Resumed first on every path, so the time scale is restored before anything else runs.
-            _pauseService.Resume();
+            _timeManager.Resume();
 
             switch (result.Result)
             {
@@ -126,6 +127,7 @@ namespace SpaceInvaders.Scenes.Game
             foreach (var condition in _gameEndConditions)
             {
                 condition.ConditionMet -= OnGameEndConditionMet;
+                condition.GameEnd();
             }
 
             // The transition delay only exists to let the death or victory beat land.

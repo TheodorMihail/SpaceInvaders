@@ -7,22 +7,20 @@ namespace SpaceInvaders.Scenes.Game
 {
     public class LevelFinishedModel : Model
     {
-        [Inject] private readonly ILevelManager _levelManager;
-        [Inject] private readonly IScoreService _scoreService;
+        [Inject] private readonly ILevelProgressManager _levelProgressManager;
+        [Inject] private readonly ILevelSessionManager _levelSessionManager;
         [Inject] private readonly ILootManager _lootManager;
-        [Inject] private readonly IInventoryManager _inventoryManager;
         [Inject] private readonly IItemsRepository _itemsRepository;
 
-        public bool AllLevelsComplete => _levelManager.CurrentLevelNumber >= _levelManager.MaxLevelNumber;
-        public int StarsEarned => _levelManager.LastPlayedLevelStarsEarned;
-        public int TotalScore => _scoreService.TotalScore;
+        public bool AllLevelsComplete => _levelProgressManager.CurrentLevelNumber >= _levelProgressManager.MaxLevelNumber;
+        public int StarsEarned => _levelProgressManager.LastPlayedLevelStarsEarned;
+        public int TotalScore => _levelSessionManager.TotalScore;
 
         public IEnumerable<(InventoryItemEntry entry, ItemConfigSO config, ItemRarityConfigSO rarity)> GetCollectedItems()
         {
             foreach (InventoryItemEntry entry in _lootManager.LastBankedLoot)
             {
-                ItemConfigSO config = _inventoryManager.GetItemConfig(entry.ItemId);
-                if (config == null)
+                if (!_itemsRepository.TryGetItemConfig(entry.ItemId, out ItemConfigSO config))
                 {
                     continue;
                 }

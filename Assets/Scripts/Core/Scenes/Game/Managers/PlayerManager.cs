@@ -24,7 +24,7 @@ namespace SpaceInvaders.Scenes.Game
 
     public partial class PlayerManager : IPlayerManager, IInitializable
     {
-        [Inject] private readonly ISpawnService _spawnService;
+        [Inject] private readonly ISpawnManager _spawnManager;
         [Inject] private readonly IMessageBus _messageBus;
         [Inject] private readonly ITalentManager _talentManager;
         [Inject] private readonly IEquipmentManager _equipmentManager;
@@ -54,7 +54,7 @@ namespace SpaceInvaders.Scenes.Game
         /// Controls are enabled later, on game start.</summary>
         public async UniTask GameInitialize()
         {
-            _playerInstance = await _spawnService.SpawnPlayer();
+            _playerInstance = await _spawnManager.SpawnPlayer();
             _talentManager.ApplyTalentBonuses(_playerInstance.Stats);
             _equipmentManager.ApplyEquipmentBonuses(_playerInstance.Stats);
             _playerInstance.OnDestroyed += OnDestroyedCallback;
@@ -120,7 +120,7 @@ namespace SpaceInvaders.Scenes.Game
 
         private void OnDamagedCallback(ISpaceship spaceship, int damage, bool isCritical)
         {
-            _messageBus.Publish(new ShipDamagedMessage(spaceship.Stats.CurrentHealth, damage, isCritical, spaceship.WorldPosition));
+            _messageBus.Publish(new ShipDamagedMessage(spaceship.Stats.CurrentHealth, damage, isCritical, spaceship.WorldPosition, isPlayer: true));
         }
 
         private void OnAmmoChangedCallback(int currentAmmo, int maxAmmo)
@@ -145,7 +145,7 @@ namespace SpaceInvaders.Scenes.Game
             _playerInstance.OnDamaged -= OnDamagedCallback;
             _playerInstance.OnAmmoChanged -= OnAmmoChangedCallback;
             _playerInstance.OnReloadStarted -= OnReloadStartedCallback;
-            _spawnService.Despawn(_playerInstance as PlayerSpaceshipBehaviourComponent);
+            _spawnManager.Despawn(_playerInstance as PlayerSpaceshipBehaviourComponent);
             _playerInstance = null;
         }
     }

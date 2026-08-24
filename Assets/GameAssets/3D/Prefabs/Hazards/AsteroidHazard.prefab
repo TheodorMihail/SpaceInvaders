@@ -391,6 +391,17 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.73
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &2860293772548774147 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5777468700184343316, guid: 37845d2d30dac8a409659175c4ee2b0d, type: 3}
+  m_PrefabInstance: {fileID: 8618903580505860631}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4775327739584923055}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93a7c120d8b6ac94cbcc5cc5188376cd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4775327739584923055 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3880168165566820280, guid: 37845d2d30dac8a409659175c4ee2b0d, type: 3}
@@ -410,6 +421,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _renderer: {fileID: 5991635265374494514}
   _collisionDetection: {fileID: 1722392624354678393}
+  _hitFlash: {fileID: 2860293772548774147}
   _artTransform: {fileID: 1799001030395442028}
   _minRotationSpeed: 8
   _maxRotationSpeed: 25

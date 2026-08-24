@@ -1,6 +1,7 @@
 using System;
 using DG.Tweening;
 using UnityEngine;
+using Zenject;
 using Random = UnityEngine.Random;
 
 namespace SpaceInvaders.Scenes.Game
@@ -36,6 +37,9 @@ namespace SpaceInvaders.Scenes.Game
     {
         new event Action<IEnemySpaceship> OnDestroyed;
         event Action<IEnemySpaceship, EnemySpawnRequestDTO> OnSpawnRequested;
+
+        /// <summary>Raised once enough of the ship has come into view for its arrival to read.</summary>
+        event Action<IEnemySpaceship> OnEnteredView;
         EnemyTypes EnemyType { get; }
         EnemyCategoryTypes Category { get; }
 
@@ -59,6 +63,8 @@ namespace SpaceInvaders.Scenes.Game
     {
         private enum EnemyState { Entering, Bouncing }
 
+        [Inject] private readonly ICameraManager _cameraManager;
+
         public EnemyTypes EnemyType => ShipConfig.EnemyType;
         public EnemyCategoryTypes Category => ShipConfig.Category;
 
@@ -68,15 +74,21 @@ namespace SpaceInvaders.Scenes.Game
         [Tooltip("Upper bound of the random wait before the first shot, so a wave does not fire in unison.")]
         [SerializeField] private float _maxFirstShotDelay = 3f;
 
+        [Tooltip("How much of the ship must be on screen before its arrival is announced. Only matters " +
+                 "for ships whose arrival is a moment, which today means bosses.")]
+        [SerializeField, Range(0f, 1f)] private float _enteredViewThreshold = 0.2f;
+
         /// <summary>Blocks damage until the entry animation completes.</summary>
         protected virtual bool IsInvulnerableWhileEntering => false;
 
         private EnemyState _currentState = EnemyState.Entering;
         private Vector3 _entryTargetPosition;
         private Tween _entryTween;
+        private bool _hasEnteredView;
 
         public new event Action<IEnemySpaceship> OnDestroyed;
         public event Action<IEnemySpaceship, EnemySpawnRequestDTO> OnSpawnRequested;
+        public event Action<IEnemySpaceship> OnEnteredView;
 
         protected override void Destroy()
         {
@@ -93,6 +105,7 @@ namespace SpaceInvaders.Scenes.Game
 
             // The movement's own Dispose, run by the base, is what clears the bounce direction.
             _currentState = EnemyState.Entering;
+            _hasEnteredView = false;
         }
 
         public float PrepareEntry(float formationDepthRatio)
@@ -167,13 +180,32 @@ namespace SpaceInvaders.Scenes.Game
             _movement.StartMoving();
         }
 
+        /// <summary>
+        /// Raised part way through the entry rather than at the end of it. A long entry would otherwise
+        /// hold the arrival until the ship was already in position and fighting, and firing it at the
+        /// start would land it while the ship was still off screen entirely.
+        /// </summary>
+        private void CheckEnteredView()
+        {
+            if (_hasEnteredView || _cameraManager.GetVisibleFraction(_movement.Renderer) < _enteredViewThreshold)
+            {
+                return;
+            }
+
+            _hasEnteredView = true;
+            OnEnteredView?.Invoke(this);
+        }
+
         private void Update()
         {
-            if (_currentState == EnemyState.Bouncing)
+            if (_currentState == EnemyState.Entering)
             {
-                _movement.Tick();
-                Shoot(); // Continuously attempt to shoot (fire rate cooldown handled in base)
+                CheckEnteredView();
+                return;
             }
+
+            _movement.Tick();
+            Shoot(); // Continuously attempt to shoot (fire rate cooldown handled in base)
         }
     }
 }

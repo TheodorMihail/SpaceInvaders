@@ -16,16 +16,13 @@ namespace SpaceInvaders.Scenes.MainMenu
         [Inject] private readonly IShipsRepository _shipsRepository;
         [Inject] private readonly ICurrencyManager _currencyManager;
         
-        public string EmptyInventoryText { get; } = "No items collected yet.";
-
         public int Currency => _currencyManager.Currency;
 
         public IEnumerable<(InventoryItemEntry entry, ItemConfigSO config)> GetInventoryItems()
         {
             foreach (InventoryItemEntry entry in _inventoryManager.Items)
             {
-                ItemConfigSO config = _inventoryManager.GetItemConfig(entry.ItemId);
-                if (config == null)
+                if (!_itemsRepository.TryGetItemConfig(entry.ItemId, out ItemConfigSO config))
                 {
                     continue;
                 }
@@ -37,9 +34,17 @@ namespace SpaceInvaders.Scenes.MainMenu
         public bool TryGetInventoryItem(string instanceId, out (InventoryItemEntry entry, ItemConfigSO config) item)
         {
             item.entry = _inventoryManager.GetItem(instanceId);
-            item.config = item.entry != null ? _inventoryManager.GetItemConfig(item.entry.ItemId) : null;
+            item.config = null;
 
-            return item.entry != null && item.config != null;
+            if (item.entry == null)
+            {
+                return false;
+            }
+
+            _itemsRepository.TryGetItemConfig(item.entry.ItemId, out ItemConfigSO config);
+            item.config = config;
+
+            return item.config != null;
         }
 
         public bool TryGetEquippedItemForEquipmentSlotType(EquipmentSlotTypes slot, out InventoryItemEntry item)

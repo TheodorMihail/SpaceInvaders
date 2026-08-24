@@ -381,7 +381,7 @@ MonoBehaviour:
   _healthBar: {fileID: 7620821064175596640}
   _flames:
   - {fileID: 7346615124248880058}
-  _shipConfig: {fileID: 0}
+  _hitFlash: {fileID: 6781386871173703341}
 --- !u!212 &3190807267319232738 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 1245273683126043596, guid: 34751f36bc4bae34cb9e597a9c2277ad, type: 3}
@@ -441,6 +441,17 @@ MonoBehaviour:
   _fireRateMultiplier: 1
   _projectileSpeedMultiplier: 1
   _allowsStatsShotSpread: 1
+--- !u!114 &6781386871173703341 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7141667715350830467, guid: 34751f36bc4bae34cb9e597a9c2277ad, type: 3}
+  m_PrefabInstance: {fileID: 4395547995376122670}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1482985585801961973}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93a7c120d8b6ac94cbcc5cc5188376cd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &7346615124248880058 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6409875803060770964, guid: 34751f36bc4bae34cb9e597a9c2277ad, type: 3}
