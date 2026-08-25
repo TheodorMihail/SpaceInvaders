@@ -397,7 +397,7 @@ namespace SpaceInvaders.Scenes.Game
                 ShipUpgradableStatTypes.CritDamage => "Crit Damage",
                 ShipUpgradableStatTypes.MagazineSize => "Magazine Size",
                 ShipUpgradableStatTypes.ReloadSpeed => "Reload Speed",
-                ShipUpgradableStatTypes.PowerupDuration => "Powerup Bonus Duration",
+                ShipUpgradableStatTypes.PowerupDuration => "Powerup Duration",
                 _ => statType.ToString()
             };
         }

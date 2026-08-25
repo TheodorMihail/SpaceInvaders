@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _categoryWeights:
   - _category: 0
-    _weight: 7
+    _weight: 75
   - _category: 1
-    _weight: 2
+    _weight: 20
   - _category: 2
-    _weight: 1
+    _weight: 5

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _talentType: 9
   _valueType: 1
-  _displayName: Bonus Powerup Duration
+  _displayName: Powerup Duration
   _icon: {fileID: 1969460533, guid: 5be90912f33c39649b363237f4946af9, type: 3}
   _levels:
   - _cost: 50
