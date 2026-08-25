@@ -5,7 +5,7 @@ using Zenject;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public class LevelFinishedModel : Model
+    public class VictoryScreenModel : Model
     {
         [Inject] private readonly ILevelProgressManager _levelProgressManager;
         [Inject] private readonly ILevelSessionManager _levelSessionManager;

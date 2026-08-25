@@ -1,7 +1,7 @@
 using BaseArchitecture.Core;
 using Cysharp.Threading.Tasks;
 using Zenject;
-using static SpaceInvaders.Scenes.Game.LevelFinishedScreen;
+using static SpaceInvaders.Scenes.Game.VictoryScreen;
 using static SpaceInvaders.Scenes.Game.GameOverScreen;
 using static SpaceInvaders.Scenes.Game.GameplayState;
 using static SpaceInvaders.Scenes.Game.GameStateMachine;
@@ -47,14 +47,18 @@ namespace SpaceInvaders.Scenes.Game
                     break;
 
                 case GameplayStateResultTypes.LevelFinished:
-                    LevelFinishedScreenResult gameFinishedResult = await _uiManager.ShowScreen<LevelFinishedScreen, LevelFinishedScreenResult>();
-                    switch (gameFinishedResult.Result)
+                    VictoryScreenResult victoryResult = await _uiManager.ShowScreen<VictoryScreen, VictoryScreenResult>();
+                    switch (victoryResult.Result)
                     {
-                        case LevelFinishedScreen.ResultTypes.MainMenu:
+                        case VictoryScreen.ResultTypes.MainMenu:
                             FinishState(GameOverStateResultTypes.MainMenu);
                             break;
-                        case LevelFinishedScreen.ResultTypes.NextLevel:
+                        case VictoryScreen.ResultTypes.NextLevel:
                             FinishState(GameOverStateResultTypes.NextLevel);
+                            break;
+                        // Replaying a cleared level reloads the scene, exactly as it does after a loss.
+                        case VictoryScreen.ResultTypes.Retry:
+                            FinishState(GameOverStateResultTypes.Restart);
                             break;
                     }
                     break;

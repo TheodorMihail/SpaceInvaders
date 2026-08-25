@@ -2,9 +2,9 @@ using BaseArchitecture.Core;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public class LevelFinishedController : Controller<LevelFinishedScreen, LevelFinishedModel, LevelFinishedView>
+    public class VictoryScreenController : Controller<VictoryScreen, VictoryScreenModel, VictoryScreenView>
     {
-        public LevelFinishedController(LevelFinishedScreen screen, LevelFinishedModel model, LevelFinishedView view) : base(screen, model, view)
+        public VictoryScreenController(VictoryScreen screen, VictoryScreenModel model, VictoryScreenView view) : base(screen, model, view)
         {
         }
 
@@ -13,29 +13,39 @@ namespace SpaceInvaders.Scenes.Game
             base.Initialize();
             _view.Initialize(_model.AllLevelsComplete, _model.StarsEarned, _model.TotalScore, _model.GetCollectedItems());
             _view.OnNextLevelButtonClicked += HandleNextLevelButtonClicked;
+            _view.OnRetryButtonClicked += HandleRetryButtonClicked;
             _view.OnMainMenuButtonClicked += HandleMainMenuButtonClicked;
         }
 
         public override void Dispose()
         {
             _view.OnNextLevelButtonClicked -= HandleNextLevelButtonClicked;
+            _view.OnRetryButtonClicked -= HandleRetryButtonClicked;
             _view.OnMainMenuButtonClicked -= HandleMainMenuButtonClicked;
             base.Dispose();
         }
 
         private void HandleNextLevelButtonClicked()
         {
-            CloseScreenWithResult(new LevelFinishedScreen.LevelFinishedScreenResult
+            CloseScreenWithResult(new VictoryScreen.VictoryScreenResult
             {
-                Result = LevelFinishedScreen.ResultTypes.NextLevel
+                Result = VictoryScreen.ResultTypes.NextLevel
+            });
+        }
+
+        private void HandleRetryButtonClicked()
+        {
+            CloseScreenWithResult(new VictoryScreen.VictoryScreenResult
+            {
+                Result = VictoryScreen.ResultTypes.Retry
             });
         }
 
         private void HandleMainMenuButtonClicked()
         {
-            CloseScreenWithResult(new LevelFinishedScreen.LevelFinishedScreenResult
+            CloseScreenWithResult(new VictoryScreen.VictoryScreenResult
             {
-                Result = LevelFinishedScreen.ResultTypes.MainMenu
+                Result = VictoryScreen.ResultTypes.MainMenu
             });
         }
     }

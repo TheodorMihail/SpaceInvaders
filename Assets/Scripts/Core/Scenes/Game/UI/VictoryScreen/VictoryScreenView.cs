@@ -8,10 +8,11 @@ using UnityEngine.UI;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    [AddressablePath("Screens/LevelFinishedScreenView")]
-    public class LevelFinishedView : View
+    [AddressablePath("Screens/VictoryScreenView")]
+    public class VictoryScreenView : View
     {
         [SerializeField] private Button _nextLevelButton;
+        [SerializeField] private Button _retryButton;
         [SerializeField] private Button _mainMenuButton;
         [SerializeField] private GameObject[] _starIcons;
         [SerializeField] private TextMeshProUGUI _scoreText;
@@ -22,6 +23,7 @@ namespace SpaceInvaders.Scenes.Game
         [SerializeField] private ItemTooltipComponent _tooltip;
 
         public event Action OnNextLevelButtonClicked;
+        public event Action OnRetryButtonClicked;
         public event Action OnMainMenuButtonClicked;
 
         public void Initialize(bool allLevelsComplete, int starsEarned, int score,
@@ -43,6 +45,7 @@ namespace SpaceInvaders.Scenes.Game
         private void Awake()
         {
             _nextLevelButton.onClick.AddListener(() => OnNextLevelButtonClicked?.Invoke());
+            _retryButton.onClick.AddListener(() => OnRetryButtonClicked?.Invoke());
             _mainMenuButton.onClick.AddListener(() => OnMainMenuButtonClicked?.Invoke());
             _itemsContainer.OnItemClicked += OnItemClicked;
         }
