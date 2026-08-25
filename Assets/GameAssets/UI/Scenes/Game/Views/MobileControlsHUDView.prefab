@@ -57,6 +57,7 @@ GameObject:
   - component: {fileID: 6256756305074318061}
   - component: {fileID: 1164976790962951541}
   - component: {fileID: 7025448856857248451}
+  - component: {fileID: 7025448856857248452}
   m_Layer: 5
   m_Name: Joystick
   m_TagString: Untagged
@@ -122,6 +123,21 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &7025448856857248452
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2213399997845972510}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e7a91c4b05d43f8ab6c1e70d92f3856, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _controlPath: <Gamepad>/leftStick
+  _handle: {fileID: 222792270141908924}
+  _movementRange: 100
 --- !u!1 &2820869069662748217
 GameObject:
   m_ObjectHideFlags: 0
@@ -327,7 +343,6 @@ GameObject:
   - component: {fileID: 222792270141908924}
   - component: {fileID: 6191394938040548510}
   - component: {fileID: 3820535862803163963}
-  - component: {fileID: 8854935499989635513}
   m_Layer: 5
   m_Name: JoystickHandle
   m_TagString: Untagged
@@ -392,41 +407,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &8854935499989635513
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4528485328778423116}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e9d677f1681015749b15c436eec6d880, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_MovementRange: 100
-  m_DynamicOriginRange: 100
-  m_ControlPath: <Gamepad>/leftStick
-  m_Behaviour: 0
-  m_UseIsolatedInputActions: 0
-  m_PointerDownAction:
-    m_Name: 
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: 2d9bc666-d973-492a-9118-fac5f04e0d8d
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings: []
-    m_Flags: 0
-  m_PointerMoveAction:
-    m_Name: 
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: badcbb62-86a3-49ee-8fe7-62ed137dc211
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings: []
-    m_Flags: 0
 --- !u!1 &6527815753390597865
 GameObject:
   m_ObjectHideFlags: 0
@@ -439,6 +419,7 @@ GameObject:
   - component: {fileID: 9159306941669423302}
   - component: {fileID: 4471929438399244930}
   - component: {fileID: 2407008483884905486}
+  - component: {fileID: 6545851621218738621}
   m_Layer: 5
   m_Name: FireButton
   m_TagString: Untagged
@@ -513,7 +494,51 @@ MonoBehaviour:
   m_GameObject: {fileID: 6527815753390597865}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d54531977ecb194c95e2d3aa7a5d72a, type: 3}
+  m_Script: {fileID: 11500000, guid: 8c3f5b21d0a94e76b41e8f0c27d5a693, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ControlPath: <Gamepad>/buttonSouth
+  _controlPath: <Gamepad>/buttonSouth
+--- !u!114 &6545851621218738621
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6527815753390597865}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Navigation:
+    m_Mode: 3
+    m_WrapAround: 0
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 1
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 4471929438399244930}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls: []
