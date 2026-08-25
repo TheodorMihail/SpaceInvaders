@@ -232,6 +232,28 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: powerups_images_infinite_ammo
+      rect:
+        serializedVersion: 2
+        x: 828
+        y: 164
+        width: 192
+        height: 175
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dc784c91c4b7efc46ae4cf80cec10506
+      internalID: 44108535
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
@@ -248,6 +270,7 @@ TextureImporter:
     nameFileIdTable:
       powerups_images_damage: -962954108
       powerups_images_heal: 1484863663
+      powerups_images_infinite_ammo: 44108535
       powerups_images_invincibility: -364998361
       powerups_images_rapid_fire: 921843265
       powerups_images_spread_shot: 118613148

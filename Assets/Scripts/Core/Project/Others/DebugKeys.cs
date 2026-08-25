@@ -11,6 +11,7 @@ namespace SpaceInvaders.Project
         public const Key DestroyAllEnemies = Key.F1;
         public const Key KillPlayer = Key.F2;
         public const Key SpawnHazard = Key.F3;
+        public const Key SpawnPowerup = Key.F4;
 
         //Everywhere
         public const Key AddCurrency = Key.F5;

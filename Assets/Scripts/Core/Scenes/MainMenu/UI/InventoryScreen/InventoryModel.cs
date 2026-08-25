@@ -96,7 +96,8 @@ namespace SpaceInvaders.Scenes.MainMenu
             builder.AppendLine(StatRowText(ShipUpgradableStatTypes.CritChance, withoutEquipment.CurrentCritChance, withEquipment.CurrentCritChance));
             builder.AppendLine(StatRowText(ShipUpgradableStatTypes.CritDamage, withoutEquipment.CurrentCritDamage, withEquipment.CurrentCritDamage));
             builder.AppendLine(StatRowText(ShipUpgradableStatTypes.MagazineSize, withoutEquipment.CurrentMaxAmmo, withEquipment.CurrentMaxAmmo));
-            builder.Append(StatRowText(ShipUpgradableStatTypes.ReloadSpeed, withoutEquipment.CurrentReloadDuration, withEquipment.CurrentReloadDuration));
+            builder.AppendLine(StatRowText(ShipUpgradableStatTypes.ReloadSpeed, withoutEquipment.CurrentReloadDuration, withEquipment.CurrentReloadDuration));
+            builder.Append(StatRowText(ShipUpgradableStatTypes.PowerupDuration, withoutEquipment.CurrentPowerupDuration, withEquipment.CurrentPowerupDuration));
 
             return builder.ToString();
         }

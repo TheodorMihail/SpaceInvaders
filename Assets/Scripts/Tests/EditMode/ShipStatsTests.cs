@@ -9,10 +9,24 @@ namespace SpaceInvaders.Tests
     {
         private const float FloatTolerance = 0.0001f;
         private const int RollSampleCount = 20;
+        private const int MagazineSize = 10;
 
         private static ShipStats CreateStats()
         {
             return new ShipStats(new ShipBaseStats());
+        }
+
+        /// <summary>The default base stats author no magazine, and that is read once at construction,
+        /// so granting one afterwards also means opting the ship back into spending it. Stands in for
+        /// a config that authors a magazine, which base stats cannot express from a test.</summary>
+        private static ShipStats CreateStatsWithMagazine()
+        {
+            ShipStats stats = CreateStats();
+            stats.ApplyStatBonus(ShipUpgradableStatTypes.MagazineSize, MagazineSize, ShipStatValueTypes.Flat);
+            stats.SetUnlimitedAmmo(false);
+            stats.RefillAmmo();
+
+            return stats;
         }
 
         [Test]
@@ -258,6 +272,50 @@ namespace SpaceInvaders.Tests
             stats.ApplyStatBonus(ShipUpgradableStatTypes.ReloadSpeed, 0.5f, ShipStatValueTypes.Percentage);
 
             Assert.Less(stats.CurrentReloadDuration, stats.BaseReloadSpeed);
+        }
+
+        [Test]
+        public void ApplyStatBonus_PowerupDuration_AddsFlatSeconds()
+        {
+            ShipStats stats = CreateStats();
+            stats.ApplyStatBonus(ShipUpgradableStatTypes.PowerupDuration, 2f, ShipStatValueTypes.Flat);
+
+            Assert.AreEqual(2f, stats.CurrentPowerupDuration, FloatTolerance);
+        }
+
+        [Test]
+        public void SetUnlimitedAmmo_WhileActive_SpendsNoRounds()
+        {
+            ShipStats stats = CreateStatsWithMagazine();
+            stats.SetUnlimitedAmmo(true);
+
+            Assert.IsTrue(stats.TryConsumeAmmo());
+            Assert.AreEqual(MagazineSize, stats.CurrentAmmo);
+        }
+
+        [Test]
+        public void SetUnlimitedAmmo_WhenSwitchedOff_SpendsRoundsAgain()
+        {
+            ShipStats stats = CreateStatsWithMagazine();
+            stats.SetUnlimitedAmmo(true);
+            stats.SetUnlimitedAmmo(false);
+
+            Assert.IsTrue(stats.TryConsumeAmmo());
+            Assert.AreEqual(MagazineSize - 1, stats.CurrentAmmo);
+        }
+
+        [Test]
+        public void SetUnlimitedAmmo_WithTheSameValueTwice_RaisesTheChangeOnlyOnce()
+        {
+            ShipStats stats = CreateStatsWithMagazine();
+            int raisedCount = 0;
+            stats.UnlimitedAmmoChanged += _ => raisedCount++;
+
+            stats.SetUnlimitedAmmo(true);
+            stats.SetUnlimitedAmmo(true);
+            stats.SetUnlimitedAmmo(false);
+
+            Assert.AreEqual(2, raisedCount);
         }
 
         [Test]

@@ -26,6 +26,12 @@ namespace SpaceInvaders.Scenes.Game
         /// <summary>Where an object is still on screen: the full view, ignoring the UI margins.</summary>
         (Vector3 min, Vector3 max) GetVisibleBounds(Renderer renderer, float buffer = 0f);
 
+        /// <summary>Where something entering from above comes in: the top edge of the view on the
+        /// given **world** plane, spanning left to right. Takes a plane rather than a renderer, since
+        /// the object being placed does not exist yet. The inset is a fraction of the view's width
+        /// taken off each side, for callers that must not leave it hanging half off screen.</summary>
+        (Vector3 left, Vector3 right) GetTopEdgeBounds(float planeY, float sideInsetRatio = 0f);
+
         /// <summary>How much of the renderer has come into view from above, from 0 fully hidden to 1
         /// fully shown, for anything that should react to arriving rather than to being spawned.</summary>
         float GetVisibleFraction(Renderer renderer);
@@ -210,6 +216,30 @@ namespace SpaceInvaders.Scenes.Game
             );
 
             return (minBounds - ShakeOffset, maxBounds - ShakeOffset);
+        }
+
+        /// <summary>
+        /// The top edge of the full view, so anything placed along it slides in rather than appearing
+        /// mid-screen. Deliberately ignores the UI margins for the same reason the visible bounds do:
+        /// they restrict where ships may move, not where the view begins.
+        /// </summary>
+        public (Vector3 left, Vector3 right) GetTopEdgeBounds(float planeY, float sideInsetRatio = 0f)
+        {
+            if (_mainCamera == null)
+            {
+                return (Vector3.zero, Vector3.zero);
+            }
+
+            // Half the width per side is the whole width, so anything beyond that would invert the span.
+            float inset = Mathf.Clamp(sideInsetRatio, 0f, 0.5f);
+
+            Vector3 leftEdge = _mainCamera.ViewportToWorldPoint(new Vector3(inset, 1f, planeY));
+            Vector3 rightEdge = _mainCamera.ViewportToWorldPoint(new Vector3(1f - inset, 1f, planeY));
+
+            return (
+                new Vector3(leftEdge.x, planeY, leftEdge.z) - ShakeOffset,
+                new Vector3(rightEdge.x, planeY, rightEdge.z) - ShakeOffset
+            );
         }
 
         /// <summary>

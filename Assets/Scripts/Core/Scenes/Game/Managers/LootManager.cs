@@ -18,7 +18,7 @@ namespace SpaceInvaders.Scenes.Game
     /// Puts drops on the board and holds what the player has picked up this run. What actually drops
     /// is rolled elsewhere; pending loot is only committed to the inventory on level completion.
     /// </summary>
-    public class LootManager : ILootManager
+    public partial class LootManager : ILootManager
     {
         [Inject] private readonly IItemsRepository _itemsRepository;
         [Inject] private readonly IInventoryManager _inventoryManager;
@@ -90,7 +90,7 @@ namespace SpaceInvaders.Scenes.Game
             {
                 case DropCategoryTypes.Powerup:
                 {
-                    SpawnPowerupDrop(localPosition);
+                    SpawnPowerupDrop(_dropRolls.RollPowerup(), localPosition);
                     break;
                 }
                 case DropCategoryTypes.Item:
@@ -112,10 +112,8 @@ namespace SpaceInvaders.Scenes.Game
             _messageBus.Publish(new ItemDroppedMessage(item.InstanceId, localPosition));
         }
 
-        private void SpawnPowerupDrop(Vector3 localPosition)
+        private void SpawnPowerupDrop(PowerupConfigSO config, Vector3 localPosition)
         {
-            PowerupConfigSO config = _dropRolls.RollPowerup();
-
             if (config == null)
             {
                 return;

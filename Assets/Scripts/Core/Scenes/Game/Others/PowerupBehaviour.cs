@@ -10,38 +10,42 @@ namespace SpaceInvaders.Scenes.Game
         PowerupTypes PowerupType { get; }
         event Action<IPowerupBehaviour> Ended; // only ever raised for timed powerups (Duration > 0)
 
-        void Initialize(ShipStats stats, PowerupConfigSO config);
-        void Refresh(); // restart the embedded timer without re-applying the bonus
+        void Initialize(ShipStats stats, PowerupConfigSO config, float duration);
+        void Refresh(float duration); // restart the embedded timer without re-applying the bonus
         void CancelTimer(); // teardown: stop the timer without reverting the bonus or raising Ended
     }
 
     /// <summary>
-    /// Applies its effect on initialization and reverts it after Duration. A Duration of 0 or less is
+    /// Applies its effect on initialization and reverts it after the duration it was activated with,
+    /// which is the config's own plus whatever the ship's stats add. A duration of 0 or less is
     /// instant and never starts a timer.
     /// </summary>
     public abstract class PowerupBaseBehaviour : IPowerupBehaviour
     {
         protected ShipStats Stats { get; private set; }
         protected PowerupConfigSO Config { get; private set; }
+        protected float Duration { get; private set; }
         private CancellationTokenSource _cts;
 
         public abstract PowerupTypes PowerupType { get; }
         public event Action<IPowerupBehaviour> Ended;
 
-        public void Initialize(ShipStats stats, PowerupConfigSO config)
+        public void Initialize(ShipStats stats, PowerupConfigSO config, float duration)
         {
             Stats = stats;
             Config = config;
+            Duration = duration;
             OnApply();
 
-            if (config.Duration > 0f)
+            if (duration > 0f)
             {
                 StartTimer();
             }
         }
 
-        public void Refresh()
+        public void Refresh(float duration)
         {
+            Duration = duration;
             _cts?.CancelAndDispose();
             StartTimer();
         }
@@ -62,7 +66,7 @@ namespace SpaceInvaders.Scenes.Game
 
         private async UniTaskVoid RunTimer(CancellationToken token)
         {
-            await UniTask.Delay(TimeSpan.FromSeconds(Config.Duration), cancellationToken: token);
+            await UniTask.Delay(TimeSpan.FromSeconds(Duration), cancellationToken: token);
 
             if (token.IsCancellationRequested)
             {
@@ -132,6 +136,23 @@ namespace SpaceInvaders.Scenes.Game
         {
             var config = (RapidFirePowerupConfigSO)Config;
             Stats.FireRateStat.RemoveBonus(config.Bonus, config.ValueType);
+        }
+    }
+
+    /// <summary>The weapon reacts to the toggle itself, finishing a running reload on activation and
+    /// topping the magazine up again on expiry.</summary>
+    public class UnlimitedAmmoPowerup : PowerupBaseBehaviour
+    {
+        public override PowerupTypes PowerupType => PowerupTypes.UnlimitedAmmo;
+
+        protected override void OnApply()
+        {
+            Stats.SetUnlimitedAmmo(true);
+        }
+
+        protected override void OnRemove()
+        {
+            Stats.SetUnlimitedAmmo(false);
         }
     }
 

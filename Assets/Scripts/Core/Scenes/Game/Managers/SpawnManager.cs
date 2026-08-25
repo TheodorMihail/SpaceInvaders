@@ -19,6 +19,14 @@ namespace SpaceInvaders.Scenes.Game
         ItemPickupBehaviourComponent SpawnItemPickup(ItemRarityConfigSO rarityConfig, InventoryItemEntry item, Vector3 localPosition);
         VFXBehaviourComponent SpawnVFX(VFXBehaviourComponent prefab, Vector3 localPosition);
         void Despawn<T>(T instance) where T : MonoBehaviour, IPoolableObject;
+
+        /// <summary>Takes a world point into the container's space, which is what every spawn position
+        /// above is expressed in. The container is offset from the world, so the two never match.</summary>
+        Vector3 GetContainerLocalPosition(Vector3 worldPosition);
+
+        /// <summary>The other way: a spawn position back out into world space, for asking anything
+        /// that answers in it — screen bounds, distances, projections.</summary>
+        Vector3 GetContainerWorldPosition(Vector3 localPosition);
     }
 
     /// <summary>
@@ -172,6 +180,16 @@ namespace SpaceInvaders.Scenes.Game
             return hazard;
         }
 
+        public Vector3 GetContainerLocalPosition(Vector3 worldPosition)
+        {
+            return _container.InverseTransformPoint(worldPosition);
+        }
+
+        public Vector3 GetContainerWorldPosition(Vector3 localPosition)
+        {
+            return _container.TransformPoint(localPosition);
+        }
+
         public void Despawn<T>(T instance) where T : MonoBehaviour, IPoolableObject
         {
             if (instance is ScreenBoundedMovingComponent transient)
@@ -189,7 +207,7 @@ namespace SpaceInvaders.Scenes.Game
         {
             // A muzzle is a transform somewhere under the ship, so the spawn point arrives in world
             // space and has to come back into the container's, which is offset from it.
-            Vector3 localPosition = _container.InverseTransformPoint(muzzleWorldPosition);
+            Vector3 localPosition = GetContainerLocalPosition(muzzleWorldPosition);
 
             var projectile = Spawn(prefab, localPosition, Quaternion.identity);
 

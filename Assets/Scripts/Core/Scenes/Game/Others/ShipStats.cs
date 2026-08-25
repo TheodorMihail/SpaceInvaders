@@ -19,7 +19,8 @@ namespace SpaceInvaders.Scenes.Game
         CritChance = 5,
         CritDamage = 6,
         MagazineSize = 7,
-        ReloadSpeed = 8
+        ReloadSpeed = 8,
+        PowerupDuration = 9
     }
 
     public enum ShipStatValueTypes
@@ -39,9 +40,15 @@ namespace SpaceInvaders.Scenes.Game
         [SerializeField] private float _critChance = 0.1f;
         [SerializeField] private float _critDamage = 2f;
 
-        [Tooltip("Shots before a reload is needed. 0 means unlimited ammo.")]
+        [Tooltip("Opts the ship out of ammo entirely: it never spends a round and never reloads.")]
+        [SerializeField] private bool _hasUnlimitedAmmo;
+
+        [Tooltip("Shots before a reload is needed. Ignored while ammo is unlimited.")]
         [SerializeField] private int _magazineSize = 0;
         [SerializeField] private float _reloadSpeed = 1.5f;
+
+        [Tooltip("Extra seconds on every powerup's duration. A base of 0 leaves percentage bonuses nothing to scale.")]
+        [SerializeField] private float _powerupDuration = 0f;
 
         public int BaseHealth => _health;
         public float BaseMoveSpeed => _moveSpeed;
@@ -50,8 +57,10 @@ namespace SpaceInvaders.Scenes.Game
         public float BaseProjectileSpeed => _projectileSpeed;
         public float BaseCritChance => _critChance;
         public float BaseCritDamage => _critDamage;
+        public bool HasUnlimitedAmmo => _hasUnlimitedAmmo;
         public int BaseMagazineSize => _magazineSize;
         public float BaseReloadSpeed => _reloadSpeed;
+        public float BasePowerupDuration => _powerupDuration;
     }
 
     /// <summary>
@@ -145,6 +154,7 @@ namespace SpaceInvaders.Scenes.Game
         private readonly StatValue _critDamageStat;
         private readonly StatValue _magazineSizeStat;
         private readonly StatValue _reloadSpeedStat;
+        private readonly StatValue _powerupDurationStat;
 
         public StatValue HealthStat => _healthStat;
         public StatValue DamageStat => _damageStat;
@@ -155,6 +165,7 @@ namespace SpaceInvaders.Scenes.Game
         public StatValue CritDamageStat => _critDamageStat;
         public StatValue MagazineSizeStat => _magazineSizeStat;
         public StatValue ReloadSpeedStat => _reloadSpeedStat;
+        public StatValue PowerupDurationStat => _powerupDurationStat;
 
         public int BaseHealth => Mathf.RoundToInt(_healthStat.BaseValue);
         public float BaseMoveSpeed => _moveSpeedStat.BaseValue;
@@ -165,6 +176,7 @@ namespace SpaceInvaders.Scenes.Game
         public float BaseCritDamage => _critDamageStat.BaseValue;
         public int BaseMagazineSize => Mathf.RoundToInt(_magazineSizeStat.BaseValue);
         public float BaseReloadSpeed => _reloadSpeedStat.BaseValue;
+        public float BasePowerupDuration => _powerupDurationStat.BaseValue;
 
         public int CurrentHealth { get; private set; }
         public int CurrentAmmo { get; private set; }
@@ -188,13 +200,18 @@ namespace SpaceInvaders.Scenes.Game
         public int CurrentMaxAmmo => Mathf.RoundToInt(_magazineSizeStat.CurrentValue);
         public float CurrentReloadDuration => _reloadSpeedStat.CurrentValue;
 
-        /// <summary>A magazine of 0 opts the ship out of ammo entirely, which is how enemies shoot forever.</summary>
-        public bool HasUnlimitedAmmo => CurrentMaxAmmo <= 0;
+        /// <summary>Seconds added on top of every powerup's authored duration.</summary>
+        public float CurrentPowerupDuration => _powerupDurationStat.CurrentValue;
+
+        /// <summary>Whether this ship spends ammo at all. Authored per ship, then owned outright: a
+        /// powerup switches it on and back off for the ships that do.</summary>
+        public bool HasUnlimitedAmmo { get; private set; }
 
         public bool IsOutOfAmmo => !HasUnlimitedAmmo && CurrentAmmo <= 0;
 
         public event Action<int, int> HealthChanged; // currentHealth, baseHealth
         public event Action<int, int> AmmoChanged; // currentAmmo, maxAmmo
+        public event Action<bool> UnlimitedAmmoChanged; // hasUnlimitedAmmo
 
         public ShipStats(ShipBaseStats baseStats)
         {
@@ -207,6 +224,9 @@ namespace SpaceInvaders.Scenes.Game
             _critDamageStat = new StatValue(baseStats.BaseCritDamage);
             _magazineSizeStat = new StatValue(baseStats.BaseMagazineSize);
             _reloadSpeedStat = new StatValue(baseStats.BaseReloadSpeed);
+            _powerupDurationStat = new StatValue(baseStats.BasePowerupDuration);
+
+            HasUnlimitedAmmo = baseStats.HasUnlimitedAmmo;
 
             CurrentHealth = CurrentMaxHealth;
             CurrentAmmo = CurrentMaxAmmo;
@@ -333,12 +353,29 @@ namespace SpaceInvaders.Scenes.Game
                     _reloadSpeedStat.AddBonus(-bonus, valueType);
                     break;
                 }
+                case ShipUpgradableStatTypes.PowerupDuration:
+                {
+                    _powerupDurationStat.AddBonus(bonus, valueType);
+                    break;
+                }
             }
         }
 
         public void SetInvincible(bool value)
         {
             IsInvincible = value;
+        }
+
+        /// <summary>Suspends ammo spending entirely, whatever magazine the ship has.</summary>
+        public void SetUnlimitedAmmo(bool value)
+        {
+            if (HasUnlimitedAmmo == value)
+            {
+                return;
+            }
+
+            HasUnlimitedAmmo = value;
+            UnlimitedAmmoChanged?.Invoke(HasUnlimitedAmmo);
         }
 
         public void UpdateShotSpread(int deltaCount, float angleDegrees)
@@ -360,6 +397,7 @@ namespace SpaceInvaders.Scenes.Game
                 ShipUpgradableStatTypes.CritDamage => "Crit Damage",
                 ShipUpgradableStatTypes.MagazineSize => "Magazine Size",
                 ShipUpgradableStatTypes.ReloadSpeed => "Reload Speed",
+                ShipUpgradableStatTypes.PowerupDuration => "Powerup Bonus Duration",
                 _ => statType.ToString()
             };
         }

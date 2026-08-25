@@ -9,7 +9,8 @@ namespace SpaceInvaders.Scenes.Game
         Heal,
         DamageBoost,
         RapidFire,
-        SpreadShot
+        SpreadShot,
+        UnlimitedAmmo
     }
 
     public abstract class PowerupConfigSO : ScriptableObject, IRepositoryObject

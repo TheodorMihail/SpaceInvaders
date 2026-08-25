@@ -40,8 +40,10 @@ namespace SpaceInvaders.Scenes.Game
         public void Initialize(ShipStats stats, string shooterTag)
         {
             CancelReload();
+            UnsubscribeFromStats();
 
             _stats = stats;
+            _stats.UnlimitedAmmoChanged += OnUnlimitedAmmoChanged;
             _shooterTag = shooterTag;
             _nextShotTime = 0f;
         }
@@ -49,6 +51,7 @@ namespace SpaceInvaders.Scenes.Game
         public void Dispose()
         {
             CancelReload();
+            UnsubscribeFromStats();
 
             foreach (ProjectileBehaviourComponent projectile in _activeProjectiles)
             {
@@ -127,6 +130,24 @@ namespace SpaceInvaders.Scenes.Game
         public void DelayNextShot(float delay)
         {
             _nextShotTime = Time.time + delay;
+        }
+
+        private void UnsubscribeFromStats()
+        {
+            if (_stats == null)
+            {
+                return;
+            }
+
+            _stats.UnlimitedAmmoChanged -= OnUnlimitedAmmoChanged;
+        }
+
+        /// <summary>A reload running when ammo stops mattering is finished on the spot instead of left
+        /// counting down, and the magazine is full again when the ship goes back to spending it.</summary>
+        private void OnUnlimitedAmmoChanged(bool hasUnlimitedAmmo)
+        {
+            CancelReload();
+            _stats.RefillAmmo();
         }
 
         private void CancelReload()

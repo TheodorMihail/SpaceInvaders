@@ -108,6 +108,11 @@ namespace SpaceInvaders.Scenes.Game
                 return;
             }
 
+            if (message.Type == PowerupTypes.UnlimitedAmmo)
+            {
+                _view.SetUnlimitedAmmo(true);
+            }
+
             if (message.Duration > 0)
             {
                 _view.ShowPowerupActivated(message.Type, config.Icon, message.Duration);
@@ -116,6 +121,11 @@ namespace SpaceInvaders.Scenes.Game
 
         private void OnPowerupExpiredCallback(PowerupExpiredMessage message)
         {
+            if (message.Type == PowerupTypes.UnlimitedAmmo)
+            {
+                _view.SetUnlimitedAmmo(false);
+            }
+
             _view.HidePowerupIndicator(message.Type);
         }
 
