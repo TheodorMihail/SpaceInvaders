@@ -40,14 +40,14 @@ namespace SpaceInvaders.Scenes.Game
         [SerializeField] private float _critChance = 0.1f;
         [SerializeField] private float _critDamage = 2f;
 
-        [Tooltip("Opts the ship out of ammo entirely: it never spends a round and never reloads.")]
+        [Tooltip("The ship never spends ammo and never reloads.")]
         [SerializeField] private bool _hasUnlimitedAmmo;
 
-        [Tooltip("Shots before a reload is needed. Ignored while ammo is unlimited.")]
+        [Tooltip("Shots before a reload is needed. Unused when ammo is unlimited.")]
         [SerializeField] private int _magazineSize = 0;
         [SerializeField] private float _reloadSpeed = 1.5f;
 
-        [Tooltip("Extra seconds on every powerup's duration. A base of 0 leaves percentage bonuses nothing to scale.")]
+        [Tooltip("Extra seconds on every timed powerup. A base of 0 means percentage bonuses do nothing.")]
         [SerializeField] private float _powerupDuration = 0f;
 
         public int BaseHealth => _health;
@@ -200,11 +200,10 @@ namespace SpaceInvaders.Scenes.Game
         public int CurrentMaxAmmo => Mathf.RoundToInt(_magazineSizeStat.CurrentValue);
         public float CurrentReloadDuration => _reloadSpeedStat.CurrentValue;
 
-        /// <summary>Seconds added on top of every powerup's authored duration.</summary>
+        /// <summary>Extra seconds added to every timed powerup.</summary>
         public float CurrentPowerupDuration => _powerupDurationStat.CurrentValue;
 
-        /// <summary>Whether this ship spends ammo at all. Authored per ship, then owned outright: a
-        /// powerup switches it on and back off for the ships that do.</summary>
+        /// <summary>Whether this ship spends ammo. Authored per ship, and toggled by a powerup.</summary>
         public bool HasUnlimitedAmmo { get; private set; }
 
         public bool IsOutOfAmmo => !HasUnlimitedAmmo && CurrentAmmo <= 0;
@@ -366,7 +365,7 @@ namespace SpaceInvaders.Scenes.Game
             IsInvincible = value;
         }
 
-        /// <summary>Suspends ammo spending entirely, whatever magazine the ship has.</summary>
+        /// <summary>Stops ammo being spent, regardless of the magazine.</summary>
         public void SetUnlimitedAmmo(bool value)
         {
             if (HasUnlimitedAmmo == value)

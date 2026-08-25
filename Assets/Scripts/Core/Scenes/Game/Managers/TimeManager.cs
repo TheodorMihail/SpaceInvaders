@@ -14,8 +14,8 @@ namespace SpaceInvaders.Scenes.Game
         void Pause();
         void Resume();
 
-        /// <summary>Runs time down for a moment so a beat lands. Pause always wins: pausing cancels
-        /// the slow motion, and one already in flight never restores time behind the pause screen.</summary>
+        /// <summary>Briefly lowers the time scale. Pause takes priority: pausing cancels it, and a
+        /// running slow motion never restores time while the pause screen is open.</summary>
         void ApplySlowMotion(float duration, float timeScale);
     }
 
@@ -52,9 +52,8 @@ namespace SpaceInvaders.Scenes.Game
             return UniTask.CompletedTask;
         }
 
-        /// <summary>Restores time outright rather than through Resume, which only acts when paused.
-        /// Slow motion still in flight would otherwise carry into the next level, since the level
-        /// advance never reloads the scene.</summary>
+        /// <summary>Restores time directly rather than through Resume, which only acts when paused.
+        /// The level advance never reloads the scene, so a running slow motion would carry over.</summary>
         public UniTask GameEnd()
         {
             Resume();
@@ -104,7 +103,7 @@ namespace SpaceInvaders.Scenes.Game
             RunSlowMotion(duration, Mathf.Clamp01(timeScale), _slowMotionCancellationTokenSource.Token).Forget();
         }
 
-        /// <summary>The wait is unscaled, or the slowdown would stretch the very delay timing it.</summary>
+        /// <summary>The wait is unscaled, or the slowdown would stretch its own duration.</summary>
         private async UniTaskVoid RunSlowMotion(float duration, float timeScale, CancellationToken token)
         {
             Time.timeScale = timeScale;

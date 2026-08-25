@@ -16,9 +16,8 @@ namespace SpaceInvaders.Scenes.Game
     }
 
     /// <summary>
-    /// Applies its effect on initialization and reverts it after the duration it was activated with,
-    /// which is the config's own plus whatever the ship's stats add. A duration of 0 or less is
-    /// instant and never starts a timer.
+    /// Applies its effect on initialization and reverts it after the duration it was activated with.
+    /// A duration of 0 or less is instant and never starts a timer.
     /// </summary>
     public abstract class PowerupBaseBehaviour : IPowerupBehaviour
     {
@@ -139,8 +138,7 @@ namespace SpaceInvaders.Scenes.Game
         }
     }
 
-    /// <summary>The weapon reacts to the toggle itself, finishing a running reload on activation and
-    /// topping the magazine up again on expiry.</summary>
+    /// <summary>The weapon handles the reload and the refill on both edges of the toggle.</summary>
     public class UnlimitedAmmoPowerup : PowerupBaseBehaviour
     {
         public override PowerupTypes PowerupType => PowerupTypes.UnlimitedAmmo;

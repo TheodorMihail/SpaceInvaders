@@ -4,15 +4,13 @@ using Random = UnityEngine.Random;
 namespace SpaceInvaders.Scenes.Game
 {
     /// <summary>
-    /// Movement that steers itself: travels in a straight line until it reaches the edge of its
-    /// bounds, then reflects off with a random angle variation so a formation never settles into a
-    /// pattern. Idle until told to start, since enemies fly a scripted entry first.
+    /// Self-steering movement: travels straight until it reaches its bounds, then reflects with a
+    /// random angle variation. Idle until started, since enemies fly a scripted entry first.
     /// </summary>
     public class BounceShipMovementComponent : BaseShipMovementComponent
     {
-        /// <summary>Bounds are tested with a tolerance: ships are parented under an offset container,
-        /// so the world position does not round trip exactly and an equality test can miss the wall,
-        /// leaving the ship clamped against it and sliding along instead of bouncing.</summary>
+        /// <summary>Bounds are tested with a tolerance. Ships sit under an offset container, so the
+        /// world position does not round trip exactly and an equality test can miss the edge.</summary>
         private const float BoundsTolerance = 0.01f;
 
         [SerializeField] private float _bounceAngleVariation = 30f;

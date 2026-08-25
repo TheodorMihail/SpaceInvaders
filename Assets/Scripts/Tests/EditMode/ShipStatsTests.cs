@@ -16,14 +16,11 @@ namespace SpaceInvaders.Tests
             return new ShipStats(new ShipBaseStats());
         }
 
-        /// <summary>The default base stats author no magazine, and that is read once at construction,
-        /// so granting one afterwards also means opting the ship back into spending it. Stands in for
-        /// a config that authors a magazine, which base stats cannot express from a test.</summary>
+        /// <summary>The default base stats author no magazine, so one is granted as a bonus.</summary>
         private static ShipStats CreateStatsWithMagazine()
         {
             ShipStats stats = CreateStats();
             stats.ApplyStatBonus(ShipUpgradableStatTypes.MagazineSize, MagazineSize, ShipStatValueTypes.Flat);
-            stats.SetUnlimitedAmmo(false);
             stats.RefillAmmo();
 
             return stats;

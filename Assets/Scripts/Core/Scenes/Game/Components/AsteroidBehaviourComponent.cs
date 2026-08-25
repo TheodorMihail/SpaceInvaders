@@ -49,7 +49,7 @@ namespace SpaceInvaders.Scenes.Game
             }
         }
 
-        /// <summary>Lands fully above the visible area, so it drifts into view rather than popping in.</summary>
+        /// <summary>Placed fully above the visible area, so it moves into view instead of appearing.</summary>
         protected override void PlaceOnEntry(float entryRatio)
         {
             (Vector3 minBounds, Vector3 maxBounds) = _cameraManager.GetVisibleBounds(_renderer);
@@ -60,8 +60,8 @@ namespace SpaceInvaders.Scenes.Game
             transform.position = position;
         }
 
-        /// <summary>Turns around world up rather than its own, so art tilted to lie flat still spins in
-        /// the plane the camera sees. Runs before the base, which may despawn it this frame.</summary>
+        /// <summary>Rotates around world up rather than its own, so tilted art still spins in the
+        /// camera's plane. Runs before the base, which may despawn it this frame.</summary>
         protected override void Update()
         {
             if (_artTransform != null)

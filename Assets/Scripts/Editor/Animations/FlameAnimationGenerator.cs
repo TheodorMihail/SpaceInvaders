@@ -7,8 +7,8 @@ using UnityEngine;
 namespace SpaceInvaders.Editor
 {
     /// <summary>
-    /// Turns an already sliced flame sheet into its idle/thrust clips and a controller that swaps
-    /// between them. Sprites are grouped by the name the slicer gave them, so the sheet must use the
+    /// Turns a sliced flame sheet into its idle and thrust clips plus a controller that swaps between
+    /// them. Sprites are grouped by slice name, so the sheet must use the
     /// "..._small_flame_N" / "..._large_flame_N" convention.
     /// </summary>
     public static class FlameAnimationGenerator

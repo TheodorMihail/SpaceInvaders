@@ -56,7 +56,7 @@ namespace SpaceInvaders.Scenes.Game
                         case VictoryScreen.ResultTypes.NextLevel:
                             FinishState(GameOverStateResultTypes.NextLevel);
                             break;
-                        // Replaying a cleared level reloads the scene, exactly as it does after a loss.
+                        // Replaying a cleared level reloads the scene, same as restarting after a loss.
                         case VictoryScreen.ResultTypes.Retry:
                             FinishState(GameOverStateResultTypes.Restart);
                             break;

@@ -7,8 +7,8 @@ using UnityEngine;
 namespace SpaceInvaders.Editor
 {
     /// <summary>
-    /// Editor window that draws every authored wave formation, so level pacing and spread can be
-    /// read at a glance without entering play mode.
+    /// Editor window that draws every authored wave formation, for checking level pacing and spread
+    /// without entering play mode.
     /// </summary>
     public class LevelWavesVisualizerWindow : EditorWindow
     {

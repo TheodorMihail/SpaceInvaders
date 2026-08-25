@@ -20,11 +20,11 @@ namespace SpaceInvaders.Project
 
         public void TakeScreenshot()
         {
-            // Named after the game, since the file lands loose among everything else on the desktop.
+            // Named after the game, since the file is saved directly to the desktop.
             string fileName = $"{Application.productName}_{DateTime.Now.ToString(FileNameTimeFormat)}.png";
             string filePath = Path.Combine(GetDesktopPath(), fileName);
 
-            // Captured at the end of the frame, so the file lands shortly after this returns.
+            // Captured at the end of the frame, so the file is written shortly after this returns.
             ScreenCapture.CaptureScreenshot(filePath);
             this.LogWarning($"Debug: Screenshot saved to {filePath}");
         }

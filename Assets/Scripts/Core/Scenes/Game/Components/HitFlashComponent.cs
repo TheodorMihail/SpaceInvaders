@@ -4,9 +4,8 @@ using UnityEngine;
 namespace SpaceInvaders.Scenes.Game
 {
     /// <summary>
-    /// Reads a hit on the thing that was hit, so damage registers without the player having to watch a
-    /// health bar. Tints rather than brightens: the sprite shaders here multiply their colour, so a
-    /// white flash would be invisible on pale art.
+    /// Briefly tints a sprite when it takes damage. Tints rather than brightens, because the sprite
+    /// shaders multiply their colour and a white flash would be invisible on pale art.
     /// </summary>
     [RequireComponent(typeof(SpriteRenderer))]
     public class HitFlashComponent : MonoBehaviour

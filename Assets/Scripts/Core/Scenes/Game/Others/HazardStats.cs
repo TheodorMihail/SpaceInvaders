@@ -4,8 +4,8 @@ using UnityEngine;
 namespace SpaceInvaders.Scenes.Game
 {
     /// <summary>
-    /// Hazard tuning, authored inside HazardConfigSO. Unlike a ship's, none of it is upgradable:
-    /// nothing in the game buffs a hazard, so these stay plain values rather than StatValues.
+    /// Hazard tuning, authored inside the hazard config. None of it is upgradable, so these are plain
+    /// values rather than StatValues.
     /// </summary>
     [Serializable]
     public class HazardBaseStats
@@ -33,7 +33,7 @@ namespace SpaceInvaders.Scenes.Game
     }
 
     /// <summary>
-    /// One hazard instance's live state. Created fresh per spawn, so pooled hazards start whole.
+    /// One hazard instance's live state. Created fresh per spawn, so pooled hazards start clean.
     /// </summary>
     public class HazardStats
     {
@@ -44,7 +44,7 @@ namespace SpaceInvaders.Scenes.Game
 
         public int CurrentHealth { get; private set; }
 
-        /// <summary>An indestructible hazard is never destroyed, however much fire it soaks.</summary>
+        /// <summary>An indestructible hazard is never destroyed, whatever damage it takes.</summary>
         public bool IsDestroyed => IsDestructible && CurrentHealth <= 0;
 
         public HazardStats(HazardBaseStats baseStats)

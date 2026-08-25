@@ -62,8 +62,7 @@ namespace SpaceInvaders.Scenes.Game
             }
         }
 
-        /// <summary>The ship's powerup duration bonus only lengthens timed powerups, so an instant one
-        /// stays instant however much of it is stacked up.</summary>
+        /// <summary>The stat bonus applies to timed powerups only; instant ones stay instant.</summary>
         private float GetEffectiveDuration(PowerupConfigSO config)
         {
             if (config.Duration <= 0f)

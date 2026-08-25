@@ -17,7 +17,7 @@ namespace SpaceInvaders.Scenes.Game
 
         [SerializeField] private string _ammoString = "{0}/{1}";
 
-        [Tooltip("Scaled up: the glyph is a lone short symbol where the count fills the whole box.")]
+        [Tooltip("Scaled up because the glyph is smaller than the ammo count text.")]
         [SerializeField] private string _unlimitedAmmoString = "<size=200%>∞</size>";
 
         private CancellationTokenSource _reloadCancellationTokenSource;
@@ -44,8 +44,7 @@ namespace SpaceInvaders.Scenes.Game
             RefreshAmmo();
         }
 
-        /// <summary>Pins the readout to the unlimited sign, so the rounds still reported underneath
-        /// never show through while ammo does not matter.</summary>
+        /// <summary>Shows the unlimited sign instead of the count until it is switched back off.</summary>
         public void SetUnlimitedAmmo(bool hasUnlimitedAmmo)
         {
             _hasUnlimitedAmmo = hasUnlimitedAmmo;
@@ -69,9 +68,8 @@ namespace SpaceInvaders.Scenes.Game
             CancelReloadCountdown();
 
             _iconImage.sprite = _ammoSprite;
-            _ammoText.text = _hasUnlimitedAmmo
-                ? _unlimitedAmmoString
-                : string.Format(_ammoString, _currentAmmo, _maxAmmo);
+            _ammoText.text = _hasUnlimitedAmmo ? _unlimitedAmmoString : 
+                                string.Format(_ammoString, _currentAmmo, _maxAmmo);
         }
 
         private void CancelReloadCountdown()

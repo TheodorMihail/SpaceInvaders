@@ -6,17 +6,16 @@ using UnityEngine.UI;
 namespace SpaceInvaders.Project
 {
     /// <summary>
-    /// Sizes the children of a vertical layout group, and the gaps between them, from the space the
-    /// panel actually has. LayoutElement can only state a fixed preferred size or an open-ended
-    /// flexible one, so an element that must scale and stay in proportion needs its size driving.
-    /// Children share a width and keep their own shapes, so a tall panel and a wide button can sit in
-    /// the same stack without either being squashed to match the other.
+    /// Sizes the children of a vertical layout group, and the gaps between them, from the panel's
+    /// current size. LayoutElement only supports a fixed or fully flexible preferred size, so an
+    /// element that must scale in proportion needs its size driven. Children share a width and keep
+    /// their own aspect ratios.
     /// </summary>
     [ExecuteAlways]
     [RequireComponent(typeof(RectTransform))]
     public class ResponsiveLayoutGroupComponent : MonoBehaviour
     {
-        /// <summary>One child's authored shape, held apart from the sizes this component drives.</summary>
+        /// <summary>One child's authored aspect ratio, stored separately from its driven size.</summary>
         [Serializable]
         private struct ChildAspect
         {
@@ -85,8 +84,8 @@ namespace SpaceInvaders.Project
         }
 #endif
 
-        /// <summary>Re-reads every child's shape from the size it currently has. Run this after
-        /// authoring the children, since from then on their size is driven from the captured value.</summary>
+        /// <summary>Re-reads every child's aspect ratio from its current size. Run after authoring the
+        /// children, since their size is driven from the captured value afterwards.</summary>
         [ContextMenu("Recapture Child Aspects")]
         public void RecaptureChildAspects()
         {
@@ -137,9 +136,8 @@ namespace SpaceInvaders.Project
         }
 
         /// <summary>
-        /// The widest the children can be if all of them, plus the gaps between, are to fit. Solved
-        /// rather than measured: the gaps are a fraction of the very heights being worked out, so
-        /// subtracting them up front would be circular.
+        /// The widest the children can be for all of them plus the gaps to fit. Solved rather than
+        /// measured, because the gaps are a fraction of the heights being calculated.
         /// </summary>
         private float GetWidthBudget(Rect rect, float inverseAspectSum)
         {
@@ -170,9 +168,8 @@ namespace SpaceInvaders.Project
         }
 
         /// <summary>
-        /// The captured shape for a child, capturing it first if this is the first time it has been
-        /// seen. Never read back from the driven size: that would be this component measuring its own
-        /// output, so one bad pass would bake in a wrong shape with no way back.
+        /// The captured aspect ratio for a child, capturing it on first use. Never read back from the
+        /// driven size, or one bad pass would permanently store a wrong ratio.
         /// </summary>
         private float GetAspect(LayoutElement element)
         {

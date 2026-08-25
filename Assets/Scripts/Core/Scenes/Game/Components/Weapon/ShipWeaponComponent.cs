@@ -9,8 +9,8 @@ using Zenject;
 namespace SpaceInvaders.Scenes.Game
 {
     /// <summary>
-    /// A ship's arsenal and the mechanism behind it: holds the attacks, spends the shared magazine,
-    /// spawns the projectiles and runs the reload. Which attack fires is the ship's decision.
+    /// Holds a ship's attacks, spends the shared magazine, spawns the projectiles and runs the
+    /// reload. The ship decides which attack fires.
     /// </summary>
     public class ShipWeaponComponent : MonoBehaviour
     {
@@ -25,8 +25,8 @@ namespace SpaceInvaders.Scenes.Game
         private ShipStats _stats;
         private string _shooterTag;
 
-        /// <summary>One cadence for the whole ship, so a rotation paces out at the fire rate instead of
-        /// every attack running its own clock and the set emptying in consecutive frames.</summary>
+        /// <summary>One cooldown for the whole ship. Per-attack clocks would let a rotation fire its
+        /// whole set in consecutive frames.</summary>
         private float _nextShotTime;
 
         private CancellationTokenSource _reloadCancellationTokenSource;
@@ -65,8 +65,8 @@ namespace SpaceInvaders.Scenes.Game
             _stats = null;
         }
 
-        /// <summary>Attacks are discovered rather than wired, so an attack dropped onto a ship can
-        /// never be left out of the lifecycle the pool depends on.</summary>
+        /// <summary>Attacks are discovered rather than wired, so one added to a prefab cannot be left
+        /// out of the pooling lifecycle.</summary>
         private void Awake()
         {
             if (_attacks == null || _attacks.Length == 0)
@@ -142,8 +142,7 @@ namespace SpaceInvaders.Scenes.Game
             _stats.UnlimitedAmmoChanged -= OnUnlimitedAmmoChanged;
         }
 
-        /// <summary>A reload running when ammo stops mattering is finished on the spot instead of left
-        /// counting down, and the magazine is full again when the ship goes back to spending it.</summary>
+        /// <summary>Finishes any running reload and refills, on both edges of the toggle.</summary>
         private void OnUnlimitedAmmoChanged(bool hasUnlimitedAmmo)
         {
             CancelReload();

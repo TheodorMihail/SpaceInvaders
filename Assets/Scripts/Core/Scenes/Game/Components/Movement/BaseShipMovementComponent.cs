@@ -5,9 +5,8 @@ using Zenject;
 namespace SpaceInvaders.Scenes.Game
 {
     /// <summary>
-    /// Moves a ship at its stat speed and keeps it inside the region it is allowed to occupy. What
-    /// decides the direction is left to the subclass. A ship holds exactly one of these, so swapping
-    /// the component on the prefab swaps how the ship moves without touching the ship itself.
+    /// Moves a ship at its stat speed and clamps it to its allowed region. The subclass decides the
+    /// direction. A ship holds exactly one, so swapping the component swaps how the ship moves.
     /// </summary>
     public abstract class BaseShipMovementComponent : MonoBehaviour
     {
@@ -31,12 +30,11 @@ namespace SpaceInvaders.Scenes.Game
             }
         }
 
-        /// <summary>The hull this drives. Movement is authored as a child object, so it must never
-        /// move its own transform: that would slide the component around inside a stationary ship.</summary>
+        /// <summary>The hull this drives. Movement is a child object, so moving its own transform
+        /// would shift the component inside a stationary ship.</summary>
         protected Transform ShipTransform => _shipTransform;
 
-        /// <summary>Exposed for anything else needing the hull's size, such as working out how much of
-        /// the ship has come into view.</summary>
+        /// <summary>Exposed for anything needing the hull's size, such as visibility checks.</summary>
         public Renderer Renderer => _renderer;
 
         [Tooltip("Measured for the bounds query, so it must be the renderer that defines the hull's size.")]
@@ -89,15 +87,15 @@ namespace SpaceInvaders.Scenes.Game
             _shipTransform.position = newPosition;
         }
 
-        /// <summary>Hands control over to whatever steers this ship, once it is free to move.</summary>
+        /// <summary>Enables movement once the ship is free to move.</summary>
         public abstract void StartMoving();
 
-        /// <summary>One frame of movement, driven by the owning ship's Update so the ship stays the
-        /// only thing deciding whether movement should run at all.</summary>
+        /// <summary>One frame of movement, called from the owning ship's Update so the ship decides
+        /// whether movement runs.</summary>
         public abstract void Tick();
 
-        /// <summary>Resolved on first use rather than on spawn, because a pooled ship is still sitting
-        /// where it died when the pool wakes it and would measure its bounds from there.</summary>
+        /// <summary>Resolved on first use, not on spawn: a pooled ship is still at its old position
+        /// when the pool wakes it and would measure its bounds from there.</summary>
         private void CalculateBounds()
         {
             if (_hasBounds)

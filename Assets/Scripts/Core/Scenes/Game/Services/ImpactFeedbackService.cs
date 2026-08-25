@@ -12,8 +12,8 @@ namespace SpaceInvaders.Scenes.Game
     }
 
     /// <summary>
-    /// Turns facts on the bus into screen shake and hit stop. Nothing in gameplay knows the camera
-    /// is being shaken.
+    /// Converts gameplay messages into screen shake and hit stop, so gameplay code does not touch the
+    /// camera itself.
     /// </summary>
     public class ImpactFeedbackService : IImpactFeedbackService
     {
@@ -46,14 +46,14 @@ namespace SpaceInvaders.Scenes.Game
             _messageBus.Unsubscribe<LevelCompletedMessage>(OnLevelCompleted);
         }
 
-        /// <summary>The level advance never reloads the scene, so a shake left running would carry into
-        /// the next level with the camera still off its mark.</summary>
+        /// <summary>The level advance never reloads the scene, so a running shake would carry into the
+        /// next level.</summary>
         public void GameEnd()
         {
             _cameraManager.ResetShake();
         }
 
-        /// <summary>Enemies take hits constantly, so only the player's own damage is worth a shake.</summary>
+        /// <summary>Only player damage shakes: enemies are hit too often for it to read.</summary>
         private void OnShipDamaged(ShipDamagedMessage message)
         {
             if (!message.IsPlayer)
@@ -70,8 +70,7 @@ namespace SpaceInvaders.Scenes.Game
             _timeManager.ApplySlowMotion(_settings.PlayerDestroyedSlowMotion, _settings.SlowMotionTimeScale);
         }
 
-        /// <summary>Ordinary kills are deliberately left alone: waves run large enough that shaking on
-        /// every one reads as noise rather than impact.</summary>
+        /// <summary>Ordinary kills do not shake: waves are large enough that it would be constant.</summary>
         private void OnEnemyDestroyed(EnemyDestroyedMessage message)
         {
             if (message.Category != EnemyCategoryTypes.Boss)
@@ -82,16 +81,15 @@ namespace SpaceInvaders.Scenes.Game
             _cameraManager.AddScreenShake(_settings.BossDestroyedShake);
         }
 
-        /// <summary>Held until the boss is actually on screen. Spawning happens while it is still above
-        /// the view with a long entry ahead of it, so reacting there plays the whole moment to nobody.</summary>
+        /// <summary>Held until the boss is on screen: it spawns above the view with a long entry
+        /// ahead of it, so reacting on spawn would play off screen.</summary>
         private void OnBossEntered(BossEnteredMessage message)
         {
             _cameraManager.AddScreenShake(_settings.BossEnteredShake);
             _timeManager.ApplySlowMotion(_settings.BossEnteredSlowMotion, _settings.SlowMotionTimeScale);
         }
 
-        /// <summary>No shake here: the level is won, so the moment is worth dwelling on rather than
-        /// hitting.</summary>
+        /// <summary>Slow motion only, no shake: the level is won rather than hit.</summary>
         private void OnLevelCompleted(LevelCompletedMessage message)
         {
             _timeManager.ApplySlowMotion(_settings.LevelCompletedSlowMotion, _settings.SlowMotionTimeScale);

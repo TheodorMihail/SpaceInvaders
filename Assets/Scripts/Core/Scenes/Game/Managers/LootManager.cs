@@ -15,8 +15,8 @@ namespace SpaceInvaders.Scenes.Game
     }
 
     /// <summary>
-    /// Puts drops on the board and holds what the player has picked up this run. What actually drops
-    /// is rolled elsewhere; pending loot is only committed to the inventory on level completion.
+    /// Spawns drops and holds what the player picked up this run. What drops is rolled elsewhere;
+    /// pending loot is only added to the inventory on level completion.
     /// </summary>
     public partial class LootManager : ILootManager
     {
@@ -25,7 +25,7 @@ namespace SpaceInvaders.Scenes.Game
         [Inject] private readonly IMessageBus _messageBus;
         [Inject] private readonly ISpawnManager _spawnManager;
 
-        /// <summary>Decides what drops; this manager decides where it lands and who hears about it.</summary>
+        /// <summary>Decides what drops; this manager decides where it spawns and publishes it.</summary>
         [Inject] private readonly IDropRollService _dropRolls;
 
         /// <summary>Loot collected during the current run. Added to the inventory only on level completion.</summary>

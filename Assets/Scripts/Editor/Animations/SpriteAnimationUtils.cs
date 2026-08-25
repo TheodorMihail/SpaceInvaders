@@ -8,8 +8,7 @@ using UnityEngine;
 namespace SpaceInvaders.Editor
 {
     /// <summary>
-    /// Shared plumbing for turning a sliced sprite sheet into animation clips, so each generator only
-    /// holds the part that is actually its own.
+    /// Shared helpers for turning a sliced sprite sheet into animation clips.
     /// </summary>
     internal static class SpriteAnimationUtils
     {

@@ -244,8 +244,7 @@ namespace SpaceInvaders.Editor
 
         /// <summary>
         /// Four arms growing outward from a centre slot, straight for a plus and diagonal for an X.
-        /// Complete at 1, 5, 9, 13 and so on; counts in between fill the outermost ring one arm at a
-        /// time, so the shape stays as balanced as the count allows.
+        /// Complete at 1, 5, 9, 13 and so on; counts in between fill the outer ring one arm at a time.
         /// </summary>
         private static List<Vector2Int> GenerateCross(int count, int spacingX, int spacingY, bool diagonal)
         {

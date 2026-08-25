@@ -10,8 +10,8 @@ namespace SpaceInvaders.Scenes.Game
     {
         [SerializeField] private BaseSpaceshipBehaviourComponent _ship;
 
-        /// <summary>Goes through Unity's null check, so a destroyed ship reads as a real null rather
-        /// than a live interface reference that throws on use.</summary>
+        /// <summary>Goes through Unity's null check, so a destroyed ship returns a real null instead
+        /// of an interface reference that throws on use.</summary>
         public ISpaceship Ship => _ship != null ? _ship : null;
 
         public override IDamageableTarget Target => Ship;

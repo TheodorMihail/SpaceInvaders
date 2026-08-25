@@ -10,7 +10,7 @@ namespace SpaceInvaders.Scenes.Game
 {
     public partial class LootManager : IDebugCommandProvider
     {
-        /// <summary>Keeps the drop clear of the side edges, where half of it would be off screen.</summary>
+        /// <summary>Keeps the drop away from the side edges.</summary>
         private const float DebugDropEdgeInset = 0.1f;
 
         [Inject] private readonly IPowerupsRepository _powerupsRepository;
@@ -26,8 +26,7 @@ namespace SpaceInvaders.Scenes.Game
             };
         }
 
-        /// <summary>Steps through the authored powerups rather than rolling one, so a specific powerup
-        /// is always a known number of presses away.</summary>
+        /// <summary>Cycles through the powerups in order instead of rolling a random one.</summary>
         private void DebugSpawnPowerup()
         {
             IReadOnlyList<PowerupConfigSO> configs = _powerupsRepository.GetAllPowerupConfigs();
@@ -45,9 +44,8 @@ namespace SpaceInvaders.Scenes.Game
             SpawnPowerupDrop(config, GetDebugDropLocalPosition());
         }
 
-        /// <summary>In over the top edge at a random point along it, so it falls the way a real drop
-        /// does. The prefab's plane is authored container-local and the view answers in world space,
-        /// so it goes out and comes back the same way, landing on exactly the plane it started on.</summary>
+        /// <summary>A random point along the top edge. The prefab plane is container-local and the
+        /// screen bounds are world, so it is converted out and back to stay on the same plane.</summary>
         private Vector3 GetDebugDropLocalPosition()
         {
             Vector3 prefabLocalPosition = _powerupsRepository.GetPowerupPickupPrefab().transform.localPosition;

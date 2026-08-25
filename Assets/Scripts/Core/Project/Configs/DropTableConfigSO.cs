@@ -12,9 +12,8 @@ namespace SpaceInvaders.Project
         Item
     }
 
-    /// <summary>Weight for one category in the enemy-kill drop roll. Higher weight relative to
-    /// the others means more likely; "None" is a normal entry here too, so it controls how often
-    /// a kill drops nothing at all.</summary>
+    /// <summary>Weight for one category in the enemy-kill drop roll, relative to the others. "None"
+    /// is an entry like any other and controls how often a kill drops nothing.</summary>
     [Serializable]
     public class DropCategoryWeightDTO
     {

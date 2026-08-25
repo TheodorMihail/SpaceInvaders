@@ -43,8 +43,8 @@ namespace SpaceInvaders.Project
             return true;
         }
 
-        /// <summary>Unequips before removing, so the slot is cleared while the item is still
-        /// resolvable and the equip change is announced rather than silently pruned.</summary>
+        /// <summary>Unequips before removing, so the slot is cleared while the item can still be
+        /// resolved and the equip change is published.</summary>
         public bool TrySellItem(string instanceId)
         {
             if (!TryGetSellValue(instanceId, out int sellValue))

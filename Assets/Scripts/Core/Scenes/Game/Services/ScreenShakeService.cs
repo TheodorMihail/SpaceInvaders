@@ -11,15 +11,13 @@ namespace SpaceInvaders.Scenes.Game
         void Add(float amount);
         void Reset();
 
-        /// <summary>Given the delta by its owner rather than reading a clock, so the owner decides
-        /// whether the shake runs on scaled or unscaled time.</summary>
+        /// <summary>Takes the delta from its owner, which decides scaled or unscaled time.</summary>
         void Tick(float deltaTime);
     }
 
     /// <summary>
-    /// Works out how far the camera should be thrown. Bound only for the camera manager, so nothing
-    /// else can reach past it to move the camera: this only computes an offset, and the manager stays
-    /// the one thing that applies it.
+    /// Computes the camera's shake offset. Bound only for the camera manager, which is the only thing
+    /// that applies it.
     /// </summary>
     public class ScreenShakeService : IScreenShakeService
     {
@@ -36,8 +34,8 @@ namespace SpaceInvaders.Scenes.Game
             _noiseSeed = Random.value * 100f;
         }
 
-        /// <summary>Adds to whatever is already running rather than restarting it, so several impacts
-        /// in one frame settle into a single shake instead of stacking into a lurch.</summary>
+        /// <summary>Adds to the running shake rather than restarting it, so several impacts in one
+        /// frame combine into a single shake.</summary>
         public void Add(float amount)
         {
             if (amount <= 0f)
@@ -73,7 +71,7 @@ namespace SpaceInvaders.Scenes.Game
             float magnitude = _amount * _amount * _settings.MaxShakeOffset;
             float time = Time.time * _settings.ShakeFrequency;
 
-            // Noise rather than a random offset per frame, which reads as static instead of shake.
+            // Noise rather than a per-frame random offset, which would look like static.
             Offset = new Vector3(
                 (Mathf.PerlinNoise(_noiseSeed, time) * 2f - 1f) * magnitude,
                 0f,
