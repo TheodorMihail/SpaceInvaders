@@ -4,8 +4,8 @@ using UnityEngine.InputSystem;
 namespace SpaceInvaders.Scenes.Game
 {
     /// <summary>
-    /// Reads from the virtual Gamepad/Touchscreen devices that MobileControlsHUD's
-    /// OnScreenStick/OnScreenButton components drive - it never talks to that UI directly.
+    /// Reads the virtual Gamepad and Touchscreen devices that the on-screen controls drive. It never
+    /// talks to that UI directly.
     /// </summary>
     public class TouchInputService : IInputService
     {

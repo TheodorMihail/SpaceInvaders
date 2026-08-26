@@ -7,9 +7,8 @@ using UnityEngine;
 namespace SpaceInvaders.Editor
 {
     /// <summary>
-    /// Editor window that turns every slice on a sprite sheet into one looping clip, for sheets that
-    /// hold a single animation. Sheets holding several animations need a generator that knows how to
-    /// tell them apart, as the flame one does.
+    /// Editor window that turns every slice on a sprite sheet into one looping clip, for sheets
+    /// holding a single animation. Sheets with several animations need a dedicated generator.
     /// </summary>
     public class SpriteSheetAnimationWindow : EditorWindow
     {

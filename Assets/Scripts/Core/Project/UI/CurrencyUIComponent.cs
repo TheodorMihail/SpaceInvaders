@@ -6,8 +6,8 @@ using UnityEngine;
 namespace SpaceInvaders.Project
 {
     /// <summary>
-    /// Currency readout that counts to each new balance rather than snapping to it. Shared by every
-    /// screen showing the player's currency, so the format is authored once instead of per screen.
+    /// Currency readout that counts up to each new balance rather than snapping. Shared by every
+    /// screen showing currency, so the format is authored once.
     /// </summary>
     public class CurrencyUIComponent : MonoBehaviour
     {
@@ -30,7 +30,7 @@ namespace SpaceInvaders.Project
             CancelCount();
         }
 
-        /// <summary>Counts in either direction, so spending reads as clearly as earning.</summary>
+        /// <summary>Counts in either direction, for spending as well as earning.</summary>
         public async void UpdateCurrency(int currency)
         {
             CancelCount();

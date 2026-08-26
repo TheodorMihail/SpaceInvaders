@@ -175,7 +175,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_Sprite: {fileID: 4035492028010042966, guid: dd0675f07de66864199dd1a1922d27c7, type: 3}
-  m_Type: 0
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -197,7 +197,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_AspectMode: 1
-  m_AspectRatio: 1.2
+  m_AspectRatio: 1.3
 --- !u!114 &3293748332494256532
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -216,6 +216,13 @@ MonoBehaviour:
   _fallbackAspect: 3
   _maxChildWidth: 0
   _fitToHeight: 0
+  _childAspects:
+  - Child: {fileID: 3675733314029213796}
+    Aspect: 6.946461
+  - Child: {fileID: 5246924206037661651}
+    Aspect: 4.67
+  - Child: {fileID: 6039073592370388783}
+    Aspect: 4.67
 --- !u!1 &2551405449312675118
 GameObject:
   m_ObjectHideFlags: 0

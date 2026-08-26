@@ -10,8 +10,8 @@ namespace SpaceInvaders.Scenes.Game
     }
 
     /// <summary>
-    /// What a hazard is. How often it turns up is authored per wave instead, so the same hazard can
-    /// be a rare nuisance in one level and constant pressure in another.
+    /// One hazard type. Spawn frequency is authored per wave instead, so the same hazard can appear
+    /// at different rates per level.
     /// </summary>
     [CreateAssetMenu(fileName = "HazardConfig", menuName = "SpaceInvaders/Hazards/Hazard Config")]
     public class HazardConfigSO : ScriptableObject, IRepositoryObject

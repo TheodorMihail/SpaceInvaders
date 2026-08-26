@@ -33,7 +33,7 @@ namespace SpaceInvaders.Project
 
         public void Initialize()
         {
-            _data = _persistenceManager.Load<LevelsSaveData>(LevelsSaveData.SaveKey);
+            _data = _persistenceManager.LoadVersioned<LevelsSaveData>(LevelsSaveData.SaveKey, LevelsSaveData.CurrentVersion);
 
             LevelSaveEntry firstLevel = GetOrCreateLevelProgress(1);
             firstLevel.Unlocked = true;

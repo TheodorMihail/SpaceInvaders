@@ -18,5 +18,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 01b4f53895bec5e4c8f02eac90a993db, type: 2}
   - {fileID: 11400000, guid: f92d640a6962f504cb8fbac90266c53a, type: 2}
   - {fileID: 11400000, guid: 28239ab7bbc3ac14caff711e06363304, type: 2}
+  - {fileID: 11400000, guid: 5d3b7e1c48a94f24b8c6a05f2e91d374, type: 2}
   _powerupPickupPrefab: {fileID: 7674986335918500557, guid: fde23407088c176408076f3e23108b42, type: 3}
   _globalPowerupDropChance: 0.3

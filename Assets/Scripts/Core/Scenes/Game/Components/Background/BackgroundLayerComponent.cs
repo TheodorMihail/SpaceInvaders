@@ -5,10 +5,8 @@ using UnityEngine;
 namespace SpaceInvaders.Scenes.Game
 {
     /// <summary>
-    /// One depth layer of the scrolling background. Drifts its pieces down the screen and lifts
-    /// whichever piece has left the bottom back onto the top of the stack, so the layer never runs out.
-    /// The multiplier is what separates one layer from another: the further away a layer reads, the
-    /// slower it should travel.
+    /// One depth layer of the scrolling background. Moves its pieces down the screen and recycles any
+    /// that leave the bottom back to the top. The speed multiplier sets the layer's apparent depth.
     /// </summary>
     public class BackgroundLayerComponent : MonoBehaviour
     {
@@ -23,7 +21,7 @@ namespace SpaceInvaders.Scenes.Game
         private float _wrapLocalY;
         private bool _isScrollable;
 
-        /// <summary>Pieces are read off the hierarchy, so a layer can be re-authored without code changes.</summary>
+        /// <summary>Pieces are read from the hierarchy, so a layer can be re-authored without code.</summary>
         private void Awake()
         {
             _pieces.Clear();
@@ -67,8 +65,8 @@ namespace SpaceInvaders.Scenes.Game
             }
         }
 
-        /// <summary>The authored stack defines the loop: pieces are spaced by their own height, so
-        /// travelling one spacing past the lowest slot lands a piece exactly on the highest one.</summary>
+        /// <summary>Pieces are spaced by their own height, so moving one spacing past the lowest slot
+        /// lands a piece exactly on the highest.</summary>
         private void MeasureStack()
         {
             float lowestLocalY = float.MaxValue;

@@ -26,6 +26,11 @@ namespace SpaceInvaders.Scenes.Game
         /// <summary>Where an object is still on screen: the full view, ignoring the UI margins.</summary>
         (Vector3 min, Vector3 max) GetVisibleBounds(Renderer renderer, float buffer = 0f);
 
+        /// <summary>The top edge of the view on the given world plane, from left to right. Takes a
+        /// plane instead of a renderer, for placing objects that do not exist yet. The inset is a
+        /// fraction of the view width removed from each side.</summary>
+        (Vector3 left, Vector3 right) GetTopEdgeBounds(float planeY, float sideInsetRatio = 0f);
+
         /// <summary>How much of the renderer has come into view from above, from 0 fully hidden to 1
         /// fully shown, for anything that should react to arriving rather than to being spawned.</summary>
         float GetVisibleFraction(Renderer renderer);
@@ -45,12 +50,10 @@ namespace SpaceInvaders.Scenes.Game
         private Camera _mainCamera;
         private GameDataConfigSO _gameDataConfig;
 
-        /// <summary>Where the camera sits when it is not being shaken. Bounds are always measured
-        /// from here, never from the shaken pose.</summary>
+        /// <summary>The camera's unshaken position. Bounds are always measured from here.</summary>
         private Vector3 _restPosition;
 
-        /// <summary>How far the camera currently sits from its mark, which every bounds query has to
-        /// take back out so it answers from the resting pose.</summary>
+        /// <summary>The camera's current shake offset, subtracted by every bounds query.</summary>
         private Vector3 ShakeOffset => _screenShake.Offset;
 
         public void Initialize()
@@ -107,8 +110,8 @@ namespace SpaceInvaders.Scenes.Game
         /// Returns the world-space movement bounds for a renderer within the given screen region,
         /// inset by the renderer's extents, the buffer, and the margins reserved for UI.
         /// </summary>
-        /// <remarks>Answers from the camera's resting pose. Callers cache these on first use, so a
-        /// query landing mid-shake would otherwise bake the shake into a ship's playfield for life.</remarks>
+        /// <remarks>Measured from the camera's resting pose. Callers cache these on first use, so a
+        /// query made mid-shake would store the shake offset permanently.</remarks>
         public (Vector3 min, Vector3 max) GetPlayableBounds(Renderer renderer, ScreenRegionTypes regionType, float buffer = 0f)
         {
             if (_mainCamera == null || renderer == null || _gameDataConfig == null)
@@ -213,9 +216,32 @@ namespace SpaceInvaders.Scenes.Game
         }
 
         /// <summary>
-        /// The visible bounds already carry the renderer's extents, so their maximum is the point where
-        /// it is exactly fully hidden above the view, and two extents further in is where it is exactly
-        /// fully shown. The fraction is where it sits between the two.
+        /// Uses the full view, ignoring the UI margins, since those restrict where ships may move
+        /// rather than where the view starts.
+        /// </summary>
+        public (Vector3 left, Vector3 right) GetTopEdgeBounds(float planeY, float sideInsetRatio = 0f)
+        {
+            if (_mainCamera == null)
+            {
+                return (Vector3.zero, Vector3.zero);
+            }
+
+            // Beyond half the width per side the span would invert.
+            float inset = Mathf.Clamp(sideInsetRatio, 0f, 0.5f);
+
+            Vector3 leftEdge = _mainCamera.ViewportToWorldPoint(new Vector3(inset, 1f, planeY));
+            Vector3 rightEdge = _mainCamera.ViewportToWorldPoint(new Vector3(1f - inset, 1f, planeY));
+
+            return (
+                new Vector3(leftEdge.x, planeY, leftEdge.z) - ShakeOffset,
+                new Vector3(rightEdge.x, planeY, rightEdge.z) - ShakeOffset
+            );
+        }
+
+        /// <summary>
+        /// The visible bounds already include the renderer's extents, so their maximum is the point
+        /// where it is fully hidden above the view, and two extents further in is fully shown. The
+        /// fraction is the position between the two.
         /// </summary>
         public float GetVisibleFraction(Renderer renderer)
         {

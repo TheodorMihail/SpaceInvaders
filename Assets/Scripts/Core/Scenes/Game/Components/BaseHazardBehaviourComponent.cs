@@ -4,10 +4,8 @@ using UnityEngine;
 namespace SpaceInvaders.Scenes.Game
 {
     /// <summary>
-    /// Neutral obstacle that crosses the play area and hurts the player on contact. A destructible one
-    /// pays out when shot down, so it is a risk worth taking rather than one to only dodge; an
-    /// indestructible one can only ever be avoided. What differs between hazards is where they come
-    /// in from, which is left to the subclass.
+    /// Neutral obstacle that crosses the play area and damages the player on contact. A destructible
+    /// one drops loot when shot down. The subclass decides where it enters from.
     /// </summary>
     public abstract class BaseHazardBehaviourComponent : ScreenBoundedMovingComponent, IDamageableTarget
     {

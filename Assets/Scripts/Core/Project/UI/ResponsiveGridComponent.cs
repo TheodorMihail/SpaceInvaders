@@ -4,9 +4,9 @@ using UnityEngine.UI;
 namespace SpaceInvaders.Project
 {
     /// <summary>
-    /// Sizes a GridLayoutGroup's cells from the width it actually has, for a fixed number of columns.
-    /// The layout group writes cellSize onto every child each pass, so anchors on the cells themselves
-    /// can never make a grid responsive: the cell size is the only thing worth driving.
+    /// Sizes a GridLayoutGroup's cells from its current width, for a fixed column count. The layout
+    /// group overwrites cellSize on every child each pass, so anchors on the cells have no effect and
+    /// the cell size has to be driven instead.
     /// </summary>
     [ExecuteAlways]
     [RequireComponent(typeof(GridLayoutGroup), typeof(RectTransform))]

@@ -71,9 +71,8 @@ namespace SpaceInvaders.Scenes.MainMenu
         }
 
         /// <summary>
-        /// "Health: 100 +20" with the base (pre-equipment) value in white and the equipped items'
-        /// contribution in green, so the panel visually separates "what you have" from "what your
-        /// gear adds."
+        /// "Health: 100 +20", with the pre-equipment value in white and the equipped items'
+        /// contribution in green.
         /// </summary>
         public string StatRowText(ShipUpgradableStatTypes statType, float baseValue, float withEquipmentValue)
         {
@@ -96,15 +95,15 @@ namespace SpaceInvaders.Scenes.MainMenu
             builder.AppendLine(StatRowText(ShipUpgradableStatTypes.CritChance, withoutEquipment.CurrentCritChance, withEquipment.CurrentCritChance));
             builder.AppendLine(StatRowText(ShipUpgradableStatTypes.CritDamage, withoutEquipment.CurrentCritDamage, withEquipment.CurrentCritDamage));
             builder.AppendLine(StatRowText(ShipUpgradableStatTypes.MagazineSize, withoutEquipment.CurrentMaxAmmo, withEquipment.CurrentMaxAmmo));
-            builder.Append(StatRowText(ShipUpgradableStatTypes.ReloadSpeed, withoutEquipment.CurrentReloadDuration, withEquipment.CurrentReloadDuration));
+            builder.AppendLine(StatRowText(ShipUpgradableStatTypes.ReloadSpeed, withoutEquipment.CurrentReloadDuration, withEquipment.CurrentReloadDuration));
+            builder.Append(StatRowText(ShipUpgradableStatTypes.PowerupDuration, withoutEquipment.CurrentPowerupDuration, withEquipment.CurrentPowerupDuration));
 
             return builder.ToString();
         }
 
         /// <summary>
-        /// Builds two independent stat snapshots - one with only talents applied, one with
-        /// talents and equipment - so the stat sheet can isolate exactly what the currently
-        /// equipped gear contributes on top of the base value.
+        /// Builds two stat snapshots, one with talents only and one with talents and equipment, so
+        /// the panel can show what the equipped gear adds.
         /// </summary>
         private (ShipStats withoutEquipment, ShipStats withEquipment) BuildComparableStats()
         {

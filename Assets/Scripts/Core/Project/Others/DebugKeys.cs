@@ -3,14 +3,15 @@ using UnityEngine.InputSystem;
 
 namespace SpaceInvaders.Project
 {
-    /// <summary>Every debug hotkey, in one place so the whole allocation is visible at a glance.
-    /// Duplicates are rejected at startup when the command table is built.</summary>
+    /// <summary>Every debug hotkey, in one place. Duplicates are rejected at startup when the
+    /// command table is built.</summary>
     public static class DebugKeys
     {
         //In game
         public const Key DestroyAllEnemies = Key.F1;
         public const Key KillPlayer = Key.F2;
         public const Key SpawnHazard = Key.F3;
+        public const Key SpawnPowerup = Key.F4;
 
         //Everywhere
         public const Key AddCurrency = Key.F5;

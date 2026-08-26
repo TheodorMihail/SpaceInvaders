@@ -42,22 +42,35 @@ namespace SpaceInvaders.Scenes.Game
                 return;
             }
 
+            float duration = GetEffectiveDuration(config);
+
             if (_activePowerups.TryGetValue(type, out var existing))
             {
-                existing.Refresh();
-                _messageBus.Publish(new PowerupActivatedMessage(type, config.Duration));
+                existing.Refresh(duration);
+                _messageBus.Publish(new PowerupActivatedMessage(type, duration));
                 return;
             }
 
             var powerup = CreatePowerup(type);
-            powerup.Initialize(_playerManager.PlayerStats, config);
-            _messageBus.Publish(new PowerupActivatedMessage(type, config.Duration));
+            powerup.Initialize(_playerManager.PlayerStats, config, duration);
+            _messageBus.Publish(new PowerupActivatedMessage(type, duration));
 
-            if (config.Duration > 0f)
+            if (duration > 0f)
             {
                 powerup.Ended += OnPowerupEnded;
                 _activePowerups[type] = powerup;
             }
+        }
+
+        /// <summary>The stat bonus applies to timed powerups only; instant ones stay instant.</summary>
+        private float GetEffectiveDuration(PowerupConfigSO config)
+        {
+            if (config.Duration <= 0f)
+            {
+                return config.Duration;
+            }
+
+            return config.Duration + _playerManager.PlayerStats.CurrentPowerupDuration;
         }
 
         private IPowerupBehaviour CreatePowerup(PowerupTypes type) => type switch
@@ -67,6 +80,7 @@ namespace SpaceInvaders.Scenes.Game
             PowerupTypes.DamageBoost => _factory.CreateNewObject<DamageBoostPowerup>(),
             PowerupTypes.RapidFire => _factory.CreateNewObject<RapidFirePowerup>(),
             PowerupTypes.SpreadShot => _factory.CreateNewObject<SpreadShotPowerup>(),
+            PowerupTypes.UnlimitedAmmo => _factory.CreateNewObject<UnlimitedAmmoPowerup>(),
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
         };
 

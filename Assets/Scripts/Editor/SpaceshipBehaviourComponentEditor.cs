@@ -37,8 +37,10 @@ namespace SpaceInvaders.Editor
                 EditorGUILayout.IntField("Current Ammo", stats.CurrentAmmo);
                 EditorGUILayout.IntField("Magazine Size", stats.CurrentMaxAmmo);
                 EditorGUILayout.FloatField("Reload Duration", stats.CurrentReloadDuration);
+                EditorGUILayout.FloatField("Powerup Duration", stats.CurrentPowerupDuration);
                 EditorGUILayout.IntField("Cumulative Damage Taken", stats.CumulativeDamageTaken);
                 EditorGUILayout.Toggle("Is Invincible", stats.IsInvincible);
+                EditorGUILayout.Toggle("Has Unlimited Ammo", stats.HasUnlimitedAmmo);
                 EditorGUILayout.IntField("Extra Shot Count", stats.ExtraShotCount);
                 EditorGUILayout.FloatField("Spread Angle", stats.SpreadAngleDegrees);
             }

@@ -6,8 +6,8 @@ using UnityEngine.Serialization;
 namespace SpaceInvaders.Scenes.Game
 {
     /// <summary>
-    /// How hard the game hits back on impact. Screen shake accumulates rather than replaying, so
-    /// several impacts in the same frame settle into one shake instead of stacking into a lurch.
+    /// Impact feedback tuning. Screen shake accumulates rather than replaying, so several impacts in
+    /// one frame combine into a single shake.
     /// </summary>
     [Serializable]
     public class ImpactFeedbackSettings

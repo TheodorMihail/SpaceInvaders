@@ -19,6 +19,13 @@ namespace SpaceInvaders.Scenes.Game
         ItemPickupBehaviourComponent SpawnItemPickup(ItemRarityConfigSO rarityConfig, InventoryItemEntry item, Vector3 localPosition);
         VFXBehaviourComponent SpawnVFX(VFXBehaviourComponent prefab, Vector3 localPosition);
         void Despawn<T>(T instance) where T : MonoBehaviour, IPoolableObject;
+
+        /// <summary>Converts a world point into the container space spawn positions use. The container
+        /// is offset from the world, so the two never match.</summary>
+        Vector3 GetContainerLocalPosition(Vector3 worldPosition);
+
+        /// <summary>Converts a spawn position back into world space.</summary>
+        Vector3 GetContainerWorldPosition(Vector3 localPosition);
     }
 
     /// <summary>
@@ -38,8 +45,8 @@ namespace SpaceInvaders.Scenes.Game
         /// <summary>Transients despawned on game end. Types not registered here are never cleaned up.</summary>
         private readonly HashSet<ScreenBoundedMovingComponent> _activeObjects = new();
 
-        /// <summary>Whether a run is live. Only awaited spawns consult it, so nothing depends on when
-        /// this is set relative to the other initialize listeners.</summary>
+        /// <summary>Whether a run is live. Only awaited spawns check it, so listener order does not
+        /// matter.</summary>
         private bool _isRunActive;
 
         public void Dispose()
@@ -87,9 +94,9 @@ namespace SpaceInvaders.Scenes.Game
             return spawnedPlayer;
         }
 
-        /// <summary>Abandons the wave where it stands once the run ends, leaving whatever already
-        /// spawned to the caller: a prefab load spans frames, and a ship built after the run ended
-        /// resolves against a container that no longer holds the game bindings.</summary>
+        /// <summary>Stops spawning once the run ends and returns what was spawned so far. A prefab
+        /// load spans frames, and a ship built after the run ends resolves against a container that no
+        /// longer has the game bindings.</summary>
         public async UniTask<List<IEnemySpaceship>> SpawnEnemies(WaveConfigDTO waveConfig)
         {
             var spawnedEnemies = new List<IEnemySpaceship>();
@@ -141,7 +148,7 @@ namespace SpaceInvaders.Scenes.Game
                 return null;
             }
 
-            // The caller knows where on the board the ship belongs, the prefab knows which plane it flies on.
+            // The caller supplies the position, the prefab supplies the plane it flies on.
             localPosition.y = enemyPrefab.transform.localPosition.y;
 
             var spawnedEnemy = Spawn(enemyPrefab, localPosition, enemyPrefab.transform.localRotation);
@@ -172,6 +179,16 @@ namespace SpaceInvaders.Scenes.Game
             return hazard;
         }
 
+        public Vector3 GetContainerLocalPosition(Vector3 worldPosition)
+        {
+            return _container.InverseTransformPoint(worldPosition);
+        }
+
+        public Vector3 GetContainerWorldPosition(Vector3 localPosition)
+        {
+            return _container.TransformPoint(localPosition);
+        }
+
         public void Despawn<T>(T instance) where T : MonoBehaviour, IPoolableObject
         {
             if (instance is ScreenBoundedMovingComponent transient)
@@ -187,9 +204,8 @@ namespace SpaceInvaders.Scenes.Game
         public ProjectileBehaviourComponent SpawnProjectile(ProjectileBehaviourComponent prefab,
             Vector3 muzzleWorldPosition, Vector3 direction, AttackSourceDTO source, string shooterTag)
         {
-            // A muzzle is a transform somewhere under the ship, so the spawn point arrives in world
-            // space and has to come back into the container's, which is offset from it.
-            Vector3 localPosition = _container.InverseTransformPoint(muzzleWorldPosition);
+            // A muzzle sits under the ship, so its position is world and has to be converted.
+            Vector3 localPosition = GetContainerLocalPosition(muzzleWorldPosition);
 
             var projectile = Spawn(prefab, localPosition, Quaternion.identity);
 

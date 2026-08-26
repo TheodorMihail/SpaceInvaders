@@ -3,9 +3,8 @@ using System.Collections.Generic;
 namespace SpaceInvaders.Scenes.Game
 {
     /// <summary>
-    /// What every boss shares: it cannot be shot down on the way in, and it cycles through its
-    /// attacks in turn so the player gets a readable rhythm to learn rather than a single pattern to
-    /// sit still against. Attack order comes from the prefab hierarchy.
+    /// Shared boss behaviour: invulnerable while entering, then cycles through its attacks in turn.
+    /// Attack order comes from the prefab hierarchy.
     /// </summary>
     public abstract class BossSpaceshipBehaviourComponent : EnemySpaceshipBehaviourComponent
     {

@@ -201,9 +201,9 @@ namespace SpaceInvaders.Scenes.Game
             _movement.Move(direction);
         }
 
-        /// <summary>Which attack fires now. The default ship has one and always uses it; bosses
-        /// override this to rotate through theirs, or override Shoot to run several at once.
-        /// Called every frame a ship tries to shoot, so it must have no side effects.</summary>
+        /// <summary>Which attack fires now. Bosses override this to rotate through theirs, or override
+        /// Shoot to fire several at once. Called every frame a ship tries to shoot, so it must have no
+        /// side effects.</summary>
         protected virtual BaseShipAttackComponent SelectAttack()
         {
             return _weapon.PrimaryAttack;

@@ -15,17 +15,17 @@ namespace SpaceInvaders.Scenes.Game
     }
 
     /// <summary>
-    /// Puts drops on the board and holds what the player has picked up this run. What actually drops
-    /// is rolled elsewhere; pending loot is only committed to the inventory on level completion.
+    /// Spawns drops and holds what the player picked up this run. What drops is rolled elsewhere;
+    /// pending loot is only added to the inventory on level completion.
     /// </summary>
-    public class LootManager : ILootManager
+    public partial class LootManager : ILootManager
     {
         [Inject] private readonly IItemsRepository _itemsRepository;
         [Inject] private readonly IInventoryManager _inventoryManager;
         [Inject] private readonly IMessageBus _messageBus;
         [Inject] private readonly ISpawnManager _spawnManager;
 
-        /// <summary>Decides what drops; this manager decides where it lands and who hears about it.</summary>
+        /// <summary>Decides what drops; this manager decides where it spawns and publishes it.</summary>
         [Inject] private readonly IDropRollService _dropRolls;
 
         /// <summary>Loot collected during the current run. Added to the inventory only on level completion.</summary>
@@ -90,7 +90,7 @@ namespace SpaceInvaders.Scenes.Game
             {
                 case DropCategoryTypes.Powerup:
                 {
-                    SpawnPowerupDrop(localPosition);
+                    SpawnPowerupDrop(_dropRolls.RollPowerup(), localPosition);
                     break;
                 }
                 case DropCategoryTypes.Item:
@@ -112,10 +112,8 @@ namespace SpaceInvaders.Scenes.Game
             _messageBus.Publish(new ItemDroppedMessage(item.InstanceId, localPosition));
         }
 
-        private void SpawnPowerupDrop(Vector3 localPosition)
+        private void SpawnPowerupDrop(PowerupConfigSO config, Vector3 localPosition)
         {
-            PowerupConfigSO config = _dropRolls.RollPowerup();
-
             if (config == null)
             {
                 return;

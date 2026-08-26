@@ -130,7 +130,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_Sprite: {fileID: -6647105266656077085, guid: b9c3d390e696aa14d9c0d77410a27d12, type: 3}
-  m_Type: 0
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -872,7 +872,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6460534198698033173, guid: c1b10e1ee4d18fc4091739384cb5b164, type: 3}
       propertyPath: m_SizeDelta.y
-      value: -3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6460534198698033173, guid: c1b10e1ee4d18fc4091739384cb5b164, type: 3}
       propertyPath: m_LocalPosition.x

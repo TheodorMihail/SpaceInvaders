@@ -2,8 +2,8 @@ using UnityEngine;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    /// <summary>One engine flame. Sits on its own object under the ship so each hull can place and
-    /// scale its engines independently.</summary>
+    /// <summary>One engine flame, on its own object under the ship so each hull can place and scale
+    /// its engines independently.</summary>
     [RequireComponent(typeof(SpriteRenderer))]
     public class ShipFlameComponent : MonoBehaviour
     {

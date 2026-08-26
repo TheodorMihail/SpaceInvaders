@@ -3,8 +3,7 @@ using UnityEngine;
 namespace SpaceInvaders.Scenes.Game
 {
     /// <summary>
-    /// Calls in reinforcements as it loses health, so the fight keeps changing shape instead of
-    /// settling into one rhythm the player can park against.
+    /// Spawns reinforcements at health thresholds.
     /// </summary>
     public class Boss2SpaceshipBehaviourComponent : BossSpaceshipBehaviourComponent
     {

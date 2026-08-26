@@ -10,8 +10,8 @@ using System.Collections.Generic;
 namespace SpaceInvaders.Project
 {
     /// <summary>
-    /// Confirm-tooltip shown near a clicked inventory item or ship slot. Uses a center pivot so
-    /// its rect always stays fully inside the parent Canvas after clamping.
+    /// Confirm tooltip shown near a clicked inventory item or ship slot. Uses a center pivot so the
+    /// rect stays inside the parent canvas after clamping.
     /// </summary>
     public class ItemTooltipComponent : MonoBehaviour
     {
@@ -210,8 +210,8 @@ namespace SpaceInvaders.Project
         }
 
         /// <summary>
-        /// Converts the canvas' own corners into the tooltip's parent space so the clamp bounds
-        /// and the desired position live in the same coordinate frame, regardless of nesting.
+        /// Converts the canvas corners into the tooltip's parent space, so the clamp bounds and the
+        /// desired position are in the same coordinate space.
         /// </summary>
         private Vector2 ClampToCanvasBounds(Vector2 desiredAnchoredPosition, Camera eventCamera)
         {

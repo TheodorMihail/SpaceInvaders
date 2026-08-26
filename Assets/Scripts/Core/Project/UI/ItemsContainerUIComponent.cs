@@ -8,9 +8,9 @@ using Zenject;
 namespace SpaceInvaders.Project
 {
     /// <summary>
-    /// Holds a grid of item cells and the message shown while it is empty, so every screen listing
-    /// items builds them the same way. Owns the cells it creates and the mapping back to their item,
-    /// leaving the screen to say only what goes in and to answer clicks.
+    /// Holds a grid of item cells and the empty-state message, so every screen listing items builds
+    /// them the same way. Owns the cells and their item mapping; the screen only supplies the items
+    /// and handles clicks.
     /// </summary>
     public class ItemsContainerUIComponent : MonoBehaviour
     {

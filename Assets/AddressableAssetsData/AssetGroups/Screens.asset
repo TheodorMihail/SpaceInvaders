@@ -40,7 +40,7 @@ MonoBehaviour:
     - Screen
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9398fd69385a2744fb1584a3a86ce506
-    m_Address: Screens/LevelFinishedScreenView
+    m_Address: Screens/VictoryScreenView
     m_ReadOnly: 0
     m_SerializedLabels:
     - Screen

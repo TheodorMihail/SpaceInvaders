@@ -118,7 +118,7 @@ namespace SpaceInvaders.Scenes.Game
             _entryTargetPosition = transform.position;
             _entryTargetPosition.x = Mathf.Clamp(_entryTargetPosition.x, minBounds.x, maxBounds.x);
 
-            // Ships further back in the formation land deeper, so the shape survives the entry.
+            // Ships further back in the formation stop deeper, keeping the formation's shape.
             float depth = Mathf.Clamp01(formationDepthRatio) * _formationDepthFactor;
             _entryTargetPosition.z = Mathf.Lerp(maxBounds.z, minBounds.z, depth);
 
@@ -132,8 +132,8 @@ namespace SpaceInvaders.Scenes.Game
             return Vector3.Distance(transform.position, _entryTargetPosition);
         }
 
-        /// <summary>Speed is whatever covers this ship's distance in the shared wave duration, so
-        /// ships further out simply fly faster and the formation lands as one.</summary>
+        /// <summary>Speed is set to cover this ship's distance in the shared wave duration, so the
+        /// whole formation arrives at the same time.</summary>
         public void StartEntryAnimation(float duration)
         {
             if (duration <= 0f)
@@ -181,9 +181,8 @@ namespace SpaceInvaders.Scenes.Game
         }
 
         /// <summary>
-        /// Raised part way through the entry rather than at the end of it. A long entry would otherwise
-        /// hold the arrival until the ship was already in position and fighting, and firing it at the
-        /// start would land it while the ship was still off screen entirely.
+        /// Raised part way through the entry. At the end it would fire once the ship is already
+        /// fighting; at the start, while it is still off screen.
         /// </summary>
         private void CheckEnteredView()
         {

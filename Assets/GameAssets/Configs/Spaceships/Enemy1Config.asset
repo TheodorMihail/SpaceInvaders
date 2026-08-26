@@ -21,6 +21,7 @@ MonoBehaviour:
     _projectileSpeed: 125
     _critChance: 0.1
     _critDamage: 2
+    _hasUnlimitedAmmo: 1
     _magazineSize: 0
     _reloadSpeed: 0
   _destroyVFXPrefab: {fileID: 2377428582029327795, guid: 39f852c28f9c3fd45a427c24f3564ba7, type: 3}
