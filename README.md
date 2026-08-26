@@ -53,7 +53,7 @@ These hold across the whole codebase, and everything below depends on them:
 
 **Player Progression**
 - **Talents**: permanent, currency-purchased stat upgrades, authored per-level as flat or percentage bonuses
-- **Equippable items**: rarity-tiered loot with randomly-rolled stat affixes, dropped on enemy kills and equipped across ship slots from a dedicated Inventory screen
+- **Equippable items**: rarity-tiered loot with randomly-rolled stat affixes, dropped on enemy kills and equipped across ship slots from a dedicated Inventory screen. Rarity sets how many affixes an item rolls and the range each one rolls within, so the tiers scale without any of it being computed at runtime
 - **Loot system**: a single weighted roll per enemy kill decides whether a powerup, an item, or nothing drops
 - **Salvage**: unwanted loot sells back for currency at a per-rarity rate
 - **Powerups**: timed or instant pickups applied as temporary `ShipStats` bonuses, with their own HUD indicator/timer
@@ -70,11 +70,13 @@ These hold across the whole codebase, and everything below depends on them:
 - **Managers**: own the vital concerns, such as progression, currency, inventory, spawning, input, time and the level session
 - **Services**: focused helpers owned outright by one manager, such as drop rolls, score accumulation, hazard cadence and sound wiring
 - **Components**: interface-driven spaceship hierarchy, projectiles, collision detection, pooled VFX and world-space health bars
+- **Input**: a single interface over keyboard or on-screen touch controls, picked per platform at runtime, so no gameplay code branches on platform. The on-screen stick and fire button read the input devices directly rather than through pointer events, so a touch that started elsewhere, or was already held before they appeared, still drives them
 
 **Data Management**
 - ScriptableObject-based configurations for almost every in-game entity, accessed via Repository Pattern
 - Object pooling for frequently spawned entities
 - Progression and settings persisted via BaseArchitecture's `IPersistenceManager`
+- Each save blob is versioned independently, so content changes that invalidate one kind of stored data discard only that blob and leave the rest of a player's progress intact
 
 **Developer Tools**
 - Level Generator editor window (`SpaceInvaders > Level Generator`) for authoring level configs, including a formation-template generator and a custom inspector showing each level's generator seed
@@ -111,13 +113,13 @@ To use BaseArchitecture in your own project, add to `Packages/manifest.json`:
     }
   ],
   "dependencies": {
-    "com.theodormihail.basearchitecture": "https://github.com/TheodorMihail/BaseArchitecture.git?path=Assets/UnityPackages/BaseArchitecture#v1.5.1"
+    "com.theodormihail.basearchitecture": "https://github.com/TheodorMihail/BaseArchitecture.git?path=Assets/UnityPackages/BaseArchitecture#v1.6.0"
   },
   "testables": [ "com.svermeulen.extenject" ]
 }
 ```
 
-The `#v1.5.1` pins the version, matching this project's own manifest. Bump it to pull a newer [release tag](https://github.com/TheodorMihail/BaseArchitecture/tags). The scoped registry resolves the package's dependencies (Zenject, UniTask) from OpenUPM. `testables` enables Zenject's test fixtures. See the [BaseArchitecture README](https://github.com/TheodorMihail/BaseArchitecture#-installation) for its own requirements.
+The `#v1.6.0` pins the version, matching this project's own manifest. Bump it to pull a newer [release tag](https://github.com/TheodorMihail/BaseArchitecture/tags). The scoped registry resolves the package's dependencies (Zenject, UniTask) from OpenUPM. `testables` enables Zenject's test fixtures. See the [BaseArchitecture README](https://github.com/TheodorMihail/BaseArchitecture#-installation) for its own requirements.
 
 ---
 
