@@ -5,36 +5,59 @@ namespace SpaceInvaders.Project
 {
     // One save blob per manager, each with its own SaveKey. Enums are stored as strings: renaming an
     // enum member invalidates existing saves, reordering does not.
+    //
+    // CurrentVersion starts at 0 and is bumped only when stored data stops being usable, which
+    // discards that blob on the next load. Saves written before versioning existed read as 0, so
+    // blobs that were never invalidated are kept.
 
     #region  SaveData
 
-    public class LevelsSaveData : ISaveData
+    public class LevelsSaveData : IVersionedSaveData
     {
         public const string SaveKey = "LevelsProgress";
+        public const int CurrentVersion = 0;
+
+        public int Version { get; set; }
         public List<LevelSaveEntry> Levels = new();
     }
 
-    public class TalentsSaveData : ISaveData
+    public class TalentsSaveData : IVersionedSaveData
     {
         public const string SaveKey = "TalentsProgress";
+        public const int CurrentVersion = 0;
+
+        public int Version { get; set; }
         public List<TalentSaveEntry> Talents = new();
     }
 
-    public class CurrencySaveData : ISaveData
+    public class CurrencySaveData : IVersionedSaveData
     {
         public const string SaveKey = "PlayerCurrency";
+        public const int CurrentVersion = 0;
+
+        public int Version { get; set; }
         public int Amount;
     }
 
-    public class InventorySaveData : ISaveData
+    public class InventorySaveData : IVersionedSaveData
     {
         public const string SaveKey = "PlayerInventory";
+
+        /// <summary>1: the item catalogue was rebuilt and every shipped item id was replaced.</summary>
+        public const int CurrentVersion = 1;
+
+        public int Version { get; set; }
         public List<InventoryItemEntry> Items = new();
     }
 
-    public class EquipmentSaveData : ISaveData
+    public class EquipmentSaveData : IVersionedSaveData
     {
         public const string SaveKey = "PlayerEquipment";
+
+        /// <summary>1: the slots referenced items that version 1 of the inventory discarded.</summary>
+        public const int CurrentVersion = 1;
+
+        public int Version { get; set; }
         public List<EquippedSlotEntry> Slots = new();
     }
 

@@ -32,7 +32,7 @@ namespace SpaceInvaders.Project
 
         public void Initialize()
         {
-            _data = _persistenceManager.Load<EquipmentSaveData>(EquipmentSaveData.SaveKey);
+            _data = _persistenceManager.LoadVersioned<EquipmentSaveData>(EquipmentSaveData.SaveKey, EquipmentSaveData.CurrentVersion);
         }
 
         /// <summary>Removes the slot entry if the referenced item is no longer owned. Validated on
