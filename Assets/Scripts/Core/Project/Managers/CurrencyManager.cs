@@ -20,7 +20,7 @@ namespace SpaceInvaders.Project
 
         public void Initialize()
         {
-            _data = _persistenceManager.Load<CurrencySaveData>(CurrencySaveData.SaveKey);
+            _data = _persistenceManager.LoadVersioned<CurrencySaveData>(CurrencySaveData.SaveKey, CurrencySaveData.CurrentVersion);
         }
 
         public void AddCurrency(int amount)

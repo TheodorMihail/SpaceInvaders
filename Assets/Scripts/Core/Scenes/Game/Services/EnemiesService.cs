@@ -137,8 +137,7 @@ namespace SpaceInvaders.Scenes.Game
             }
         }
 
-        /// <summary>Only a boss is worth announcing as it comes into view: it is the one ship whose
-        /// arrival is a moment in its own right rather than a wave filing into place.</summary>
+        /// <summary>Only a boss is announced on entering view; regular enemies arrive as a wave.</summary>
         private void OnEnemyEnteredViewCallback(IEnemySpaceship enemy)
         {
             if (enemy.Category != EnemyCategoryTypes.Boss)

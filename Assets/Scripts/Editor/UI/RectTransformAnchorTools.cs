@@ -6,8 +6,8 @@ namespace SpaceInvaders.Editor
 {
     /// <summary>
     /// Converts between absolute offsets and relative anchors on the selected RectTransforms. Unity
-    /// only offers fixed anchor presets, so an element sized by hand has no way to start scaling with
-    /// its parent without this.
+    /// only offers fixed anchor presets, so a hand-sized element cannot otherwise scale with its
+    /// parent.
     /// </summary>
     internal static class RectTransformAnchorTools
     {
@@ -16,9 +16,8 @@ namespace SpaceInvaders.Editor
 
         /// <summary>
         /// Moves the anchors onto the rect's current corners and zeroes the offsets, so the element
-        /// keeps the size it has now and then holds it proportionally as the parent resizes.
-        /// Scale is read so the anchors land on the corners actually on screen, since offsets
-        /// describe the unscaled rect. Neither the scale nor the rect's own size is changed.
+        /// keeps its size and then scales with the parent. Scale is applied because offsets describe
+        /// the unscaled rect. Neither the scale nor the rect size is changed.
         /// </summary>
         [MenuItem(AnchorsToCornersItem)]
         private static void AnchorsToCorners()

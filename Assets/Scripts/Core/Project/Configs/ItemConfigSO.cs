@@ -78,9 +78,8 @@ namespace SpaceInvaders.Project
 
         public virtual string ObjectID => _itemId;
 
-        /// <summary>Rolls a fresh owned instance of this item: a new instance id and up to
-        /// affixCount distinct affixes drawn from the pool. Shared by real drops (LootManager)
-        /// and the debug "add random item" cheat (InventoryManager), so both stay in sync.</summary>
+        /// <summary>Rolls a new owned instance: a fresh instance id and up to affixCount distinct
+        /// affixes from the pool. Shared by real drops and the debug cheat.</summary>
         public InventoryItemEntry RollEntry(int affixCount)
         {
             var entry = new InventoryItemEntry

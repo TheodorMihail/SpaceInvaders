@@ -5,8 +5,8 @@ namespace SpaceInvaders.Scenes.Game
 {
     public class ProjectileBehaviourComponent : ScreenBoundedMovingComponent
     {
-        /// <summary>Every projectile is drawn pointing up the screen, whoever fires it, so travel
-        /// direction alone decides the rotation. Enemy shots simply come out rotated 180.</summary>
+        /// <summary>Every projectile sprite is drawn pointing up, so the travel direction alone sets
+        /// the rotation. Enemy shots come out rotated 180.</summary>
         private static readonly Vector3 ArtFacingDirection = Vector3.forward;
 
         [SerializeField] private CollisionDetectionComponent _collisionDetection;
@@ -15,9 +15,8 @@ namespace SpaceInvaders.Scenes.Game
 
         public event Action<ProjectileBehaviourComponent> OnProjectileDestroyed;
 
-        /// <summary>Damage is resolved on impact from the firing attack's source, speed is snapshotted
-        /// here so a projectile already in flight keeps its velocity, and the tag is restamped every
-        /// time because pooled projectiles get reissued to the other team.</summary>
+        /// <summary>Damage is resolved on impact. Speed is copied here so a projectile in flight keeps
+        /// its velocity, and the tag is set per spawn because pooled projectiles change team.</summary>
         public void Initialize(AttackSourceDTO source, Vector3 direction, string shooterTag)
         {
             _source = source;
@@ -53,7 +52,7 @@ namespace SpaceInvaders.Scenes.Game
         {
             if (other.TryGetComponent(out BaseHitboxComponent hitbox) && hitbox.Target != null)
             {
-                // The hitbox answers for whatever owns it, and decides whether this shot lands.
+                // The hitbox resolves its owner and decides whether this shot applies.
                 if (hitbox.IsSameTeamAs(gameObject))
                 {
                     return;

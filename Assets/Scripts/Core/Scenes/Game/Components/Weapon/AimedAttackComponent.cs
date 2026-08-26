@@ -25,7 +25,7 @@ namespace SpaceInvaders.Scenes.Game
             Vector3 toPlayer = playerWorldPosition - transform.position;
             toPlayer.y = 0f;
 
-            // Sitting on top of the player leaves no direction to aim, so fall back to the default.
+            // No direction to aim when overlapping the player, so fall back to the default.
             yield return toPlayer.sqrMagnitude > MinAimDistanceSqr
                 ? toPlayer.normalized
                 : BaseDirection.normalized;

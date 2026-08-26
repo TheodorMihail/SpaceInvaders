@@ -6,8 +6,8 @@ using SpaceInvaders.Scenes.Game;
 namespace SpaceInvaders.Editor
 {
     /// <summary>
-    /// Writes the private serialized fields of the level configs by reflection, so the runtime types
-    /// need no editor-only setters. Field lookups throw if the data model is renamed.
+    /// Writes the level configs' private serialized fields by reflection, so the runtime types need
+    /// no editor-only setters. Field lookups throw if the data model is renamed.
     /// </summary>
     internal static class LevelConfigAssetWriter
     {

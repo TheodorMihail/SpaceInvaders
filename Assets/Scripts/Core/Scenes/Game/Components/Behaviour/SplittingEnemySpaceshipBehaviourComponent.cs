@@ -3,8 +3,8 @@ using UnityEngine;
 namespace SpaceInvaders.Scenes.Game
 {
     /// <summary>
-    /// Enemy that leaves smaller ships behind when it dies, so killing it is only half the job. What
-    /// it splits into is authored, so the same component covers any number of tiers.
+    /// Enemy that spawns smaller ships when it dies. What it splits into is authored, so the same
+    /// component covers any number of tiers.
     /// </summary>
     public class SplittingEnemySpaceshipBehaviourComponent : EnemySpaceshipBehaviourComponent
     {
@@ -12,8 +12,8 @@ namespace SpaceInvaders.Scenes.Game
         [Tooltip("Ships left behind where this one dies. Whatever it splits into should not split again.")]
         [SerializeField] private EnemySpawnDTO _splitSpawn;
 
-        /// <summary>Asks before the base raises its destroyed event, so the manager counts the children
-        /// while the wave still looks occupied. The other order advances the level out from under them.</summary>
+        /// <summary>Requests the split before the destroyed event, so the children are counted while
+        /// the wave is still active. The other order advances the level before they spawn.</summary>
         protected override void Destroy()
         {
             RaiseSpawnRequest(new EnemySpawnRequestDTO(_splitSpawn, LocalPosition));

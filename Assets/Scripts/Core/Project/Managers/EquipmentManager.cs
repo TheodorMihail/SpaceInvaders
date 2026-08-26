@@ -32,7 +32,7 @@ namespace SpaceInvaders.Project
 
         public void Initialize()
         {
-            _data = _persistenceManager.Load<EquipmentSaveData>(EquipmentSaveData.SaveKey);
+            _data = _persistenceManager.LoadVersioned<EquipmentSaveData>(EquipmentSaveData.SaveKey, EquipmentSaveData.CurrentVersion);
         }
 
         /// <summary>Removes the slot entry if the referenced item is no longer owned. Validated on
@@ -91,13 +91,13 @@ namespace SpaceInvaders.Project
                 return;
             }
 
-            // Whatever already sits in the target slot gets unequipped, unless it's this same instance.
+            // Anything already in the target slot is unequipped, unless it is this same instance.
             EquippedSlotEntry previousEquippedItem = GetEquipmentSlotEntry(slot.Value);
             string previousEquippedInstanceId = previousEquippedItem != null && previousEquippedItem.InstanceId != instanceId
                 ? previousEquippedItem.InstanceId
                 : null;
 
-            // The same instance can only occupy one slot, so free the slot it currently sits in.
+            // The same instance can only occupy one slot, so clear the slot it currently uses.
             EquippedSlotEntry previousSlot = _data.Slots.Find(s => s.InstanceId == instanceId);
             if (previousSlot != null)
             {

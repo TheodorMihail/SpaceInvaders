@@ -24,7 +24,7 @@ namespace SpaceInvaders.Project
 
         public void Initialize()
         {
-            _data = _persistenceManager.Load<TalentsSaveData>(TalentsSaveData.SaveKey);
+            _data = _persistenceManager.LoadVersioned<TalentsSaveData>(TalentsSaveData.SaveKey, TalentsSaveData.CurrentVersion);
         }
 
         public int GetTalentLevel(ShipUpgradableStatTypes type)

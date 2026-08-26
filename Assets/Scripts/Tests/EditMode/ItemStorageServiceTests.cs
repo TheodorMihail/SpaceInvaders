@@ -19,7 +19,7 @@ namespace SpaceInvaders.Tests
         {
             base.Setup();
 
-            _saveData = new InventorySaveData();
+            _saveData = new InventorySaveData { Version = InventorySaveData.CurrentVersion };
             _mockPersistenceManager = Substitute.For<IPersistenceManager>();
             _mockPersistenceManager.Load<InventorySaveData>(InventorySaveData.SaveKey).Returns(_saveData);
 

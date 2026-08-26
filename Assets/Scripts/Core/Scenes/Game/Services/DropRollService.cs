@@ -10,11 +10,11 @@ namespace SpaceInvaders.Scenes.Game
         /// <summary>What a kill pays out, which is most often nothing.</summary>
         DropCategoryTypes RollKillCategory();
 
-        /// <summary>What something worth breaking pays out. Never nothing.</summary>
+        /// <summary>The payout for a destructible object. Never returns nothing.</summary>
         DropCategoryTypes RollGuaranteedCategory();
 
-        /// <summary>A freshly rolled item and the rarity it came from. False when nothing could be
-        /// rolled, which means the tables are unauthored rather than that the player was unlucky.</summary>
+        /// <summary>A rolled item and its rarity. False means the tables are unauthored, not that the
+        /// roll failed.</summary>
         bool TryRollItem(out ItemRarityConfigSO rarityConfig, out InventoryItemEntry item);
 
         PowerupConfigSO RollPowerup();
@@ -22,7 +22,7 @@ namespace SpaceInvaders.Scenes.Game
 
     /// <summary>
     /// Decides what drops, and nothing else: no state, no spawning, no messages. Bound only for the
-    /// loot manager, which owns where the drop goes and what the run has collected so far.
+    /// loot manager, which handles where the drop goes.
     /// </summary>
     public class DropRollService : IDropRollService
     {
@@ -56,8 +56,8 @@ namespace SpaceInvaders.Scenes.Game
             return winner?.Category ?? DropCategoryTypes.None;
         }
 
-        /// <summary>Rarity decides how many affixes are drawn, not how strong they are: the magnitudes
-        /// come from each affix's own range on the item template.</summary>
+        /// <summary>Rarity decides how many affixes are drawn. The magnitudes come from each affix's
+        /// own range on the item template.</summary>
         public bool TryRollItem(out ItemRarityConfigSO rarityConfig, out InventoryItemEntry item)
         {
             item = null;

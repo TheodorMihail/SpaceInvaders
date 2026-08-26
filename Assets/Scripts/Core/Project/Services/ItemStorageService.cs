@@ -30,7 +30,7 @@ namespace SpaceInvaders.Project
 
         public void Initialize()
         {
-            _data = _persistenceManager.Load<InventorySaveData>(InventorySaveData.SaveKey);
+            _data = _persistenceManager.LoadVersioned<InventorySaveData>(InventorySaveData.SaveKey, InventorySaveData.CurrentVersion);
         }
 
         public bool ContainsItem(string instanceId)

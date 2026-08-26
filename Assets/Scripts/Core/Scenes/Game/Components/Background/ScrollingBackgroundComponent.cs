@@ -4,9 +4,8 @@ using UnityEngine;
 namespace SpaceInvaders.Scenes.Game
 {
     /// <summary>
-    /// Drives every background layer from one speed, so the whole flight can be sped up or slowed
-    /// down without retuning the layers against each other. Layers are discovered from the hierarchy,
-    /// so one dropped onto this object can never miss the scroll.
+    /// Drives every background layer from one speed, so layers keep their relative rates when it
+    /// changes. Layers are discovered from the hierarchy.
     /// </summary>
     public class ScrollingBackgroundComponent : MonoBehaviour
     {

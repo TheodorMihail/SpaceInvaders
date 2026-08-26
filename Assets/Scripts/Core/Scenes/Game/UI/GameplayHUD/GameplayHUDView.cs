@@ -74,6 +74,16 @@ namespace SpaceInvaders.Scenes.Game
             _ammoUI.UpdateAmmo(currentAmmo, maxAmmo);
         }
 
+        public void SetUnlimitedAmmo(bool hasUnlimitedAmmo)
+        {
+            if (_ammoUI == null)
+            {
+                return;
+            }
+
+            _ammoUI.SetUnlimitedAmmo(hasUnlimitedAmmo);
+        }
+
         public void ShowReloading(float duration)
         {
             if (_ammoUI == null)

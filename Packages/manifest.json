@@ -12,7 +12,7 @@
   "dependencies": {
     "com.cysharp.unitask": "2.5.10",
     "com.svermeulen.extenject": "9.1.0",
-    "com.theodormihail.basearchitecture": "https://github.com/TheodorMihail/BaseArchitecture.git?path=Assets/UnityPackages/BaseArchitecture#v1.5.1",
+    "com.theodormihail.basearchitecture": "https://github.com/TheodorMihail/BaseArchitecture.git?path=Assets/UnityPackages/BaseArchitecture#v1.6.0",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.addressables": "2.7.4",
     "com.unity.nuget.newtonsoft-json": "3.2.1",

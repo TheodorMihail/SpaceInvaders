@@ -21,8 +21,8 @@ namespace SpaceInvaders.Scenes.Game
     }
 
     /// <summary>
-    /// Runs the hazard cadence a wave asks for. Owns only the timing: the hazards themselves are
-    /// transients that the spawn service cleans up.
+    /// Runs a wave's hazard spawn timing. Owns only the timing: the hazards are transients cleaned up
+    /// by the spawn manager.
     /// </summary>
     public partial class HazardsService : IHazardsService
     {
@@ -62,8 +62,8 @@ namespace SpaceInvaders.Scenes.Game
             _messageBus.Publish(new HazardDestroyedMessage(hazardType, localPosition));
         }
 
-        /// <summary>The wait between hazards is time scaled, so pausing holds the next one with the
-        /// rest of the game instead of letting it land in the next scene.</summary>
+        /// <summary>The wait between hazards is time scaled, so it halts with the rest of the game
+        /// while paused instead of spawning into the next scene.</summary>
         private async UniTaskVoid RunHazardLoop(WaveConfigDTO.WaveHazardDTO waveHazard, CancellationToken token)
         {
             if (!_hazardsRepository.TryGetHazardConfig(waveHazard.HazardType, out HazardConfigSO config)
@@ -91,8 +91,8 @@ namespace SpaceInvaders.Scenes.Game
             }
         }
 
-        /// <summary>Enters at a random point along the spawn edge and angles back towards the middle,
-        /// so it crosses the play area rather than clipping the corner it came in at.</summary>
+        /// <summary>Enters at a random point along the edge, angled back towards the middle so it
+        /// crosses the play area instead of clipping the corner.</summary>
         private void SpawnHazard(HazardConfigSO config)
         {
             float entryRatio = Random.value;

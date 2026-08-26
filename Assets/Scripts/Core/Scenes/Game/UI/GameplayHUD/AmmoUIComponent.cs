@@ -17,7 +17,14 @@ namespace SpaceInvaders.Scenes.Game
 
         [SerializeField] private string _ammoString = "{0}/{1}";
 
+        [Tooltip("Scaled up because the glyph is smaller than the ammo count text.")]
+        [SerializeField] private string _unlimitedAmmoString = "<size=200%>∞</size>";
+
         private CancellationTokenSource _reloadCancellationTokenSource;
+
+        private int _currentAmmo;
+        private int _maxAmmo;
+        private bool _hasUnlimitedAmmo;
 
         private void OnDestroy()
         {
@@ -31,10 +38,18 @@ namespace SpaceInvaders.Scenes.Game
 
         public void UpdateAmmo(int currentAmmo, int maxAmmo)
         {
-            CancelReloadCountdown();
+            _currentAmmo = currentAmmo;
+            _maxAmmo = maxAmmo;
 
-            _iconImage.sprite = _ammoSprite;
-            _ammoText.text = string.Format(_ammoString, currentAmmo, maxAmmo);
+            RefreshAmmo();
+        }
+
+        /// <summary>Shows the unlimited sign instead of the count until it is switched back off.</summary>
+        public void SetUnlimitedAmmo(bool hasUnlimitedAmmo)
+        {
+            _hasUnlimitedAmmo = hasUnlimitedAmmo;
+
+            RefreshAmmo();
         }
 
         /// <summary>The countdown replaces the ammo text until the magazine is refilled.</summary>
@@ -46,6 +61,15 @@ namespace SpaceInvaders.Scenes.Game
             _iconImage.sprite = _reloadingSprite;
 
             await _ammoText.CountdownAsync(duration, 0, duration, null, _reloadCancellationTokenSource);
+        }
+
+        private void RefreshAmmo()
+        {
+            CancelReloadCountdown();
+
+            _iconImage.sprite = _ammoSprite;
+            _ammoText.text = _hasUnlimitedAmmo ? _unlimitedAmmoString : 
+                                string.Format(_ammoString, _currentAmmo, _maxAmmo);
         }
 
         private void CancelReloadCountdown()

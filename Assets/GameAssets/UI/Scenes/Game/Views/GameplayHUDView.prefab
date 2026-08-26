@@ -1276,6 +1276,7 @@ MonoBehaviour:
   _ammoSprite: {fileID: 1981228401, guid: 95ba7dc04a250ec4b85d6b19ef1b8aab, type: 3}
   _reloadingSprite: {fileID: -2114626870, guid: 95ba7dc04a250ec4b85d6b19ef1b8aab, type: 3}
   _ammoString: '{0}/{1}'
+  _unlimitedAmmoString: '<size=200%>∞</size>'
 --- !u!114 &3537658839506184071
 MonoBehaviour:
   m_ObjectHideFlags: 0
