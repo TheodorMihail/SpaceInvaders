@@ -49,7 +49,7 @@ namespace SpaceInvaders.Scenes.Game
             _pendingLoot.Clear();
         }
 
-        public UniTask GameEnd()
+        public UniTask GameEnd(GameSessionResultDTO result)
         {
             // Loot that was not banked by completing the level is lost.
             _pendingLoot.Clear();

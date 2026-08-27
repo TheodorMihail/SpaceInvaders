@@ -43,13 +43,13 @@ namespace SpaceInvaders.Project
             return UniTask.CompletedTask;
         }
 
-        public UniTask GameInitialize()
+        public UniTask GameInitialize(GameSessionDTO session)
         {
             PlaySound(SoundTypes.GameplayMusic);
             return UniTask.CompletedTask;
         }
 
-        public UniTask GameEnd()
+        public UniTask GameEnd(GameSessionResultDTO result)
         {
             PlaySound(SoundTypes.GameOver);
             return UniTask.CompletedTask;

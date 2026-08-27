@@ -12,6 +12,8 @@ namespace SpaceInvaders.Tests
     [TestFixture]
     public class LevelSessionManagerTests : ZenjectUnitTestFixture
     {
+        private static readonly GameSessionDTO _session = new(GameModeTypes.Campaign, 1);
+
         private LevelSessionManager _levelSessionManager;
         private ILevelsRepository _mockLevelsRepository;
         private IShipsRepository _mockShipsRepository;
@@ -95,7 +97,7 @@ namespace SpaceInvaders.Tests
             _mockLevelProgressManager.MaxLevelNumber.Returns(3);
 
             _levelSessionManager.Initialize();
-            _levelSessionManager.GameStart(1).Forget();
+            _levelSessionManager.GameStart(_session).Forget();
             _levelSessionManager.Dispose();
 
             _messageBus.Publish(new AllEnemiesDestroyedMessage());
@@ -119,7 +121,7 @@ namespace SpaceInvaders.Tests
             _mockLevelProgressManager.MaxLevelNumber.Returns(3);
 
             _levelSessionManager.Initialize();
-            _levelSessionManager.GameStart(1).Forget();
+            _levelSessionManager.GameStart(_session).Forget();
 
             Assert.AreEqual(1, _levelSessionManager.CurrentLevelNumber);
         }
@@ -131,7 +133,7 @@ namespace SpaceInvaders.Tests
             _mockLevelProgressManager.MaxLevelNumber.Returns(3);
 
             _levelSessionManager.Initialize();
-            _levelSessionManager.GameStart(1).Forget();
+            _levelSessionManager.GameStart(_session).Forget();
 
             _mockEnemiesService.Received(1).SpawnEnemies(Arg.Any<WaveConfigDTO>());
         }
@@ -151,7 +153,7 @@ namespace SpaceInvaders.Tests
             });
 
             _levelSessionManager.Initialize();
-            _levelSessionManager.GameStart(1).Forget();
+            _levelSessionManager.GameStart(_session).Forget();
 
             Assert.AreEqual(1, startedLevelNumber);
             Assert.AreEqual("Level 1", startedLevelName);
@@ -167,7 +169,7 @@ namespace SpaceInvaders.Tests
             _messageBus.Subscribe<WaveStartedMessage>((message) => startedWaveNumber = message.WaveNumber);
 
             _levelSessionManager.Initialize();
-            _levelSessionManager.GameStart(1).Forget();
+            _levelSessionManager.GameStart(_session).Forget();
 
             Assert.AreEqual(1, startedWaveNumber);
         }
@@ -179,7 +181,7 @@ namespace SpaceInvaders.Tests
             _mockLevelProgressManager.MaxLevelNumber.Returns(3);
 
             _levelSessionManager.Initialize();
-            _levelSessionManager.GameStart(1).Forget();
+            _levelSessionManager.GameStart(_session).Forget();
 
             _messageBus.Publish(new AllEnemiesDestroyedMessage());
 
@@ -196,7 +198,7 @@ namespace SpaceInvaders.Tests
             _messageBus.Subscribe<LevelCompletedMessage>((message) => levelCompletedInvoked = true);
 
             _levelSessionManager.Initialize();
-            _levelSessionManager.GameStart(1).Forget();
+            _levelSessionManager.GameStart(_session).Forget();
 
             _messageBus.Publish(new AllEnemiesDestroyedMessage());
 
@@ -213,7 +215,7 @@ namespace SpaceInvaders.Tests
             _messageBus.Subscribe<LevelCompletedMessage>((message) => completedLevelNumber = message.LevelNumber);
 
             _levelSessionManager.Initialize();
-            _levelSessionManager.GameStart(1).Forget();
+            _levelSessionManager.GameStart(_session).Forget();
 
             _messageBus.Publish(new AllEnemiesDestroyedMessage());
 
@@ -227,7 +229,7 @@ namespace SpaceInvaders.Tests
             _mockLevelProgressManager.MaxLevelNumber.Returns(3);
 
             _levelSessionManager.Initialize();
-            _levelSessionManager.GameStart(1).Forget();
+            _levelSessionManager.GameStart(_session).Forget();
 
             _messageBus.Publish(new AllEnemiesDestroyedMessage());
 

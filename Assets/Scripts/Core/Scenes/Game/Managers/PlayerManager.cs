@@ -51,7 +51,7 @@ namespace SpaceInvaders.Scenes.Game
         }
 
         /// <summary>Controls are enabled later, on game start.</summary>
-        public async UniTask GameInitialize()
+        public async UniTask GameInitialize(GameSessionDTO session)
         {
             _playerInstance = await _spawnManager.SpawnPlayer();
             _talentManager.ApplyTalentBonuses(_playerInstance.Stats);
@@ -63,7 +63,7 @@ namespace SpaceInvaders.Scenes.Game
             _playerInstance.OnReloadStarted += OnReloadStartedCallback;
         }
 
-        public UniTask GameStart(int levelNumber)
+        public UniTask GameStart(GameSessionDTO session)
         {
             _playerInstance.EnableControls();
             return UniTask.CompletedTask;
@@ -81,7 +81,7 @@ namespace SpaceInvaders.Scenes.Game
             return true;
         }
 
-        public UniTask GameEnd()
+        public UniTask GameEnd(GameSessionResultDTO result)
         {
             DespawnPlayer();
             return UniTask.CompletedTask;

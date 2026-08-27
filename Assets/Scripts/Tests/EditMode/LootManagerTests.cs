@@ -12,6 +12,9 @@ namespace SpaceInvaders.Tests
     [TestFixture]
     public class LootManagerTests : ZenjectUnitTestFixture
     {
+        private static readonly GameSessionResultDTO _sessionResult =
+            new(new GameSessionDTO(GameModeTypes.Campaign, 1), GameplayStateResultTypes.GameOver);
+
         private LootManager _lootManager;
         private IItemsRepository _mockItemsRepository;
         private IPowerupsRepository _mockPowerupsRepository;
@@ -366,7 +369,7 @@ namespace SpaceInvaders.Tests
             SetupSingleNormalItem();
             _lootManager.CollectItem(new InventoryItemEntry { InstanceId = "a", ItemId = "PlasmaWing" });
 
-            _lootManager.GameEnd();
+            _lootManager.GameEnd(_sessionResult);
             _messageBus.Publish(new LevelCompletedMessage(1));
 
             _mockInventoryManager.DidNotReceive().AddItems(Arg.Any<IReadOnlyList<InventoryItemEntry>>());

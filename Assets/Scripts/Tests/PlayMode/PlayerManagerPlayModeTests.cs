@@ -14,6 +14,9 @@ namespace SpaceInvaders.Tests
     [TestFixture]
     public class PlayerManagerPlayModeTests : ZenjectUnitTestFixture
     {
+        private static readonly GameSessionDTO _session = new(GameModeTypes.Campaign, 1);
+        private static readonly GameSessionResultDTO _sessionResult = new(_session, GameplayStateResultTypes.GameOver);
+
         private PlayerManager _playerManager;
         private ISpawnManager _mockSpawnManager;
         private IPlayerSpaceship _mockPlayer;
@@ -23,7 +26,7 @@ namespace SpaceInvaders.Tests
 
         private IEnumerator InitializeAndSpawnPlayer()
         {
-            yield return _playerManager.GameInitialize().ToCoroutine();
+            yield return _playerManager.GameInitialize(_session).ToCoroutine();
         }
 
         [SetUp]
@@ -74,7 +77,7 @@ namespace SpaceInvaders.Tests
         public IEnumerator OnGameStarted_EnablesPlayerControls()
         {
             yield return InitializeAndSpawnPlayer();
-            _playerManager.GameStart(1).Forget();
+            _playerManager.GameStart(_session).Forget();
 
             _mockPlayer.Received(1).EnableControls();
         }
@@ -105,7 +108,7 @@ namespace SpaceInvaders.Tests
         {
             yield return InitializeAndSpawnPlayer();
 
-            _playerManager.GameEnd().Forget();
+            _playerManager.GameEnd(_sessionResult).Forget();
 
             _mockPlayer.Received(1).OnDestroyed -= Arg.Any<Action<IPlayerSpaceship>>();
         }

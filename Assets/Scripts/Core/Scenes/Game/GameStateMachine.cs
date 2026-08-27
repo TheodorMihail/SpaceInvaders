@@ -19,16 +19,17 @@ namespace SpaceInvaders.Scenes.Game
 
         protected override GameStateTypes DefaultStateId => GameStateTypes.Playing;
 
-        private int _currentLevelNumber;
+        private GameSessionDTO _currentSession;
 
         public GameStateMachine(IList<IState<GameStateTypes>> gameStates) : base(gameStates)
         {
         }
-        
+
+        /// <summary>The launching scene decides the session, so the mode is never assumed here.</summary>
         public override void Initialize()
         {
-            _scenesManager.PendingSceneParams.TryGetParam(out _currentLevelNumber, 1);
-            SetState(DefaultStateId, _currentLevelNumber);
+            _scenesManager.PendingSceneParams.TryGetParam(out _currentSession, new GameSessionDTO(GameModeTypes.Campaign, 1));
+            SetState(DefaultStateId, _currentSession);
         }
 
         protected override void OnStateFinished((GameStateTypes stateId, object[] paramsList) finishedState)
@@ -47,7 +48,7 @@ namespace SpaceInvaders.Scenes.Game
                                 _scenesManager.LoadScene(SceneTypes.MainMenu.ToString());
                                 break;
                             case GameplayStateResultTypes.Restart:
-                                _scenesManager.LoadScene(SceneTypes.Game.ToString(), _currentLevelNumber);
+                                _scenesManager.LoadScene(SceneTypes.Game.ToString(), _currentSession);
                                 break;
                             default:
                                 SetState(GameStateTypes.GameOver, result);
@@ -64,13 +65,13 @@ namespace SpaceInvaders.Scenes.Game
                                 _scenesManager.LoadScene(SceneTypes.MainMenu.ToString());
                                 break;
                             case GameOverStateResultTypes.Restart:
-                                _scenesManager.LoadScene(SceneTypes.Game.ToString(), _currentLevelNumber);
+                                _scenesManager.LoadScene(SceneTypes.Game.ToString(), _currentSession);
                                 break;
                             // Re-enters gameplay without reloading the scene, so nothing is disposed
                             // or re-initialized. Per-run state must be reset on game end.
                             case GameOverStateResultTypes.NextLevel:
-                                _currentLevelNumber++;
-                                SetState(GameStateTypes.Playing, _currentLevelNumber);
+                                _currentSession = new GameSessionDTO(_currentSession.Mode, _currentSession.LevelNumber + 1);
+                                SetState(GameStateTypes.Playing, _currentSession);
                                 break;
                         }
                     

@@ -27,14 +27,17 @@ namespace SpaceInvaders.Scenes.Game
         [Inject] private readonly IProjectRepository _projectRepository;
         [Inject] private readonly ITimeManager _timeManager;
 
+        /// <summary>Kept so the end result can be reported against the session that produced it.</summary>
+        private GameSessionDTO _session;
+
         public override void OnEnter(params object[] paramsList)
         {
             base.OnEnter();
 
             _messageBus.Subscribe<GamePausedMessage>(OnGamePaused);
 
-            paramsList.TryGetParam(out int levelNumber, 1);
-            StartGameplay(levelNumber).Forget();
+            paramsList.TryGetParam(out _session, new GameSessionDTO(GameModeTypes.Campaign, 1));
+            StartGameplay(_session).Forget();
         }
 
         public override void OnExit()
@@ -45,18 +48,18 @@ namespace SpaceInvaders.Scenes.Game
 
         #region StartGameplay
 
-        private async UniTask StartGameplay(int levelNumber)
+        private async UniTask StartGameplay(GameSessionDTO session)
         {
-            this.Log($"Start level: {levelNumber}");
+            this.Log($"Start level: {session.LevelNumber}");
 
-            await TriggerGameInitialize();
-            await SetupUI(levelNumber);
-            await TriggerGameStart(levelNumber);
+            await TriggerGameInitialize(session);
+            await SetupUI(session);
+            await TriggerGameStart(session);
         }
 
-        private async UniTask SetupUI(int levelNumber)
+        private async UniTask SetupUI(GameSessionDTO session)
         {
-            _uiManager.ShowHUD<GameplayHUD, GameplayHUD.GameplayHUDParams>(new GameplayHUD.GameplayHUDParams { LevelNumber = levelNumber });
+            _uiManager.ShowHUD<GameplayHUD, GameplayHUD.GameplayHUDParams>(new GameplayHUD.GameplayHUDParams { LevelNumber = session.LevelNumber });
             _uiManager.ShowHUD<GameAnnouncerHUD>();
 
             if (_platformManager.IsTouchPlatform)
@@ -67,21 +70,21 @@ namespace SpaceInvaders.Scenes.Game
             await _uiManager.ShowScreen<GameStartScreen>();
         }
 
-        private UniTask TriggerGameInitialize()
+        private UniTask TriggerGameInitialize(GameSessionDTO session)
         {
             // Listeners run concurrently, with no ordering guarantee.
-            return UniTask.WhenAll(_gameInitializeListeners.Select(handler => handler.GameInitialize()));
+            return UniTask.WhenAll(_gameInitializeListeners.Select(handler => handler.GameInitialize(session)));
         }
 
-        private UniTask TriggerGameStart(int levelNumber)
+        private UniTask TriggerGameStart(GameSessionDTO session)
         {
             foreach (var condition in _gameEndConditions)
             {
-                condition.GameStart();
+                condition.GameStart(session);
                 condition.ConditionMet += OnGameEndConditionMet;
             }
 
-            return UniTask.WhenAll(_gameStartListeners.Select(handler => handler.GameStart(levelNumber)));
+            return UniTask.WhenAll(_gameStartListeners.Select(handler => handler.GameStart(session)));
         }
 
         #endregion
@@ -137,7 +140,8 @@ namespace SpaceInvaders.Scenes.Game
                 await UniTask.Delay(TimeSpan.FromSeconds(delay));
             }
 
-            await UniTask.WhenAll(_gameEndListeners.Select(handler => handler.GameEnd()));
+            var sessionResult = new GameSessionResultDTO(_session, result);
+            await UniTask.WhenAll(_gameEndListeners.Select(handler => handler.GameEnd(sessionResult)));
 
             FinishState(result);
         }

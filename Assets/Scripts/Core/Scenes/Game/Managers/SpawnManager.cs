@@ -51,13 +51,13 @@ namespace SpaceInvaders.Scenes.Game
             _objectPooling.ClearAll();
         }
 
-        public UniTask GameInitialize()
+        public UniTask GameInitialize(GameSessionDTO session)
         {
             _isRunActive = true;
             return UniTask.CompletedTask;
         }
 
-        public UniTask GameEnd()
+        public UniTask GameEnd(GameSessionResultDTO result)
         {
             _isRunActive = false;
 

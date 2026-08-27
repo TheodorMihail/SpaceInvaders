@@ -100,18 +100,18 @@ namespace SpaceInvaders.Scenes.Game
             _impactFeedbackService.Dispose();
         }
 
-        public UniTask GameInitialize()
+        public UniTask GameInitialize(GameSessionDTO session)
         {
             _enemiesService.GameInitialize();
             _scoreService.GameInitialize();
             return UniTask.CompletedTask;
         }
 
-        public UniTask GameStart(int levelNumber)
+        public UniTask GameStart(GameSessionDTO session)
         {
-            CurrentLevelNumber = levelNumber;
+            CurrentLevelNumber = session.LevelNumber;
 
-            if (!_levelsRepository.TryGetLevelConfig(levelNumber, out LevelConfigSO levelConfig))
+            if (!_levelsRepository.TryGetLevelConfig(CurrentLevelNumber, out LevelConfigSO levelConfig))
             {
                 return UniTask.CompletedTask;
             }
@@ -120,7 +120,7 @@ namespace SpaceInvaders.Scenes.Game
             return UniTask.CompletedTask;
         }
 
-        public UniTask GameEnd()
+        public UniTask GameEnd(GameSessionResultDTO result)
         {
             _hazardsService.StopHazards();
             _enemiesService.GameEnd();

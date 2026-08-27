@@ -101,7 +101,7 @@ namespace SpaceInvaders.Tests
 
             _mockPlayingState.OnStateFinished += Raise.Event<Action<(GameStateTypes, object[])>>((GameStateTypes.Playing, new object[] { GameplayStateResultTypes.Restart }));
 
-            _mockScenesManager.Received(1).LoadScene(SceneTypes.Game.ToString(), 1);
+            _mockScenesManager.Received(1).LoadScene(SceneTypes.Game.ToString(), new GameSessionDTO(GameModeTypes.Campaign, 1));
             _mockGameOverState.DidNotReceive().OnEnter(Arg.Any<object[]>());
         }
 
@@ -133,7 +133,7 @@ namespace SpaceInvaders.Tests
 
             _mockGameOverState.OnStateFinished += Raise.Event<Action<(GameStateTypes, object[])>>((GameStateTypes.GameOver, new object[] { GameOverStateResultTypes.Restart }));
 
-            _mockScenesManager.Received(1).LoadScene(SceneTypes.Game.ToString(), 1);
+            _mockScenesManager.Received(1).LoadScene(SceneTypes.Game.ToString(), new GameSessionDTO(GameModeTypes.Campaign, 1));
         }
 
         [Test]
@@ -146,7 +146,7 @@ namespace SpaceInvaders.Tests
             _mockPlayingState.OnStateFinished += Raise.Event<Action<(GameStateTypes, object[])>>((GameStateTypes.Playing, new object[] { GameplayStateResultTypes.GameOver }));
             _mockGameOverState.OnStateFinished += Raise.Event<Action<(GameStateTypes, object[])>>((GameStateTypes.GameOver, new object[] { GameOverStateResultTypes.Restart }));
 
-            _mockScenesManager.Received(1).LoadScene(SceneTypes.Game.ToString(), 2);
+            _mockScenesManager.Received(1).LoadScene(SceneTypes.Game.ToString(), new GameSessionDTO(GameModeTypes.Campaign, 2));
         }
 
         [Test]
@@ -182,8 +182,8 @@ namespace SpaceInvaders.Tests
             _mockPlayingState.OnStateFinished += Raise.Event<Action<(GameStateTypes, object[])>>((GameStateTypes.Playing, new object[] { GameplayStateResultTypes.LevelFinished }));
             _mockGameOverState.OnStateFinished += Raise.Event<Action<(GameStateTypes, object[])>>((GameStateTypes.GameOver, new object[] { GameOverStateResultTypes.NextLevel }));
 
-            _mockPlayingState.Received(1).OnEnter(Arg.Is<object[]>(args => args.Length > 0 && (int)args[0] == 2));
-            _mockPlayingState.Received(1).OnEnter(Arg.Is<object[]>(args => args.Length > 0 && (int)args[0] == 3));
+            _mockPlayingState.Received(1).OnEnter(Arg.Is<object[]>(args => args.Length > 0 && ((GameSessionDTO)args[0]).LevelNumber == 2));
+            _mockPlayingState.Received(1).OnEnter(Arg.Is<object[]>(args => args.Length > 0 && ((GameSessionDTO)args[0]).LevelNumber == 3));
         }
 
         [Test]

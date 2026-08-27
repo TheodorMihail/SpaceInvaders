@@ -11,7 +11,7 @@ namespace SpaceInvaders.Scenes.Game
 
         public event Action<GameplayStateResultTypes> ConditionMet;
 
-        public void GameStart()
+        public void GameStart(GameSessionDTO session)
         {
             _messageBus.Subscribe<LevelCompletedMessage>(OnLevelCompleted);
         }
@@ -33,7 +33,7 @@ namespace SpaceInvaders.Scenes.Game
 
         public event Action<GameplayStateResultTypes> ConditionMet;
 
-        public void GameStart()
+        public void GameStart(GameSessionDTO session)
         {
             _messageBus.Subscribe<PlayerDestroyedMessage>(OnPlayerDestroyed);
         }

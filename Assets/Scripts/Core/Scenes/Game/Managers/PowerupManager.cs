@@ -27,7 +27,7 @@ namespace SpaceInvaders.Scenes.Game
             ClearActivePowerups();
         }
 
-        public UniTask GameEnd()
+        public UniTask GameEnd(GameSessionResultDTO result)
         {
             ClearActivePowerups();
             return UniTask.CompletedTask;

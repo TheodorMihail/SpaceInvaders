@@ -1,5 +1,6 @@
 using BaseArchitecture.Core;
 using SpaceInvaders.Project;
+using SpaceInvaders.Scenes.Game;
 using System.Collections.Generic;
 using Zenject;
 using static SpaceInvaders.Scenes.MainMenu.MainMenuStateMachine;
@@ -42,7 +43,8 @@ namespace SpaceInvaders.Scenes.MainMenu
                         }
                         else if (finishedState.paramsList.TryGetParam<LevelSelectionScreen.LevelSelectionScreenResult>(out var levelResult))
                         {
-                            _scenesManager.LoadScene(SceneTypes.Game.ToString(), levelResult.LevelSelected);
+                            var session = new GameSessionDTO(GameModeTypes.Campaign, levelResult.LevelSelected);
+                            _scenesManager.LoadScene(SceneTypes.Game.ToString(), session);
                         }
                             
                     break;

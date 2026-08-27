@@ -46,7 +46,7 @@ namespace SpaceInvaders.Scenes.Game
             Time.timeScale = 1f;
         }
 
-        public UniTask GameStart(int levelNumber)
+        public UniTask GameStart(GameSessionDTO session)
         {
             _canPause = true;
             return UniTask.CompletedTask;
@@ -54,7 +54,7 @@ namespace SpaceInvaders.Scenes.Game
 
         /// <summary>Restores time directly rather than through Resume, which only acts when paused.
         /// The level advance never reloads the scene, so a running slow motion would carry over.</summary>
-        public UniTask GameEnd()
+        public UniTask GameEnd(GameSessionResultDTO result)
         {
             Resume();
             CancelSlowMotion();

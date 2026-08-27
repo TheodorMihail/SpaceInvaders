@@ -10,6 +10,9 @@ namespace SpaceInvaders.Tests
     [TestFixture]
     public class TimeManagerTests : ZenjectUnitTestFixture
     {
+        private static readonly GameSessionDTO _session = new(GameModeTypes.Campaign, 1);
+        private static readonly GameSessionResultDTO _sessionResult = new(_session, GameplayStateResultTypes.GameOver);
+
         private TimeManager _timeManager;
         private IInputManager _mockInputManager;
         private IMessageBus _messageBus;
@@ -64,7 +67,7 @@ namespace SpaceInvaders.Tests
         [Test]
         public void Pause_AfterGameStart_FreezesTimeAndPublishesMessage()
         {
-            _timeManager.GameStart(1);
+            _timeManager.GameStart(_session);
 
             _timeManager.Pause();
 
@@ -76,7 +79,7 @@ namespace SpaceInvaders.Tests
         [Test]
         public void Pause_WhileAlreadyPaused_PublishesOnce()
         {
-            _timeManager.GameStart(1);
+            _timeManager.GameStart(_session);
 
             _timeManager.Pause();
             _timeManager.Pause();
@@ -87,7 +90,7 @@ namespace SpaceInvaders.Tests
         [Test]
         public void Resume_WhilePaused_RestoresTimeAndPublishesMessage()
         {
-            _timeManager.GameStart(1);
+            _timeManager.GameStart(_session);
             _timeManager.Pause();
 
             _timeManager.Resume();
@@ -100,7 +103,7 @@ namespace SpaceInvaders.Tests
         [Test]
         public void Resume_WhileNotPaused_DoesNothing()
         {
-            _timeManager.GameStart(1);
+            _timeManager.GameStart(_session);
 
             _timeManager.Resume();
 
@@ -110,10 +113,10 @@ namespace SpaceInvaders.Tests
         [Test]
         public void GameEnd_WhilePaused_Resumes()
         {
-            _timeManager.GameStart(1);
+            _timeManager.GameStart(_session);
             _timeManager.Pause();
 
-            _timeManager.GameEnd();
+            _timeManager.GameEnd(_sessionResult);
 
             Assert.IsFalse(_timeManager.IsPaused);
             Assert.AreEqual(1f, Time.timeScale);
@@ -123,8 +126,8 @@ namespace SpaceInvaders.Tests
         [Test]
         public void Pause_AfterGameEnd_DoesNothing()
         {
-            _timeManager.GameStart(1);
-            _timeManager.GameEnd();
+            _timeManager.GameStart(_session);
+            _timeManager.GameEnd(_sessionResult);
 
             _timeManager.Pause();
 
@@ -135,10 +138,10 @@ namespace SpaceInvaders.Tests
         [Test]
         public void Pause_OnNextGameStartAfterGameEnd_IsAllowedAgain()
         {
-            _timeManager.GameStart(1);
-            _timeManager.GameEnd();
+            _timeManager.GameStart(_session);
+            _timeManager.GameEnd(_sessionResult);
 
-            _timeManager.GameStart(1);
+            _timeManager.GameStart(_session);
             _timeManager.Pause();
 
             Assert.IsTrue(_timeManager.IsPaused);
@@ -148,7 +151,7 @@ namespace SpaceInvaders.Tests
         [Test]
         public void PauseInput_WhenNotPaused_Pauses()
         {
-            _timeManager.GameStart(1);
+            _timeManager.GameStart(_session);
 
             _mockInputManager.OnPause += Raise.Event<System.Action>();
 
@@ -159,7 +162,7 @@ namespace SpaceInvaders.Tests
         [Test]
         public void PauseInput_WhilePaused_DoesNotResume()
         {
-            _timeManager.GameStart(1);
+            _timeManager.GameStart(_session);
             _timeManager.Pause();
 
             _mockInputManager.OnPause += Raise.Event<System.Action>();
@@ -171,7 +174,7 @@ namespace SpaceInvaders.Tests
         [Test]
         public void Dispose_RestoresTimeScale()
         {
-            _timeManager.GameStart(1);
+            _timeManager.GameStart(_session);
             _timeManager.Pause();
 
             _timeManager.Dispose();
