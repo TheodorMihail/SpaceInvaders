@@ -40,7 +40,6 @@ namespace SpaceInvaders.Scenes.Game
             MeasureStack();
         }
 
-        /// <summary>Travels the layer down by the given distance, recycling any piece that runs off the bottom.</summary>
         public void Scroll(float distance)
         {
             if (!_isScrollable)

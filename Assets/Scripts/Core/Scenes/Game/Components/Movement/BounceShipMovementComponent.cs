@@ -77,7 +77,6 @@ namespace SpaceInvaders.Scenes.Game
             _currentDirection.Normalize();
         }
 
-        /// <summary>Applies a random angle variation to the reflected direction.</summary>
         private void ApplyRandomBounce()
         {
             float randomAngleVariation = Random.Range(-_bounceAngleVariation, _bounceAngleVariation);

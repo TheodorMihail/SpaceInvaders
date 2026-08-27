@@ -78,7 +78,6 @@ namespace SpaceInvaders.Scenes.Game
                  "for ships whose arrival is a moment, which today means bosses.")]
         [SerializeField, Range(0f, 1f)] private float _enteredViewThreshold = 0.2f;
 
-        /// <summary>Blocks damage until the entry animation completes.</summary>
         protected virtual bool IsInvulnerableWhileEntering => false;
 
         private EnemyState _currentState = EnemyState.Entering;
@@ -132,8 +131,6 @@ namespace SpaceInvaders.Scenes.Game
             return Vector3.Distance(transform.position, _entryTargetPosition);
         }
 
-        /// <summary>Speed is set to cover this ship's distance in the shared wave duration, so the
-        /// whole formation arrives at the same time.</summary>
         public void StartEntryAnimation(float duration)
         {
             if (duration <= 0f)
@@ -151,8 +148,6 @@ namespace SpaceInvaders.Scenes.Game
                 .OnComplete(OnEntryComplete);
         }
 
-        /// <summary>Split and summoned ships are placed where they are needed, so there is no entry
-        /// to fly and nothing to be invulnerable through.</summary>
         public void SkipEntry()
         {
             _entryTween?.Kill();

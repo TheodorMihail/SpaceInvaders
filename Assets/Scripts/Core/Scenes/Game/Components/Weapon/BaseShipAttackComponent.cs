@@ -82,15 +82,12 @@ namespace SpaceInvaders.Scenes.Game
             }
         }
 
-        /// <summary>The ship's cooldown after firing this attack. Fire rate is a cooldown, so a
-        /// higher multiplier divides it, so a higher value means faster, as with a FireRate bonus.
-        /// A heavy attack leaves the ship idle for longer than a light one.</summary>
+        /// <summary>Fire rate is a cooldown, so a higher multiplier divides it and means faster.</summary>
         public float GetCooldown(ShipStats stats)
         {
             return stats.CurrentFireRate / Mathf.Max(_fireRateMultiplier, MinFireRateMultiplier);
         }
 
-        /// <summary>The ship's live stats scaled by this attack's own multipliers.</summary>
         public AttackSourceDTO CreateAttackSource(ShipStats stats)
         {
             return new AttackSourceDTO(stats, _damageMultiplier, _projectileSpeedMultiplier);

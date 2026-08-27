@@ -5,9 +5,6 @@ using Random = UnityEngine.Random;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    /// <summary>
-    /// Ship stats that permanent progression (talents, equipped items) can modify.
-    /// </summary>
     /// <summary>Values are pinned: configs serialize this enum by index.</summary>
     public enum ShipUpgradableStatTypes
     {
@@ -64,11 +61,9 @@ namespace SpaceInvaders.Scenes.Game
     }
 
     /// <summary>
-    /// A base value with stackable flat and percentage bonus modifiers. Both count from base
-    /// independently (order doesn't matter): percentage bonuses scale the base (positive bonuses
-    /// sum additively, negative gives diminishing returns, never reaching/crossing -100%), flat
-    /// bonuses add directly to it. The combined result is floored at 10% of base either way, so
-    /// no combination of maluses can zero out or invert a stat.
+    /// A base value with stackable flat and percentage bonuses. Both count from base independently, so
+    /// order never matters: positives sum, negatives give diminishing returns and never cross -100%,
+    /// and the result is floored at 10% of base so no combination of maluses can zero or invert a stat.
     /// </summary>
     public class StatValue
     {
@@ -203,7 +198,7 @@ namespace SpaceInvaders.Scenes.Game
         /// <summary>Extra seconds added to every timed powerup.</summary>
         public float CurrentPowerupDuration => _powerupDurationStat.CurrentValue;
 
-        /// <summary>Whether this ship spends ammo. Authored per ship, and toggled by a powerup.</summary>
+        /// <summary>Authored per ship, and toggled by a powerup.</summary>
         public bool HasUnlimitedAmmo { get; private set; }
 
         public bool IsOutOfAmmo => !HasUnlimitedAmmo && CurrentAmmo <= 0;
@@ -231,15 +226,13 @@ namespace SpaceInvaders.Scenes.Game
             CurrentAmmo = CurrentMaxAmmo;
         }
 
-        /// <summary>Rolls this ship's outgoing damage against its own crit stats.</summary>
         public int RollOutgoingDamage(out bool isCritical)
         {
             return RollOutgoingDamage(1f, out isCritical);
         }
 
-        /// <summary>The multiplier is the firing attack's own damage scaling, layered over this ship's
-        /// stats. It scales the rounded projectile damage, so a multiplier of 1 rolls exactly as an
-        /// unscaled shot does.</summary>
+        /// <summary>The multiplier is the firing attack's own scaling, applied to the rounded projectile
+        /// damage, so 1 rolls exactly as an unscaled shot does.</summary>
         public int RollOutgoingDamage(float damageMultiplier, out bool isCritical)
         {
             isCritical = Random.value < CurrentCritChance;
@@ -273,8 +266,7 @@ namespace SpaceInvaders.Scenes.Game
             HealthChanged?.Invoke(CurrentHealth, CurrentMaxHealth);
         }
 
-        /// <summary>Spends one round for a whole volley, so extra shots never cost extra ammo.
-        /// Always succeeds for ships with unlimited ammo.</summary>
+        /// <summary>One round per volley, so extra shots never cost extra ammo.</summary>
         public bool TryConsumeAmmo()
         {
             if (HasUnlimitedAmmo)
@@ -299,10 +291,8 @@ namespace SpaceInvaders.Scenes.Game
             AmmoChanged?.Invoke(CurrentAmmo, CurrentMaxAmmo);
         }
 
-        /// <summary>
-        /// Adds a permanent bonus to the given stat. FireRate and ReloadSpeed are durations, so a
-        /// positive bonus is inverted here to make the ship shoot and reload faster.
-        /// </summary>
+        /// <summary>FireRate and ReloadSpeed are durations, so a positive bonus is inverted here to make
+        /// the ship shoot and reload faster.</summary>
         public void ApplyStatBonus(ShipUpgradableStatTypes statType, float bonus, ShipStatValueTypes valueType)
         {
             switch (statType)
@@ -365,7 +355,6 @@ namespace SpaceInvaders.Scenes.Game
             IsInvincible = value;
         }
 
-        /// <summary>Stops ammo being spent, regardless of the magazine.</summary>
         public void SetUnlimitedAmmo(bool value)
         {
             if (HasUnlimitedAmmo == value)

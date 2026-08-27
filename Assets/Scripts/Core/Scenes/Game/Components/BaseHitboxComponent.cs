@@ -19,7 +19,7 @@ namespace SpaceInvaders.Scenes.Game
         /// reference that throws on use.</summary>
         public abstract IDamageableTarget Target { get; }
 
-        /// <summary>Whether a shot from the given object flies the same colours and should pass through.</summary>
+        /// <summary>Whether a shot from the given object is friendly and should pass through.</summary>
         public abstract bool IsSameTeamAs(GameObject other);
     }
 }
