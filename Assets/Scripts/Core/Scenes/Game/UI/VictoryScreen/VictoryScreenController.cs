@@ -11,7 +11,7 @@ namespace SpaceInvaders.Scenes.Game
         public override void Initialize()
         {
             base.Initialize();
-            _view.Initialize(_model.AllLevelsComplete, _model.StarsEarned, _model.TotalScore, _model.GetCollectedItems());
+            _view.Initialize(_model.Options, _model.StarsEarned, _model.TotalScore, _model.GetCollectedItems());
             _view.OnNextLevelButtonClicked += HandleNextLevelButtonClicked;
             _view.OnRetryButtonClicked += HandleRetryButtonClicked;
             _view.OnMainMenuButtonClicked += HandleMainMenuButtonClicked;

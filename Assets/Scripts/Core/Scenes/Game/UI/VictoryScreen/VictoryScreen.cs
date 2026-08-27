@@ -1,4 +1,5 @@
 using BaseArchitecture.Core;
+using SpaceInvaders.Project;
 using static SpaceInvaders.Scenes.Game.VictoryScreen;
 
 namespace SpaceInvaders.Scenes.Game
@@ -10,6 +11,11 @@ namespace SpaceInvaders.Scenes.Game
             NextLevel,
             Retry,
             MainMenu
+        }
+
+        public struct VictoryScreenParams
+        {
+            public GameOverOptionTypes Options { get; set; }
         }
 
         public struct VictoryScreenResult : IScreenResult

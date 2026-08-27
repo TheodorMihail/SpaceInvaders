@@ -17,6 +17,7 @@ namespace SpaceInvaders.Tests
     {
         private GameStateMachine _gameStateMachine;
         private IScenesManager _mockScenesManager;
+        private IGameModeManager _mockGameModeManager;
         private IState<GameStateTypes> _mockPlayingState;
         private IState<GameStateTypes> _mockGameOverState;
 
@@ -27,6 +28,9 @@ namespace SpaceInvaders.Tests
 
             _mockScenesManager = Substitute.For<IScenesManager>();
 
+            _mockGameModeManager = Substitute.For<IGameModeManager>();
+            _mockGameModeManager.HubScene.Returns(SceneTypes.MainMenu);
+
             _mockPlayingState = Substitute.For<IState<GameStateTypes>>();
             _mockPlayingState.Id.Returns(GameStateTypes.Playing);
 
@@ -34,6 +38,7 @@ namespace SpaceInvaders.Tests
             _mockGameOverState.Id.Returns(GameStateTypes.GameOver);
 
             Container.Bind<IScenesManager>().FromInstance(_mockScenesManager);
+            Container.Bind<IGameModeManager>().FromInstance(_mockGameModeManager);
 
             var mockStates = new List<IState<GameStateTypes>> { _mockPlayingState, _mockGameOverState };
             _gameStateMachine = new GameStateMachine(mockStates);
@@ -80,7 +85,7 @@ namespace SpaceInvaders.Tests
 
             _mockPlayingState.OnStateFinished += Raise.Event<Action<(GameStateTypes, object[])>>((GameStateTypes.Playing, new object[] { GameplayStateResultTypes.GameOver }));
 
-            _mockGameOverState.Received(1).OnEnter(Arg.Is<object[]>(args => args.Length > 0 && (GameplayStateResultTypes)args[0] == GameplayStateResultTypes.GameOver));
+            _mockGameOverState.Received(1).OnEnter(Arg.Is<object[]>(args => args.Length > 0 && ((GameSessionResultDTO)args[0]).Result == GameplayStateResultTypes.GameOver));
         }
 
         [Test]

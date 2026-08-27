@@ -21,8 +21,7 @@ namespace SpaceInvaders.Tests
         private ISpawnManager _mockSpawnManager;
         private IPlayerSpaceship _mockPlayer;
         private IMessageBus _messageBus;
-        private ITalentManager _mockTalentManager;
-        private IEquipmentManager _mockEquipmentManager;
+        private IGameModeManager _mockGameModeManager;
 
         private IEnumerator InitializeAndSpawnPlayer()
         {
@@ -37,15 +36,13 @@ namespace SpaceInvaders.Tests
             _mockSpawnManager = Substitute.For<ISpawnManager>();
             _mockPlayer = Substitute.For<IPlayerSpaceship>();
             _messageBus = new MessageBus();
-            _mockTalentManager = Substitute.For<ITalentManager>();
-            _mockEquipmentManager = Substitute.For<IEquipmentManager>();
+            _mockGameModeManager = Substitute.For<IGameModeManager>();
 
             _mockSpawnManager.SpawnPlayer().Returns(UniTask.FromResult(_mockPlayer));
 
             Container.Bind<ISpawnManager>().FromInstance(_mockSpawnManager);
             Container.Bind<IMessageBus>().FromInstance(_messageBus);
-            Container.Bind<ITalentManager>().FromInstance(_mockTalentManager);
-            Container.Bind<IEquipmentManager>().FromInstance(_mockEquipmentManager);
+            Container.Bind<IGameModeManager>().FromInstance(_mockGameModeManager);
 
             _playerManager = Container.Instantiate<PlayerManager>();
         }

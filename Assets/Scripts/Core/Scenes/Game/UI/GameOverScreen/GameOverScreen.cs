@@ -1,4 +1,5 @@
 using BaseArchitecture.Core;
+using SpaceInvaders.Project;
 using static SpaceInvaders.Scenes.Game.GameOverScreen;
 
 namespace SpaceInvaders.Scenes.Game
@@ -9,6 +10,11 @@ namespace SpaceInvaders.Scenes.Game
         {
             Restart,
             MainMenu
+        }
+
+        public struct GameOverScreenParams
+        {
+            public GameOverOptionTypes Options { get; set; }
         }
 
         public struct GameOverScreenResult : IScreenResult

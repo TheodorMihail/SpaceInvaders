@@ -1,5 +1,6 @@
 using System;
 using BaseArchitecture.Core;
+using SpaceInvaders.Project;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,8 +19,11 @@ namespace SpaceInvaders.Scenes.Game
         public event Action OnRestartButtonClicked;
         public event Action OnMainMenuButtonClicked;
 
-        public void Initialize(int score)
+        public void Initialize(GameOverOptionTypes options, int score)
         {
+            _restartButton.gameObject.SetActive(options.HasFlag(GameOverOptionTypes.Restart));
+            _mainMenuButton.gameObject.SetActive(options.HasFlag(GameOverOptionTypes.MainMenu));
+
             _scoreText.text = string.Format(_scoreString, score);
         }
 

@@ -37,6 +37,8 @@ namespace SpaceInvaders.Project
                 .FromSubContainerResolve().ByInstaller<SoundsInstaller>().AsSingle();
             Container.BindInterfacesTo<InventoryManager>()
                 .FromSubContainerResolve().ByInstaller<InventoryInstaller>().AsSingle();
+            Container.BindInterfacesTo<GameModeManager>()
+                .FromSubContainerResolve().ByInstaller<GameModeInstaller>().AsSingle();
         }
 
         private void RepositoriesInstall()
@@ -75,6 +77,16 @@ namespace SpaceInvaders.Project
         {
             Container.Bind<GameSoundsManager>().AsSingle();
             Container.Bind<ISoundsService>().To<SoundsService>().AsSingle();
+        }
+    }
+
+    public class GameModeInstaller : Installer<GameModeInstaller>
+    {
+        public override void InstallBindings()
+        {
+            // Concrete: the parent's subcontainer lookup asks for this type, not the interfaces.
+            Container.Bind<GameModeManager>().AsSingle();
+            Container.Bind<IGameModeService>().To<CampaignModeService>().AsSingle();
         }
     }
 

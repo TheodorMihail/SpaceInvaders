@@ -69,6 +69,7 @@ namespace SpaceInvaders.Scenes.Game
         [Inject] private readonly IShipsRepository _shipsRepository;
         [Inject] private readonly IPlayerManager _playerManager;
         [Inject] private readonly ILevelProgressManager _levelProgressManager;
+        [Inject] private readonly IGameModeManager _gameModeManager;
         [Inject] private readonly IMessageBus _messageBus;
 
         [Inject] private readonly IEnemiesService _enemiesService;
@@ -76,9 +77,10 @@ namespace SpaceInvaders.Scenes.Game
         [Inject] private readonly IScoreService _scoreService;
         [Inject] private readonly IImpactFeedbackService _impactFeedbackService;
 
-        public int CurrentLevelNumber { get; private set; }
+        public int CurrentLevelNumber => _session.LevelNumber;
         public int TotalScore => _scoreService.TotalScore;
 
+        private GameSessionDTO _session;
         private int _currentWaveNumber;
         private LevelConfigSO _currentLevelConfigSo;
 
@@ -109,9 +111,9 @@ namespace SpaceInvaders.Scenes.Game
 
         public UniTask GameStart(GameSessionDTO session)
         {
-            CurrentLevelNumber = session.LevelNumber;
+            _session = session;
 
-            if (!_levelsRepository.TryGetLevelConfig(CurrentLevelNumber, out LevelConfigSO levelConfig))
+            if (!_levelsRepository.TryGetLevelConfig(session.LevelNumber, out LevelConfigSO levelConfig))
             {
                 return UniTask.CompletedTask;
             }
@@ -124,7 +126,7 @@ namespace SpaceInvaders.Scenes.Game
         {
             _hazardsService.StopHazards();
             _enemiesService.GameEnd();
-            _scoreService.GameEnd();
+            _scoreService.GameEnd(result);
             _impactFeedbackService.GameEnd();
             return UniTask.CompletedTask;
         }
@@ -136,12 +138,6 @@ namespace SpaceInvaders.Scenes.Game
 
         private void StartLevel(LevelConfigSO levelConfig)
         {
-            if (CurrentLevelNumber > _levelProgressManager.MaxLevelNumber)
-            {
-                this.LogError($"Level {CurrentLevelNumber} is out of range! Max levels: {_levelProgressManager.MaxLevelNumber}");
-                return;
-            }
-
             _currentLevelConfigSo = levelConfig;
             _currentWaveNumber = 0;
 
@@ -156,7 +152,7 @@ namespace SpaceInvaders.Scenes.Game
                 // Nothing left to survive, so the level should not keep throwing hazards during the
                 // delay before the run actually ends.
                 _hazardsService.StopHazards();
-                AwardLevelStars();
+                _gameModeManager.SaveLevelResult(_session, _playerManager.PlayerStats);
                 _messageBus.Publish(new LevelCompletedMessage(CurrentLevelNumber));
                 return;
             }
@@ -186,30 +182,6 @@ namespace SpaceInvaders.Scenes.Game
             }
 
             return false;
-        }
-
-        private void AwardLevelStars()
-        {
-            ShipStats stats = _playerManager.PlayerStats;
-            int stars = CalculateStars(stats.CumulativeDamageTaken, _currentLevelConfigSo.ThreeStarMaxDamage,
-                    _levelsRepository.GetTwoStarDamageMultiplier());
-
-            _levelProgressManager.RecordLevelResult(CurrentLevelNumber, stars);
-        }
-
-        private static int CalculateStars(int damageTaken, int threeStarMaxDamage, float twoStarDamageMultiplier)
-        {
-            if (damageTaken <= threeStarMaxDamage)
-            {
-                return 3;
-            }
-
-            if (damageTaken <= threeStarMaxDamage * twoStarDamageMultiplier)
-            {
-                return 2;
-            }
-
-            return 1;
         }
     }
 }

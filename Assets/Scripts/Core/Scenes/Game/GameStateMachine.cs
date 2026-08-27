@@ -16,6 +16,7 @@ namespace SpaceInvaders.Scenes.Game
         }
 
         [Inject] private readonly IScenesManager _scenesManager;
+        [Inject] private readonly IGameModeManager _gameModeManager;
 
         protected override GameStateTypes DefaultStateId => GameStateTypes.Playing;
 
@@ -29,6 +30,7 @@ namespace SpaceInvaders.Scenes.Game
         public override void Initialize()
         {
             _scenesManager.PendingSceneParams.TryGetParam(out _currentSession, new GameSessionDTO(GameModeTypes.Campaign, 1));
+            _gameModeManager.InitializeGameMode(_currentSession.Mode);
             SetState(DefaultStateId, _currentSession);
         }
 
@@ -45,13 +47,13 @@ namespace SpaceInvaders.Scenes.Game
                             // Quitting and restarting come from the pause screen, so they skip the
                             // game over flow entirely.
                             case GameplayStateResultTypes.Quit:
-                                _scenesManager.LoadScene(SceneTypes.MainMenu.ToString());
+                                _scenesManager.LoadScene(_gameModeManager.HubScene.ToString());
                                 break;
                             case GameplayStateResultTypes.Restart:
                                 _scenesManager.LoadScene(SceneTypes.Game.ToString(), _currentSession);
                                 break;
                             default:
-                                SetState(GameStateTypes.GameOver, result);
+                                SetState(GameStateTypes.GameOver, new GameSessionResultDTO(_currentSession, result));
                                 break;
                         }
 
@@ -62,7 +64,7 @@ namespace SpaceInvaders.Scenes.Game
                         switch (gameOverResult)
                         {
                             case GameOverStateResultTypes.MainMenu:
-                                _scenesManager.LoadScene(SceneTypes.MainMenu.ToString());
+                                _scenesManager.LoadScene(_gameModeManager.HubScene.ToString());
                                 break;
                             case GameOverStateResultTypes.Restart:
                                 _scenesManager.LoadScene(SceneTypes.Game.ToString(), _currentSession);

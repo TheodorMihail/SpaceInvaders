@@ -26,8 +26,7 @@ namespace SpaceInvaders.Scenes.Game
     {
         [Inject] private readonly ISpawnManager _spawnManager;
         [Inject] private readonly IMessageBus _messageBus;
-        [Inject] private readonly ITalentManager _talentManager;
-        [Inject] private readonly IEquipmentManager _equipmentManager;
+        [Inject] private readonly IGameModeManager _gameModeManager;
 
         private IPlayerSpaceship _playerInstance;
 
@@ -54,8 +53,7 @@ namespace SpaceInvaders.Scenes.Game
         public async UniTask GameInitialize(GameSessionDTO session)
         {
             _playerInstance = await _spawnManager.SpawnPlayer();
-            _talentManager.ApplyTalentBonuses(_playerInstance.Stats);
-            _equipmentManager.ApplyEquipmentBonuses(_playerInstance.Stats);
+            _gameModeManager.ApplyProgressionBonuses(_playerInstance.Stats);
             _playerInstance.OnDestroyed += OnDestroyedCallback;
             _playerInstance.OnShotFired += OnShotFiredCallback;
             _playerInstance.OnDamaged += OnDamagedCallback;

@@ -16,6 +16,7 @@ namespace SpaceInvaders.Tests
 
         private LevelSessionManager _levelSessionManager;
         private ILevelsRepository _mockLevelsRepository;
+        private IGameModeManager _mockGameModeManager;
         private IShipsRepository _mockShipsRepository;
         private IEnemiesService _mockEnemiesService;
         private IPlayerManager _mockPlayerManager;
@@ -50,6 +51,7 @@ namespace SpaceInvaders.Tests
             base.Setup();
 
             _mockLevelsRepository = Substitute.For<ILevelsRepository>();
+            _mockGameModeManager = Substitute.For<IGameModeManager>();
             _mockShipsRepository = Substitute.For<IShipsRepository>();
             _mockEnemiesService = Substitute.For<IEnemiesService>();
             _mockPlayerManager = Substitute.For<IPlayerManager>();
@@ -62,6 +64,7 @@ namespace SpaceInvaders.Tests
             _mockPlayerManager.PlayerStats.Returns(new ShipStats(new ShipBaseStats()));
 
             Container.Bind<ILevelsRepository>().FromInstance(_mockLevelsRepository);
+            Container.Bind<IGameModeManager>().FromInstance(_mockGameModeManager);
             Container.Bind<IShipsRepository>().FromInstance(_mockShipsRepository);
             Container.Bind<IEnemiesService>().FromInstance(_mockEnemiesService);
             Container.Bind<IPlayerManager>().FromInstance(_mockPlayerManager);
@@ -94,7 +97,6 @@ namespace SpaceInvaders.Tests
         public void Dispose_StopsReactingToAllEnemiesDestroyedMessage()
         {
             CreateMockLevelConfig(1, 3);
-            _mockLevelProgressManager.MaxLevelNumber.Returns(3);
 
             _levelSessionManager.Initialize();
             _levelSessionManager.GameStart(_session).Forget();
@@ -115,10 +117,9 @@ namespace SpaceInvaders.Tests
         }
 
         [Test]
-        public void OnGameStarted_IncrementsCurrentLevelNumber()
+        public void OnGameStarted_TakesCurrentLevelNumberFromTheSession()
         {
             CreateMockLevelConfig(1, 3);
-            _mockLevelProgressManager.MaxLevelNumber.Returns(3);
 
             _levelSessionManager.Initialize();
             _levelSessionManager.GameStart(_session).Forget();
@@ -130,7 +131,6 @@ namespace SpaceInvaders.Tests
         public void OnGameStarted_SpawnsFirstWave()
         {
             CreateMockLevelConfig(1, 3);
-            _mockLevelProgressManager.MaxLevelNumber.Returns(3);
 
             _levelSessionManager.Initialize();
             _levelSessionManager.GameStart(_session).Forget();
@@ -142,7 +142,6 @@ namespace SpaceInvaders.Tests
         public void OnGameStarted_PublishesLevelStartedMessage()
         {
             CreateMockLevelConfig(1, 3);
-            _mockLevelProgressManager.MaxLevelNumber.Returns(3);
 
             var startedLevelNumber = -1;
             string startedLevelName = null;
@@ -163,7 +162,6 @@ namespace SpaceInvaders.Tests
         public void OnGameStarted_PublishesWaveStartedMessage()
         {
             CreateMockLevelConfig(1, 3);
-            _mockLevelProgressManager.MaxLevelNumber.Returns(3);
 
             var startedWaveNumber = -1;
             _messageBus.Subscribe<WaveStartedMessage>((message) => startedWaveNumber = message.WaveNumber);
@@ -178,7 +176,6 @@ namespace SpaceInvaders.Tests
         public void OnAllEnemiesDestroyed_StartsNextWave()
         {
             CreateMockLevelConfig(1, 3);
-            _mockLevelProgressManager.MaxLevelNumber.Returns(3);
 
             _levelSessionManager.Initialize();
             _levelSessionManager.GameStart(_session).Forget();
@@ -192,7 +189,6 @@ namespace SpaceInvaders.Tests
         public void OnAllEnemiesDestroyed_LastWave_PublishesLevelCompletedMessage()
         {
             CreateMockLevelConfig(1, 1);
-            _mockLevelProgressManager.MaxLevelNumber.Returns(3);
 
             var levelCompletedInvoked = false;
             _messageBus.Subscribe<LevelCompletedMessage>((message) => levelCompletedInvoked = true);
@@ -209,7 +205,6 @@ namespace SpaceInvaders.Tests
         public void OnAllEnemiesDestroyed_LastWave_PassesCorrectLevelNumber()
         {
             CreateMockLevelConfig(1, 1);
-            _mockLevelProgressManager.MaxLevelNumber.Returns(3);
 
             var completedLevelNumber = -1;
             _messageBus.Subscribe<LevelCompletedMessage>((message) => completedLevelNumber = message.LevelNumber);
@@ -223,17 +218,16 @@ namespace SpaceInvaders.Tests
         }
 
         [Test]
-        public void OnAllEnemiesDestroyed_LastWave_RecordsLevelResult()
+        public void OnAllEnemiesDestroyed_LastWave_SavesLevelResultThroughTheMode()
         {
             CreateMockLevelConfig(1, 1);
-            _mockLevelProgressManager.MaxLevelNumber.Returns(3);
 
             _levelSessionManager.Initialize();
             _levelSessionManager.GameStart(_session).Forget();
 
             _messageBus.Publish(new AllEnemiesDestroyedMessage());
 
-            _mockLevelProgressManager.Received(1).RecordLevelResult(1, Arg.Any<int>());
+            _mockGameModeManager.Received(1).SaveLevelResult(_session, Arg.Any<ShipStats>());
         }
     }
 }

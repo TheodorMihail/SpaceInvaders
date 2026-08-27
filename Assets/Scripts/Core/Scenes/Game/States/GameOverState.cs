@@ -1,9 +1,9 @@
 using BaseArchitecture.Core;
 using Cysharp.Threading.Tasks;
+using SpaceInvaders.Project;
 using Zenject;
 using static SpaceInvaders.Scenes.Game.VictoryScreen;
 using static SpaceInvaders.Scenes.Game.GameOverScreen;
-using static SpaceInvaders.Scenes.Game.GameplayState;
 using static SpaceInvaders.Scenes.Game.GameStateMachine;
 
 namespace SpaceInvaders.Scenes.Game
@@ -18,6 +18,7 @@ namespace SpaceInvaders.Scenes.Game
         }
 
         [Inject] private readonly IUIManager _uiManager;
+        [Inject] private readonly IGameModeManager _gameModeManager;
 
         public override GameStateTypes Id => GameStateTypes.GameOver;
 
@@ -25,16 +26,22 @@ namespace SpaceInvaders.Scenes.Game
         {
             base.OnEnter();
 
-            GameplayStateResultTypes result = (GameplayStateResultTypes)paramsList[0];
-            ShowGameOver(result).Forget();
+            var sessionResult = (GameSessionResultDTO)paramsList[0];
+            ShowGameOver(sessionResult).Forget();
         }
 
-        private async UniTask ShowGameOver(GameplayStateResultTypes result)
+        /// <summary>Which buttons a result screen offers is the mode's decision.</summary>
+        private async UniTask ShowGameOver(GameSessionResultDTO sessionResult)
         {
-            switch (result)
+            GameOverOptionTypes options = _gameModeManager.GetGameOverOptions(sessionResult);
+
+            switch (sessionResult.Result)
             {
                 case GameplayStateResultTypes.GameOver:
-                    GameOverScreenResult gameOverResult = await _uiManager.ShowScreen<GameOverScreen, GameOverScreenResult>();
+                    GameOverScreenResult gameOverResult = await _uiManager
+                        .ShowScreen<GameOverScreen, GameOverScreenParams, GameOverScreenResult>(
+                            new GameOverScreenParams { Options = options });
+
                     switch (gameOverResult.Result)
                     {
                         case GameOverScreen.ResultTypes.MainMenu:
@@ -47,7 +54,10 @@ namespace SpaceInvaders.Scenes.Game
                     break;
 
                 case GameplayStateResultTypes.LevelFinished:
-                    VictoryScreenResult victoryResult = await _uiManager.ShowScreen<VictoryScreen, VictoryScreenResult>();
+                    VictoryScreenResult victoryResult = await _uiManager
+                        .ShowScreen<VictoryScreen, VictoryScreenParams, VictoryScreenResult>(
+                            new VictoryScreenParams { Options = options });
+
                     switch (victoryResult.Result)
                     {
                         case VictoryScreen.ResultTypes.MainMenu:
@@ -63,8 +73,6 @@ namespace SpaceInvaders.Scenes.Game
                     }
                     break;
             }
-            
-            
         }
     }
 }
