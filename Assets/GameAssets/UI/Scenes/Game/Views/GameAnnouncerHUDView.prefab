@@ -69,6 +69,7 @@ GameObject:
   - component: {fileID: 25377915951081801}
   - component: {fileID: 802698915899287170}
   - component: {fileID: 3769010534035945286}
+  - component: {fileID: 2139658960972077422}
   m_Layer: 5
   m_Name: GameAnnouncerHUDView
   m_TagString: Untagged
@@ -118,6 +119,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _textCanvasGroup: {fileID: 5374970130973552980}
   _displayText: {fileID: 6476455906206235616}
+--- !u!114 &2139658960972077422
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2820869069662748217}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ac82b2cfa101f240a012c73d4448a60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4698832480510133548
 GameObject:
   m_ObjectHideFlags: 0

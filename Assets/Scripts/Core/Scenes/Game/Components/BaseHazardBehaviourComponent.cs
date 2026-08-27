@@ -64,7 +64,7 @@ namespace SpaceInvaders.Scenes.Game
             if (!Stats.IsDestructible)
             {
                 SpawnVFX(_config.HitVFXPrefab);
-                Flash();
+                AnimateFlash();
                 return;
             }
 
@@ -75,7 +75,7 @@ namespace SpaceInvaders.Scenes.Game
 
             Stats.ApplyDamage(source.RollDamage(out _));
             SpawnVFX(_config.HitVFXPrefab);
-            Flash();
+            AnimateFlash();
 
             if (Stats.IsDestroyed)
             {
@@ -118,15 +118,14 @@ namespace SpaceInvaders.Scenes.Game
             Despawn();
         }
 
-        /// <summary>Hazards without a flash authored just skip it, so no prefab has to carry one.</summary>
-        private void Flash()
+        private void AnimateFlash()
         {
             if (_hitFlash == null)
             {
                 return;
             }
 
-            _hitFlash.Flash();
+            _hitFlash.AnimateFlash();
         }
 
         private void SpawnVFX(VFXBehaviourComponent prefab)

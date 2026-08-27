@@ -197,7 +197,6 @@ namespace SpaceInvaders.Scenes.Game
             _levelProgressManager.RecordLevelResult(CurrentLevelNumber, stars);
         }
 
-        /// <summary>Star rating based on total damage taken against the level's three-star threshold.</summary>
         private static int CalculateStars(int damageTaken, int threeStarMaxDamage, float twoStarDamageMultiplier)
         {
             if (damageTaken <= threeStarMaxDamage)

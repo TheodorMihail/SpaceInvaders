@@ -12,19 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93d9f8e61f7265044a5bda2ccbbb3bec, type: 3}
   m_Name: GameDataConfig
   m_EditorClassIdentifier: 
-  _sideMarginRatio: 0.05
+  _referenceAspectRatio: 1.7777778
+  _referenceOrthographicSize: 150
+  _sideMarginRatio: 0.06
   _topMarginRatio: 0.1
   _bottomMarginRatio: 0.03
   _regionDividerRatio: 0.4
   _impactFeedback:
     _maxShakeOffset: 15
-    _traumaDecayRate: 2
+    _shakeDecayRate: 2
     _shakeFrequency: 22
-    _playerDamagedTrauma: 0.65
-    _playerDestroyedTrauma: 1
-    _bossEnteredTrauma: 0.8
-    _bossDestroyedTrauma: 1
-    _hazardDestroyedTrauma: 0.65
+    _playerDamagedShake: 0.65
+    _playerDestroyedShake: 1
+    _bossEnteredShake: 0.8
+    _bossDestroyedShake: 1
+    _hazardDestroyedShake: 0.65
     _slowMotionTimeScale: 0.3
     _playerDestroyedSlowMotion: 2
     _levelCompletedSlowMotion: 2

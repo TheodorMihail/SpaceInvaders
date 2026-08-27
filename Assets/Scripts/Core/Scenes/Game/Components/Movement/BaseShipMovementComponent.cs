@@ -34,7 +34,6 @@ namespace SpaceInvaders.Scenes.Game
         /// would shift the component inside a stationary ship.</summary>
         protected Transform ShipTransform => _shipTransform;
 
-        /// <summary>Exposed for anything needing the hull's size, such as visibility checks.</summary>
         public Renderer Renderer => _renderer;
 
         [Tooltip("Measured for the bounds query, so it must be the renderer that defines the hull's size.")]
@@ -65,7 +64,6 @@ namespace SpaceInvaders.Scenes.Game
             _hasBounds = false;
         }
 
-        /// <summary>Travels one frame's worth along the given direction, clamped to the bounds.</summary>
         public void Move(Vector3 direction)
         {
             if (_stats == null || _shipTransform == null)
@@ -87,11 +85,9 @@ namespace SpaceInvaders.Scenes.Game
             _shipTransform.position = newPosition;
         }
 
-        /// <summary>Enables movement once the ship is free to move.</summary>
         public abstract void StartMoving();
 
-        /// <summary>One frame of movement, called from the owning ship's Update so the ship decides
-        /// whether movement runs.</summary>
+        /// <summary>Called from the owning ship's Update, so the ship decides whether movement runs.</summary>
         public abstract void Tick();
 
         /// <summary>Resolved on first use, not on spawn: a pooled ship is still at its old position
@@ -109,7 +105,7 @@ namespace SpaceInvaders.Scenes.Game
                 return;
             }
 
-            (_minBounds, _maxBounds) = _cameraManager.GetPlayableBounds(_renderer, _region);
+            (_minBounds, _maxBounds) = _cameraManager.GetPlayfieldRegionBounds(_renderer, _region);
             _hasBounds = true;
         }
     }

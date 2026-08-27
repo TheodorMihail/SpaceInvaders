@@ -74,18 +74,26 @@ namespace SpaceInvaders.Scenes.Game
     [CreateAssetMenu(fileName = "GameDataConfig", menuName = "SpaceInvaders/Data Config/Game Data Config")]
     public class GameDataConfigSO : ScriptableObject, IRepositoryObject
     {
-        [Header("Camera")]
-        [Tooltip("Screen edges reserved for UI, as a fraction of the view, so ships never move underneath it.")]
+        [Header("Play Area")]
+        [Tooltip("Aspect the play area is authored against. The camera zooms out until the whole area fits, so the arena is the same shape on every display.")]
+        [SerializeField, Range(1f, 3f)] private float _referenceAspectRatio = 16f / 9f;
+
+        [Tooltip("Half the play area's height in world units. Must match the scene camera's authored orthographic size.")]
+        [SerializeField] private float _referenceOrthographicSize = 150f;
+
+        [Tooltip("Play area edges reserved for UI, as a fraction of the area, so ships never move underneath it.")]
         [SerializeField, Range(0f, 0.4f)] private float _sideMarginRatio = 0.05f;
         [SerializeField, Range(0f, 0.4f)] private float _topMarginRatio = 0.1f;
         [SerializeField, Range(0f, 0.4f)] private float _bottomMarginRatio = 0.03f;
 
-        [Tooltip("Viewport height where the enemy region ends and the player's begins. Below the middle gives enemy formations more depth.")]
+        [Tooltip("Play area height where the enemy region ends and the player's begins. Below the middle gives enemy formations more depth.")]
         [SerializeField, Range(0.1f, 0.9f)] private float _regionDividerRatio = 0.4f;
 
         [Header("Impact Feedback")]
         [SerializeField] private ImpactFeedbackSettings _impactFeedback = new();
 
+        public virtual float ReferenceAspectRatio => _referenceAspectRatio;
+        public virtual float ReferenceOrthographicSize => _referenceOrthographicSize;
         public virtual float SideMarginRatio => _sideMarginRatio;
         public virtual float TopMarginRatio => _topMarginRatio;
         public virtual float BottomMarginRatio => _bottomMarginRatio;

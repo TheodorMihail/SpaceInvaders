@@ -13,29 +13,29 @@ namespace SpaceInvaders.Scenes.Game
 
     public interface ICameraManager : IInitializable, IDisposable, ITickable
     {
-        /// <summary>Adds to the shake the camera is already carrying. It decays on its own, so callers
-        /// never have to stop one.</summary>
+        /// <summary>The play area in viewport space, for UI that should follow the arena.</summary>
+        Rect PlayfieldViewportRect { get; }
+
+        /// <summary>Adds to the shake already running. It decays on its own, so callers never stop one.</summary>
         void AddScreenShake(float amount);
 
-        /// <summary>Drops all shake and puts the camera back on its mark.</summary>
         void ResetShake();
 
-        /// <summary>Where ships may move: inset by the margins reserved for UI.</summary>
-        (Vector3 min, Vector3 max) GetPlayableBounds(Renderer renderer, ScreenRegionTypes regionType, float buffer = 0f);
+        /// <summary>Where ships may move: the play area inset by the margins reserved for UI.</summary>
+        (Vector3 min, Vector3 max) GetPlayfieldRegionBounds(Renderer renderer, ScreenRegionTypes regionType, float buffer = 0f);
 
-        /// <summary>Where an object is still on screen: the full view, ignoring the UI margins.</summary>
-        (Vector3 min, Vector3 max) GetVisibleBounds(Renderer renderer, float buffer = 0f);
+        /// <summary>Where an object is still in play: the whole play area, ignoring the UI margins.</summary>
+        (Vector3 min, Vector3 max) GetPlayfieldBounds(Renderer renderer, float buffer = 0f);
 
-        /// <summary>The top edge of the view on the given world plane, from left to right. Takes a
-        /// plane instead of a renderer, for placing objects that do not exist yet. The inset is a
-        /// fraction of the view width removed from each side.</summary>
+        /// <summary>The top edge of the play area, left to right. Takes a plane rather than a renderer,
+        /// for placing objects that do not exist yet. The inset is a fraction of the width per side.</summary>
         (Vector3 left, Vector3 right) GetTopEdgeBounds(float planeY, float sideInsetRatio = 0f);
 
-        /// <summary>How much of the renderer has come into view from above, from 0 fully hidden to 1
-        /// fully shown, for anything that should react to arriving rather than to being spawned.</summary>
+        /// <summary>How much of the renderer has come into the play area from above, 0 to 1.</summary>
         float GetVisibleFraction(Renderer renderer);
 
-        Vector3 GetViewportWorldPoint(float viewportX, float viewportY, float yPosition);
+        /// <summary>Takes a point inside the play area, from 0 to 1 on each axis.</summary>
+        Vector3 GetPlayfieldWorldPoint(float playfieldX, float playfieldY, float yPosition);
         Vector3 GetScreenPoint(Vector3 worldPosition);
     }
 
@@ -43,25 +43,28 @@ namespace SpaceInvaders.Scenes.Game
     {
         [Inject] private readonly IGameRepository _gameRepository;
 
-        /// <summary>Reachable from nowhere else, so the camera keeps a single owner while the shake
-        /// maths lives on its own.</summary>
         [Inject] private readonly IScreenShakeService _screenShake;
+
+        [Inject] private readonly IPlayfieldService _playfield;
 
         private Camera _mainCamera;
         private GameDataConfigSO _gameDataConfig;
 
-        /// <summary>The camera's unshaken position. Bounds are always measured from here.</summary>
+        /// <summary>The camera's unshaken position; bounds are always measured from here.</summary>
         private Vector3 _restPosition;
 
-        /// <summary>The camera's current shake offset, subtracted by every bounds query.</summary>
+        public Rect PlayfieldViewportRect => GetPlayfieldViewportRect();
+
+        /// <summary>Subtracted by every bounds query.</summary>
         private Vector3 ShakeOffset => _screenShake.Offset;
 
         public void Initialize()
         {
-            _mainCamera = Camera.main;
             _gameDataConfig = _gameRepository.GetGameDataConfig();
 
-            if (_mainCamera == null)
+            // Before the rest position is taken: every bounds answer is measured against the size the
+            // camera settles on.
+            if (!TrySetupCameraToPlayfield())
             {
                 Debug.LogError("CameraManager: No main camera found!");
                 return;
@@ -88,8 +91,7 @@ namespace SpaceInvaders.Scenes.Game
             ApplyShakeOffset();
         }
 
-        /// <summary>Scaled time on purpose: the shake freezes with the rest of the game while paused
-        /// or held in slow motion, rather than rattling on over a still frame.</summary>
+        /// <summary>Scaled time on purpose: the shake freezes with the game while paused or in slow motion.</summary>
         public void Tick()
         {
             _screenShake.Tick(Time.deltaTime);
@@ -106,13 +108,9 @@ namespace SpaceInvaders.Scenes.Game
             _mainCamera.transform.position = _restPosition + ShakeOffset;
         }
 
-        /// <summary>
-        /// Returns the world-space movement bounds for a renderer within the given screen region,
-        /// inset by the renderer's extents, the buffer, and the margins reserved for UI.
-        /// </summary>
-        /// <remarks>Measured from the camera's resting pose. Callers cache these on first use, so a
-        /// query made mid-shake would store the shake offset permanently.</remarks>
-        public (Vector3 min, Vector3 max) GetPlayableBounds(Renderer renderer, ScreenRegionTypes regionType, float buffer = 0f)
+        /// <remarks>Callers cache these on first use, so a query made mid-shake would store the shake
+        /// offset permanently.</remarks>
+        public (Vector3 min, Vector3 max) GetPlayfieldRegionBounds(Renderer renderer, ScreenRegionTypes regionType, float buffer = 0f)
         {
             if (_mainCamera == null || renderer == null || _gameDataConfig == null)
             {
@@ -123,9 +121,9 @@ namespace SpaceInvaders.Scenes.Game
             Vector3 extents = renderer.bounds.extents;
 
             float sideMargin = _gameDataConfig.SideMarginRatio;
-            Vector3 screenBottomLeft = _mainCamera.ViewportToWorldPoint(new Vector3(sideMargin, _gameDataConfig.BottomMarginRatio, position.y));
-            Vector3 screenTopRight = _mainCamera.ViewportToWorldPoint(new Vector3(1f - sideMargin, 1f - _gameDataConfig.TopMarginRatio, position.y));
-            Vector3 screenDivider = _mainCamera.ViewportToWorldPoint(new Vector3(0.5f, _gameDataConfig.RegionDividerRatio, position.y));
+            Vector3 screenBottomLeft = PlayfieldToWorldPoint(sideMargin, _gameDataConfig.BottomMarginRatio, position.y);
+            Vector3 screenTopRight = PlayfieldToWorldPoint(1f - sideMargin, 1f - _gameDataConfig.TopMarginRatio, position.y);
+            Vector3 screenDivider = PlayfieldToWorldPoint(0.5f, _gameDataConfig.RegionDividerRatio, position.y);
 
             Vector3 minBounds;
             Vector3 maxBounds;
@@ -183,12 +181,9 @@ namespace SpaceInvaders.Scenes.Game
             return (minBounds - ShakeOffset, maxBounds - ShakeOffset);
         }
 
-        /// <summary>
-        /// The full view, expanded by the renderer's extents so an object is only considered gone
-        /// once it has fully left the screen. Deliberately ignores the UI margins, which restrict
-        /// where ships may move rather than what is still visible.
-        /// </summary>
-        public (Vector3 min, Vector3 max) GetVisibleBounds(Renderer renderer, float buffer = 0f)
+        /// <summary>Expanded by the renderer's extents, so an object counts as gone only once it has
+        /// fully left the arena.</summary>
+        public (Vector3 min, Vector3 max) GetPlayfieldBounds(Renderer renderer, float buffer = 0f)
         {
             if (_mainCamera == null || renderer == null)
             {
@@ -198,8 +193,8 @@ namespace SpaceInvaders.Scenes.Game
             Vector3 position = renderer.transform.position;
             Vector3 extents = renderer.bounds.extents;
 
-            Vector3 bottomLeft = _mainCamera.ViewportToWorldPoint(new Vector3(0f, 0f, position.y));
-            Vector3 topRight = _mainCamera.ViewportToWorldPoint(new Vector3(1f, 1f, position.y));
+            Vector3 bottomLeft = PlayfieldToWorldPoint(0f, 0f, position.y);
+            Vector3 topRight = PlayfieldToWorldPoint(1f, 1f, position.y);
 
             Vector3 minBounds = new Vector3(
                 bottomLeft.x - extents.x - buffer,
@@ -215,10 +210,6 @@ namespace SpaceInvaders.Scenes.Game
             return (minBounds - ShakeOffset, maxBounds - ShakeOffset);
         }
 
-        /// <summary>
-        /// Uses the full view, ignoring the UI margins, since those restrict where ships may move
-        /// rather than where the view starts.
-        /// </summary>
         public (Vector3 left, Vector3 right) GetTopEdgeBounds(float planeY, float sideInsetRatio = 0f)
         {
             if (_mainCamera == null)
@@ -229,8 +220,8 @@ namespace SpaceInvaders.Scenes.Game
             // Beyond half the width per side the span would invert.
             float inset = Mathf.Clamp(sideInsetRatio, 0f, 0.5f);
 
-            Vector3 leftEdge = _mainCamera.ViewportToWorldPoint(new Vector3(inset, 1f, planeY));
-            Vector3 rightEdge = _mainCamera.ViewportToWorldPoint(new Vector3(1f - inset, 1f, planeY));
+            Vector3 leftEdge = PlayfieldToWorldPoint(inset, 1f, planeY);
+            Vector3 rightEdge = PlayfieldToWorldPoint(1f - inset, 1f, planeY);
 
             return (
                 new Vector3(leftEdge.x, planeY, leftEdge.z) - ShakeOffset,
@@ -238,11 +229,8 @@ namespace SpaceInvaders.Scenes.Game
             );
         }
 
-        /// <summary>
-        /// The visible bounds already include the renderer's extents, so their maximum is the point
-        /// where it is fully hidden above the view, and two extents further in is fully shown. The
-        /// fraction is the position between the two.
-        /// </summary>
+        /// <summary>The bounds already include the extents, so their maximum is fully hidden and two
+        /// extents further in is fully shown.</summary>
         public float GetVisibleFraction(Renderer renderer)
         {
             if (_mainCamera == null || renderer == null)
@@ -257,23 +245,60 @@ namespace SpaceInvaders.Scenes.Game
                 return 0f;
             }
 
-            (Vector3 _, Vector3 maxBounds) = GetVisibleBounds(renderer);
+            (Vector3 _, Vector3 maxBounds) = GetPlayfieldBounds(renderer);
             float fullyShownZ = maxBounds.z - extentZ * 2f;
 
             return Mathf.InverseLerp(maxBounds.z, fullyShownZ, renderer.transform.position.z);
         }
 
-        public Vector3 GetViewportWorldPoint(float viewportX, float viewportY, float yPosition)
+        public Vector3 GetPlayfieldWorldPoint(float playfieldX, float playfieldY, float yPosition)
         {
             if (_mainCamera == null)
             {
                 return Vector3.zero;
             }
 
-            return _mainCamera.ViewportToWorldPoint(new Vector3(viewportX, viewportY, yPosition)) - ShakeOffset;
+            return PlayfieldToWorldPoint(playfieldX, playfieldY, yPosition) - ShakeOffset;
         }
 
-        /// <summary>Projects a world position to screen pixels, for placing UI over gameplay.</summary>
+        /// <summary>UI is built during scene load, before the initialize phase runs, and a play area not
+        /// yet set up would silently answer with the whole screen.</summary>
+        private Rect GetPlayfieldViewportRect()
+        {
+            TrySetupCameraToPlayfield();
+
+            return _playfield.ViewportRect;
+        }
+
+        /// <summary>Runs once: the first caller frames the camera, later ones find it already done.</summary>
+        private bool TrySetupCameraToPlayfield()
+        {
+            if (_mainCamera != null)
+            {
+                return true;
+            }
+
+            _mainCamera = Camera.main;
+
+            if (_mainCamera == null)
+            {
+                return false;
+            }
+
+            _playfield.SetupToPlayfield(_mainCamera);
+
+            return true;
+        }
+
+        /// <summary>The one place play area coordinates become world ones. Carries the shake, since
+        /// callers subtract it once from the bounds they return.</summary>
+        private Vector3 PlayfieldToWorldPoint(float playfieldX, float playfieldY, float yPosition)
+        {
+            Vector2 viewportPoint = _playfield.ToViewportPoint(playfieldX, playfieldY);
+
+            return _mainCamera.ViewportToWorldPoint(new Vector3(viewportPoint.x, viewportPoint.y, yPosition));
+        }
+
         public Vector3 GetScreenPoint(Vector3 worldPosition)
         {
             if (_mainCamera == null)

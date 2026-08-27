@@ -20,11 +20,9 @@ namespace SpaceInvaders.Scenes.Game
         VFXBehaviourComponent SpawnVFX(VFXBehaviourComponent prefab, Vector3 localPosition);
         void Despawn<T>(T instance) where T : MonoBehaviour, IPoolableObject;
 
-        /// <summary>Converts a world point into the container space spawn positions use. The container
-        /// is offset from the world, so the two never match.</summary>
+        /// <summary>The container is offset from the world, so the two spaces never match.</summary>
         Vector3 GetContainerLocalPosition(Vector3 worldPosition);
 
-        /// <summary>Converts a spawn position back into world space.</summary>
         Vector3 GetContainerWorldPosition(Vector3 localPosition);
     }
 
@@ -45,8 +43,7 @@ namespace SpaceInvaders.Scenes.Game
         /// <summary>Transients despawned on game end. Types not registered here are never cleaned up.</summary>
         private readonly HashSet<ScreenBoundedMovingComponent> _activeObjects = new();
 
-        /// <summary>Whether a run is live. Only awaited spawns check it, so listener order does not
-        /// matter.</summary>
+        /// <summary>Only awaited spawns check this, so listener order does not matter.</summary>
         private bool _isRunActive;
 
         public void Dispose()
