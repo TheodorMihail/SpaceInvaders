@@ -28,7 +28,7 @@ namespace SpaceInvaders.Scenes.Game
         /// <summary>Decides what drops; this manager decides where it spawns and publishes it.</summary>
         [Inject] private readonly IDropRollService _dropRolls;
 
-        /// <summary>Loot collected during the current run. Added to the inventory only on level completion.</summary>
+        /// <summary>Added to the inventory only on level completion.</summary>
         private readonly List<InventoryItemEntry> _pendingLoot = new();
         private IReadOnlyList<InventoryItemEntry> _lastBankedLoot = Array.Empty<InventoryItemEntry>();
 

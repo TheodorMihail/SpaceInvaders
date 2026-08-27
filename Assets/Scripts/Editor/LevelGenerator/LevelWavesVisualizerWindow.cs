@@ -51,8 +51,8 @@ namespace SpaceInvaders.Editor
             ReloadLevels();
         }
 
-        /// <summary>Read from the config rather than repeated here, so the guides cannot drift from the
-        /// area the game actually frames. Still editable in the toolbar, for previewing another aspect.</summary>
+        /// <summary>Read from the config so the guides cannot drift from what the game frames. Still
+        /// editable in the toolbar, for previewing another aspect.</summary>
         private void LoadPlayArea()
         {
             GameDataConfigSO gameDataConfig = AssetDatabase.FindAssets($"t:{nameof(GameDataConfigSO)}")

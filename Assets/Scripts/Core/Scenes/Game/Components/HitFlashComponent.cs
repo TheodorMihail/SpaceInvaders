@@ -38,10 +38,10 @@ namespace SpaceInvaders.Scenes.Game
         /// <summary>Pooled ships can come back mid-flash, so the hull is put back before it is reused.</summary>
         private void OnDisable()
         {
-            Restore();
+            CancelAnimation();
         }
 
-        public void Flash()
+        public void AnimateFlash()
         {
             _colorTween?.Kill();
             _renderer.color = _flashColor;
@@ -63,7 +63,7 @@ namespace SpaceInvaders.Scenes.Game
             _scaleTween = transform.DOPunchScale(_restScale * _punchScale, _flashDuration, vibrato: 1, elasticity: 0f);
         }
 
-        private void Restore()
+        private void CancelAnimation()
         {
             _colorTween?.Kill();
             _scaleTween?.Kill();

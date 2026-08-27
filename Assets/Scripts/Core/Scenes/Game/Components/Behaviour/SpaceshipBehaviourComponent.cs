@@ -25,7 +25,6 @@ namespace SpaceInvaders.Scenes.Game
         void Move(Vector3 direction);
         void Shoot();
 
-        /// <summary>Tops the magazine up early, such as when a wave has been cleared.</summary>
         void Reload();
         void TakeDamage(int damage);
     }
@@ -127,7 +126,6 @@ namespace SpaceInvaders.Scenes.Game
             SetFlamesThrusting(false);
         }
 
-        /// <summary>Builds the ship from the config the spawner already resolved to find its prefab.</summary>
         public virtual void Initialize(Config config)
         {
             _shipConfig = config;
@@ -215,7 +213,6 @@ namespace SpaceInvaders.Scenes.Game
         {
         }
 
-        /// <summary>Ships without a flash authored just skip it, so no prefab has to carry one.</summary>
         private void FlashHull()
         {
             if (_hitFlash == null)
@@ -223,7 +220,7 @@ namespace SpaceInvaders.Scenes.Game
                 return;
             }
 
-            _hitFlash.Flash();
+            _hitFlash.AnimateFlash();
         }
 
         protected void SpawnHitVFX()

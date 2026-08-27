@@ -30,7 +30,6 @@ namespace SpaceInvaders.Scenes.Game
         UniTask GameEnd();
     }
 
-    /// <summary>Condition that ends the game when met.</summary>
     public interface IGameEndCondition
     {
         event Action<GameplayStateResultTypes> ConditionMet;

@@ -50,8 +50,7 @@ namespace SpaceInvaders.Scenes.Game
             DespawnPlayer();
         }
 
-        /// <summary>Spawns the player ship and applies permanent progression bonuses to its stats.
-        /// Controls are enabled later, on game start.</summary>
+        /// <summary>Controls are enabled later, on game start.</summary>
         public async UniTask GameInitialize()
         {
             _playerInstance = await _spawnManager.SpawnPlayer();

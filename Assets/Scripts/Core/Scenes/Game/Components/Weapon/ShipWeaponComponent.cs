@@ -110,7 +110,6 @@ namespace SpaceInvaders.Scenes.Game
             return true;
         }
 
-        /// <summary>Tops the magazine up early. Ignored when there is nothing to gain by it.</summary>
         public void Reload()
         {
             if (_stats == null || _stats.HasUnlimitedAmmo || _reloadCancellationTokenSource != null)
@@ -126,7 +125,6 @@ namespace SpaceInvaders.Scenes.Game
             StartReload();
         }
 
-        /// <summary>Holds every attack off for the given delay, used to stagger a wave's opening shots.</summary>
         public void DelayNextShot(float delay)
         {
             _nextShotTime = Time.time + delay;
@@ -155,7 +153,6 @@ namespace SpaceInvaders.Scenes.Game
             _reloadCancellationTokenSource = null;
         }
 
-        /// <summary>Expands each direction into an evenly spread shot pattern centered on it.</summary>
         private IEnumerable<Vector3> ApplyStatsShotSpread(BaseShipAttackComponent attack, IEnumerable<Vector3> baseDirections)
         {
             if (!attack.AllowsStatsShotSpread || _stats.ExtraShotCount <= 0)
