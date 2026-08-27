@@ -109,7 +109,7 @@ namespace SpaceInvaders.Scenes.Game
                 return;
             }
 
-            (_minBounds, _maxBounds) = _cameraManager.GetPlayableBounds(_renderer, _region);
+            (_minBounds, _maxBounds) = _cameraManager.GetPlayfieldRegionBounds(_renderer, _region);
             _hasBounds = true;
         }
     }

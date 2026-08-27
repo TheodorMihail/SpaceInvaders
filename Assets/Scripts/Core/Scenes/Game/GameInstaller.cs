@@ -86,6 +86,7 @@ namespace SpaceInvaders.Scenes.Game
             // Concrete: the parent's subcontainer lookup asks for this type, not the interfaces.
             Container.Bind<CameraManager>().AsSingle();
             Container.Bind<IScreenShakeService>().To<ScreenShakeService>().AsSingle();
+            Container.Bind<IPlayfieldService>().To<PlayfieldService>().AsSingle();
         }
     }
 

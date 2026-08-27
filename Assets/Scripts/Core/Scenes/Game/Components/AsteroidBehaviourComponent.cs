@@ -52,7 +52,7 @@ namespace SpaceInvaders.Scenes.Game
         /// <summary>Placed fully above the visible area, so it moves into view instead of appearing.</summary>
         protected override void PlaceOnEntry(float entryRatio)
         {
-            (Vector3 minBounds, Vector3 maxBounds) = _cameraManager.GetVisibleBounds(_renderer);
+            (Vector3 minBounds, Vector3 maxBounds) = _cameraManager.GetPlayfieldBounds(_renderer);
 
             Vector3 position = transform.position;
             position.x = Mathf.Lerp(minBounds.x, maxBounds.x, Mathf.Clamp01(entryRatio));

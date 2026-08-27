@@ -14,7 +14,7 @@ namespace SpaceInvaders.Editor
     {
         private static readonly Color BackgroundColor = new Color(0.13f, 0.13f, 0.18f);
         private static readonly Color ArrivalLineColor = new Color(0.35f, 0.75f, 0.45f, 0.7f);
-        private static readonly Color ScreenEdgeColor = new Color(0.9f, 0.9f, 0.4f, 0.35f);
+        private static readonly Color PlayableEdgeColor = new Color(0.9f, 0.9f, 0.4f, 0.35f);
         private static readonly Color OffScreenColor = new Color(1f, 0.3f, 0.3f);
 
         private const float WaveHeight = 150f;
@@ -23,15 +23,18 @@ namespace SpaceInvaders.Editor
 
         [SerializeField] private float _orthographicSize = 150f;
         [SerializeField] private float _aspectRatio = 16f / 9f;
+        [SerializeField] private float _sideMarginRatio = 0.05f;
         [SerializeField] private int _levelFilter;
 
         private Vector2 _scrollPosition;
         private List<LevelConfigSO> _levels = new List<LevelConfigSO>();
 
-        private float ScreenHalfWidth => _orthographicSize * _aspectRatio;
+        /// <summary>Where a formation is actually clamped: the play area less the margin reserved for UI.</summary>
+        private float PlayableHalfWidth => _orthographicSize * _aspectRatio * (1f - _sideMarginRatio);
 
         private void OnEnable()
         {
+            LoadPlayArea();
             ReloadLevels();
         }
 
@@ -46,6 +49,25 @@ namespace SpaceInvaders.Editor
         private void OnFocus()
         {
             ReloadLevels();
+        }
+
+        /// <summary>Read from the config rather than repeated here, so the guides cannot drift from the
+        /// area the game actually frames. Still editable in the toolbar, for previewing another aspect.</summary>
+        private void LoadPlayArea()
+        {
+            GameDataConfigSO gameDataConfig = AssetDatabase.FindAssets($"t:{nameof(GameDataConfigSO)}")
+                .Select(AssetDatabase.GUIDToAssetPath)
+                .Select(AssetDatabase.LoadAssetAtPath<GameDataConfigSO>)
+                .FirstOrDefault(config => config != null);
+
+            if (gameDataConfig == null)
+            {
+                return;
+            }
+
+            _orthographicSize = gameDataConfig.ReferenceOrthographicSize;
+            _aspectRatio = gameDataConfig.ReferenceAspectRatio;
+            _sideMarginRatio = gameDataConfig.SideMarginRatio;
         }
 
         private void ReloadLevels()
@@ -104,6 +126,7 @@ namespace SpaceInvaders.Editor
 
                 if (GUILayout.Button("Refresh", EditorStyles.toolbarButton, GUILayout.Width(60f)))
                 {
+                    LoadPlayArea();
                     ReloadLevels();
                 }
             }
@@ -153,7 +176,7 @@ namespace SpaceInvaders.Editor
                 return;
             }
 
-            float halfWidth = Mathf.Max(ScreenHalfWidth, slots.Max(slot => Mathf.Abs(slot.GridPosition.x))) + BoundsMargin;
+            float halfWidth = Mathf.Max(PlayableHalfWidth, slots.Max(slot => Mathf.Abs(slot.GridPosition.x))) + BoundsMargin;
             int minY = slots.Min(slot => slot.GridPosition.y);
             int maxY = slots.Max(slot => slot.GridPosition.y);
 
@@ -170,21 +193,22 @@ namespace SpaceInvaders.Editor
                     area.yMax - 14f - (ty * (area.height - 26f)) - (SlotSize * 0.5f),
                     SlotSize, SlotSize);
 
-                bool offScreen = Mathf.Abs(slot.GridPosition.x) > ScreenHalfWidth;
+                bool offScreen = Mathf.Abs(slot.GridPosition.x) > PlayableHalfWidth;
                 EditorGUI.DrawRect(dot, offScreen ? OffScreenColor : ColorFor(slot.EnemyType));
             }
         }
 
-        /// <summary>Draws the arrival line the entry animation tweens to, and the screen edges.</summary>
+        /// <summary>Draws the arrival line the entry animation tweens to, and the edges a formation is
+        /// clamped to.</summary>
         private void DrawGuides(Rect area, float halfWidth)
         {
             EditorGUI.DrawRect(new Rect(area.x, area.yMax - 8f, area.width, 1f), ArrivalLineColor);
 
-            float leftEdge = Mathf.InverseLerp(-halfWidth, halfWidth, -ScreenHalfWidth);
-            float rightEdge = Mathf.InverseLerp(-halfWidth, halfWidth, ScreenHalfWidth);
+            float leftEdge = Mathf.InverseLerp(-halfWidth, halfWidth, -PlayableHalfWidth);
+            float rightEdge = Mathf.InverseLerp(-halfWidth, halfWidth, PlayableHalfWidth);
 
-            EditorGUI.DrawRect(new Rect(area.x + (leftEdge * area.width), area.y, 1f, area.height), ScreenEdgeColor);
-            EditorGUI.DrawRect(new Rect(area.x + (rightEdge * area.width), area.y, 1f, area.height), ScreenEdgeColor);
+            EditorGUI.DrawRect(new Rect(area.x + (leftEdge * area.width), area.y, 1f, area.height), PlayableEdgeColor);
+            EditorGUI.DrawRect(new Rect(area.x + (rightEdge * area.width), area.y, 1f, area.height), PlayableEdgeColor);
         }
 
         private static string DescribeMix(List<WaveConfigDTO.WaveFormationDTO> slots)
