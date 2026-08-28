@@ -20,7 +20,6 @@ namespace SpaceInvaders.Tests
         private IShipsRepository _mockShipsRepository;
         private IEnemiesService _mockEnemiesService;
         private IPlayerManager _mockPlayerManager;
-        private ILevelProgressManager _mockLevelProgressManager;
         private IHazardsService _mockHazardsService;
         private IScoreService _mockScoreService;
         private IImpactFeedbackService _mockImpactFeedbackService;
@@ -55,7 +54,6 @@ namespace SpaceInvaders.Tests
             _mockShipsRepository = Substitute.For<IShipsRepository>();
             _mockEnemiesService = Substitute.For<IEnemiesService>();
             _mockPlayerManager = Substitute.For<IPlayerManager>();
-            _mockLevelProgressManager = Substitute.For<ILevelProgressManager>();
             _mockHazardsService = Substitute.For<IHazardsService>();
             _mockScoreService = Substitute.For<IScoreService>();
             _mockImpactFeedbackService = Substitute.For<IImpactFeedbackService>();
@@ -68,7 +66,6 @@ namespace SpaceInvaders.Tests
             Container.Bind<IShipsRepository>().FromInstance(_mockShipsRepository);
             Container.Bind<IEnemiesService>().FromInstance(_mockEnemiesService);
             Container.Bind<IPlayerManager>().FromInstance(_mockPlayerManager);
-            Container.Bind<ILevelProgressManager>().FromInstance(_mockLevelProgressManager);
             Container.Bind<IHazardsService>().FromInstance(_mockHazardsService);
             Container.Bind<IScoreService>().FromInstance(_mockScoreService);
             Container.Bind<IImpactFeedbackService>().FromInstance(_mockImpactFeedbackService);
@@ -86,14 +83,6 @@ namespace SpaceInvaders.Tests
         }
 
         [Test]
-        public void Initialize_RegistersSessionWithLevelProgressManager()
-        {
-            _levelSessionManager.Initialize();
-
-            _mockLevelProgressManager.Received(1).RegisterSession(_levelSessionManager);
-        }
-
-        [Test]
         public void Dispose_StopsReactingToAllEnemiesDestroyedMessage()
         {
             CreateMockLevelConfig(1, 3);
@@ -105,15 +94,6 @@ namespace SpaceInvaders.Tests
             _messageBus.Publish(new AllEnemiesDestroyedMessage());
 
             _mockEnemiesService.Received(1).SpawnEnemies(Arg.Any<WaveConfigDTO>());
-        }
-
-        [Test]
-        public void Dispose_UnregistersSessionFromLevelProgressManager()
-        {
-            _levelSessionManager.Initialize();
-            _levelSessionManager.Dispose();
-
-            _mockLevelProgressManager.Received(1).UnregisterSession(_levelSessionManager);
         }
 
         [Test]

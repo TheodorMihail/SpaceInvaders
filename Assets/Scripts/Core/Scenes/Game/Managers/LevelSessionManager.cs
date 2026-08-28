@@ -68,7 +68,6 @@ namespace SpaceInvaders.Scenes.Game
         [Inject] private readonly ILevelsRepository _levelsRepository;
         [Inject] private readonly IShipsRepository _shipsRepository;
         [Inject] private readonly IPlayerManager _playerManager;
-        [Inject] private readonly ILevelProgressManager _levelProgressManager;
         [Inject] private readonly IGameModeManager _gameModeManager;
         [Inject] private readonly IMessageBus _messageBus;
 
@@ -87,7 +86,6 @@ namespace SpaceInvaders.Scenes.Game
         public void Initialize()
         {
             _messageBus.Subscribe<AllEnemiesDestroyedMessage>(OnAllEnemiesDestroyedCallback);
-            _levelProgressManager.RegisterSession(this);
             _scoreService.Initialize();
             _impactFeedbackService.Initialize();
         }
@@ -95,7 +93,6 @@ namespace SpaceInvaders.Scenes.Game
         public void Dispose()
         {
             _messageBus.Unsubscribe<AllEnemiesDestroyedMessage>(OnAllEnemiesDestroyedCallback);
-            _levelProgressManager.UnregisterSession(this);
             _hazardsService.StopHazards();
             _enemiesService.GameEnd();
             _scoreService.Dispose();

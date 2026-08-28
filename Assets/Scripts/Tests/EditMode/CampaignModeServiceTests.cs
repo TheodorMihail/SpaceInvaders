@@ -45,9 +45,9 @@ namespace SpaceInvaders.Tests
         }
 
         [Test]
-        public void HubScene_IsTheMainMenu()
+        public void HubScene_IsTheCampaignScene()
         {
-            Assert.AreEqual(SceneTypes.MainMenu, _campaignModeService.HubScene);
+            Assert.AreEqual(SceneTypes.Campaign, _campaignModeService.HubScene);
         }
 
         [Test]

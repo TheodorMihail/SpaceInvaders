@@ -1,5 +1,4 @@
 using BaseArchitecture.Core;
-using SpaceInvaders.Scenes.Game;
 using Zenject;
 
 namespace SpaceInvaders.Project
@@ -7,16 +6,12 @@ namespace SpaceInvaders.Project
     public interface ILevelProgressManager : IInitializable
     {
         int MaxLevelNumber { get; }
-        int CurrentLevelNumber { get; }
 
         int GetLevelStars(int levelIndex);
         int LastPlayedLevelStarsEarned { get; }
         bool IsLevelUnlocked(int levelIndex);
         void SetLevelUnlocked(int levelIndex, bool unlocked);
         void RecordLevelResult(int levelIndex, int stars);
-
-        void RegisterSession(ILevelSessionManager session);
-        void UnregisterSession(ILevelSessionManager session);
     }
 
     public partial class LevelProgressManager : ILevelProgressManager
@@ -25,10 +20,8 @@ namespace SpaceInvaders.Project
         [Inject] private readonly ILevelsRepository _levelsRepository;
 
         private LevelsSaveData _data;
-        private ILevelSessionManager _activeSession;
 
         public int MaxLevelNumber => _levelsRepository.GetLevelsCount();
-        public int CurrentLevelNumber => _activeSession?.CurrentLevelNumber ?? 0;
         public int LastPlayedLevelStarsEarned { get; private set; }
 
         public void Initialize()
@@ -86,21 +79,6 @@ namespace SpaceInvaders.Project
             }
 
             SaveData();
-        }
-
-        /// <summary>Registers the active gameplay session. CurrentLevelNumber returns 0 while none
-        /// is registered.</summary>
-        public void RegisterSession(ILevelSessionManager session)
-        {
-            _activeSession = session;
-        }
-
-        public void UnregisterSession(ILevelSessionManager session)
-        {
-            if (_activeSession == session)
-            {
-                _activeSession = null;
-            }
         }
 
         private LevelSaveEntry GetLevelProgress(int levelIndex)

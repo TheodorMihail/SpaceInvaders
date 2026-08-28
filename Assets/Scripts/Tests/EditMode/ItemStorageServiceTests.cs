@@ -21,7 +21,9 @@ namespace SpaceInvaders.Tests
 
             _saveData = new InventorySaveData { Version = InventorySaveData.CurrentVersion };
             _mockPersistenceManager = Substitute.For<IPersistenceManager>();
-            _mockPersistenceManager.Load<InventorySaveData>(InventorySaveData.SaveKey).Returns(_saveData);
+            _mockPersistenceManager
+                .LoadVersioned<InventorySaveData>(InventorySaveData.SaveKey, InventorySaveData.CurrentVersion)
+                .Returns(_saveData);
 
             Container.Bind<IPersistenceManager>().FromInstance(_mockPersistenceManager);
 

@@ -29,7 +29,8 @@ namespace SpaceInvaders.Tests
             _configsByItemId.Clear();
 
             _mockPersistenceManager = Substitute.For<IPersistenceManager>();
-            _mockPersistenceManager.Load<EquipmentSaveData>(EquipmentSaveData.SaveKey)
+            _mockPersistenceManager
+                .LoadVersioned<EquipmentSaveData>(EquipmentSaveData.SaveKey, EquipmentSaveData.CurrentVersion)
                 .Returns(new EquipmentSaveData { Version = EquipmentSaveData.CurrentVersion });
 
             _mockItemsRepository = Substitute.For<IItemsRepository>();

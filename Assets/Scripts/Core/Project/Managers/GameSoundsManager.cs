@@ -50,9 +50,14 @@ namespace SpaceInvaders.Project
             return UniTask.CompletedTask;
         }
 
+        /// <summary>Only a defeat gets the sting. Clearing the level, restarting and quitting do not.</summary>
         public UniTask GameEnd(GameSessionResultDTO result)
         {
-            PlaySound(SoundTypes.GameOver);
+            if (result.Result == GameplayStateResultTypes.GameOver)
+            {
+                PlaySound(SoundTypes.GameOver);
+            }
+
             return UniTask.CompletedTask;
         }
 

@@ -41,7 +41,7 @@ namespace SpaceInvaders.Tests
         }
 
         [Test]
-        public void InitializeMode_StoresTheMode()
+        public void InitializeGameMode_StoresTheMode()
         {
             GameModeManager gameModeManager = CreateInitializedManagerWith(_mockCampaignService);
 

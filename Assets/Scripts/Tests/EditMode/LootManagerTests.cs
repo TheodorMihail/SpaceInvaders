@@ -21,6 +21,7 @@ namespace SpaceInvaders.Tests
         private IDropsRepository _mockDropsRepository;
         private IInventoryManager _mockInventoryManager;
         private ISpawnManager _mockSpawnManager;
+        private ICameraManager _mockCameraManager;
         private IMessageBus _messageBus;
 
         private readonly List<ItemConfigSO> _itemConfigs = new();
@@ -54,6 +55,7 @@ namespace SpaceInvaders.Tests
 
             _mockInventoryManager = Substitute.For<IInventoryManager>();
             _mockSpawnManager = Substitute.For<ISpawnManager>();
+            _mockCameraManager = Substitute.For<ICameraManager>();
             _messageBus = new MessageBus();
 
             Container.Bind<IItemsRepository>().FromInstance(_mockItemsRepository);
@@ -61,6 +63,8 @@ namespace SpaceInvaders.Tests
             Container.Bind<IDropsRepository>().FromInstance(_mockDropsRepository);
             Container.Bind<IInventoryManager>().FromInstance(_mockInventoryManager);
             Container.Bind<ISpawnManager>().FromInstance(_mockSpawnManager);
+            // Required by the debug partial, which is compiled into the Editor build.
+            Container.Bind<ICameraManager>().FromInstance(_mockCameraManager);
             Container.Bind<IMessageBus>().FromInstance(_messageBus);
 
             // The real roller over the mocked repositories, so these tests keep exercising the drop

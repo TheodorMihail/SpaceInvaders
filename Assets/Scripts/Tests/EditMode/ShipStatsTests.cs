@@ -179,19 +179,31 @@ namespace SpaceInvaders.Tests
             return stats;
         }
 
+        /// <summary>Unlimited ammo is an authored flag, not an empty magazine.</summary>
         [Test]
-        public void Ammo_WithoutMagazine_IsUnlimited()
+        public void Ammo_WithUnlimitedAmmo_IsNeverOutOfAmmo()
         {
             ShipStats stats = CreateStats();
+            stats.SetUnlimitedAmmo(true);
 
             Assert.IsTrue(stats.HasUnlimitedAmmo);
             Assert.IsFalse(stats.IsOutOfAmmo);
         }
 
         [Test]
+        public void Ammo_WithoutMagazineAndWithoutTheFlag_RunsOut()
+        {
+            ShipStats stats = CreateStats();
+
+            Assert.IsFalse(stats.HasUnlimitedAmmo);
+            Assert.IsTrue(stats.IsOutOfAmmo);
+        }
+
+        [Test]
         public void TryConsumeAmmo_WithUnlimitedAmmo_AlwaysSucceeds()
         {
             ShipStats stats = CreateStats();
+            stats.SetUnlimitedAmmo(true);
 
             for (int i = 0; i < RollSampleCount; i++)
             {
