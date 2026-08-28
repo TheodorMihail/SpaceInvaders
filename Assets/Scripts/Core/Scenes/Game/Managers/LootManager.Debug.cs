@@ -4,11 +4,10 @@ using BaseArchitecture.Core;
 using SpaceInvaders.Project;
 using UnityEngine;
 using Zenject;
-using Random = UnityEngine.Random;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public partial class LootManager : IDebugCommandProvider
+    public partial class LootManager
     {
         /// <summary>Keeps the drop away from the side edges.</summary>
         private const float DebugDropEdgeInset = 0.1f;
@@ -18,16 +17,8 @@ namespace SpaceInvaders.Scenes.Game
 
         private int _debugPowerupIndex;
 
-        public IReadOnlyList<DebugCommandDTO> GetDebugCommands()
-        {
-            return new[]
-            {
-                new DebugCommandDTO(DebugKeys.SpawnPowerup, "Spawn the next powerup", DebugSpawnPowerup)
-            };
-        }
-
         /// <summary>Cycles through the powerups in order instead of rolling a random one.</summary>
-        private void DebugSpawnPowerup()
+        public void DebugSpawnPowerup()
         {
             IReadOnlyList<PowerupConfigSO> configs = _powerupsRepository.GetAllPowerupConfigs();
 

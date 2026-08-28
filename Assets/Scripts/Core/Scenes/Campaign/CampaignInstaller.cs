@@ -27,6 +27,7 @@ namespace SpaceInvaders.Scenes.Campaign
         private void ManagersInstall()
         {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
+            Container.BindInterfacesTo<CampaignDebugCommands>().AsSingle();
             Container.BindInterfacesTo<DebugManager>().AsSingle();
 #endif
         }

@@ -1,21 +1,11 @@
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-using System.Collections.Generic;
 using BaseArchitecture.Core;
-using SpaceInvaders.Project;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public partial class PlayerManager : IDebugCommandProvider
+    public partial class PlayerManager
     {
-        public IReadOnlyList<DebugCommandDTO> GetDebugCommands()
-        {
-            return new[]
-            {
-                new DebugCommandDTO(DebugKeys.KillPlayer, "Kill player", DebugKillPlayer)
-            };
-        }
-
-        private void DebugKillPlayer()
+        public void DebugKillPlayer()
         {
             // No ship exists before it spawns or after it dies.
             if (_playerInstance == null)

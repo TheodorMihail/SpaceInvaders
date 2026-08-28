@@ -26,16 +26,16 @@ namespace SpaceInvaders.Project
             Container.BindInterfacesTo<AddressablesManager>().AsSingle();
             Container.BindInterfacesTo<PersistenceManager>().AsSingle();
 
-            Container.BindInterfacesTo<LevelProgressManager>().AsSingle();
-            Container.BindInterfacesTo<CurrencyManager>().AsSingle();
-            Container.BindInterfacesTo<TalentManager>().AsSingle();
-            Container.BindInterfacesTo<EquipmentManager>().AsSingle();
+            Container.BindInterfacesAndSelfTo<LevelProgressManager>().AsSingle();
+            Container.BindInterfacesAndSelfTo<CurrencyManager>().AsSingle();
+            Container.BindInterfacesAndSelfTo<TalentManager>().AsSingle();
+            Container.BindInterfacesAndSelfTo<EquipmentManager>().AsSingle();
 
             Container.BindInterfacesTo<PlatformManager>()
                 .FromSubContainerResolve().ByInstaller<PlatformInstaller>().AsSingle();
             Container.BindInterfacesTo<GameSoundsManager>()
                 .FromSubContainerResolve().ByInstaller<SoundsInstaller>().AsSingle();
-            Container.BindInterfacesTo<InventoryManager>()
+            Container.BindInterfacesAndSelfTo<InventoryManager>()
                 .FromSubContainerResolve().ByInstaller<InventoryInstaller>().AsSingle();
             Container.BindInterfacesTo<GameModeManager>()
                 .FromSubContainerResolve().ByInstaller<GameModeInstaller>().AsSingle();

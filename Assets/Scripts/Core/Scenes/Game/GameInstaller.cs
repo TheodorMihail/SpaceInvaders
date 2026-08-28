@@ -34,7 +34,7 @@ namespace SpaceInvaders.Scenes.Game
         {
             Container.BindInterfacesTo<ObjectPooling>().AsSingle().WithArguments(_objectPoolingContainer);
             Container.BindInterfacesTo<SpawnManager>().AsSingle().WithArguments(_gameContainer);
-            Container.BindInterfacesTo<PlayerManager>().AsSingle();
+            Container.BindInterfacesAndSelfTo<PlayerManager>().AsSingle();
             Container.BindInterfacesTo<PowerupManager>().AsSingle();
 
             Container.BindInterfacesTo<InputManager>()
@@ -42,12 +42,13 @@ namespace SpaceInvaders.Scenes.Game
             Container.BindInterfacesTo<TimeManager>().AsSingle();
             Container.BindInterfacesTo<CameraManager>()
                 .FromSubContainerResolve().ByInstaller<CameraInstaller>().AsSingle();
-            Container.BindInterfacesTo<LevelSessionManager>()
+            Container.BindInterfacesAndSelfTo<LevelSessionManager>()
                 .FromSubContainerResolve().ByInstaller<LevelSessionInstaller>().AsSingle();
-            Container.BindInterfacesTo<LootManager>()
+            Container.BindInterfacesAndSelfTo<LootManager>()
                 .FromSubContainerResolve().ByInstaller<LootInstaller>().AsSingle();
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
+            Container.BindInterfacesTo<GameplayDebugCommands>().AsSingle();
             Container.BindInterfacesTo<DebugManager>().AsSingle();
 #endif
         }

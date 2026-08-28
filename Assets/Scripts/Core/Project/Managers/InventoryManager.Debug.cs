@@ -6,20 +6,11 @@ using Zenject;
 
 namespace SpaceInvaders.Project
 {
-    public partial class InventoryManager : IDebugCommandProvider
+    public partial class InventoryManager
     {
         [Inject] private readonly IItemsRepository _itemsRepository;
 
-        public IReadOnlyList<DebugCommandDTO> GetDebugCommands()
-        {
-            return new[]
-            {
-                new DebugCommandDTO(DebugKeys.AddRandomItem, "Add random item", DebugAddRandomItem),
-                new DebugCommandDTO(DebugKeys.ClearInventory, "Clear inventory", DebugClearInventory)
-            };
-        }
-
-        private void DebugAddRandomItem()
+        public void DebugAddRandomItem()
         {
             IReadOnlyList<ItemConfigSO> configs = _itemsRepository.GetAllItemConfigs();
             if (configs.Count == 0)
@@ -37,7 +28,7 @@ namespace SpaceInvaders.Project
             this.LogWarning($"Debug: Added '{config.ItemId}' ({config.Rarity}) to inventory.");
         }
 
-        private void DebugClearInventory()
+        public void DebugClearInventory()
         {
             _itemStorage.ClearAll();
             this.LogWarning("Debug: Inventory cleared.");

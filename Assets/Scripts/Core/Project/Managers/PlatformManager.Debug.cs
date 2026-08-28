@@ -13,7 +13,7 @@ namespace SpaceInvaders.Project
         {
             return new[]
             {
-                new DebugCommandDTO(DebugKeys.TakeScreenshot, "Take screenshot", DebugTakeScreenshot)
+                new DebugCommandDTO(DebugKeys.Global.TakeScreenshot, "Take screenshot", DebugTakeScreenshot)
             };
         }
 

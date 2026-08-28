@@ -1,20 +1,11 @@
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-using System.Collections.Generic;
 using BaseArchitecture.Core;
 
 namespace SpaceInvaders.Project
 {
-    public partial class LevelProgressManager : IDebugCommandProvider
+    public partial class LevelProgressManager
     {
-        public IReadOnlyList<DebugCommandDTO> GetDebugCommands()
-        {
-            return new[]
-            {
-                new DebugCommandDTO(DebugKeys.ClearLevelProgress, "Clear level progress", DebugClearLevelProgress)
-            };
-        }
-
-        private void DebugClearLevelProgress()
+        public void DebugClearLevelProgress()
         {
             _data.Levels.Clear();
             GetOrCreateLevelProgress(1).Unlocked = true;

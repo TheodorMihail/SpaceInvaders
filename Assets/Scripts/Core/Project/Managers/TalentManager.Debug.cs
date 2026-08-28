@@ -1,20 +1,11 @@
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-using System.Collections.Generic;
 using BaseArchitecture.Core;
 
 namespace SpaceInvaders.Project
 {
-    public partial class TalentManager : IDebugCommandProvider
+    public partial class TalentManager
     {
-        public IReadOnlyList<DebugCommandDTO> GetDebugCommands()
-        {
-            return new[]
-            {
-                new DebugCommandDTO(DebugKeys.ClearTalents, "Clear talents", DebugClearTalents)
-            };
-        }
-
-        private void DebugClearTalents()
+        public void DebugClearTalents()
         {
             _data.Talents.Clear();
             SaveData();
