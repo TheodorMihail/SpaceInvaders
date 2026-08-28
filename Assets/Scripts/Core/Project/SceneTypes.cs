@@ -9,6 +9,7 @@ namespace SpaceInvaders.Project
         Preload,
         MainMenu,
         Campaign,
+        Expedition,
         Game
     }
 }

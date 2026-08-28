@@ -5,7 +5,8 @@ namespace SpaceInvaders.Scenes.Game
 {
     public enum GameModeTypes
     {
-        Campaign
+        Campaign,
+        Expedition
     }
 
     public enum GameplayStateResultTypes

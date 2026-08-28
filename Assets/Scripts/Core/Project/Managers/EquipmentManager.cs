@@ -21,7 +21,9 @@ namespace SpaceInvaders.Project
     /// <summary>Holds which item occupies each equipment slot and applies their bonuses.</summary>
     public partial class EquipmentManager : IEquipmentManager
     {
-        [Inject] private readonly IPersistenceManager _persistenceManager;
+        [Inject] private readonly ISaveProfileManager _saveProfileManager;
+
+        private IPersistenceManager _persistenceManager;
         [Inject] private readonly IItemsRepository _itemsRepository;
         [Inject] private readonly IMessageBus _messageBus;
         [Inject] private readonly IInventoryManager _inventoryManager;
@@ -32,6 +34,7 @@ namespace SpaceInvaders.Project
 
         public void Initialize()
         {
+            _persistenceManager = _saveProfileManager.GetProfile(GameModeTypes.Campaign);
             _data = _persistenceManager.LoadVersioned<EquipmentSaveData>(EquipmentSaveData.SaveKey, EquipmentSaveData.CurrentVersion);
         }
 

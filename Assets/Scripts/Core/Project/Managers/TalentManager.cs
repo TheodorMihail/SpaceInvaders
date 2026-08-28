@@ -16,7 +16,9 @@ namespace SpaceInvaders.Project
 
     public partial class TalentManager : ITalentManager
     {
-        [Inject] private readonly IPersistenceManager _persistenceManager;
+        [Inject] private readonly ISaveProfileManager _saveProfileManager;
+
+        private IPersistenceManager _persistenceManager;
         [Inject] private readonly ITalentsRepository _talentsRepository;
         [Inject] private readonly ICurrencyManager _currencyManager;
 
@@ -24,6 +26,7 @@ namespace SpaceInvaders.Project
 
         public void Initialize()
         {
+            _persistenceManager = _saveProfileManager.GetProfile(GameModeTypes.Campaign);
             _data = _persistenceManager.LoadVersioned<TalentsSaveData>(TalentsSaveData.SaveKey, TalentsSaveData.CurrentVersion);
         }
 

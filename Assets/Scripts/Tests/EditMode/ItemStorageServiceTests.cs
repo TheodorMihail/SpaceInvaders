@@ -3,6 +3,7 @@ using BaseArchitecture.Core;
 using NSubstitute;
 using NUnit.Framework;
 using SpaceInvaders.Project;
+using SpaceInvaders.Scenes.Game;
 using Zenject;
 
 namespace SpaceInvaders.Tests
@@ -25,7 +26,10 @@ namespace SpaceInvaders.Tests
                 .LoadVersioned<InventorySaveData>(InventorySaveData.SaveKey, InventorySaveData.CurrentVersion)
                 .Returns(_saveData);
 
-            Container.Bind<IPersistenceManager>().FromInstance(_mockPersistenceManager);
+            var mockSaveProfileManager = Substitute.For<ISaveProfileManager>();
+            mockSaveProfileManager.GetProfile(Arg.Any<GameModeTypes>()).Returns(_mockPersistenceManager);
+
+            Container.Bind<ISaveProfileManager>().FromInstance(mockSaveProfileManager);
 
             _itemStorage = Container.Instantiate<ItemStorageService>();
             _itemStorage.Initialize();

@@ -14,6 +14,7 @@ namespace SpaceInvaders.Tests
         private EquipmentManager _equipmentManager;
         private IInventoryManager _mockInventoryManager;
         private IPersistenceManager _mockPersistenceManager;
+        private ISaveProfileManager _mockSaveProfileManager;
         private IItemsRepository _mockItemsRepository;
         private IMessageBus _messageBus;
 
@@ -32,6 +33,9 @@ namespace SpaceInvaders.Tests
             _mockPersistenceManager
                 .LoadVersioned<EquipmentSaveData>(EquipmentSaveData.SaveKey, EquipmentSaveData.CurrentVersion)
                 .Returns(new EquipmentSaveData { Version = EquipmentSaveData.CurrentVersion });
+
+            _mockSaveProfileManager = Substitute.For<ISaveProfileManager>();
+            _mockSaveProfileManager.GetProfile(Arg.Any<GameModeTypes>()).Returns(_mockPersistenceManager);
 
             _mockItemsRepository = Substitute.For<IItemsRepository>();
             _mockItemsRepository.GetAllEquipmentSlotConfigs().Returns(new List<EquipmentSlotConfigDTO>
@@ -55,7 +59,7 @@ namespace SpaceInvaders.Tests
 
             _messageBus = new MessageBus();
 
-            Container.Bind<IPersistenceManager>().FromInstance(_mockPersistenceManager);
+            Container.Bind<ISaveProfileManager>().FromInstance(_mockSaveProfileManager);
             Container.Bind<IItemsRepository>().FromInstance(_mockItemsRepository);
             Container.Bind<IInventoryManager>().FromInstance(_mockInventoryManager);
             Container.Bind<IMessageBus>().FromInstance(_messageBus);

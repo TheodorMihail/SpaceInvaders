@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using BaseArchitecture.Core;
+using SpaceInvaders.Scenes.Game;
 using Zenject;
 
 namespace SpaceInvaders.Project
@@ -22,14 +23,16 @@ namespace SpaceInvaders.Project
     /// <summary>Holds the owned items and persists them.</summary>
     public class ItemStorageService : IItemStorageService
     {
-        [Inject] private readonly IPersistenceManager _persistenceManager;
+        [Inject] private readonly ISaveProfileManager _saveProfileManager;
 
+        private IPersistenceManager _persistenceManager;
         private InventorySaveData _data;
 
         public IReadOnlyList<InventoryItemEntry> Items => _data.Items;
 
         public void Initialize()
         {
+            _persistenceManager = _saveProfileManager.GetProfile(GameModeTypes.Campaign);
             _data = _persistenceManager.LoadVersioned<InventorySaveData>(InventorySaveData.SaveKey, InventorySaveData.CurrentVersion);
         }
 

@@ -1,4 +1,5 @@
 using BaseArchitecture.Core;
+using SpaceInvaders.Scenes.Game;
 using Zenject;
 
 namespace SpaceInvaders.Project
@@ -12,14 +13,16 @@ namespace SpaceInvaders.Project
 
     public partial class CurrencyManager : ICurrencyManager
     {
-        [Inject] private readonly IPersistenceManager _persistenceManager;
+        [Inject] private readonly ISaveProfileManager _saveProfileManager;
 
+        private IPersistenceManager _persistenceManager;
         private CurrencySaveData _data;
 
         public int Currency => _data.Amount;
 
         public void Initialize()
         {
+            _persistenceManager = _saveProfileManager.GetProfile(GameModeTypes.Campaign);
             _data = _persistenceManager.LoadVersioned<CurrencySaveData>(CurrencySaveData.SaveKey, CurrencySaveData.CurrentVersion);
         }
 

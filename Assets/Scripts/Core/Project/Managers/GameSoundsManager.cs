@@ -21,14 +21,23 @@ namespace SpaceInvaders.Project
     {
         [Inject] private readonly ISoundsRepository _soundsRepository;
         [Inject] private readonly ISoundsService _soundsService;
+        [Inject] private readonly ISaveProfileManager _saveProfileManager;
 
-        /// <summary>Explicit, so the kernel reaches this rather than the non-virtual base.</summary>
-        void IInitializable.Initialize()
+        private IPersistenceManager _persistenceManager;
+
+        /// <summary>Volume settings belong to no mode, so they live in the general profile.</summary>
+        public override void Initialize()
         {
-            base.Initialize();
+            _persistenceManager = _saveProfileManager.GetGeneralProfile();
+            InitializeWithSettings(_persistenceManager.Load<SoundsSaveData>(SoundsSaveData.SaveKey));
 
             _soundsService.OnSoundRequested += PlaySound;
             _soundsService.Initialize();
+        }
+
+        protected override void SaveSettings(SoundsSaveData settings)
+        {
+            _persistenceManager.Save(SoundsSaveData.SaveKey, settings);
         }
 
         public void Dispose()

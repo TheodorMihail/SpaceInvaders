@@ -1,4 +1,5 @@
 using BaseArchitecture.Core;
+using SpaceInvaders.Scenes.Game;
 using Zenject;
 
 namespace SpaceInvaders.Project
@@ -16,16 +17,19 @@ namespace SpaceInvaders.Project
 
     public partial class LevelProgressManager : ILevelProgressManager
     {
-        [Inject] private readonly IPersistenceManager _persistenceManager;
+        [Inject] private readonly ISaveProfileManager _saveProfileManager;
         [Inject] private readonly ILevelsRepository _levelsRepository;
 
+        private IPersistenceManager _persistenceManager;
         private LevelsSaveData _data;
 
         public int MaxLevelNumber => _levelsRepository.GetLevelsCount();
         public int LastPlayedLevelStarsEarned { get; private set; }
 
+        /// <summary>Level progress is Campaign's alone, so this profile never varies.</summary>
         public void Initialize()
         {
+            _persistenceManager = _saveProfileManager.GetProfile(GameModeTypes.Campaign);
             _data = _persistenceManager.LoadVersioned<LevelsSaveData>(LevelsSaveData.SaveKey, LevelsSaveData.CurrentVersion);
 
             LevelSaveEntry firstLevel = GetOrCreateLevelProgress(1);
