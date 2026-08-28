@@ -7,9 +7,7 @@ namespace SpaceInvaders.Scenes.MainMenu
     {
         public enum ResultTypes
         {
-            PlayGame,
-            OpenTalentTree,
-            OpenInventory,
+            PlayCampaign,
             OpenSettings,
             QuitGame
         }

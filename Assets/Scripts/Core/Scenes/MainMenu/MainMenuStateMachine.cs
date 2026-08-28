@@ -1,6 +1,5 @@
 using BaseArchitecture.Core;
 using SpaceInvaders.Project;
-using SpaceInvaders.Scenes.Game;
 using System.Collections.Generic;
 using Zenject;
 using static SpaceInvaders.Scenes.MainMenu.MainMenuStateMachine;
@@ -29,25 +28,25 @@ namespace SpaceInvaders.Scenes.MainMenu
                 switch (finishedState.stateId)
                 {
                     case MainMenuStateTypes.Menu:
-                    
-                        if (finishedState.paramsList.TryGetParam<MenuScreen.MenuScreenResult>(out var menuResult))
+
+                        if (!finishedState.paramsList.TryGetParam<MenuScreen.MenuScreenResult>(out var menuResult))
                         {
-                            if(menuResult.Result == MenuScreen.ResultTypes.QuitGame)
-                            {
+                            break;
+                        }
+
+                        if (menuResult.Result == MenuScreen.ResultTypes.QuitGame)
+                        {
 #if UNITY_EDITOR
-                                UnityEditor.EditorApplication.isPlaying = false;
+                            UnityEditor.EditorApplication.isPlaying = false;
 #else
-                                UnityEngine.Application.Quit();
+                            UnityEngine.Application.Quit();
 #endif
-                            }
+                            break;
                         }
-                        else if (finishedState.paramsList.TryGetParam<LevelSelectionScreen.LevelSelectionScreenResult>(out var levelResult))
-                        {
-                            var session = new GameSessionDTO(GameModeTypes.Campaign, levelResult.LevelSelected);
-                            _scenesManager.LoadScene(SceneTypes.Game.ToString(), session);
-                        }
-                            
-                    break;
+
+                        // Each mode owns a scene, so the menu only has to pick which one to load.
+                        _scenesManager.LoadScene(SceneTypes.Campaign.ToString());
+                        break;
                 }
             }
             catch (System.Exception ex)

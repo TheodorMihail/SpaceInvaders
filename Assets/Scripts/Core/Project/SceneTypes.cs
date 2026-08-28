@@ -8,6 +8,7 @@ namespace SpaceInvaders.Project
     {
         Preload,
         MainMenu,
+        Campaign,
         Game
     }
 }

@@ -17,7 +17,7 @@ namespace SpaceInvaders.Project
     /// <summary>Resolves authored sounds against the generic playback system and owns the music per
     /// lifecycle phase.</summary>
     public class GameSoundsManager : SoundsManager, IGameSoundsManager, IDisposable,
-        IGameInitializeListener, IGameEndListener, IMenuEnterListener
+        IGameInitializeListener, IGameEndListener, ISceneEnterListener
     {
         [Inject] private readonly ISoundsRepository _soundsRepository;
         [Inject] private readonly ISoundsService _soundsService;
@@ -37,7 +37,8 @@ namespace SpaceInvaders.Project
             _soundsService.Dispose();
         }
 
-        public UniTask MenuEnter()
+        /// <summary>Every non-gameplay scene shares the menu music, so the scene is not read yet.</summary>
+        public UniTask SceneEnter(SceneTypes scene)
         {
             PlaySound(SoundTypes.MenuMusic);
             return UniTask.CompletedTask;

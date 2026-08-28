@@ -2,29 +2,31 @@ using System.Collections.Generic;
 using System.Linq;
 using BaseArchitecture.Core;
 using Cysharp.Threading.Tasks;
+using SpaceInvaders.Project;
 using Zenject;
 using static SpaceInvaders.Scenes.MainMenu.MainMenuStateMachine;
 
 namespace SpaceInvaders.Scenes.MainMenu
 {
+    /// <summary>The hub: it picks a game mode or opens settings, and owns no progression of its own.</summary>
     public class MenuState : BaseState<MainMenuStateTypes>
     {
         public override MainMenuStateTypes Id => MainMenuStateTypes.Menu;
 
         [Inject] private readonly IUIManager _uiManager;
-        [Inject] private readonly IList<IMenuEnterListener> _menuEnterListeners;
+        [Inject] private readonly IList<ISceneEnterListener> _sceneEnterListeners;
 
         public override void OnEnter(params object[] paramsList)
         {
             base.OnEnter();
 
-            TriggerMenuEnter().Forget();
+            TriggerSceneEnter().Forget();
             ShowMenuScreen();
         }
 
-        private UniTask TriggerMenuEnter()
+        private UniTask TriggerSceneEnter()
         {
-            return UniTask.WhenAll(_menuEnterListeners.Select(listener => listener.MenuEnter()));
+            return UniTask.WhenAll(_sceneEnterListeners.Select(listener => listener.SceneEnter(SceneTypes.MainMenu)));
         }
 
         private async void ShowMenuScreen()
@@ -33,38 +35,13 @@ namespace SpaceInvaders.Scenes.MainMenu
 
             switch (result.Result)
             {
-                case MenuScreen.ResultTypes.QuitGame:
-                    FinishState(result);
-                    break;
-                case MenuScreen.ResultTypes.OpenTalentTree:
-                    await _uiManager.ShowScreen<TalentTreeScreen>();
-                    ShowMenuScreen();
-                    break;
-                case MenuScreen.ResultTypes.OpenInventory:
-                    await _uiManager.ShowScreen<InventoryScreen>();
-                    ShowMenuScreen();
-                    break;
                 case MenuScreen.ResultTypes.OpenSettings:
                     await _uiManager.ShowScreen<SettingsScreen>();
                     ShowMenuScreen();
                     break;
                 default:
-                    ShowLevelSelectionScreen();
+                    FinishState(result);
                     break;
-            }
-        }
-
-        private async void ShowLevelSelectionScreen()
-        {
-            var result = await _uiManager.ShowScreen<LevelSelectionScreen, LevelSelectionScreen.LevelSelectionScreenResult>();
-
-            if (result.Back)
-            {
-                ShowMenuScreen();
-            }
-            else
-            {
-                FinishState(result);
             }
         }
     }

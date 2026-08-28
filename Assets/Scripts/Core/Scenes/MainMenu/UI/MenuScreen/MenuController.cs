@@ -11,52 +11,24 @@ namespace SpaceInvaders.Scenes.MainMenu
         public override void Initialize()
         {
             base.Initialize();
-            _view.OnPlayGameButtonClicked += HandlePlayGameButtonClicked;
-            _view.OnQuitGameButtonClicked += HandleQuitGameButtonClicked;
-            _view.OnTalentsButtonClicked += HandleTalentsButtonClicked;
-            _view.OnInventoryButtonClicked += HandleInventoryButtonClicked;
+            _view.OnCampaignButtonClicked += HandleCampaignButtonClicked;
             _view.OnSettingsButtonClicked += HandleSettingsButtonClicked;
+            _view.OnQuitGameButtonClicked += HandleQuitGameButtonClicked;
         }
 
         public override void Dispose()
         {
-            _view.OnPlayGameButtonClicked -= HandlePlayGameButtonClicked;
-            _view.OnQuitGameButtonClicked -= HandleQuitGameButtonClicked;
-            _view.OnTalentsButtonClicked -= HandleTalentsButtonClicked;
-            _view.OnInventoryButtonClicked -= HandleInventoryButtonClicked;
+            _view.OnCampaignButtonClicked -= HandleCampaignButtonClicked;
             _view.OnSettingsButtonClicked -= HandleSettingsButtonClicked;
+            _view.OnQuitGameButtonClicked -= HandleQuitGameButtonClicked;
             base.Dispose();
         }
 
-        private void HandlePlayGameButtonClicked()
+        private void HandleCampaignButtonClicked()
         {
             CloseScreenWithResult(new MenuScreen.MenuScreenResult
             {
-                Result = MenuScreen.ResultTypes.PlayGame
-            });
-        }
-
-        private void HandleQuitGameButtonClicked()
-        {
-            CloseScreenWithResult(new MenuScreen.MenuScreenResult
-            {
-                Result = MenuScreen.ResultTypes.QuitGame
-            });
-        }
-
-        private void HandleTalentsButtonClicked()
-        {
-            CloseScreenWithResult(new MenuScreen.MenuScreenResult
-            {
-                Result = MenuScreen.ResultTypes.OpenTalentTree
-            });
-        }
-
-        private void HandleInventoryButtonClicked()
-        {
-            CloseScreenWithResult(new MenuScreen.MenuScreenResult
-            {
-                Result = MenuScreen.ResultTypes.OpenInventory
+                Result = MenuScreen.ResultTypes.PlayCampaign
             });
         }
 
@@ -65,6 +37,14 @@ namespace SpaceInvaders.Scenes.MainMenu
             CloseScreenWithResult(new MenuScreen.MenuScreenResult
             {
                 Result = MenuScreen.ResultTypes.OpenSettings
+            });
+        }
+
+        private void HandleQuitGameButtonClicked()
+        {
+            CloseScreenWithResult(new MenuScreen.MenuScreenResult
+            {
+                Result = MenuScreen.ResultTypes.QuitGame
             });
         }
     }

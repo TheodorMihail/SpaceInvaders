@@ -16,7 +16,7 @@ namespace SpaceInvaders.Project
         [Inject] private readonly ICurrencyManager _currencyManager;
 
         public GameModeTypes Mode => GameModeTypes.Campaign;
-        public SceneTypes HubScene => SceneTypes.MainMenu;
+        public SceneTypes HubScene => SceneTypes.Campaign;
 
         public void ApplyProgressionBonuses(ShipStats stats)
         {
