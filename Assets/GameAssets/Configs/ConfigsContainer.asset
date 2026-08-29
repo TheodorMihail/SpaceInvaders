@@ -23,3 +23,4 @@ MonoBehaviour:
   _itemsDataConfigSO: {fileID: 11400000, guid: 56be236a491fb5a4d8fe7ff22880ad91, type: 2}
   _dropTableConfigSO: {fileID: 11400000, guid: aea00731d6b6bfd4f9b8146440c87f8d, type: 2}
   _hazardsDataConfigSO: {fileID: 11400000, guid: 9ef5bce37546bcd4dad1f13838d56fd2, type: 2}
+  _expeditionDataConfigSO: {fileID: 11400000, guid: 0f56cd3e4f9145148a1efbf660a69d81, type: 2}

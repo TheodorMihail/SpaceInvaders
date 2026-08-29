@@ -45,7 +45,11 @@ namespace SpaceInvaders.Scenes.MainMenu
                         }
 
                         // Each mode owns a scene, so the menu only has to pick which one to load.
-                        _scenesManager.LoadScene(SceneTypes.Campaign.ToString());
+                        SceneTypes modeScene = menuResult.Result == MenuScreen.ResultTypes.PlayExpedition
+                            ? SceneTypes.Expedition
+                            : SceneTypes.Campaign;
+
+                        _scenesManager.LoadScene(modeScene.ToString());
                         break;
                 }
             }

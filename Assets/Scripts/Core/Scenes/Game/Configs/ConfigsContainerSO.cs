@@ -1,4 +1,5 @@
 using SpaceInvaders.Project;
+using SpaceInvaders.Scenes.Expedition;
 using UnityEngine;
 
 namespace SpaceInvaders.Scenes.Game
@@ -18,6 +19,7 @@ namespace SpaceInvaders.Scenes.Game
         [SerializeField] private ItemsDataConfigSO _itemsDataConfigSO;
         [SerializeField] private DropTableConfigSO _dropTableConfigSO;
         [SerializeField] private HazardsDataConfigSO _hazardsDataConfigSO;
+        [SerializeField] private ExpeditionDataConfigSO _expeditionDataConfigSO;
 
         public LevelsDataConfigSO LevelsDataConfigSO => _levelsDataConfigSO;
         public PlayerDataConfigSO PlayerDataConfigSO => _playerDataConfigSO;
@@ -30,5 +32,6 @@ namespace SpaceInvaders.Scenes.Game
         public ItemsDataConfigSO ItemsDataConfigSO => _itemsDataConfigSO;
         public DropTableConfigSO DropTableConfigSO => _dropTableConfigSO;
         public HazardsDataConfigSO HazardsDataConfigSO => _hazardsDataConfigSO;
+        public ExpeditionDataConfigSO ExpeditionDataConfigSO => _expeditionDataConfigSO;
     }
 }

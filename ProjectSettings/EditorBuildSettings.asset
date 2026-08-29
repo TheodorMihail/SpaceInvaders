@@ -15,6 +15,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Campaign.unity
     guid: 93025c80344033b478fb21413409a385
   - enabled: 1
+    path: Assets/Scenes/Expedition.unity
+    guid: 73430e82511359749be5beca89d65e1c
+  - enabled: 1
     path: Assets/Scenes/Game.unity
     guid: 26beac507d7e49443865e1b44e2ef6fb
   m_configObjects:

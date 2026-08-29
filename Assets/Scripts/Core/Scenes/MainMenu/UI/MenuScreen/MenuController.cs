@@ -12,12 +12,14 @@ namespace SpaceInvaders.Scenes.MainMenu
         {
             base.Initialize();
             _view.OnCampaignButtonClicked += HandleCampaignButtonClicked;
+            _view.OnExpeditionButtonClicked += HandleExpeditionButtonClicked;
             _view.OnSettingsButtonClicked += HandleSettingsButtonClicked;
             _view.OnQuitGameButtonClicked += HandleQuitGameButtonClicked;
         }
 
         public override void Dispose()
         {
+            _view.OnExpeditionButtonClicked -= HandleExpeditionButtonClicked;
             _view.OnCampaignButtonClicked -= HandleCampaignButtonClicked;
             _view.OnSettingsButtonClicked -= HandleSettingsButtonClicked;
             _view.OnQuitGameButtonClicked -= HandleQuitGameButtonClicked;
@@ -29,6 +31,14 @@ namespace SpaceInvaders.Scenes.MainMenu
             CloseScreenWithResult(new MenuScreen.MenuScreenResult
             {
                 Result = MenuScreen.ResultTypes.PlayCampaign
+            });
+        }
+
+        private void HandleExpeditionButtonClicked()
+        {
+            CloseScreenWithResult(new MenuScreen.MenuScreenResult
+            {
+                Result = MenuScreen.ResultTypes.PlayExpedition
             });
         }
 

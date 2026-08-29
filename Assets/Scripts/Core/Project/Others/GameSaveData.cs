@@ -61,6 +61,23 @@ namespace SpaceInvaders.Project
         public List<EquippedSlotEntry> Slots = new();
     }
 
+    /// <summary>Lives in the Expedition profile, so a run and the Campaign save never mix. Holds only
+    /// what is the run's own: items, talents and scrap sit in the usual managers against that same
+    /// profile.</summary>
+    public class ExpeditionRunSaveData : IVersionedSaveData
+    {
+        public const string SaveKey = "ExpeditionRun";
+        public const int CurrentVersion = 0;
+
+        public int Version { get; set; }
+        public string RunPhase;
+        public int Seed;
+        public int CurrentNodeId;
+        public float RemainingHealthRatio;
+        public int ShopRerollsUsed;
+        public List<ExpeditionNodeEntry> Nodes = new();
+    }
+
     #endregion
 
     #region  SaveEntries
@@ -96,6 +113,19 @@ namespace SpaceInvaders.Project
     {
         public string Slot;
         public string InstanceId;
+    }
+
+    public class ExpeditionNodeEntry
+    {
+        public int Id;
+        public int Depth;
+        public int Column;
+        public string NodeType;
+        public string State;
+
+        /// <summary>LevelConfigSO.ObjectID. Empty on nodes that are not played.</summary>
+        public string LevelId;
+        public List<int> NextNodeIds = new();
     }
 
     #endregion

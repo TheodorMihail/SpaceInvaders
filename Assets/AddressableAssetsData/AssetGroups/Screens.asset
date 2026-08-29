@@ -15,6 +15,12 @@ MonoBehaviour:
   m_GroupName: Screens
   m_GUID: f21c6ee93f5b08f41bda8a900b9a5c0d
   m_SerializeEntries:
+  - m_GUID: 0183284f6475a0d4a8af6516a02d9465
+    m_Address: Screens/ExpeditionLobbyScreenView
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Screen
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 0cdb28206d16cba4fbfee760b4261cde
     m_Address: Screens/BootScreenView
     m_ReadOnly: 0
@@ -41,6 +47,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 77a40495b69721c4dad04db18bd9b915
     m_Address: Screens/SplashScreenView
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Screen
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7c99c5b99996e164aa948f8034f6fbbd
+    m_Address: Screens/ExpeditionMapScreenView
     m_ReadOnly: 0
     m_SerializedLabels:
     - Screen

@@ -9,16 +9,19 @@ namespace SpaceInvaders.Scenes.MainMenu
     public class MenuView : View
     {
         [SerializeField] private Button _campaignButton;
+        [SerializeField] private Button _expeditionButton;
         [SerializeField] private Button _settingsButton;
         [SerializeField] private Button _quitGameButton;
 
         public event Action OnCampaignButtonClicked;
+        public event Action OnExpeditionButtonClicked;
         public event Action OnSettingsButtonClicked;
         public event Action OnQuitGameButtonClicked;
 
         private void Awake()
         {
             _campaignButton.onClick.AddListener(() => OnCampaignButtonClicked?.Invoke());
+            _expeditionButton.onClick.AddListener(() => OnExpeditionButtonClicked?.Invoke());
             _settingsButton.onClick.AddListener(() => OnSettingsButtonClicked?.Invoke());
             _quitGameButton.onClick.AddListener(() => OnQuitGameButtonClicked?.Invoke());
         }

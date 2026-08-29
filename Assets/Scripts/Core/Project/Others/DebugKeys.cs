@@ -28,6 +28,13 @@ namespace SpaceInvaders.Project
             public const Key ClearLevelProgress = Key.F7;
         }
 
+        /// <summary>A run and its map, so only reachable from the Expedition scene.</summary>
+        public static class Expedition
+        {
+            public const Key RerollMap = Key.F1;
+            public const Key AbandonRun = Key.F2;
+        }
+
         /// <summary>A running level, so only reachable from the Game scene.</summary>
         public static class Gameplay
         {

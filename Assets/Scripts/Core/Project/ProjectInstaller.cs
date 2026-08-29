@@ -39,6 +39,8 @@ namespace SpaceInvaders.Project
                 .FromSubContainerResolve().ByInstaller<InventoryInstaller>().AsSingle();
             Container.BindInterfacesTo<GameModeManager>()
                 .FromSubContainerResolve().ByInstaller<GameModeInstaller>().AsSingle();
+            Container.BindInterfacesAndSelfTo<ExpeditionRunManager>()
+                .FromSubContainerResolve().ByInstaller<ExpeditionRunInstaller>().AsSingle();
         }
 
         private void RepositoriesInstall()
@@ -52,6 +54,7 @@ namespace SpaceInvaders.Project
             Container.BindInterfacesTo<TalentsRepository>().AsSingle().WithArguments(_configsContainerSO.TalentsDataConfigSO);
             Container.BindInterfacesTo<ItemsRepository>().AsSingle().WithArguments(_configsContainerSO.ItemsDataConfigSO);
             Container.BindInterfacesTo<HazardsRepository>().AsSingle().WithArguments(_configsContainerSO.HazardsDataConfigSO);
+            Container.BindInterfacesTo<ExpeditionRepository>().AsSingle().WithArguments(_configsContainerSO.ExpeditionDataConfigSO);
             Container.BindInterfacesTo<ShipsRepository>().AsSingle().WithArguments(new object[]
            {
                 _configsContainerSO.PlayerDataConfigSO, _configsContainerSO.EnemyDataConfigSO
@@ -87,6 +90,16 @@ namespace SpaceInvaders.Project
             // Concrete: the parent's subcontainer lookup asks for this type, not the interfaces.
             Container.Bind<GameModeManager>().AsSingle();
             Container.Bind<IGameModeService>().To<CampaignModeService>().AsSingle();
+        }
+    }
+
+    public class ExpeditionRunInstaller : Installer<ExpeditionRunInstaller>
+    {
+        public override void InstallBindings()
+        {
+            // Concrete: the parent's subcontainer lookup asks for this type, not the interfaces.
+            Container.Bind<ExpeditionRunManager>().AsSingle();
+            Container.Bind<IExpeditionMapService>().To<ExpeditionMapService>().AsSingle();
         }
     }
 

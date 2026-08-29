@@ -8,6 +8,7 @@ namespace SpaceInvaders.Scenes.MainMenu
         public enum ResultTypes
         {
             PlayCampaign,
+            PlayExpedition,
             OpenSettings,
             QuitGame
         }

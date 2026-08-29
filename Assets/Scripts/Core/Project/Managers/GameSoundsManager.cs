@@ -2,7 +2,6 @@ using System;
 using BaseArchitecture.Core;
 using Cysharp.Threading.Tasks;
 using SpaceInvaders.Scenes.Game;
-using SpaceInvaders.Scenes.MainMenu;
 using Zenject;
 
 namespace SpaceInvaders.Project
