@@ -90,6 +90,7 @@ namespace SpaceInvaders.Project
             // Concrete: the parent's subcontainer lookup asks for this type, not the interfaces.
             Container.Bind<GameModeManager>().AsSingle();
             Container.Bind<IGameModeService>().To<CampaignModeService>().AsSingle();
+            Container.Bind<IGameModeService>().To<ExpeditionModeService>().AsSingle();
         }
     }
 
