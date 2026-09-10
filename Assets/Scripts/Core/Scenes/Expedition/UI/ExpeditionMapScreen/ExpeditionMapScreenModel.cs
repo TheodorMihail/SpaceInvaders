@@ -11,5 +11,6 @@ namespace SpaceInvaders.Scenes.Expedition
 
         public IReadOnlyList<ExpeditionNodeEntry> Nodes => _expeditionRunManager.Nodes;
         public int CurrentNodeId => _expeditionRunManager.CurrentNodeId;
+        public ExpeditionRunPhaseTypes RunPhase => _expeditionRunManager.RunPhase;
     }
 }

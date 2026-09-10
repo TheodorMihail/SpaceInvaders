@@ -33,6 +33,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Screen
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2d4c20275e511b8418d1209ef2907200
+    m_Address: Screens/ExpeditionSummaryScreenView
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Screen
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 37320afd10c6f5047a1ba261a779d3da
     m_Address: Screens/SettingsScreenView
     m_ReadOnly: 0
