@@ -28,7 +28,7 @@ namespace SpaceInvaders.Tests
         private IExpeditionMapService _mockMapService;
         private ICurrencyManager _mockCurrencyManager;
         private ILevelsRepository _mockLevelsRepository;
-        private IModeScopedManager _mockModeScopedManager;
+        private IGameModeScopedManager _mockModeScopedManager;
         private ExpeditionDataConfigSO _mockConfig;
 
         [SetUp]
@@ -58,15 +58,15 @@ namespace SpaceInvaders.Tests
             _mockLevelsRepository = Substitute.For<ILevelsRepository>();
             _mockLevelsRepository.ContainsLevelConfig(Arg.Any<string>()).Returns(true);
 
-            _mockModeScopedManager = Substitute.For<IModeScopedManager>();
+            _mockModeScopedManager = Substitute.For<IGameModeScopedManager>();
 
             Container.Bind<ISaveProfileManager>().FromInstance(mockSaveProfileManager);
             Container.Bind<IExpeditionMapService>().FromInstance(_mockMapService);
             Container.Bind<IExpeditionRepository>().FromInstance(mockExpeditionRepository);
             Container.Bind<ICurrencyManager>().FromInstance(_mockCurrencyManager);
             Container.Bind<ILevelsRepository>().FromInstance(_mockLevelsRepository);
-            Container.Bind<IList<IModeScopedManager>>()
-                .FromInstance(new List<IModeScopedManager> { _mockModeScopedManager });
+            Container.Bind<IList<IGameModeScopedManager>>()
+                .FromInstance(new List<IGameModeScopedManager> { _mockModeScopedManager });
 
             _expeditionRunManager = Container.Instantiate<ExpeditionRunManager>();
             _expeditionRunManager.Initialize();
@@ -80,34 +80,40 @@ namespace SpaceInvaders.Tests
         }
 
         [Test]
-        public void StartNewRun_PutsThePlayerOnTheStartNodeAndOnTheMap()
+        public void StartNewExpedition_PutsTheGeneratedMapOnTheScreenAndNoLevelInProgress()
         {
-            _expeditionRunManager.StartNewRun();
+            _expeditionRunManager.StartNewExpedition();
 
-            Assert.AreEqual(ExpeditionRunPhaseTypes.OnMap, _expeditionRunManager.RunPhase);
-            Assert.AreEqual(StartNodeId, _expeditionRunManager.CurrentNodeId);
-            Assert.IsTrue(_expeditionRunManager.HasActiveRun);
+            Assert.IsNotNull(_expeditionRunManager.CurrentExpedition);
+            Assert.IsFalse(_expeditionRunManager.CurrentExpedition.IsLevelInProgress);
+            Assert.AreEqual(CreateMap().Count, _expeditionRunManager.CurrentExpedition.Nodes.Count);
         }
 
-        /// <summary>The whole profile is the run's, so leaving one store behind arms the next run with it.</summary>
+        /// <summary>Nothing exists to read until one is started.</summary>
         [Test]
-        public void AbandonRun_ClearsTheRunAndEveryModeScopedStore()
+        public void CurrentExpedition_WithoutOne_IsNull()
         {
-            _expeditionRunManager.StartNewRun();
+            Assert.IsNull(_expeditionRunManager.CurrentExpedition);
+        }
+
+        /// <summary>The whole profile belongs to the expedition, so leaving one store behind arms the
+        /// next one with it.</summary>
+        [Test]
+        public void AbandonExpedition_ClearsTheExpeditionAndEveryModeScopedStore()
+        {
+            _expeditionRunManager.StartNewExpedition();
             _mockModeScopedManager.ClearReceivedCalls();
 
-            _expeditionRunManager.AbandonRun();
+            _expeditionRunManager.AbandonExpedition();
 
-            Assert.AreEqual(ExpeditionRunPhaseTypes.None, _expeditionRunManager.RunPhase);
-            Assert.IsFalse(_expeditionRunManager.HasActiveRun);
-            Assert.AreEqual(0, _expeditionRunManager.Nodes.Count);
+            Assert.IsNull(_expeditionRunManager.CurrentExpedition);
             _mockModeScopedManager.Received(1).ClearLoadedData();
         }
 
         [Test]
-        public void StartNewRun_ClearsEveryModeScopedStore()
+        public void StartNewExpedition_ClearsEveryModeScopedStore()
         {
-            _expeditionRunManager.StartNewRun();
+            _expeditionRunManager.StartNewExpedition();
 
             _mockModeScopedManager.Received(1).ClearLoadedData();
         }
@@ -115,41 +121,41 @@ namespace SpaceInvaders.Tests
         [Test]
         public void EnterNode_WithALevelNode_MovesIntoTheLevel()
         {
-            _expeditionRunManager.StartNewRun();
+            _expeditionRunManager.StartNewExpedition();
 
             _expeditionRunManager.EnterNode(LevelNodeId);
 
-            Assert.AreEqual(ExpeditionRunPhaseTypes.InLevel, _expeditionRunManager.RunPhase);
+            Assert.IsTrue(_expeditionRunManager.CurrentExpedition.IsLevelInProgress);
         }
 
         [Test]
         public void EnterNode_WithANodeThatRunsNoLevel_StaysOnTheMap()
         {
-            _expeditionRunManager.StartNewRun();
+            _expeditionRunManager.StartNewExpedition();
 
             _expeditionRunManager.EnterNode(ShopNodeId);
 
-            Assert.AreEqual(ExpeditionRunPhaseTypes.OnMap, _expeditionRunManager.RunPhase);
+            Assert.IsFalse(_expeditionRunManager.CurrentExpedition.IsLevelInProgress);
         }
 
         [Test]
         public void EnterNode_WithAnUnreachableNode_DoesNothing()
         {
-            _expeditionRunManager.StartNewRun();
+            _expeditionRunManager.StartNewExpedition();
 
             _expeditionRunManager.EnterNode(MegaBossNodeId);
 
-            Assert.AreEqual(StartNodeId, _expeditionRunManager.CurrentNodeId);
-            Assert.AreEqual(ExpeditionRunPhaseTypes.OnMap, _expeditionRunManager.RunPhase);
+            // The mega boss carries a level, so arriving there would have started one.
+            Assert.IsFalse(_expeditionRunManager.CurrentExpedition.IsLevelInProgress);
         }
 
         [Test]
-        public void TryGetCurrentNodeSession_OnALevelNode_DescribesThatLevel()
+        public void TryGetCurrentLevelSession_OnALevelNode_DescribesThatLevel()
         {
-            _expeditionRunManager.StartNewRun();
+            _expeditionRunManager.StartNewExpedition();
             _expeditionRunManager.EnterNode(LevelNodeId);
 
-            bool found = _expeditionRunManager.TryGetCurrentNodeSession(out GameSessionDTO session);
+            bool found = _expeditionRunManager.TryGetCurrentLevelSession(out GameSessionDTO session);
 
             Assert.IsTrue(found);
             Assert.AreEqual(GameModeTypes.Expedition, session.Mode);
@@ -158,90 +164,82 @@ namespace SpaceInvaders.Tests
         }
 
         [Test]
-        public void TryGetCurrentNodeSession_OnANodeThatRunsNoLevel_FindsNothing()
+        public void TryGetCurrentLevelSession_OnANodeThatRunsNoLevel_FindsNothing()
         {
-            _expeditionRunManager.StartNewRun();
+            _expeditionRunManager.StartNewExpedition();
 
-            Assert.IsFalse(_expeditionRunManager.TryGetCurrentNodeSession(out GameSessionDTO _));
+            Assert.IsFalse(_expeditionRunManager.TryGetCurrentLevelSession(out GameSessionDTO _));
         }
 
         [Test]
-        public void CompleteCurrentNode_MarksTheNodeClearedAndCarriesTheHealthLeft()
+        public void CompleteCurrentLevel_LeavesTheLevelAndCarriesTheHealthLeft()
         {
-            _expeditionRunManager.StartNewRun();
+            _expeditionRunManager.StartNewExpedition();
             _expeditionRunManager.EnterNode(LevelNodeId);
 
-            _expeditionRunManager.CompleteCurrentNode(CreateStatsWithHalfHealth());
+            _expeditionRunManager.CompleteCurrentLevel(CreateResult(CreateStatsWithHalfHealth()));
 
-            Assert.AreEqual(ExpeditionRunPhaseTypes.NodeCleared, _expeditionRunManager.RunPhase);
-            Assert.AreEqual(0.5f, _expeditionRunManager.RemainingHealthRatio, 0.01f);
+            Assert.IsFalse(_expeditionRunManager.CurrentExpedition.IsLevelInProgress);
+            Assert.AreEqual(0.5f, _expeditionRunManager.CurrentExpedition.RemainingHealthRatio, 0.01f);
         }
 
         [Test]
-        public void CompleteCurrentNode_OnTheMegaBoss_FinishesTheRun()
+        public void CompleteCurrentLevel_PaysTheScoreAtTheAuthoredRate()
         {
-            _expeditionRunManager.StartNewRun();
+            _expeditionRunManager.StartNewExpedition();
             _expeditionRunManager.EnterNode(LevelNodeId);
-            _expeditionRunManager.CompleteCurrentNode(null);
-            _expeditionRunManager.ReturnToMap();
-            _expeditionRunManager.EnterNode(MegaBossNodeId);
 
-            _expeditionRunManager.CompleteCurrentNode(null);
-
-            Assert.AreEqual(ExpeditionRunPhaseTypes.Finished, _expeditionRunManager.RunPhase);
-            Assert.AreEqual(ExpeditionRunResultTypes.Completed, _expeditionRunManager.ConsumeRunResult().Result);
-        }
-
-        [Test]
-        public void CompleteCurrentNode_OutsideALevel_DoesNothing()
-        {
-            _expeditionRunManager.StartNewRun();
-
-            _expeditionRunManager.CompleteCurrentNode(CreateStatsWithHalfHealth());
-
-            Assert.AreEqual(ExpeditionRunPhaseTypes.OnMap, _expeditionRunManager.RunPhase);
-        }
-
-        [Test]
-        public void BankScrap_PaysTheScoreAtTheAuthoredRate()
-        {
-            _expeditionRunManager.StartNewRun();
-
-            _expeditionRunManager.BankScrap(100);
+            _expeditionRunManager.CompleteCurrentLevel(CreateResult(null, 100));
 
             _mockCurrencyManager.Received(1).AddCurrency(200);
         }
 
+        /// <summary>Nothing to complete means nothing to pay for either.</summary>
         [Test]
-        public void EndRunInDefeat_FromInsideALevel_FinishesTheRunAsADefeat()
+        public void CompleteCurrentLevel_OutsideALevel_DoesNothing()
         {
-            _expeditionRunManager.StartNewRun();
-            _expeditionRunManager.EnterNode(LevelNodeId);
+            _expeditionRunManager.StartNewExpedition();
 
-            _expeditionRunManager.EndRunInDefeat();
+            _expeditionRunManager.CompleteCurrentLevel(CreateResult(CreateStatsWithHalfHealth(), 100));
 
-            Assert.AreEqual(ExpeditionRunPhaseTypes.Finished, _expeditionRunManager.RunPhase);
-            Assert.AreEqual(ExpeditionRunResultTypes.Defeated, _expeditionRunManager.ConsumeRunResult().Result);
+            Assert.AreEqual(1f, _expeditionRunManager.RemainingHealthRatio);
+            _mockCurrencyManager.DidNotReceive().AddCurrency(Arg.Any<int>());
         }
 
-        /// <summary>A run is only ever reported once, so reading its result drops it.</summary>
         [Test]
-        public void ConsumeRunResult_EndsTheRun()
+        public void IsOnFinalLevel_OnlyOnTheMegaBoss()
         {
-            _expeditionRunManager.StartNewRun();
+            _expeditionRunManager.StartNewExpedition();
             _expeditionRunManager.EnterNode(LevelNodeId);
-            _expeditionRunManager.EndRunInDefeat();
 
-            ExpeditionRunResultDTO result = _expeditionRunManager.ConsumeRunResult();
+            Assert.IsFalse(_expeditionRunManager.IsOnFinalLevel);
 
+            _expeditionRunManager.CompleteCurrentLevel(CreateResult(null));
+            _expeditionRunManager.EnterNode(MegaBossNodeId);
+
+            Assert.IsTrue(_expeditionRunManager.IsOnFinalLevel);
+        }
+
+        /// <summary>Recorded and dropped in one step, so no screen has to be reached for it to count.</summary>
+        [Test]
+        public void FinishExpedition_ReportsWhereItReachedAndDropsIt()
+        {
+            _expeditionRunManager.StartNewExpedition();
+            _expeditionRunManager.EnterNode(LevelNodeId);
+            _mockModeScopedManager.ClearReceivedCalls();
+
+            ExpeditionRunResultDTO result = _expeditionRunManager.FinishExpedition(ExpeditionRunResultTypes.Defeated);
+
+            Assert.AreEqual(ExpeditionRunResultTypes.Defeated, result.Result);
             Assert.AreEqual(1, result.DepthReached);
-            Assert.IsFalse(_expeditionRunManager.HasActiveRun);
+            Assert.IsNull(_expeditionRunManager.CurrentExpedition);
+            _mockModeScopedManager.Received(1).ClearLoadedData();
         }
 
         [Test]
         public void HasMissingLevels_WhenAMappedLevelIsGone_IsTrue()
         {
-            _expeditionRunManager.StartNewRun();
+            _expeditionRunManager.StartNewExpedition();
             _mockLevelsRepository.ContainsLevelConfig(LevelId).Returns(false);
 
             Assert.IsTrue(_expeditionRunManager.HasMissingLevels);
@@ -250,7 +248,7 @@ namespace SpaceInvaders.Tests
         [Test]
         public void HasMissingLevels_WithEveryMappedLevelPresent_IsFalse()
         {
-            _expeditionRunManager.StartNewRun();
+            _expeditionRunManager.StartNewExpedition();
 
             Assert.IsFalse(_expeditionRunManager.HasMissingLevels);
         }
@@ -289,6 +287,13 @@ namespace SpaceInvaders.Tests
                     NextNodeIds = new List<int>()
                 }
             };
+        }
+
+        private static GameSessionResultDTO CreateResult(ShipStats stats, int score = 0)
+        {
+            var session = new GameSessionDTO(GameModeTypes.Expedition, 1, LevelId);
+
+            return new GameSessionResultDTO(session, GameplayStateResultTypes.LevelFinished, score, stats);
         }
 
         private static ShipStats CreateStatsWithHalfHealth()

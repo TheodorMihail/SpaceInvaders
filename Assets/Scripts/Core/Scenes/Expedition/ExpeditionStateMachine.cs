@@ -25,20 +25,30 @@ namespace SpaceInvaders.Scenes.Expedition
         {
         }
 
-        /// <summary>The run phase picks the entry state, so returning from a level needs no params.</summary>
+        /// <summary>A run that just ended arrives as a scene parameter, since nothing is left on disk
+        /// to read it from.</summary>
         public override void Initialize()
         {
             // Before any screen reads progression, so it reads this mode's profile.
             _gameModeManager.InitializeGameMode(GameModeTypes.Expedition);
 
+            IExpeditionState expedition = _expeditionRunManager.CurrentExpedition;
+
             // Mid-level on entry means the level was left, and a map missing a level cannot be finished.
-            if (_expeditionRunManager.RunPhase == ExpeditionRunPhaseTypes.InLevel
-                || _expeditionRunManager.HasMissingLevels)
+            if (expedition != null && (expedition.IsLevelInProgress || expedition.HasMissingLevels))
             {
-                _expeditionRunManager.AbandonRun();
+                _expeditionRunManager.AbandonExpedition();
             }
 
-            SetState(GetEntryState());
+            if (_scenesManager.PendingSceneParams.TryGetParam(out ExpeditionRunResultDTO runResult))
+            {
+                SetState(ExpeditionStateTypes.Hub, runResult);
+                return;
+            }
+
+            SetState(_expeditionRunManager.CurrentExpedition != null
+                ? ExpeditionStateTypes.Map
+                : ExpeditionStateTypes.Hub);
         }
 
         protected override void OnStateFinished((ExpeditionStateTypes stateId, object[] paramsList) finishedState)
@@ -63,8 +73,8 @@ namespace SpaceInvaders.Scenes.Expedition
                     case ExpeditionStateTypes.Map:
 
                         // Picking a level node is the one way out of the map that is not going back.
-                        if (_expeditionRunManager.TryGetCurrentNodeSession(out GameSessionDTO session)
-                            && _expeditionRunManager.RunPhase == ExpeditionRunPhaseTypes.InLevel)
+                        if ((_expeditionRunManager.CurrentExpedition?.IsLevelInProgress ?? false)
+                            && _expeditionRunManager.TryGetCurrentLevelSession(out GameSessionDTO session))
                         {
                             _scenesManager.LoadScene(SceneTypes.Game.ToString(), session);
                             break;
@@ -77,19 +87,6 @@ namespace SpaceInvaders.Scenes.Expedition
             catch (System.Exception ex)
             {
                 this.LogError($"State transition failed from {finishedState.stateId}", ex);
-            }
-        }
-
-        /// <summary>A finished run opens on the hub, which is where its summary is shown.</summary>
-        private ExpeditionStateTypes GetEntryState()
-        {
-            switch (_expeditionRunManager.RunPhase)
-            {
-                case ExpeditionRunPhaseTypes.OnMap:
-                case ExpeditionRunPhaseTypes.NodeCleared:
-                    return ExpeditionStateTypes.Map;
-                default:
-                    return ExpeditionStateTypes.Hub;
             }
         }
     }

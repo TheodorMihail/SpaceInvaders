@@ -16,10 +16,8 @@ namespace SpaceInvaders.Tests
 
         private LevelSessionManager _levelSessionManager;
         private ILevelsRepository _mockLevelsRepository;
-        private IGameModeManager _mockGameModeManager;
         private IShipsRepository _mockShipsRepository;
         private IEnemiesService _mockEnemiesService;
-        private IPlayerManager _mockPlayerManager;
         private IHazardsService _mockHazardsService;
         private IScoreService _mockScoreService;
         private IImpactFeedbackService _mockImpactFeedbackService;
@@ -49,22 +47,16 @@ namespace SpaceInvaders.Tests
             base.Setup();
 
             _mockLevelsRepository = Substitute.For<ILevelsRepository>();
-            _mockGameModeManager = Substitute.For<IGameModeManager>();
             _mockShipsRepository = Substitute.For<IShipsRepository>();
             _mockEnemiesService = Substitute.For<IEnemiesService>();
-            _mockPlayerManager = Substitute.For<IPlayerManager>();
             _mockHazardsService = Substitute.For<IHazardsService>();
             _mockScoreService = Substitute.For<IScoreService>();
             _mockImpactFeedbackService = Substitute.For<IImpactFeedbackService>();
             _messageBus = new MessageBus();
 
-            _mockPlayerManager.PlayerStats.Returns(new ShipStats(new ShipBaseStats()));
-
             Container.Bind<ILevelsRepository>().FromInstance(_mockLevelsRepository);
-            Container.Bind<IGameModeManager>().FromInstance(_mockGameModeManager);
             Container.Bind<IShipsRepository>().FromInstance(_mockShipsRepository);
             Container.Bind<IEnemiesService>().FromInstance(_mockEnemiesService);
-            Container.Bind<IPlayerManager>().FromInstance(_mockPlayerManager);
             Container.Bind<IHazardsService>().FromInstance(_mockHazardsService);
             Container.Bind<IScoreService>().FromInstance(_mockScoreService);
             Container.Bind<IImpactFeedbackService>().FromInstance(_mockImpactFeedbackService);
@@ -191,7 +183,7 @@ namespace SpaceInvaders.Tests
         }
 
         [Test]
-        public void OnAllEnemiesDestroyed_LastWave_SavesLevelResultThroughTheMode()
+        public void OnAllEnemiesDestroyed_LastWave_StopsTheHazards()
         {
             CreateMockLevelConfig(1, 1);
 
@@ -200,7 +192,7 @@ namespace SpaceInvaders.Tests
 
             _messageBus.Publish(new AllEnemiesDestroyedMessage());
 
-            _mockGameModeManager.Received(1).SaveLevelResult(_session, Arg.Any<ShipStats>());
+            _mockHazardsService.Received(1).StopHazards();
         }
     }
 }

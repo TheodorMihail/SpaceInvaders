@@ -12,66 +12,66 @@ namespace SpaceInvaders.Tests
     [TestFixture]
     public class GameModeManagerTests : ZenjectUnitTestFixture
     {
-        private const string MissingServiceError =
-            "[GameModeManager] [Error] No game mode service is bound for Campaign.";
+        private const string MissingRulesError =
+            "[GameModeManager] [Error] No game mode rules are bound for Campaign.";
 
         private static readonly GameSessionDTO _session = new(GameModeTypes.Campaign, 1, "Level 1");
 
-        private IGameModeService _mockCampaignService;
-        private IGameModeService _mockExpeditionService;
-        private IModeScopedManager _mockModeScopedManager;
-        private List<IModeScopedManager> _modeScopedManagers;
+        private IGameModeRules _mockCampaignRules;
+        private IGameModeRules _mockExpeditionRules;
+        private IGameModeScopedManager _mockModeScopedManager;
+        private List<IGameModeScopedManager> _modeScopedManagers;
 
         [SetUp]
         public override void Setup()
         {
             base.Setup();
 
-            _mockModeScopedManager = Substitute.For<IModeScopedManager>();
-            _modeScopedManagers = new List<IModeScopedManager> { _mockModeScopedManager };
+            _mockModeScopedManager = Substitute.For<IGameModeScopedManager>();
+            _modeScopedManagers = new List<IGameModeScopedManager> { _mockModeScopedManager };
 
-            _mockCampaignService = Substitute.For<IGameModeService>();
-            _mockCampaignService.Mode.Returns(GameModeTypes.Campaign);
+            _mockCampaignRules = Substitute.For<IGameModeRules>();
+            _mockCampaignRules.Mode.Returns(GameModeTypes.Campaign);
 
-            _mockExpeditionService = Substitute.For<IGameModeService>();
-            _mockExpeditionService.Mode.Returns(GameModeTypes.Expedition);
+            _mockExpeditionRules = Substitute.For<IGameModeRules>();
+            _mockExpeditionRules.Mode.Returns(GameModeTypes.Expedition);
         }
 
-        /// <summary>The whole point of the manager: the same call reaches a different service.</summary>
+        /// <summary>The whole point of the manager: the same call reaches a different mode's rules.</summary>
         [Test]
-        public void InitializeGameMode_RoutesToTheServiceForThatModeAndNoOther()
+        public void InitializeGameMode_RoutesToTheRulesForThatModeAndNoOther()
         {
-            GameModeManager gameModeManager = CreateInitializedManagerWith(_mockCampaignService, _mockExpeditionService);
+            GameModeManager gameModeManager = CreateInitializedManagerWith(_mockCampaignRules, _mockExpeditionRules);
             var stats = new ShipStats(new ShipBaseStats());
 
             gameModeManager.InitializeGameMode(GameModeTypes.Expedition);
             gameModeManager.ApplyProgressionBonuses(stats);
 
-            _mockExpeditionService.Received(1).ApplyProgressionBonuses(stats);
-            _mockCampaignService.DidNotReceive().ApplyProgressionBonuses(Arg.Any<ShipStats>());
+            _mockExpeditionRules.Received(1).ApplyProgressionBonuses(stats);
+            _mockCampaignRules.DidNotReceive().ApplyProgressionBonuses(Arg.Any<ShipStats>());
         }
 
         [Test]
-        public void InitializeGameMode_SwitchingBack_RoutesToTheOriginalService()
+        public void InitializeGameMode_SwitchingBack_RoutesToTheOriginalRules()
         {
-            GameModeManager gameModeManager = CreateInitializedManagerWith(_mockCampaignService, _mockExpeditionService);
+            GameModeManager gameModeManager = CreateInitializedManagerWith(_mockCampaignRules, _mockExpeditionRules);
             var stats = new ShipStats(new ShipBaseStats());
 
             gameModeManager.InitializeGameMode(GameModeTypes.Expedition);
             gameModeManager.InitializeGameMode(GameModeTypes.Campaign);
             gameModeManager.ApplyProgressionBonuses(stats);
 
-            _mockCampaignService.Received(1).ApplyProgressionBonuses(stats);
-            _mockExpeditionService.DidNotReceive().ApplyProgressionBonuses(Arg.Any<ShipStats>());
+            _mockCampaignRules.Received(1).ApplyProgressionBonuses(stats);
+            _mockExpeditionRules.DidNotReceive().ApplyProgressionBonuses(Arg.Any<ShipStats>());
         }
 
         [Test]
         public void HubScene_FollowsTheModeThatWasInitialized()
         {
-            _mockCampaignService.HubScene.Returns(SceneTypes.Campaign);
-            _mockExpeditionService.HubScene.Returns(SceneTypes.Expedition);
+            _mockCampaignRules.HubScene.Returns(SceneTypes.Campaign);
+            _mockExpeditionRules.HubScene.Returns(SceneTypes.Expedition);
 
-            GameModeManager gameModeManager = CreateInitializedManagerWith(_mockCampaignService, _mockExpeditionService);
+            GameModeManager gameModeManager = CreateInitializedManagerWith(_mockCampaignRules, _mockExpeditionRules);
 
             Assert.AreEqual(SceneTypes.Campaign, gameModeManager.HubScene);
 
@@ -83,7 +83,7 @@ namespace SpaceInvaders.Tests
         [Test]
         public void CurrentMode_DefaultsToCampaign()
         {
-            GameModeManager gameModeManager = CreateInitializedManagerWith(_mockCampaignService);
+            GameModeManager gameModeManager = CreateInitializedManagerWith(_mockCampaignRules);
 
             Assert.AreEqual(GameModeTypes.Campaign, gameModeManager.CurrentMode);
         }
@@ -91,7 +91,7 @@ namespace SpaceInvaders.Tests
         [Test]
         public void InitializeGameMode_StoresTheMode()
         {
-            GameModeManager gameModeManager = CreateInitializedManagerWith(_mockCampaignService);
+            GameModeManager gameModeManager = CreateInitializedManagerWith(_mockCampaignRules);
 
             gameModeManager.InitializeGameMode(GameModeTypes.Campaign);
 
@@ -102,7 +102,7 @@ namespace SpaceInvaders.Tests
         [Test]
         public void InitializeGameMode_ReloadsEveryModeScopedManagerForThatMode()
         {
-            GameModeManager gameModeManager = CreateInitializedManagerWith(_mockCampaignService, _mockExpeditionService);
+            GameModeManager gameModeManager = CreateInitializedManagerWith(_mockCampaignRules, _mockExpeditionRules);
 
             gameModeManager.InitializeGameMode(GameModeTypes.Expedition);
 
@@ -110,61 +110,51 @@ namespace SpaceInvaders.Tests
         }
 
         [Test]
-        public void HubScene_ComesFromTheServiceForTheCurrentMode()
+        public void HubScene_ComesFromTheRulesForTheCurrentMode()
         {
-            _mockCampaignService.HubScene.Returns(SceneTypes.Preload);
-            GameModeManager gameModeManager = CreateInitializedManagerWith(_mockCampaignService);
+            _mockCampaignRules.HubScene.Returns(SceneTypes.Preload);
+            GameModeManager gameModeManager = CreateInitializedManagerWith(_mockCampaignRules);
 
             Assert.AreEqual(SceneTypes.Preload, gameModeManager.HubScene);
         }
 
         [Test]
-        public void ApplyProgressionBonuses_ReachesTheServiceForTheCurrentMode()
+        public void ApplyProgressionBonuses_ReachesTheRulesForTheCurrentMode()
         {
-            GameModeManager gameModeManager = CreateInitializedManagerWith(_mockCampaignService);
+            GameModeManager gameModeManager = CreateInitializedManagerWith(_mockCampaignRules);
             var stats = new ShipStats(new ShipBaseStats());
 
             gameModeManager.ApplyProgressionBonuses(stats);
 
-            _mockCampaignService.Received(1).ApplyProgressionBonuses(stats);
+            _mockCampaignRules.Received(1).ApplyProgressionBonuses(stats);
         }
 
         [Test]
-        public void SaveLevelResult_ReachesTheServiceForTheCurrentMode()
+        public void ResolveGameEnd_ReachesTheRulesForTheCurrentMode()
         {
-            GameModeManager gameModeManager = CreateInitializedManagerWith(_mockCampaignService);
-            var stats = new ShipStats(new ShipBaseStats());
+            GameModeManager gameModeManager = CreateInitializedManagerWith(_mockCampaignRules);
+            var result = new GameSessionResultDTO(_session, GameplayStateResultTypes.LevelFinished, 120);
 
-            gameModeManager.SaveLevelResult(_session, stats);
+            gameModeManager.ResolveGameEnd(result);
 
-            _mockCampaignService.Received(1).SaveLevelResult(_session, stats);
+            _mockCampaignRules.Received(1).ResolveGameEnd(result);
         }
 
         [Test]
-        public void SaveRunScore_ReachesTheServiceForTheCurrentMode()
+        public void ResolveGameEnd_ReturnsWhatTheRulesForTheCurrentModeDecides()
         {
-            GameModeManager gameModeManager = CreateInitializedManagerWith(_mockCampaignService);
-            var result = new GameSessionResultDTO(_session, GameplayStateResultTypes.LevelFinished);
+            var result = new GameSessionResultDTO(_session, GameplayStateResultTypes.LevelFinished, 120);
+            _mockCampaignRules.ResolveGameEnd(result)
+                .Returns(new GameEndResolutionDTO(GameEndOptionTypes.NextLevel));
+            GameModeManager gameModeManager = CreateInitializedManagerWith(_mockCampaignRules);
 
-            gameModeManager.SaveRunScore(result, 120);
-
-            _mockCampaignService.Received(1).SaveRunScore(result, 120);
+            Assert.AreEqual(GameEndOptionTypes.NextLevel, gameModeManager.ResolveGameEnd(result).Options);
         }
 
         [Test]
-        public void GetGameOverOptions_ReturnsWhatTheServiceForTheCurrentModeDecides()
+        public void WithNoRulesForTheCurrentMode_LogsAnErrorOnceAndForwardsNothing()
         {
-            var result = new GameSessionResultDTO(_session, GameplayStateResultTypes.LevelFinished);
-            _mockCampaignService.GetGameOverOptions(result).Returns(GameOverOptionTypes.NextLevel);
-            GameModeManager gameModeManager = CreateInitializedManagerWith(_mockCampaignService);
-
-            Assert.AreEqual(GameOverOptionTypes.NextLevel, gameModeManager.GetGameOverOptions(result));
-        }
-
-        [Test]
-        public void WithNoServiceForTheCurrentMode_LogsAnErrorOnceAndForwardsNothing()
-        {
-            LogAssert.Expect(LogType.Error, MissingServiceError);
+            LogAssert.Expect(LogType.Error, MissingRulesError);
 
             GameModeManager gameModeManager = CreateInitializedManagerWith();
 
@@ -172,10 +162,10 @@ namespace SpaceInvaders.Tests
             Assert.AreEqual(SceneTypes.MainMenu, gameModeManager.HubScene);
         }
 
-        private GameModeManager CreateInitializedManagerWith(params IGameModeService[] services)
+        private GameModeManager CreateInitializedManagerWith(params IGameModeRules[] modeRules)
         {
-            Container.Bind<IList<IGameModeService>>().FromInstance(new List<IGameModeService>(services));
-            Container.Bind<IList<IModeScopedManager>>().FromInstance(_modeScopedManagers);
+            Container.Bind<IList<IGameModeRules>>().FromInstance(new List<IGameModeRules>(modeRules));
+            Container.Bind<IList<IGameModeScopedManager>>().FromInstance(_modeScopedManagers);
 
             GameModeManager gameModeManager = Container.Instantiate<GameModeManager>();
             gameModeManager.Initialize();

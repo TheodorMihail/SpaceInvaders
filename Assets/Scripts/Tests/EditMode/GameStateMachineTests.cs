@@ -7,7 +7,7 @@ using NSubstitute;
 using Zenject;
 using BaseArchitecture.Core;
 using static SpaceInvaders.Scenes.Game.GameplayState;
-using static SpaceInvaders.Scenes.Game.GameOverState;
+using static SpaceInvaders.Scenes.Game.GameEndState;
 using static SpaceInvaders.Scenes.Game.GameStateMachine;
 
 namespace SpaceInvaders.Tests
@@ -20,7 +20,7 @@ namespace SpaceInvaders.Tests
         private IGameModeManager _mockGameModeManager;
         private ILevelsRepository _mockLevelsRepository;
         private IState<GameStateTypes> _mockPlayingState;
-        private IState<GameStateTypes> _mockGameOverState;
+        private IState<GameStateTypes> _mockGameEndState;
 
         [SetUp]
         public override void Setup()
@@ -38,14 +38,14 @@ namespace SpaceInvaders.Tests
             _mockPlayingState = Substitute.For<IState<GameStateTypes>>();
             _mockPlayingState.Id.Returns(GameStateTypes.Playing);
 
-            _mockGameOverState = Substitute.For<IState<GameStateTypes>>();
-            _mockGameOverState.Id.Returns(GameStateTypes.GameOver);
+            _mockGameEndState = Substitute.For<IState<GameStateTypes>>();
+            _mockGameEndState.Id.Returns(GameStateTypes.GameEnd);
 
             Container.Bind<IScenesManager>().FromInstance(_mockScenesManager);
             Container.Bind<IGameModeManager>().FromInstance(_mockGameModeManager);
             Container.Bind<ILevelsRepository>().FromInstance(_mockLevelsRepository);
 
-            var mockStates = new List<IState<GameStateTypes>> { _mockPlayingState, _mockGameOverState };
+            var mockStates = new List<IState<GameStateTypes>> { _mockPlayingState, _mockGameEndState };
             _gameStateMachine = new GameStateMachine(mockStates);
             Container.Inject(_gameStateMachine);
         }
@@ -84,13 +84,13 @@ namespace SpaceInvaders.Tests
         }
 
         [Test]
-        public void OnPlayingStateFinished_WithGameOver_TransitionsToGameOverState()
+        public void OnPlayingStateFinished_WithGameOver_TransitionsToGameEndState()
         {
             _gameStateMachine.Initialize();
 
             _mockPlayingState.OnStateFinished += Raise.Event<Action<(GameStateTypes, object[])>>((GameStateTypes.Playing, new object[] { GameplayStateResultTypes.GameOver }));
 
-            _mockGameOverState.Received(1).OnEnter(Arg.Is<object[]>(args => args.Length > 0 && ((GameSessionResultDTO)args[0]).Result == GameplayStateResultTypes.GameOver));
+            _mockGameEndState.Received(1).OnEnter(Arg.Is<object[]>(args => args.Length > 0 && ((GameSessionResultDTO)args[0]).Result == GameplayStateResultTypes.GameOver));
         }
 
         [Test]
@@ -101,7 +101,7 @@ namespace SpaceInvaders.Tests
             _mockPlayingState.OnStateFinished += Raise.Event<Action<(GameStateTypes, object[])>>((GameStateTypes.Playing, new object[] { GameplayStateResultTypes.Quit }));
 
             _mockScenesManager.Received(1).LoadScene(SceneTypes.MainMenu.ToString());
-            _mockGameOverState.DidNotReceive().OnEnter(Arg.Any<object[]>());
+            _mockGameEndState.DidNotReceive().OnEnter(Arg.Any<object[]>());
         }
 
         [Test]
@@ -112,7 +112,7 @@ namespace SpaceInvaders.Tests
             _mockPlayingState.OnStateFinished += Raise.Event<Action<(GameStateTypes, object[])>>((GameStateTypes.Playing, new object[] { GameplayStateResultTypes.Restart }));
 
             _mockScenesManager.Received(1).LoadScene(SceneTypes.Game.ToString(), new GameSessionDTO(GameModeTypes.Campaign, 1, "Level 1"));
-            _mockGameOverState.DidNotReceive().OnEnter(Arg.Any<object[]>());
+            _mockGameEndState.DidNotReceive().OnEnter(Arg.Any<object[]>());
         }
 
         [Test]
@@ -136,61 +136,61 @@ namespace SpaceInvaders.Tests
         }
 
         [Test]
-        public void OnGameOverStateFinished_WithRestart_LoadsGameSceneWithCurrentLevel()
+        public void OnGameEndStateFinished_WithRestart_LoadsGameSceneWithCurrentLevel()
         {
             _gameStateMachine.Initialize();
             _mockPlayingState.OnStateFinished += Raise.Event<Action<(GameStateTypes, object[])>>((GameStateTypes.Playing, new object[] { GameplayStateResultTypes.GameOver }));
 
-            _mockGameOverState.OnStateFinished += Raise.Event<Action<(GameStateTypes, object[])>>((GameStateTypes.GameOver, new object[] { GameOverStateResultTypes.Restart }));
+            _mockGameEndState.OnStateFinished += Raise.Event<Action<(GameStateTypes, object[])>>((GameStateTypes.GameEnd, new object[] { GameEndStateResultTypes.Restart }));
 
             _mockScenesManager.Received(1).LoadScene(SceneTypes.Game.ToString(), new GameSessionDTO(GameModeTypes.Campaign, 1, "Level 1"));
         }
 
         [Test]
-        public void OnGameOverStateFinished_RestartAfterNextLevel_LoadsGameSceneWithAdvancedLevel()
+        public void OnGameEndStateFinished_RestartAfterNextLevel_LoadsGameSceneWithAdvancedLevel()
         {
             _gameStateMachine.Initialize();
             _mockPlayingState.OnStateFinished += Raise.Event<Action<(GameStateTypes, object[])>>((GameStateTypes.Playing, new object[] { GameplayStateResultTypes.LevelFinished }));
-            _mockGameOverState.OnStateFinished += Raise.Event<Action<(GameStateTypes, object[])>>((GameStateTypes.GameOver, new object[] { GameOverStateResultTypes.NextLevel }));
+            _mockGameEndState.OnStateFinished += Raise.Event<Action<(GameStateTypes, object[])>>((GameStateTypes.GameEnd, new object[] { GameEndStateResultTypes.NextLevel }));
 
             _mockPlayingState.OnStateFinished += Raise.Event<Action<(GameStateTypes, object[])>>((GameStateTypes.Playing, new object[] { GameplayStateResultTypes.GameOver }));
-            _mockGameOverState.OnStateFinished += Raise.Event<Action<(GameStateTypes, object[])>>((GameStateTypes.GameOver, new object[] { GameOverStateResultTypes.Restart }));
+            _mockGameEndState.OnStateFinished += Raise.Event<Action<(GameStateTypes, object[])>>((GameStateTypes.GameEnd, new object[] { GameEndStateResultTypes.Restart }));
 
             _mockScenesManager.Received(1).LoadScene(SceneTypes.Game.ToString(), new GameSessionDTO(GameModeTypes.Campaign, 2, "Level 2"));
         }
 
         [Test]
-        public void OnGameOverStateFinished_WithReturnToHub_LoadsTheModeHubScene()
+        public void OnGameEndStateFinished_WithReturnToHub_LoadsTheModeHubScene()
         {
             _gameStateMachine.Initialize();
             _mockPlayingState.OnStateFinished += Raise.Event<Action<(GameStateTypes, object[])>>((GameStateTypes.Playing, new object[] { GameplayStateResultTypes.GameOver }));
 
-            _mockGameOverState.OnStateFinished += Raise.Event<Action<(GameStateTypes, object[])>>((GameStateTypes.GameOver, new object[] { GameOverStateResultTypes.ReturnToHub }));
+            _mockGameEndState.OnStateFinished += Raise.Event<Action<(GameStateTypes, object[])>>((GameStateTypes.GameEnd, new object[] { GameEndStateResultTypes.ReturnToHub }));
 
             _mockScenesManager.Received(1).LoadScene(SceneTypes.MainMenu.ToString());
         }
 
         [Test]
-        public void OnGameOverStateFinished_WithNextLevel_TransitionsToPlayingState()
+        public void OnGameEndStateFinished_WithNextLevel_TransitionsToPlayingState()
         {
             _gameStateMachine.Initialize();
             _mockPlayingState.OnStateFinished += Raise.Event<Action<(GameStateTypes, object[])>>((GameStateTypes.Playing, new object[] { GameplayStateResultTypes.GameOver }));
 
-            _mockGameOverState.OnStateFinished += Raise.Event<Action<(GameStateTypes, object[])>>((GameStateTypes.GameOver, new object[] { GameOverStateResultTypes.NextLevel }));
+            _mockGameEndState.OnStateFinished += Raise.Event<Action<(GameStateTypes, object[])>>((GameStateTypes.GameEnd, new object[] { GameEndStateResultTypes.NextLevel }));
 
             _mockPlayingState.Received(2).OnEnter(Arg.Any<object[]>());
         }
 
         [Test]
-        public void OnGameOverStateFinished_WithChainedNextLevels_IncrementsLevelEachTime()
+        public void OnGameEndStateFinished_WithChainedNextLevels_IncrementsLevelEachTime()
         {
             _gameStateMachine.Initialize();
 
             _mockPlayingState.OnStateFinished += Raise.Event<Action<(GameStateTypes, object[])>>((GameStateTypes.Playing, new object[] { GameplayStateResultTypes.LevelFinished }));
-            _mockGameOverState.OnStateFinished += Raise.Event<Action<(GameStateTypes, object[])>>((GameStateTypes.GameOver, new object[] { GameOverStateResultTypes.NextLevel }));
+            _mockGameEndState.OnStateFinished += Raise.Event<Action<(GameStateTypes, object[])>>((GameStateTypes.GameEnd, new object[] { GameEndStateResultTypes.NextLevel }));
 
             _mockPlayingState.OnStateFinished += Raise.Event<Action<(GameStateTypes, object[])>>((GameStateTypes.Playing, new object[] { GameplayStateResultTypes.LevelFinished }));
-            _mockGameOverState.OnStateFinished += Raise.Event<Action<(GameStateTypes, object[])>>((GameStateTypes.GameOver, new object[] { GameOverStateResultTypes.NextLevel }));
+            _mockGameEndState.OnStateFinished += Raise.Event<Action<(GameStateTypes, object[])>>((GameStateTypes.GameEnd, new object[] { GameEndStateResultTypes.NextLevel }));
 
             _mockPlayingState.Received(1).OnEnter(Arg.Is<object[]>(args => args.Length > 0 && ((GameSessionDTO)args[0]).LevelNumber == 2));
             _mockPlayingState.Received(1).OnEnter(Arg.Is<object[]>(args => args.Length > 0 && ((GameSessionDTO)args[0]).LevelNumber == 3));

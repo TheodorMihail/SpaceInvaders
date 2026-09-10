@@ -8,9 +8,9 @@ using static SpaceInvaders.Scenes.Game.GameStateMachine;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public class GameOverState : BaseState<GameStateTypes>
+    public class GameEndState : BaseState<GameStateTypes>
     {
-        public enum GameOverStateResultTypes
+        public enum GameEndStateResultTypes
         {
             Restart,
 
@@ -20,26 +20,25 @@ namespace SpaceInvaders.Scenes.Game
         }
 
         [Inject] private readonly IUIManager _uiManager;
-        [Inject] private readonly IGameModeManager _gameModeManager;
 
-        public override GameStateTypes Id => GameStateTypes.GameOver;
+        public override GameStateTypes Id => GameStateTypes.GameEnd;
 
         public override void OnEnter(params object[] paramsList)
         {
             base.OnEnter();
 
-            var sessionResult = (GameSessionResultDTO)paramsList[0];
-            ShowGameOver(sessionResult).Forget();
+            paramsList.TryGetParam(out GameSessionResultDTO sessionResult);
+            paramsList.TryGetParam(out GameEndResolutionDTO resolution, default, 1);
+
+            ShowResultScreen(sessionResult, resolution.Options).Forget();
         }
 
         /// <summary>The mode decides the buttons, and offering none means no screen at all.</summary>
-        private async UniTask ShowGameOver(GameSessionResultDTO sessionResult)
+        private async UniTask ShowResultScreen(GameSessionResultDTO sessionResult, GameEndOptionTypes options)
         {
-            GameOverOptionTypes options = _gameModeManager.GetGameOverOptions(sessionResult);
-
-            if (options == GameOverOptionTypes.None)
+            if (options == GameEndOptionTypes.None)
             {
-                FinishState(GameOverStateResultTypes.ReturnToHub);
+                FinishState(GameEndStateResultTypes.ReturnToHub);
                 return;
             }
 
@@ -53,10 +52,10 @@ namespace SpaceInvaders.Scenes.Game
                     switch (gameOverResult.Result)
                     {
                         case GameOverScreen.ResultTypes.MainMenu:
-                            FinishState(GameOverStateResultTypes.ReturnToHub);
+                            FinishState(GameEndStateResultTypes.ReturnToHub);
                             break;
                         case GameOverScreen.ResultTypes.Restart:
-                            FinishState(GameOverStateResultTypes.Restart);
+                            FinishState(GameEndStateResultTypes.Restart);
                             break;
                     }
                     break;
@@ -69,14 +68,14 @@ namespace SpaceInvaders.Scenes.Game
                     switch (victoryResult.Result)
                     {
                         case VictoryScreen.ResultTypes.MainMenu:
-                            FinishState(GameOverStateResultTypes.ReturnToHub);
+                            FinishState(GameEndStateResultTypes.ReturnToHub);
                             break;
                         case VictoryScreen.ResultTypes.NextLevel:
-                            FinishState(GameOverStateResultTypes.NextLevel);
+                            FinishState(GameEndStateResultTypes.NextLevel);
                             break;
                         // Replaying a cleared level reloads the scene, same as restarting after a loss.
                         case VictoryScreen.ResultTypes.Retry:
-                            FinishState(GameOverStateResultTypes.Restart);
+                            FinishState(GameEndStateResultTypes.Restart);
                             break;
                     }
                     break;

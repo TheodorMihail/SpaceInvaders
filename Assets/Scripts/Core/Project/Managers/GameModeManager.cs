@@ -10,48 +10,57 @@ namespace SpaceInvaders.Project
         GameModeTypes CurrentMode { get; }
         SceneTypes HubScene { get; }
 
-        /// <summary>Called once on entering the Game scene. The mode never changes within a run.</summary>
+        /// <summary>Called once on entering a mode's hub or the Game scene. The mode never changes
+        /// within a run.</summary>
         void InitializeGameMode(GameModeTypes mode);
 
         void ApplyProgressionBonuses(ShipStats stats);
-        void SaveLevelResult(GameSessionDTO session, ShipStats stats);
-        void SaveRunScore(GameSessionResultDTO result, int score);
-        GameOverOptionTypes GetGameOverOptions(GameSessionResultDTO result);
+        GameEndResolutionDTO ResolveGameEnd(GameSessionResultDTO result);
+    }
+
+    /// <summary>A manager whose whole state lives in the running mode's save profile, so it reloads on
+    /// every mode change instead of loading once at boot.</summary>
+    public interface IGameModeScopedManager
+    {
+        void LoadForMode(GameModeTypes mode);
+
+        /// <summary>Wipes the loaded mode's store, for a mode whose progression lasts one run.</summary>
+        void ClearLoadedData();
     }
 
     /// <summary>
-    /// Owns the running mode and the services behind it, forwarding every mode-specific call to the
-    /// active one. Callers never see a service, so nothing outside branches on the mode.
+    /// Owns the running mode: the rules behind it, which every mode-specific call is forwarded to, and
+    /// the managers scoped to it. Callers never see a mode's rules, so nothing outside branches on it.
     /// </summary>
     public class GameModeManager : IGameModeManager
     {
-        [Inject] private readonly IList<IGameModeService> _modeServices;
-        [Inject] private readonly IList<IModeScopedManager> _modeScopedManagers;
+        [Inject] private readonly IList<IGameModeRules> _modeRules;
+        [Inject] private readonly IList<IGameModeScopedManager> _modeScopedManagers;
 
         public GameModeTypes CurrentMode { get; private set; }
 
-        public SceneTypes HubScene => _activeModeService?.HubScene ?? SceneTypes.MainMenu;
+        public SceneTypes HubScene => _activeRules?.HubScene ?? SceneTypes.MainMenu;
 
         /// <summary>Resolved once per mode change, so no call has to search the list.</summary>
-        private IGameModeService _activeModeService;
+        private IGameModeRules _activeRules;
 
         public void Initialize()
         {
             InitializeGameMode(CurrentMode);
         }
 
-        /// <summary>A mode with no service is a binding error, so it is logged rather than defaulted over.</summary>
+        /// <summary>A mode with no rules is a binding error, so it is logged rather than defaulted over.</summary>
         public void InitializeGameMode(GameModeTypes mode)
         {
             CurrentMode = mode;
 
-            if (!TryGetModeService(mode, out _activeModeService))
+            if (!TryGetModeRules(mode, out _activeRules))
             {
-                this.LogError($"No game mode service is bound for {mode}.");
+                this.LogError($"No game mode rules are bound for {mode}.");
             }
 
             // Before anything reads them, so a hub screen never draws the previous mode's progression.
-            foreach (IModeScopedManager modeScopedManager in _modeScopedManagers)
+            foreach (IGameModeScopedManager modeScopedManager in _modeScopedManagers)
             {
                 modeScopedManager.LoadForMode(mode);
             }
@@ -59,36 +68,31 @@ namespace SpaceInvaders.Project
 
         public void ApplyProgressionBonuses(ShipStats stats)
         {
-            _activeModeService?.ApplyProgressionBonuses(stats);
+            _activeRules?.ApplyProgressionBonuses(stats);
         }
 
-        public void SaveLevelResult(GameSessionDTO session, ShipStats stats)
+        public GameEndResolutionDTO ResolveGameEnd(GameSessionResultDTO result)
         {
-            _activeModeService?.SaveLevelResult(session, stats);
-        }
-
-        public void SaveRunScore(GameSessionResultDTO result, int score)
-        {
-            _activeModeService?.SaveRunScore(result, score);
-        }
-
-        public GameOverOptionTypes GetGameOverOptions(GameSessionResultDTO result)
-        {
-            return _activeModeService?.GetGameOverOptions(result) ?? GameOverOptionTypes.MainMenu;
-        }
-
-        private bool TryGetModeService(GameModeTypes mode, out IGameModeService modeService)
-        {
-            foreach (IGameModeService service in _modeServices)
+            if (_activeRules == null)
             {
-                if (service.Mode == mode)
+                return new GameEndResolutionDTO(GameEndOptionTypes.MainMenu);
+            }
+
+            return _activeRules.ResolveGameEnd(result);
+        }
+
+        private bool TryGetModeRules(GameModeTypes mode, out IGameModeRules rules)
+        {
+            foreach (IGameModeRules modeRules in _modeRules)
+            {
+                if (modeRules.Mode == mode)
                 {
-                    modeService = service;
+                    rules = modeRules;
                     return true;
                 }
             }
 
-            modeService = null;
+            rules = null;
             return false;
         }
     }

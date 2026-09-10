@@ -26,6 +26,9 @@ namespace SpaceInvaders.Scenes.Game
         [Inject] private readonly IPlatformManager _platformManager;
         [Inject] private readonly IProjectRepository _projectRepository;
         [Inject] private readonly ITimeManager _timeManager;
+        [Inject] private readonly ILevelSessionManager _levelSessionManager;
+        [Inject] private readonly IPlayerManager _playerManager;
+        [Inject] private readonly IGameModeManager _gameModeManager;
 
         /// <summary>Kept so the end result can be reported against the session that produced it.</summary>
         private GameSessionDTO _session;
@@ -141,10 +144,16 @@ namespace SpaceInvaders.Scenes.Game
                 await UniTask.Delay(TimeSpan.FromSeconds(delay));
             }
 
-            var sessionResult = new GameSessionResultDTO(_session, result);
+            // Built before the listeners run, since despawning the ship is one of the things they do.
+            var sessionResult = new GameSessionResultDTO(_session, result, _levelSessionManager.TotalScore,
+                _playerManager.PlayerStats);
+
             await UniTask.WhenAll(_gameEndListeners.Select(handler => handler.GameEnd(sessionResult)));
 
-            FinishState(result);
+            // Applied here rather than on a result screen, so quitting before one is shown costs nothing.
+            GameEndResolutionDTO resolution = _gameModeManager.ResolveGameEnd(sessionResult);
+
+            FinishState(result, sessionResult, resolution);
         }
 
         #endregion

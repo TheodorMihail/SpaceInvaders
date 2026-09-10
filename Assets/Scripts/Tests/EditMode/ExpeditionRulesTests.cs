@@ -7,14 +7,15 @@ using Zenject;
 namespace SpaceInvaders.Tests
 {
     [TestFixture]
-    public class ExpeditionModeServiceTests : ZenjectUnitTestFixture
+    public class ExpeditionRulesTests : ZenjectUnitTestFixture
     {
         private const int Score = 120;
 
         private static readonly GameSessionDTO _session = new(GameModeTypes.Expedition, 1, "Level 1");
 
-        private ExpeditionModeService _expeditionModeService;
+        private ExpeditionRules _expeditionRules;
         private IExpeditionRunManager _mockExpeditionRunManager;
+        private IExpeditionState _mockExpedition;
         private ITalentManager _mockTalentManager;
         private IEquipmentManager _mockEquipmentManager;
 
@@ -23,7 +24,9 @@ namespace SpaceInvaders.Tests
         {
             base.Setup();
 
+            _mockExpedition = Substitute.For<IExpeditionState>();
             _mockExpeditionRunManager = Substitute.For<IExpeditionRunManager>();
+            _mockExpeditionRunManager.CurrentExpedition.Returns(_mockExpedition);
             _mockTalentManager = Substitute.For<ITalentManager>();
             _mockEquipmentManager = Substitute.For<IEquipmentManager>();
 
@@ -31,23 +34,23 @@ namespace SpaceInvaders.Tests
             Container.Bind<ITalentManager>().FromInstance(_mockTalentManager);
             Container.Bind<IEquipmentManager>().FromInstance(_mockEquipmentManager);
 
-            _expeditionModeService = Container.Instantiate<ExpeditionModeService>();
+            _expeditionRules = Container.Instantiate<ExpeditionRules>();
         }
 
         [Test]
         public void HubScene_IsTheExpeditionScene()
         {
-            Assert.AreEqual(SceneTypes.Expedition, _expeditionModeService.HubScene);
+            Assert.AreEqual(SceneTypes.Expedition, _expeditionRules.HubScene);
         }
 
         /// <summary>The same machinery as Campaign, only against the Expedition profile.</summary>
         [Test]
         public void ApplyProgressionBonuses_AppliesTalentsEquipmentAndTheHealthCarried()
         {
-            _mockExpeditionRunManager.RemainingHealthRatio.Returns(0.5f);
+            _mockExpedition.RemainingHealthRatio.Returns(0.5f);
             var stats = new ShipStats(new ShipBaseStats());
 
-            _expeditionModeService.ApplyProgressionBonuses(stats);
+            _expeditionRules.ApplyProgressionBonuses(stats);
 
             _mockTalentManager.Received(1).ApplyTalentBonuses(stats);
             _mockEquipmentManager.Received(1).ApplyEquipmentBonuses(stats);
@@ -55,56 +58,82 @@ namespace SpaceInvaders.Tests
         }
 
         [Test]
-        public void SaveLevelResult_CompletesTheCurrentNode()
+        public void ResolveGameEnd_AfterClearingALevel_CompletesItAndKeepsTheExpedition()
         {
-            var stats = new ShipStats(new ShipBaseStats());
+            GameSessionResultDTO result = CreateResult(GameplayStateResultTypes.LevelFinished,
+                new ShipStats(new ShipBaseStats()));
 
-            _expeditionModeService.SaveLevelResult(_session, stats);
+            _expeditionRules.ResolveGameEnd(result);
 
-            _mockExpeditionRunManager.Received(1).CompleteCurrentNode(stats);
+            _mockExpeditionRunManager.Received(1).CompleteCurrentLevel(result);
+            _mockExpeditionRunManager.DidNotReceive().FinishExpedition(Arg.Any<ExpeditionRunResultTypes>());
         }
 
         [Test]
-        public void SaveRunScore_AfterClearingTheLevel_BanksTheScoreAsScrap()
+        public void ResolveGameEnd_AfterClearingTheFinalLevel_FinishesTheExpedition()
         {
-            _expeditionModeService.SaveRunScore(CreateResult(GameplayStateResultTypes.LevelFinished), Score);
+            _mockExpedition.IsOnFinalLevel.Returns(true);
 
-            _mockExpeditionRunManager.Received(1).BankScrap(Score);
-            _mockExpeditionRunManager.DidNotReceive().EndRunInDefeat();
+            _expeditionRules.ResolveGameEnd(CreateResult(GameplayStateResultTypes.LevelFinished));
+
+            _mockExpeditionRunManager.Received(1).FinishExpedition(ExpeditionRunResultTypes.Completed);
         }
 
         [Test]
-        public void SaveRunScore_AfterADefeat_EndsTheRunAndPaysNothing()
+        public void ResolveGameEnd_AfterADefeat_EndsTheExpeditionAndPaysNothing()
         {
-            _expeditionModeService.SaveRunScore(CreateResult(GameplayStateResultTypes.GameOver), Score);
+            _expeditionRules.ResolveGameEnd(CreateResult(GameplayStateResultTypes.GameOver));
 
-            _mockExpeditionRunManager.Received(1).EndRunInDefeat();
-            _mockExpeditionRunManager.DidNotReceive().BankScrap(Arg.Any<int>());
+            _mockExpeditionRunManager.Received(1).FinishExpedition(ExpeditionRunResultTypes.Defeated);
+            _mockExpeditionRunManager.DidNotReceive().CompleteCurrentLevel(Arg.Any<GameSessionResultDTO>());
         }
 
-        /// <summary>Leaving a level any other way is not a defeat, but it is still the end of the run.</summary>
+        /// <summary>The result rides the scene change rather than waiting on disk to be read.</summary>
         [Test]
-        public void SaveRunScore_AfterQuitting_AbandonsTheRun()
+        public void ResolveGameEnd_WhenTheExpeditionEnds_HandsTheResultToTheHubScene()
         {
-            _expeditionModeService.SaveRunScore(CreateResult(GameplayStateResultTypes.Quit), Score);
+            var expeditionResult = new ExpeditionRunResultDTO(ExpeditionRunResultTypes.Defeated, 4);
+            _mockExpeditionRunManager.FinishExpedition(Arg.Any<ExpeditionRunResultTypes>()).Returns(expeditionResult);
 
-            _mockExpeditionRunManager.Received(1).AbandonRun();
-            _mockExpeditionRunManager.DidNotReceive().BankScrap(Arg.Any<int>());
+            GameEndResolutionDTO resolution =
+                _expeditionRules.ResolveGameEnd(CreateResult(GameplayStateResultTypes.GameOver));
+
+            Assert.AreEqual(1, resolution.HubSceneParams.Length);
+            Assert.AreEqual(expeditionResult, resolution.HubSceneParams[0]);
+        }
+
+        [Test]
+        public void ResolveGameEnd_AfterClearingALevel_HandsTheHubNothing()
+        {
+            GameEndResolutionDTO resolution =
+                _expeditionRules.ResolveGameEnd(CreateResult(GameplayStateResultTypes.LevelFinished));
+
+            Assert.AreEqual(0, resolution.HubSceneParams.Length);
+        }
+
+        /// <summary>Leaving a level any other way is not a defeat, but it still ends the expedition.</summary>
+        [Test]
+        public void ResolveGameEnd_AfterQuitting_AbandonsTheExpedition()
+        {
+            _expeditionRules.ResolveGameEnd(CreateResult(GameplayStateResultTypes.Quit));
+
+            _mockExpeditionRunManager.Received(1).AbandonExpedition();
+            _mockExpeditionRunManager.DidNotReceive().CompleteCurrentLevel(Arg.Any<GameSessionResultDTO>());
         }
 
         /// <summary>No options means no result screen at all, win or lose.</summary>
         [Test]
-        public void GetGameOverOptions_OffersNothing()
+        public void ResolveGameEnd_OffersNoResultScreen()
         {
-            Assert.AreEqual(GameOverOptionTypes.None,
-                _expeditionModeService.GetGameOverOptions(CreateResult(GameplayStateResultTypes.LevelFinished)));
-            Assert.AreEqual(GameOverOptionTypes.None,
-                _expeditionModeService.GetGameOverOptions(CreateResult(GameplayStateResultTypes.GameOver)));
+            Assert.AreEqual(GameEndOptionTypes.None,
+                _expeditionRules.ResolveGameEnd(CreateResult(GameplayStateResultTypes.LevelFinished)).Options);
+            Assert.AreEqual(GameEndOptionTypes.None,
+                _expeditionRules.ResolveGameEnd(CreateResult(GameplayStateResultTypes.GameOver)).Options);
         }
 
-        private static GameSessionResultDTO CreateResult(GameplayStateResultTypes result)
+        private static GameSessionResultDTO CreateResult(GameplayStateResultTypes result, ShipStats stats = null)
         {
-            return new GameSessionResultDTO(_session, result);
+            return new GameSessionResultDTO(_session, result, Score, stats);
         }
     }
 }

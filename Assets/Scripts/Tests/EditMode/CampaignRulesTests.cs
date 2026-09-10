@@ -7,14 +7,14 @@ using Zenject;
 namespace SpaceInvaders.Tests
 {
     [TestFixture]
-    public class CampaignModeServiceTests : ZenjectUnitTestFixture
+    public class CampaignRulesTests : ZenjectUnitTestFixture
     {
         private const int ThreeStarMaxDamage = 10;
         private const float TwoStarDamageMultiplier = 3f;
 
         private static readonly GameSessionDTO _session = new(GameModeTypes.Campaign, 1, "Level 1");
 
-        private CampaignModeService _campaignModeService;
+        private CampaignRules _campaignRules;
         private ILevelsRepository _mockLevelsRepository;
         private ILevelProgressManager _mockLevelProgressManager;
         private ITalentManager _mockTalentManager;
@@ -41,13 +41,13 @@ namespace SpaceInvaders.Tests
             Container.Bind<IEquipmentManager>().FromInstance(_mockEquipmentManager);
             Container.Bind<ICurrencyManager>().FromInstance(_mockCurrencyManager);
 
-            _campaignModeService = Container.Instantiate<CampaignModeService>();
+            _campaignRules = Container.Instantiate<CampaignRules>();
         }
 
         [Test]
         public void HubScene_IsTheCampaignScene()
         {
-            Assert.AreEqual(SceneTypes.Campaign, _campaignModeService.HubScene);
+            Assert.AreEqual(SceneTypes.Campaign, _campaignRules.HubScene);
         }
 
         [Test]
@@ -55,102 +55,131 @@ namespace SpaceInvaders.Tests
         {
             var stats = new ShipStats(new ShipBaseStats());
 
-            _campaignModeService.ApplyProgressionBonuses(stats);
+            _campaignRules.ApplyProgressionBonuses(stats);
 
             _mockTalentManager.Received(1).ApplyTalentBonuses(stats);
             _mockEquipmentManager.Received(1).ApplyEquipmentBonuses(stats);
         }
 
         [Test]
-        public void SaveRunScore_BanksTheScoreAsCurrency()
+        public void ResolveGameEnd_BanksTheScoreAsCurrency()
         {
-            var result = new GameSessionResultDTO(_session, GameplayStateResultTypes.LevelFinished);
+            var result = new GameSessionResultDTO(_session, GameplayStateResultTypes.LevelFinished, 250);
 
-            _campaignModeService.SaveRunScore(result, 250);
+            _campaignRules.ResolveGameEnd(result);
 
             _mockCurrencyManager.Received(1).AddCurrency(250);
         }
 
+        /// <summary>Campaign keeps its own hub, so it hands the next scene nothing.</summary>
         [Test]
-        public void SaveLevelResult_WithinThreeStarThreshold_RecordsThreeStars()
+        public void ResolveGameEnd_HandsTheHubNothing()
+        {
+            var result = new GameSessionResultDTO(_session, GameplayStateResultTypes.LevelFinished, 250);
+
+            GameEndResolutionDTO resolution = _campaignRules.ResolveGameEnd(result);
+
+            Assert.AreEqual(0, resolution.HubSceneParams.Length);
+        }
+
+        [Test]
+        public void ResolveGameEnd_WithinThreeStarThreshold_RecordsThreeStars()
         {
             CreateMockLevelConfig();
 
-            _campaignModeService.SaveLevelResult(_session, CreateStatsWithDamage(ThreeStarMaxDamage));
+            _campaignRules.ResolveGameEnd(CreateClearedResult(CreateStatsWithDamage(ThreeStarMaxDamage)));
 
             _mockLevelProgressManager.Received(1).RecordLevelResult(1, 3);
         }
 
         [Test]
-        public void SaveLevelResult_WithinTwoStarThreshold_RecordsTwoStars()
+        public void ResolveGameEnd_WithinTwoStarThreshold_RecordsTwoStars()
         {
             CreateMockLevelConfig();
 
-            _campaignModeService.SaveLevelResult(_session, CreateStatsWithDamage(ThreeStarMaxDamage + 1));
+            _campaignRules.ResolveGameEnd(CreateClearedResult(CreateStatsWithDamage(ThreeStarMaxDamage + 1)));
 
             _mockLevelProgressManager.Received(1).RecordLevelResult(1, 2);
         }
 
         [Test]
-        public void SaveLevelResult_AboveEveryThreshold_RecordsOneStar()
+        public void ResolveGameEnd_AboveEveryThreshold_RecordsOneStar()
         {
             CreateMockLevelConfig();
 
             int damage = (int)(ThreeStarMaxDamage * TwoStarDamageMultiplier) + 1;
-            _campaignModeService.SaveLevelResult(_session, CreateStatsWithDamage(damage));
+            _campaignRules.ResolveGameEnd(CreateClearedResult(CreateStatsWithDamage(damage)));
 
             _mockLevelProgressManager.Received(1).RecordLevelResult(1, 1);
         }
 
         [Test]
-        public void SaveLevelResult_WithoutStats_RecordsNothing()
+        public void ResolveGameEnd_WithoutStats_RecordsNothing()
         {
             CreateMockLevelConfig();
 
-            _campaignModeService.SaveLevelResult(_session, null);
+            _campaignRules.ResolveGameEnd(CreateClearedResult(null));
 
             _mockLevelProgressManager.DidNotReceive().RecordLevelResult(Arg.Any<int>(), Arg.Any<int>());
         }
 
         [Test]
-        public void SaveLevelResult_WithoutALevelConfig_RecordsNothing()
+        public void ResolveGameEnd_WithoutALevelConfig_RecordsNothing()
         {
-            _campaignModeService.SaveLevelResult(_session, CreateStatsWithDamage(0));
+            _campaignRules.ResolveGameEnd(CreateClearedResult(CreateStatsWithDamage(0)));
+
+            _mockLevelProgressManager.DidNotReceive().RecordLevelResult(Arg.Any<int>(), Arg.Any<int>());
+        }
+
+        /// <summary>A level that was not cleared is never rated, however it ended.</summary>
+        [Test]
+        public void ResolveGameEnd_AfterADefeat_RecordsNoStars()
+        {
+            CreateMockLevelConfig();
+            var result = new GameSessionResultDTO(_session, GameplayStateResultTypes.GameOver, 0,
+                CreateStatsWithDamage(0));
+
+            _campaignRules.ResolveGameEnd(result);
 
             _mockLevelProgressManager.DidNotReceive().RecordLevelResult(Arg.Any<int>(), Arg.Any<int>());
         }
 
         [Test]
-        public void GetGameOverOptions_AfterADefeat_OffersRestartAndMainMenu()
+        public void ResolveGameEnd_AfterADefeat_OffersRestartAndMainMenu()
         {
             var result = new GameSessionResultDTO(_session, GameplayStateResultTypes.GameOver);
 
-            GameOverOptionTypes actions = _campaignModeService.GetGameOverOptions(result);
+            GameEndOptionTypes actions = _campaignRules.ResolveGameEnd(result).Options;
 
-            Assert.AreEqual(GameOverOptionTypes.Restart | GameOverOptionTypes.MainMenu, actions);
+            Assert.AreEqual(GameEndOptionTypes.Restart | GameEndOptionTypes.MainMenu, actions);
         }
 
         [Test]
-        public void GetGameOverOptions_AfterAVictory_OffersNextLevelRetryAndMainMenu()
+        public void ResolveGameEnd_AfterAVictory_OffersNextLevelRetryAndMainMenu()
         {
             var result = new GameSessionResultDTO(_session, GameplayStateResultTypes.LevelFinished);
 
-            GameOverOptionTypes actions = _campaignModeService.GetGameOverOptions(result);
+            GameEndOptionTypes actions = _campaignRules.ResolveGameEnd(result).Options;
 
             Assert.AreEqual(
-                GameOverOptionTypes.NextLevel | GameOverOptionTypes.Retry | GameOverOptionTypes.MainMenu,
+                GameEndOptionTypes.NextLevel | GameEndOptionTypes.Retry | GameEndOptionTypes.MainMenu,
                 actions);
         }
 
         [Test]
-        public void GetGameOverOptions_AfterClearingTheFinalLevel_OmitsNextLevel()
+        public void ResolveGameEnd_AfterClearingTheFinalLevel_OmitsNextLevel()
         {
             var finalSession = new GameSessionDTO(GameModeTypes.Campaign, 3, "Level 3");
             var result = new GameSessionResultDTO(finalSession, GameplayStateResultTypes.LevelFinished);
 
-            GameOverOptionTypes actions = _campaignModeService.GetGameOverOptions(result);
+            GameEndOptionTypes actions = _campaignRules.ResolveGameEnd(result).Options;
 
-            Assert.AreEqual(GameOverOptionTypes.Retry | GameOverOptionTypes.MainMenu, actions);
+            Assert.AreEqual(GameEndOptionTypes.Retry | GameEndOptionTypes.MainMenu, actions);
+        }
+
+        private static GameSessionResultDTO CreateClearedResult(ShipStats stats)
+        {
+            return new GameSessionResultDTO(_session, GameplayStateResultTypes.LevelFinished, 0, stats);
         }
 
         private void CreateMockLevelConfig()

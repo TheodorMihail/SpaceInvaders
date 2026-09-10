@@ -36,16 +36,23 @@ namespace SpaceInvaders.Scenes.Game
         }
     }
 
-    /// <summary>The session plus why it ended, so listeners do not have to track the outcome themselves.</summary>
+    /// <summary>Everything about how a level ended, so nothing has to be gathered a second time.</summary>
     public readonly struct GameSessionResultDTO
     {
         public GameSessionDTO Session { get; }
         public GameplayStateResultTypes Result { get; }
+        public int Score { get; }
 
-        public GameSessionResultDTO(GameSessionDTO session, GameplayStateResultTypes result)
+        /// <summary>The ship as it finished. Null when it did not survive.</summary>
+        public ShipStats Stats { get; }
+
+        public GameSessionResultDTO(GameSessionDTO session, GameplayStateResultTypes result, int score = 0,
+            ShipStats stats = null)
         {
             Session = session;
             Result = result;
+            Score = score;
+            Stats = stats;
         }
     }
 

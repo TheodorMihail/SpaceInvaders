@@ -7,14 +7,14 @@ namespace SpaceInvaders.Project
     {
         public void DebugRerollMap()
         {
-            StartNewRun();
-            this.LogWarning($"Debug: Map rerolled with seed {_data.Seed}.");
+            StartNewExpedition();
+            this.LogWarning($"Debug: Map rerolled with seed {_data.RunInProgress.Seed}.");
         }
 
-        public void DebugAbandonRun()
+        public void DebugAbandonExpedition()
         {
-            AbandonRun();
-            this.LogWarning("Debug: Run abandoned.");
+            AbandonExpedition();
+            this.LogWarning("Debug: Expedition abandoned.");
         }
     }
 }

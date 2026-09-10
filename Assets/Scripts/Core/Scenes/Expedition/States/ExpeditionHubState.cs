@@ -23,7 +23,7 @@ namespace SpaceInvaders.Scenes.Expedition
             base.OnEnter();
 
             TriggerSceneEnter().Forget();
-            ShowScreens();
+            ShowScreens(paramsList);
         }
 
         private UniTask TriggerSceneEnter()
@@ -31,13 +31,11 @@ namespace SpaceInvaders.Scenes.Expedition
             return UniTask.WhenAll(_sceneEnterListeners.Select(listener => listener.SceneEnter(SceneTypes.Expedition)));
         }
 
-        /// <summary>A finished run is reported before the lobby, which is what drops it.</summary>
-        private async void ShowScreens()
+        /// <summary>A run that just ended is reported before the lobby.</summary>
+        private async void ShowScreens(object[] paramsList)
         {
-            if (_expeditionRunManager.RunPhase == ExpeditionRunPhaseTypes.Finished)
+            if (paramsList.TryGetParam(out ExpeditionRunResultDTO runResult))
             {
-                ExpeditionRunResultDTO runResult = _expeditionRunManager.ConsumeRunResult();
-
                 await _uiManager.ShowScreen<ExpeditionSummaryScreen, ExpeditionSummaryScreen.ExpeditionSummaryScreenParams>(
                     new ExpeditionSummaryScreen.ExpeditionSummaryScreenParams { RunResult = runResult });
             }
@@ -49,7 +47,7 @@ namespace SpaceInvaders.Scenes.Expedition
         {
             var parameters = new ExpeditionLobbyScreen.ExpeditionLobbyScreenParams
             {
-                HasActiveRun = _expeditionRunManager.HasActiveRun
+                HasActiveExpedition = _expeditionRunManager.CurrentExpedition != null
             };
 
             var result = await _uiManager.ShowScreen<ExpeditionLobbyScreen, ExpeditionLobbyScreen.ExpeditionLobbyScreenParams, 
@@ -57,7 +55,7 @@ namespace SpaceInvaders.Scenes.Expedition
 
             if (result.Result == ExpeditionLobbyScreen.ResultTypes.NewRun)
             {
-                _expeditionRunManager.StartNewRun();
+                _expeditionRunManager.StartNewExpedition();
             }
 
             FinishState(result);

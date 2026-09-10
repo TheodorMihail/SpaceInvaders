@@ -19,7 +19,7 @@ namespace SpaceInvaders.Scenes.Expedition
             return new[]
             {
                 new DebugCommandDTO(DebugKeys.Expedition.RerollMap, "Reroll the map", _expeditionRunManager.DebugRerollMap),
-                new DebugCommandDTO(DebugKeys.Expedition.AbandonRun, "Abandon the run", _expeditionRunManager.DebugAbandonRun)
+                new DebugCommandDTO(DebugKeys.Expedition.AbandonExpedition, "Abandon the expedition", _expeditionRunManager.DebugAbandonExpedition)
             };
         }
     }
