@@ -50,6 +50,19 @@ namespace SpaceInvaders.Tests
             Assert.AreEqual(SceneTypes.Campaign, _campaignRules.HubScene);
         }
 
+        /// <summary>An authored level can always be thrown away and played again.</summary>
+        [Test]
+        public void CanReplayLevel_IsTrue()
+        {
+            Assert.IsTrue(_campaignRules.CanReplayLevel);
+        }
+
+        [Test]
+        public void DropTableType_IsTheCampaignTable()
+        {
+            Assert.AreEqual(DropTableTypes.Campaign, _campaignRules.DropTableType);
+        }
+
         [Test]
         public void ApplyProgressionBonuses_AppliesTalentsAndEquipment()
         {

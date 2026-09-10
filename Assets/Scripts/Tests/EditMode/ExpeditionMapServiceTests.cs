@@ -228,6 +228,44 @@ namespace SpaceInvaders.Tests
             });
         }
 
+        /// <summary>Walking any branch, a special never comes up twice running.</summary>
+        [Test]
+        public void GenerateMap_NeverPlacesASpecialTypeOnConsecutiveDepths()
+        {
+            AssertNeverOnConsecutiveDepths(ExpeditionNodeTypes.Boss);
+            AssertNeverOnConsecutiveDepths(ExpeditionNodeTypes.Shop);
+            AssertNeverOnConsecutiveDepths(ExpeditionNodeTypes.Event);
+        }
+
+        /// <summary>The mega boss row is a boss row, so the row before it may not be one too.</summary>
+        [Test]
+        public void GenerateMap_NeverPlacesABossAgainstTheMegaBoss()
+        {
+            ForEachSampledMap(nodes =>
+            {
+                foreach (ExpeditionNodeEntry node in GetRow(nodes, Depth - 2))
+                {
+                    Assert.AreNotEqual(ExpeditionNodeTypes.Boss.ToString(), node.NodeType,
+                        "A boss sits directly before the mega boss.");
+                }
+            });
+        }
+
+        /// <summary>Authoring beats a roll: a rolled boss never takes the row before an authored one
+        /// and pushes it out.</summary>
+        [Test]
+        public void GenerateMap_LeavesTheRowBeforeAnAuthoredBossDepthFree()
+        {
+            ForEachSampledMap(nodes =>
+            {
+                foreach (ExpeditionNodeEntry node in GetRow(nodes, AuthoredBossDepth - 1))
+                {
+                    Assert.AreNotEqual(ExpeditionNodeTypes.Boss.ToString(), node.NodeType,
+                        "A rolled boss displaced the authored one.");
+                }
+            });
+        }
+
         [Test]
         public void GenerateMap_NeverRollsStartOrMegaBossIntoTheMiddle()
         {
@@ -277,6 +315,35 @@ namespace SpaceInvaders.Tests
             });
         }
 
+        private void AssertNeverOnConsecutiveDepths(ExpeditionNodeTypes nodeType)
+        {
+            ForEachSampledMap(nodes =>
+            {
+                for (int depth = 1; depth < Depth - 1; depth++)
+                {
+                    if (!RowContains(nodes, depth, nodeType) || !RowContains(nodes, depth + 1, nodeType))
+                    {
+                        continue;
+                    }
+
+                    Assert.Fail($"'{nodeType}' appears at both depth {depth} and {depth + 1}.");
+                }
+            });
+        }
+
+        private static bool RowContains(List<ExpeditionNodeEntry> nodes, int depth, ExpeditionNodeTypes nodeType)
+        {
+            foreach (ExpeditionNodeEntry node in GetRow(nodes, depth))
+            {
+                if (node.NodeType == nodeType.ToString())
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         private void AssertNodeTypeNeverAppearsBefore(ExpeditionNodeTypes nodeType, int minDepth)
         {
             ForEachSampledMap(nodes =>
@@ -315,7 +382,15 @@ namespace SpaceInvaders.Tests
             // Deliberately includes a boss depth below the minimum, so the clamp is exercised.
             config.BossDepths.Returns(new List<int> { ClampedBossDepth, AuthoredBossDepth });
 
-            config.NodeTypeWeights.Returns(new List<ExpeditionNodeWeightDTO>());
+            // Weighted so specials actually roll; without these every rolled node is Normal and the
+            // placement rules go untested.
+            config.NodeTypeWeights.Returns(new List<ExpeditionNodeWeightDTO>
+            {
+                new(ExpeditionNodeTypes.Normal, 8),
+                new(ExpeditionNodeTypes.Shop, 3),
+                new(ExpeditionNodeTypes.Event, 3),
+                new(ExpeditionNodeTypes.Boss, 2)
+            });
             config.LevelPools.Returns(new List<ExpeditionLevelPoolDTO>());
 
             return config;

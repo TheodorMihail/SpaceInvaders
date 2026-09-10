@@ -109,6 +109,26 @@ namespace SpaceInvaders.Tests
             _mockModeScopedManager.Received(1).LoadForMode(GameModeTypes.Expedition);
         }
 
+        /// <summary>Every mode-specific read follows the mode, not just the ones with methods.</summary>
+        [Test]
+        public void DropTableTypeAndCanReplayLevel_FollowTheModeThatWasInitialized()
+        {
+            _mockCampaignRules.DropTableType.Returns(DropTableTypes.Campaign);
+            _mockCampaignRules.CanReplayLevel.Returns(true);
+            _mockExpeditionRules.DropTableType.Returns(DropTableTypes.Expedition);
+            _mockExpeditionRules.CanReplayLevel.Returns(false);
+
+            GameModeManager gameModeManager = CreateInitializedManagerWith(_mockCampaignRules, _mockExpeditionRules);
+
+            Assert.AreEqual(DropTableTypes.Campaign, gameModeManager.DropTableType);
+            Assert.IsTrue(gameModeManager.CanReplayLevel);
+
+            gameModeManager.InitializeGameMode(GameModeTypes.Expedition);
+
+            Assert.AreEqual(DropTableTypes.Expedition, gameModeManager.DropTableType);
+            Assert.IsFalse(gameModeManager.CanReplayLevel);
+        }
+
         [Test]
         public void HubScene_ComesFromTheRulesForTheCurrentMode()
         {

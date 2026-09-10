@@ -43,6 +43,20 @@ namespace SpaceInvaders.Tests
             Assert.AreEqual(SceneTypes.Expedition, _expeditionRules.HubScene);
         }
 
+        /// <summary>A node is spent the moment it is entered, so nothing can be replayed.</summary>
+        [Test]
+        public void CanReplayLevel_IsFalse()
+        {
+            Assert.IsFalse(_expeditionRules.CanReplayLevel);
+        }
+
+        /// <summary>Gear comes from the shop, so kills roll against a table of its own.</summary>
+        [Test]
+        public void DropTableType_IsTheExpeditionTable()
+        {
+            Assert.AreEqual(DropTableTypes.Expedition, _expeditionRules.DropTableType);
+        }
+
         /// <summary>The same machinery as Campaign, only against the Expedition profile.</summary>
         [Test]
         public void ApplyProgressionBonuses_AppliesTalentsEquipmentAndTheHealthCarried()
@@ -111,14 +125,28 @@ namespace SpaceInvaders.Tests
             Assert.AreEqual(0, resolution.HubSceneParams.Length);
         }
 
-        /// <summary>Leaving a level any other way is not a defeat, but it still ends the expedition.</summary>
+        /// <summary>Quitting is not a defeat, but the node is spent, so the expedition ends and is
+        /// still reported rather than vanishing.</summary>
         [Test]
-        public void ResolveGameEnd_AfterQuitting_AbandonsTheExpedition()
+        public void ResolveGameEnd_AfterQuitting_EndsTheExpeditionAsAbandoned()
         {
             _expeditionRules.ResolveGameEnd(CreateResult(GameplayStateResultTypes.Quit));
 
-            _mockExpeditionRunManager.Received(1).AbandonExpedition();
+            _mockExpeditionRunManager.Received(1).FinishExpedition(ExpeditionRunResultTypes.Abandoned);
             _mockExpeditionRunManager.DidNotReceive().CompleteCurrentLevel(Arg.Any<GameSessionResultDTO>());
+        }
+
+        [Test]
+        public void ResolveGameEnd_AfterQuitting_HandsTheResultToTheHubScene()
+        {
+            var expeditionResult = new ExpeditionRunResultDTO(ExpeditionRunResultTypes.Abandoned, 2);
+            _mockExpeditionRunManager.FinishExpedition(Arg.Any<ExpeditionRunResultTypes>()).Returns(expeditionResult);
+
+            GameEndResolutionDTO resolution =
+                _expeditionRules.ResolveGameEnd(CreateResult(GameplayStateResultTypes.Quit));
+
+            Assert.AreEqual(1, resolution.HubSceneParams.Length);
+            Assert.AreEqual(expeditionResult, resolution.HubSceneParams[0]);
         }
 
         /// <summary>No options means no result screen at all, win or lose.</summary>
