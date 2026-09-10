@@ -12,7 +12,7 @@ namespace SpaceInvaders.Tests
         private const int ThreeStarMaxDamage = 10;
         private const float TwoStarDamageMultiplier = 3f;
 
-        private static readonly GameSessionDTO _session = new(GameModeTypes.Campaign, 1);
+        private static readonly GameSessionDTO _session = new(GameModeTypes.Campaign, 1, "Level 1");
 
         private CampaignModeService _campaignModeService;
         private ILevelsRepository _mockLevelsRepository;
@@ -145,7 +145,7 @@ namespace SpaceInvaders.Tests
         [Test]
         public void GetGameOverOptions_AfterClearingTheFinalLevel_OmitsNextLevel()
         {
-            var finalSession = new GameSessionDTO(GameModeTypes.Campaign, 3);
+            var finalSession = new GameSessionDTO(GameModeTypes.Campaign, 3, "Level 3");
             var result = new GameSessionResultDTO(finalSession, GameplayStateResultTypes.LevelFinished);
 
             GameOverOptionTypes actions = _campaignModeService.GetGameOverOptions(result);

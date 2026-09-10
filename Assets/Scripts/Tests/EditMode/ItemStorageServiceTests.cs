@@ -32,7 +32,7 @@ namespace SpaceInvaders.Tests
             Container.Bind<ISaveProfileManager>().FromInstance(mockSaveProfileManager);
 
             _itemStorage = Container.Instantiate<ItemStorageService>();
-            _itemStorage.Initialize();
+            _itemStorage.LoadForMode(GameModeTypes.Campaign);
         }
 
         private static InventoryItemEntry CreateEntry(string instanceId, string itemId = "PlasmaWing")

@@ -12,7 +12,7 @@ namespace SpaceInvaders.Tests
     [TestFixture]
     public class LevelSessionManagerTests : ZenjectUnitTestFixture
     {
-        private static readonly GameSessionDTO _session = new(GameModeTypes.Campaign, 1);
+        private static readonly GameSessionDTO _session = new(GameModeTypes.Campaign, 1, "Level 1");
 
         private LevelSessionManager _levelSessionManager;
         private ILevelsRepository _mockLevelsRepository;
@@ -35,8 +35,7 @@ namespace SpaceInvaders.Tests
             }
 
             mockLevelConfig.WavesConfigs.Returns(waveConfigs);
-            mockLevelConfig.LevelName.Returns($"Level {level}");
-            _mockLevelsRepository.TryGetLevelConfig(level, out LevelConfigSO _)
+            _mockLevelsRepository.TryGetLevelConfigById($"Level {level}", out LevelConfigSO _)
                 .Returns(call =>
                 {
                     call[1] = mockLevelConfig;
@@ -124,18 +123,12 @@ namespace SpaceInvaders.Tests
             CreateMockLevelConfig(1, 3);
 
             var startedLevelNumber = -1;
-            string startedLevelName = null;
-            _messageBus.Subscribe<LevelStartedMessage>((message) =>
-            {
-                startedLevelNumber = message.LevelNumber;
-                startedLevelName = message.LevelName;
-            });
+            _messageBus.Subscribe<LevelStartedMessage>((message) => startedLevelNumber = message.LevelNumber);
 
             _levelSessionManager.Initialize();
             _levelSessionManager.GameStart(_session).Forget();
 
             Assert.AreEqual(1, startedLevelNumber);
-            Assert.AreEqual("Level 1", startedLevelName);
         }
 
         [Test]

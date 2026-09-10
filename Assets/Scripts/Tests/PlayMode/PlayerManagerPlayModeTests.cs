@@ -14,7 +14,7 @@ namespace SpaceInvaders.Tests
     [TestFixture]
     public class PlayerManagerPlayModeTests : ZenjectUnitTestFixture
     {
-        private static readonly GameSessionDTO _session = new(GameModeTypes.Campaign, 1);
+        private static readonly GameSessionDTO _session = new(GameModeTypes.Campaign, 1, "Level 1");
         private static readonly GameSessionResultDTO _sessionResult = new(_session, GameplayStateResultTypes.GameOver);
 
         private PlayerManager _playerManager;

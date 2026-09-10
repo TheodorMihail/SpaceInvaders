@@ -18,6 +18,7 @@ namespace SpaceInvaders.Tests
         private GameStateMachine _gameStateMachine;
         private IScenesManager _mockScenesManager;
         private IGameModeManager _mockGameModeManager;
+        private ILevelsRepository _mockLevelsRepository;
         private IState<GameStateTypes> _mockPlayingState;
         private IState<GameStateTypes> _mockGameOverState;
 
@@ -31,6 +32,9 @@ namespace SpaceInvaders.Tests
             _mockGameModeManager = Substitute.For<IGameModeManager>();
             _mockGameModeManager.HubScene.Returns(SceneTypes.MainMenu);
 
+            _mockLevelsRepository = Substitute.For<ILevelsRepository>();
+            _mockLevelsRepository.GetLevelId(Arg.Any<int>()).Returns(call => $"Level {call.Arg<int>()}");
+
             _mockPlayingState = Substitute.For<IState<GameStateTypes>>();
             _mockPlayingState.Id.Returns(GameStateTypes.Playing);
 
@@ -39,6 +43,7 @@ namespace SpaceInvaders.Tests
 
             Container.Bind<IScenesManager>().FromInstance(_mockScenesManager);
             Container.Bind<IGameModeManager>().FromInstance(_mockGameModeManager);
+            Container.Bind<ILevelsRepository>().FromInstance(_mockLevelsRepository);
 
             var mockStates = new List<IState<GameStateTypes>> { _mockPlayingState, _mockGameOverState };
             _gameStateMachine = new GameStateMachine(mockStates);
@@ -106,7 +111,7 @@ namespace SpaceInvaders.Tests
 
             _mockPlayingState.OnStateFinished += Raise.Event<Action<(GameStateTypes, object[])>>((GameStateTypes.Playing, new object[] { GameplayStateResultTypes.Restart }));
 
-            _mockScenesManager.Received(1).LoadScene(SceneTypes.Game.ToString(), new GameSessionDTO(GameModeTypes.Campaign, 1));
+            _mockScenesManager.Received(1).LoadScene(SceneTypes.Game.ToString(), new GameSessionDTO(GameModeTypes.Campaign, 1, "Level 1"));
             _mockGameOverState.DidNotReceive().OnEnter(Arg.Any<object[]>());
         }
 
@@ -138,7 +143,7 @@ namespace SpaceInvaders.Tests
 
             _mockGameOverState.OnStateFinished += Raise.Event<Action<(GameStateTypes, object[])>>((GameStateTypes.GameOver, new object[] { GameOverStateResultTypes.Restart }));
 
-            _mockScenesManager.Received(1).LoadScene(SceneTypes.Game.ToString(), new GameSessionDTO(GameModeTypes.Campaign, 1));
+            _mockScenesManager.Received(1).LoadScene(SceneTypes.Game.ToString(), new GameSessionDTO(GameModeTypes.Campaign, 1, "Level 1"));
         }
 
         [Test]
@@ -151,16 +156,16 @@ namespace SpaceInvaders.Tests
             _mockPlayingState.OnStateFinished += Raise.Event<Action<(GameStateTypes, object[])>>((GameStateTypes.Playing, new object[] { GameplayStateResultTypes.GameOver }));
             _mockGameOverState.OnStateFinished += Raise.Event<Action<(GameStateTypes, object[])>>((GameStateTypes.GameOver, new object[] { GameOverStateResultTypes.Restart }));
 
-            _mockScenesManager.Received(1).LoadScene(SceneTypes.Game.ToString(), new GameSessionDTO(GameModeTypes.Campaign, 2));
+            _mockScenesManager.Received(1).LoadScene(SceneTypes.Game.ToString(), new GameSessionDTO(GameModeTypes.Campaign, 2, "Level 2"));
         }
 
         [Test]
-        public void OnGameOverStateFinished_WithMainMenu_LoadsMainMenuScene()
+        public void OnGameOverStateFinished_WithReturnToHub_LoadsTheModeHubScene()
         {
             _gameStateMachine.Initialize();
             _mockPlayingState.OnStateFinished += Raise.Event<Action<(GameStateTypes, object[])>>((GameStateTypes.Playing, new object[] { GameplayStateResultTypes.GameOver }));
 
-            _mockGameOverState.OnStateFinished += Raise.Event<Action<(GameStateTypes, object[])>>((GameStateTypes.GameOver, new object[] { GameOverStateResultTypes.MainMenu }));
+            _mockGameOverState.OnStateFinished += Raise.Event<Action<(GameStateTypes, object[])>>((GameStateTypes.GameOver, new object[] { GameOverStateResultTypes.ReturnToHub }));
 
             _mockScenesManager.Received(1).LoadScene(SceneTypes.MainMenu.ToString());
         }

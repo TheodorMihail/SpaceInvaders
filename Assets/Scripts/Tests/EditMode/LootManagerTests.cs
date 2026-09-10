@@ -13,7 +13,7 @@ namespace SpaceInvaders.Tests
     public class LootManagerTests : ZenjectUnitTestFixture
     {
         private static readonly GameSessionResultDTO _sessionResult =
-            new(new GameSessionDTO(GameModeTypes.Campaign, 1), GameplayStateResultTypes.GameOver);
+            new(new GameSessionDTO(GameModeTypes.Campaign, 1, "Level 1"), GameplayStateResultTypes.GameOver);
 
         private LootManager _lootManager;
         private IItemsRepository _mockItemsRepository;

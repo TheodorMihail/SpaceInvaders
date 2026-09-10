@@ -15,15 +15,20 @@ namespace SpaceInvaders.Tests
         private const string MissingServiceError =
             "[GameModeManager] [Error] No game mode service is bound for Campaign.";
 
-        private static readonly GameSessionDTO _session = new(GameModeTypes.Campaign, 1);
+        private static readonly GameSessionDTO _session = new(GameModeTypes.Campaign, 1, "Level 1");
 
         private IGameModeService _mockCampaignService;
         private IGameModeService _mockExpeditionService;
+        private IModeScopedManager _mockModeScopedManager;
+        private List<IModeScopedManager> _modeScopedManagers;
 
         [SetUp]
         public override void Setup()
         {
             base.Setup();
+
+            _mockModeScopedManager = Substitute.For<IModeScopedManager>();
+            _modeScopedManagers = new List<IModeScopedManager> { _mockModeScopedManager };
 
             _mockCampaignService = Substitute.For<IGameModeService>();
             _mockCampaignService.Mode.Returns(GameModeTypes.Campaign);
@@ -93,6 +98,17 @@ namespace SpaceInvaders.Tests
             Assert.AreEqual(GameModeTypes.Campaign, gameModeManager.CurrentMode);
         }
 
+        /// <summary>Progression is stored per mode, so switching mode has to reload every store.</summary>
+        [Test]
+        public void InitializeGameMode_ReloadsEveryModeScopedManagerForThatMode()
+        {
+            GameModeManager gameModeManager = CreateInitializedManagerWith(_mockCampaignService, _mockExpeditionService);
+
+            gameModeManager.InitializeGameMode(GameModeTypes.Expedition);
+
+            _mockModeScopedManager.Received(1).LoadForMode(GameModeTypes.Expedition);
+        }
+
         [Test]
         public void HubScene_ComesFromTheServiceForTheCurrentMode()
         {
@@ -159,6 +175,7 @@ namespace SpaceInvaders.Tests
         private GameModeManager CreateInitializedManagerWith(params IGameModeService[] services)
         {
             Container.Bind<IList<IGameModeService>>().FromInstance(new List<IGameModeService>(services));
+            Container.Bind<IList<IModeScopedManager>>().FromInstance(_modeScopedManagers);
 
             GameModeManager gameModeManager = Container.Instantiate<GameModeManager>();
             gameModeManager.Initialize();

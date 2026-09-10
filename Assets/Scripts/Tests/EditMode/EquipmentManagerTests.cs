@@ -65,7 +65,7 @@ namespace SpaceInvaders.Tests
             Container.Bind<IMessageBus>().FromInstance(_messageBus);
 
             _equipmentManager = Container.Instantiate<EquipmentManager>();
-            _equipmentManager.Initialize();
+            _equipmentManager.LoadForMode(GameModeTypes.Campaign);
         }
 
         [TearDown]
