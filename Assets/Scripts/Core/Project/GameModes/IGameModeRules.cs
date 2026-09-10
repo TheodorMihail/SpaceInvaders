@@ -47,6 +47,10 @@ namespace SpaceInvaders.Project
         /// <summary>Which drop table a kill rolls against, so what drops is authored per mode.</summary>
         DropTableTypes DropTableType { get; }
 
+        /// <summary>Whether a level can be thrown away and played again, from the pause screen or a
+        /// result screen. False where a level is one consumed step of a longer run.</summary>
+        bool CanReplayLevel { get; }
+
         void ApplyProgressionBonuses(ShipStats stats);
 
         /// <summary>The level ended. Everything it costs or earns is applied here, so nothing is left

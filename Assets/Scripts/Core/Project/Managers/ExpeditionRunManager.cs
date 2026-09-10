@@ -27,6 +27,9 @@ namespace SpaceInvaders.Project
     public enum ExpeditionRunResultTypes
     {
         Defeated,
+
+        /// <summary>Walked away from rather than lost, which unlocks may want to tell apart.</summary>
+        Abandoned,
         Completed
     }
 

@@ -8,7 +8,7 @@ using UnityEngine.UI;
 namespace SpaceInvaders.Scenes.Game
 {
     [AddressablePath("Screens/GameOverScreenView")]
-    public class GameOverView : View
+    public class GameOverScreenView : View
     {
         [SerializeField] private Button _restartButton;
         [SerializeField] private Button _mainMenuButton;

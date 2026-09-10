@@ -3,18 +3,19 @@ using Zenject;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public class GamePausedController : Controller<GamePausedScreen, GamePausedModel, GamePausedView>
+    public class GamePausedScreenController : Controller<GamePausedScreen, GamePausedScreenModel, GamePausedScreenView>
     {
         [Inject] private readonly IInputManager _inputManager;
 
-        public GamePausedController(GamePausedScreen screen, GamePausedModel model, GamePausedView view) : base(screen, model, view)
+        public GamePausedScreenController(GamePausedScreen screen, GamePausedScreenModel model, GamePausedScreenView view)
+            : base(screen, model, view)
         {
         }
 
         public override void Initialize()
         {
             base.Initialize();
-            _view.Setup(_model.MusicVolume, _model.SfxVolume);
+            _view.Setup(_model.CanRestart, _model.MusicVolume, _model.SfxVolume);
 
             _view.OnResumeButtonClicked += HandleResumeButtonClicked;
             _view.OnRestartButtonClicked += HandleRestartButtonClicked;

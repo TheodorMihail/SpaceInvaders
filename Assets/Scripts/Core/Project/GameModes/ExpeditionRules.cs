@@ -19,6 +19,9 @@ namespace SpaceInvaders.Project
         /// <summary>Gear comes from the shop, so the table this names drops no items.</summary>
         public DropTableTypes DropTableType => DropTableTypes.Expedition;
 
+        /// <summary>A node is consumed the moment it is entered, so there is nothing to replay.</summary>
+        public bool CanReplayLevel => false;
+
         /// <summary>Carried health is set after the bonuses, which decide the maximum.</summary>
         public void ApplyProgressionBonuses(ShipStats stats)
         {
@@ -47,9 +50,10 @@ namespace SpaceInvaders.Project
                 case GameplayStateResultTypes.GameOver:
                     return EndExpedition(ExpeditionRunResultTypes.Defeated);
 
+                // Leaving a level is not a defeat, but the node is spent either way, so the expedition
+                // is over and still worth reporting.
                 default:
-                    _expeditionRunManager.AbandonExpedition();
-                    break;
+                    return EndExpedition(ExpeditionRunResultTypes.Abandoned);
             }
 
             return new GameEndResolutionDTO(GameEndOptionTypes.None);

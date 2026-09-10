@@ -8,7 +8,7 @@ namespace SpaceInvaders.Scenes.Game
 {
     /// <summary>Shown while the time scale is zero, so nothing here may animate on scaled time.</summary>
     [AddressablePath("Screens/GamePausedScreenView")]
-    public class GamePausedView : View
+    public class GamePausedScreenView : View
     {
         [SerializeField] private VolumeSettingsComponent _volumeSettings;
         [SerializeField] private Button _resumeButton;
@@ -31,8 +31,10 @@ namespace SpaceInvaders.Scenes.Game
             _volumeSettings.OnSfxVolumeChanged += volume => OnSfxVolumeChanged?.Invoke(volume);
         }
 
-        public void Setup(float musicVolume, float sfxVolume)
+        /// <summary>Restarting throws the level away, which not every mode allows.</summary>
+        public void Setup(bool canRestart, float musicVolume, float sfxVolume)
         {
+            _restartButton.gameObject.SetActive(canRestart);
             _volumeSettings.Setup(musicVolume, sfxVolume);
         }
     }

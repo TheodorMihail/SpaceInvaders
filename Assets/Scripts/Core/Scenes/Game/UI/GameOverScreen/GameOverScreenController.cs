@@ -2,9 +2,10 @@ using BaseArchitecture.Core;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public class GameOverController : Controller<GameOverScreen, GameOverModel, GameOverView>
+    public class GameOverScreenController : Controller<GameOverScreen, GameOverScreenModel, GameOverScreenView>
     {
-        public GameOverController(GameOverScreen screen, GameOverModel model, GameOverView view) : base(screen, model, view)
+        public GameOverScreenController(GameOverScreen screen, GameOverScreenModel model, GameOverScreenView view)
+            : base(screen, model, view)
         {
         }
 

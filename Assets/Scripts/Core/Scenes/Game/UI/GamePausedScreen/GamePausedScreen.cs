@@ -3,7 +3,7 @@ using static SpaceInvaders.Scenes.Game.GamePausedScreen;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public class GamePausedScreen : Screen<GamePausedModel, GamePausedView, GamePausedController>, IScreenWithResult<GamePausedScreenResult>
+    public class GamePausedScreen : Screen<GamePausedScreenModel, GamePausedScreenView, GamePausedScreenController>, IScreenWithResult<GamePausedScreenResult>
     {
         public enum ResultTypes
         {

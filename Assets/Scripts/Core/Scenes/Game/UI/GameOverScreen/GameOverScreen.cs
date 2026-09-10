@@ -4,7 +4,7 @@ using static SpaceInvaders.Scenes.Game.GameOverScreen;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public class GameOverScreen : Screen<GameOverModel, GameOverView, GameOverController>, IScreenWithResult<GameOverScreenResult>
+    public class GameOverScreen : Screen<GameOverScreenModel, GameOverScreenView, GameOverScreenController>, IScreenWithResult<GameOverScreenResult>
     {
         public enum ResultTypes
         {

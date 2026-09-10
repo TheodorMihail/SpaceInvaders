@@ -18,6 +18,7 @@ namespace SpaceInvaders.Project
         public GameModeTypes Mode => GameModeTypes.Campaign;
         public SceneTypes HubScene => SceneTypes.Campaign;
         public DropTableTypes DropTableType => DropTableTypes.Campaign;
+        public bool CanReplayLevel => true;
 
         public void ApplyProgressionBonuses(ShipStats stats)
         {

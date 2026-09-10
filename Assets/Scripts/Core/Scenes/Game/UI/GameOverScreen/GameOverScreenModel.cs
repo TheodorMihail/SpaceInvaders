@@ -5,7 +5,7 @@ using static SpaceInvaders.Scenes.Game.GameOverScreen;
 
 namespace SpaceInvaders.Scenes.Game
 {
-    public class GameOverModel : Model, IModelWithParams<GameOverScreenParams>
+    public class GameOverScreenModel : Model, IModelWithParams<GameOverScreenParams>
     {
         [Inject] private readonly ILevelSessionManager _levelSessionManager;
 
