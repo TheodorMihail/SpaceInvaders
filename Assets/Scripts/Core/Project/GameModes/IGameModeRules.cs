@@ -11,10 +11,11 @@ namespace SpaceInvaders.Project
     public enum GameEndOptionTypes
     {
         None = 0,
-        Restart = 1,
-        Retry = 2,
-        NextLevel = 4,
-        MainMenu = 8
+
+        /// <summary>Play the same level again, however it ended. Each screen labels it its own way.</summary>
+        ReplayLevel = 1,
+        NextLevel = 2,
+        MainMenu = 4
     }
 
     /// <summary>Where a finished level leads: the buttons offered, and what the hub scene is handed.</summary>

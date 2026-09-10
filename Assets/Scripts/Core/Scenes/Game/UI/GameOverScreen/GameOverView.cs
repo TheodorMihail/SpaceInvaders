@@ -21,7 +21,7 @@ namespace SpaceInvaders.Scenes.Game
 
         public void Initialize(GameEndOptionTypes options, int score)
         {
-            _restartButton.gameObject.SetActive(options.HasFlag(GameEndOptionTypes.Restart));
+            _restartButton.gameObject.SetActive(options.HasFlag(GameEndOptionTypes.ReplayLevel));
             _mainMenuButton.gameObject.SetActive(options.HasFlag(GameEndOptionTypes.MainMenu));
 
             _scoreText.text = string.Format(_scoreString, score);

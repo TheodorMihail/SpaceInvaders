@@ -30,7 +30,7 @@ namespace SpaceInvaders.Scenes.Game
             IEnumerable<(InventoryItemEntry entry, ItemConfigSO config, ItemRarityConfigSO rarity)> collectedItems)
         {
             _nextLevelButton.gameObject.SetActive(options.HasFlag(GameEndOptionTypes.NextLevel));
-            _retryButton.gameObject.SetActive(options.HasFlag(GameEndOptionTypes.Retry));
+            _retryButton.gameObject.SetActive(options.HasFlag(GameEndOptionTypes.ReplayLevel));
             _mainMenuButton.gameObject.SetActive(options.HasFlag(GameEndOptionTypes.MainMenu));
 
             for (int i = 0; i < _starIcons.Length; i++)

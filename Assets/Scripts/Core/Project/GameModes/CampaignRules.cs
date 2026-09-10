@@ -35,7 +35,7 @@ namespace SpaceInvaders.Project
                 RecordStars(result);
             }
 
-            return new GameEndResolutionDTO(GetGameOverOptions(result));
+            return new GameEndResolutionDTO(GetGameEndOptions(result));
         }
 
         /// <summary>Stars come from the damage taken against the level's authored threshold.</summary>
@@ -53,17 +53,13 @@ namespace SpaceInvaders.Project
             _levelProgressManager.RecordLevelResult(result.Session.LevelNumber, stars);
         }
 
-        /// <summary>Next Level is only offered while there is a level left to advance to.</summary>
-        private GameEndOptionTypes GetGameOverOptions(GameSessionResultDTO result)
+        /// <summary>Next Level is only offered on a cleared level with one left to advance to.</summary>
+        private GameEndOptionTypes GetGameEndOptions(GameSessionResultDTO result)
         {
-            if (result.Result != GameplayStateResultTypes.LevelFinished)
-            {
-                return GameEndOptionTypes.Restart | GameEndOptionTypes.MainMenu;
-            }
+            GameEndOptionTypes options = GameEndOptionTypes.ReplayLevel | GameEndOptionTypes.MainMenu;
 
-            GameEndOptionTypes options = GameEndOptionTypes.Retry | GameEndOptionTypes.MainMenu;
-
-            if (result.Session.LevelNumber < _levelProgressManager.MaxLevelNumber)
+            if (result.Result == GameplayStateResultTypes.LevelFinished
+                && result.Session.LevelNumber < _levelProgressManager.MaxLevelNumber)
             {
                 options |= GameEndOptionTypes.NextLevel;
             }

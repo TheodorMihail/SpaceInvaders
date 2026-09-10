@@ -145,24 +145,24 @@ namespace SpaceInvaders.Tests
         }
 
         [Test]
-        public void ResolveGameEnd_AfterADefeat_OffersRestartAndMainMenu()
+        public void ResolveGameEnd_AfterADefeat_OffersReplayAndMainMenu()
         {
             var result = new GameSessionResultDTO(_session, GameplayStateResultTypes.GameOver);
 
             GameEndOptionTypes actions = _campaignRules.ResolveGameEnd(result).Options;
 
-            Assert.AreEqual(GameEndOptionTypes.Restart | GameEndOptionTypes.MainMenu, actions);
+            Assert.AreEqual(GameEndOptionTypes.ReplayLevel | GameEndOptionTypes.MainMenu, actions);
         }
 
         [Test]
-        public void ResolveGameEnd_AfterAVictory_OffersNextLevelRetryAndMainMenu()
+        public void ResolveGameEnd_AfterAVictory_OffersNextLevelReplayAndMainMenu()
         {
             var result = new GameSessionResultDTO(_session, GameplayStateResultTypes.LevelFinished);
 
             GameEndOptionTypes actions = _campaignRules.ResolveGameEnd(result).Options;
 
             Assert.AreEqual(
-                GameEndOptionTypes.NextLevel | GameEndOptionTypes.Retry | GameEndOptionTypes.MainMenu,
+                GameEndOptionTypes.NextLevel | GameEndOptionTypes.ReplayLevel | GameEndOptionTypes.MainMenu,
                 actions);
         }
 
@@ -174,7 +174,7 @@ namespace SpaceInvaders.Tests
 
             GameEndOptionTypes actions = _campaignRules.ResolveGameEnd(result).Options;
 
-            Assert.AreEqual(GameEndOptionTypes.Retry | GameEndOptionTypes.MainMenu, actions);
+            Assert.AreEqual(GameEndOptionTypes.ReplayLevel | GameEndOptionTypes.MainMenu, actions);
         }
 
         private static GameSessionResultDTO CreateClearedResult(ShipStats stats)
