@@ -231,13 +231,13 @@ namespace SpaceInvaders.Scenes.Game
             return RollOutgoingDamage(1f, out isCritical);
         }
 
-        /// <summary>The multiplier is the firing attack's own scaling, applied to the rounded projectile
-        /// damage, so 1 rolls exactly as an unscaled shot does.</summary>
+        /// <summary>The multiplier is the firing attack's own scaling. Rounding happens once, at the end,
+        /// so bonuses too small to move the rounded stat still count.</summary>
         public int RollOutgoingDamage(float damageMultiplier, out bool isCritical)
         {
             isCritical = Random.value < CurrentCritChance;
 
-            float damage = CurrentProjectileDamage * damageMultiplier;
+            float damage = _damageStat.CurrentValue * damageMultiplier;
 
             if (isCritical)
             {

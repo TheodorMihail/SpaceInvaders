@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: CritChanceTalentConfig
   m_EditorClassIdentifier: 
   _talentType: 5
-  _valueType: 0
+  _valueType: 1
   _displayName: Crit Chance
   _icon: {fileID: 1146449724, guid: 5be90912f33c39649b363237f4946af9, type: 3}
   _levels:
