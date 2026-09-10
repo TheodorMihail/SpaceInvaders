@@ -31,6 +31,12 @@ namespace SpaceInvaders.Scenes.Expedition
 
         public ExpeditionNodeTypes NodeType => _nodeType;
         public float Weight => _weight;
+
+        public ExpeditionNodeWeightDTO(ExpeditionNodeTypes nodeType, float weight)
+        {
+            _nodeType = nodeType;
+            _weight = weight;
+        }
     }
 
     [CreateAssetMenu(fileName = "ExpeditionDataConfig", menuName = "SpaceInvaders/Expedition/Expedition Data Config")]

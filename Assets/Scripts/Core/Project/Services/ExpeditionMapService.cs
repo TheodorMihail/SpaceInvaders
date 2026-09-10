@@ -46,6 +46,9 @@ namespace SpaceInvaders.Project
             int depth = System.Math.Max(config.Depth, 2);
             int nextId = 0;
 
+            // Carried between rows so a special type never lands on two depths in a row.
+            var previousRowTypes = new HashSet<ExpeditionNodeTypes>();
+
             for (int rowDepth = 0; rowDepth < depth; rowDepth++)
             {
                 bool isSingle = rowDepth == 0 || rowDepth == depth - 1;
@@ -59,7 +62,7 @@ namespace SpaceInvaders.Project
 
                 for (int column = 0; column < width; column++)
                 {
-                    ExpeditionNodeTypes nodeType = GetNodeType(config, rowDepth, depth, usedTypes, random);
+                    ExpeditionNodeTypes nodeType = GetNodeType(config, rowDepth, depth, usedTypes, previousRowTypes, random);
                     usedTypes.Add(nodeType);
 
                     row.Add(new ExpeditionNodeEntry
@@ -73,6 +76,7 @@ namespace SpaceInvaders.Project
                 }
 
                 rows.Add(row);
+                previousRowTypes = usedTypes;
             }
 
             rows[0][0].State = ExpeditionNodeStateTypes.Visited.ToString();
@@ -80,7 +84,7 @@ namespace SpaceInvaders.Project
         }
 
         private static ExpeditionNodeTypes GetNodeType(ExpeditionDataConfigSO config, int rowDepth, int depth,
-            HashSet<ExpeditionNodeTypes> usedTypes, Random random)
+            HashSet<ExpeditionNodeTypes> usedTypes, HashSet<ExpeditionNodeTypes> previousRowTypes, Random random)
         {
             if (rowDepth == 0)
             {
@@ -92,14 +96,14 @@ namespace SpaceInvaders.Project
                 return ExpeditionNodeTypes.MegaBoss;
             }
 
-            // An authored boss depth still obeys the earliest-boss rule, so one bad number cannot
-            // put a boss on the opening rows.
-            if (IsAuthoredBossDepth(config, rowDepth) && rowDepth >= config.MinBossDepth)
+            // An authored boss depth still obeys every boss rule, so no number can put one on the
+            // opening rows or against another boss.
+            if (IsAuthoredBossDepth(config, rowDepth) && IsBossAllowed(config, rowDepth, depth, previousRowTypes))
             {
                 return ExpeditionNodeTypes.Boss;
             }
 
-            return RollWeightedNodeType(config, rowDepth, usedTypes, random);
+            return RollWeightedNodeType(config, rowDepth, depth, usedTypes, previousRowTypes, random);
         }
 
         private static bool IsAuthoredBossDepth(ExpeditionDataConfigSO config, int rowDepth)
@@ -117,13 +121,13 @@ namespace SpaceInvaders.Project
 
         /// <summary>Rolls among the types allowed here, so a weight can never place one where the rules
         /// forbid it. Normal is the fallback and is always allowed.</summary>
-        private static ExpeditionNodeTypes RollWeightedNodeType(ExpeditionDataConfigSO config, int rowDepth,
-            HashSet<ExpeditionNodeTypes> usedTypes, Random random)
+        private static ExpeditionNodeTypes RollWeightedNodeType(ExpeditionDataConfigSO config, int rowDepth, int depth,
+            HashSet<ExpeditionNodeTypes> usedTypes, HashSet<ExpeditionNodeTypes> previousRowTypes, Random random)
         {
             float total = 0f;
             foreach (ExpeditionNodeWeightDTO weight in config.NodeTypeWeights)
             {
-                if (IsNodeTypeAllowed(config, weight.NodeType, rowDepth, usedTypes))
+                if (IsNodeTypeAllowed(config, weight.NodeType, rowDepth, depth, usedTypes, previousRowTypes))
                 {
                     total += System.Math.Max(weight.Weight, 0f);
                 }
@@ -137,7 +141,8 @@ namespace SpaceInvaders.Project
             double roll = random.NextDouble() * total;
             foreach (ExpeditionNodeWeightDTO weight in config.NodeTypeWeights)
             {
-                if (weight.Weight <= 0f || !IsNodeTypeAllowed(config, weight.NodeType, rowDepth, usedTypes))
+                if (weight.Weight <= 0f
+                    || !IsNodeTypeAllowed(config, weight.NodeType, rowDepth, depth, usedTypes, previousRowTypes))
                 {
                     continue;
                 }
@@ -154,7 +159,8 @@ namespace SpaceInvaders.Project
         }
 
         private static bool IsNodeTypeAllowed(ExpeditionDataConfigSO config, ExpeditionNodeTypes nodeType,
-            int rowDepth, HashSet<ExpeditionNodeTypes> usedTypes)
+            int rowDepth, int depth, HashSet<ExpeditionNodeTypes> usedTypes,
+            HashSet<ExpeditionNodeTypes> previousRowTypes)
         {
             // Only ever placed by position, never rolled.
             if (nodeType == ExpeditionNodeTypes.Start || nodeType == ExpeditionNodeTypes.MegaBoss)
@@ -172,6 +178,12 @@ namespace SpaceInvaders.Project
                 return false;
             }
 
+            // No path can meet the same special twice running, whichever branch it walks.
+            if (previousRowTypes.Contains(nodeType))
+            {
+                return false;
+            }
+
             if (nodeType == ExpeditionNodeTypes.Shop)
             {
                 return rowDepth >= config.MinShopDepth;
@@ -179,10 +191,23 @@ namespace SpaceInvaders.Project
 
             if (nodeType == ExpeditionNodeTypes.Boss)
             {
-                return rowDepth >= config.MinBossDepth;
+                // An authored boss depth is reserved, so a roll never lands one just before it and
+                // forces the authored one out.
+                return IsBossAllowed(config, rowDepth, depth, previousRowTypes)
+                    && !IsAuthoredBossDepth(config, rowDepth + 1);
             }
 
             return true;
+        }
+
+        /// <summary>The mega boss closes the map, so its row counts as a boss row and nothing may sit
+        /// a second boss against it.</summary>
+        private static bool IsBossAllowed(ExpeditionDataConfigSO config, int rowDepth, int depth,
+            HashSet<ExpeditionNodeTypes> previousRowTypes)
+        {
+            return rowDepth >= config.MinBossDepth
+                && rowDepth != depth - 2
+                && !previousRowTypes.Contains(ExpeditionNodeTypes.Boss);
         }
 
         /// <summary>
