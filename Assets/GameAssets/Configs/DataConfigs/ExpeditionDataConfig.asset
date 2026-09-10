@@ -16,13 +16,37 @@ MonoBehaviour:
   _minBranchWidth: 2
   _maxBranchWidth: 3
   _bossDepths: 
+  _extraLinkChance: 0.5
+  _minBossDepth: 3
+  _minShopDepth: 2
   _nodeTypeWeights:
   - _nodeType: 1
-    _weight: 7
+    _weight: 8
   - _nodeType: 4
-    _weight: 2
+    _weight: 3
   - _nodeType: 3
-    _weight: 2
+    _weight: 3
   - _nodeType: 2
-    _weight: 1
-  _levelPools: []
+    _weight: 2
+  _levelPools:
+  - _nodeType: 1
+    _minDepth: 1
+    _maxDepth: 10
+    _levels:
+    - {fileID: 11400000, guid: dfbc3dee90d866c449223693c16750c8, type: 2}
+    - {fileID: 11400000, guid: e77dcc4ad00fb844db9dab7cb37faad5, type: 2}
+    - {fileID: 11400000, guid: f355646393bbbc1418cb47de71c6f063, type: 2}
+    - {fileID: 11400000, guid: 1db6cc57140b83d47aa5b473df5122b2, type: 2}
+  - _nodeType: 2
+    _minDepth: 1
+    _maxDepth: 10
+    _levels:
+    - {fileID: 11400000, guid: 4aaded0c37bb30e4f99008f40c89fa73, type: 2}
+    - {fileID: 11400000, guid: 7195ab20a81a4d7faef7c4c9724dde4a, type: 2}
+  - _nodeType: 5
+    _minDepth: 1
+    _maxDepth: 10
+    _levels:
+    - {fileID: 11400000, guid: 4aaded0c37bb30e4f99008f40c89fa73, type: 2}
+    - {fileID: 11400000, guid: 7195ab20a81a4d7faef7c4c9724dde4a, type: 2}
+  _scrapPerScore: 1

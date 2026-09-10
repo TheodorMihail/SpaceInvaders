@@ -63,6 +63,10 @@ namespace SpaceInvaders.Scenes.Expedition
         [Header("Levels")]
         [SerializeField] private List<ExpeditionLevelPoolDTO> _levelPools = new();
 
+        [Header("Rewards")]
+        [Tooltip("Scrap banked per point of score when a node is cleared.")]
+        [SerializeField] private float _scrapPerScore = 1f;
+
         public virtual int Depth => _depth;
         public virtual int MinBranchWidth => _minBranchWidth;
         public virtual int MaxBranchWidth => _maxBranchWidth;
@@ -72,6 +76,7 @@ namespace SpaceInvaders.Scenes.Expedition
         public virtual int MinShopDepth => _minShopDepth;
         public virtual IReadOnlyList<ExpeditionNodeWeightDTO> NodeTypeWeights => _nodeTypeWeights;
         public virtual IReadOnlyList<ExpeditionLevelPoolDTO> LevelPools => _levelPools;
+        public virtual float ScrapPerScore => _scrapPerScore;
 
         public virtual string ObjectID => nameof(ExpeditionDataConfigSO);
     }

@@ -44,8 +44,7 @@ namespace SpaceInvaders.Scenes.Game
             base.OnDespawned();
             _collisionDetection.OnTriggerEntered -= HandleTriggerEnter;
 
-            // Cleared here too: one that drifts off screen is never destroyed, so the spawner would
-            // otherwise stack a listener on every reuse of this instance.
+            // Despawning without being destroyed would otherwise stack listeners across reuses.
             OnDestroyed = null;
 
             _config = null;
@@ -59,8 +58,7 @@ namespace SpaceInvaders.Scenes.Game
                 return;
             }
 
-            // Shots still land on an indestructible hazard, they simply achieve nothing. The hit
-            // feedback is what tells the player that shooting it is not the answer.
+            // An indestructible hazard still reports the hit, so the feedback plays.
             if (!Stats.IsDestructible)
             {
                 SpawnVFX(_config.HitVFXPrefab);

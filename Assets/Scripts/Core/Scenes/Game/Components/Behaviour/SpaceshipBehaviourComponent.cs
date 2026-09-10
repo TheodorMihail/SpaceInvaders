@@ -213,7 +213,7 @@ namespace SpaceInvaders.Scenes.Game
         {
         }
 
-        private void FlashHull()
+        private void AnimateFlash()
         {
             if (_hitFlash == null)
             {
@@ -281,7 +281,7 @@ namespace SpaceInvaders.Scenes.Game
         {
             Stats.ApplyDamage(damage);
             SpawnHitVFX();
-            FlashHull();
+            AnimateFlash();
             RaiseDamaged(damage, isCritical);
 
             if (Stats.CurrentHealth == 0)

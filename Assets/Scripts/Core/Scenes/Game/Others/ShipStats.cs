@@ -266,6 +266,13 @@ namespace SpaceInvaders.Scenes.Game
             HealthChanged?.Invoke(CurrentHealth, CurrentMaxHealth);
         }
 
+        /// <summary>Health carried between levels, never zero.</summary>
+        public void SetHealthRatio(float ratio)
+        {
+            CurrentHealth = Mathf.Clamp(Mathf.RoundToInt(CurrentMaxHealth * ratio), 1, CurrentMaxHealth);
+            HealthChanged?.Invoke(CurrentHealth, CurrentMaxHealth);
+        }
+
         /// <summary>One round per volley, so extra shots never cost extra ammo.</summary>
         public bool TryConsumeAmmo()
         {
