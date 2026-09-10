@@ -4,7 +4,7 @@ using Zenject;
 
 namespace SpaceInvaders.Project
 {
-    public interface ICurrencyManager : IModeScopedManager
+    public interface ICurrencyManager : IGameModeScopedManager
     {
         int Currency { get; }
         void AddCurrency(int amount);

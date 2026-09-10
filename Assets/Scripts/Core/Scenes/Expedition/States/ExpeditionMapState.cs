@@ -1,5 +1,4 @@
 using BaseArchitecture.Core;
-using Cysharp.Threading.Tasks;
 using SpaceInvaders.Project;
 using Zenject;
 using static SpaceInvaders.Scenes.Expedition.ExpeditionStateMachine;
@@ -15,14 +14,11 @@ namespace SpaceInvaders.Scenes.Expedition
         public override ExpeditionStateTypes Id => ExpeditionStateTypes.Map;
 
         [Inject] private readonly IUIManager _uiManager;
-        [Inject] private readonly IExpeditionRunManager _expeditionRunManager;
 
         public override void OnEnter(params object[] paramsList)
         {
             base.OnEnter();
 
-            // Anything owed for the node just cleared is handed out before the map is back.
-            _expeditionRunManager.ReturnToMap();
             ShowMapScreen();
         }
 

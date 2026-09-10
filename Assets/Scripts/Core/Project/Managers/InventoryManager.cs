@@ -4,7 +4,7 @@ using Zenject;
 
 namespace SpaceInvaders.Project
 {
-    public interface IInventoryManager : IModeScopedManager
+    public interface IInventoryManager : IGameModeScopedManager
     {
         IReadOnlyList<InventoryItemEntry> Items { get; }
 

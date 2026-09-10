@@ -13,7 +13,7 @@ namespace SpaceInvaders.Scenes.Game
         [Inject] private readonly ILootManager _lootManager;
         [Inject] private readonly IItemsRepository _itemsRepository;
 
-        public GameOverOptionTypes Options { get; set; } = GameOverOptionTypes.None;
+        public GameEndOptionTypes Options { get; set; } = GameEndOptionTypes.None;
 
         public int StarsEarned => _levelProgressManager.LastPlayedLevelStarsEarned;
         public int TotalScore => _levelSessionManager.TotalScore;

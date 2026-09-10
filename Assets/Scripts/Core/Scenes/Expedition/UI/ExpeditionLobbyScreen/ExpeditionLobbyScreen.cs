@@ -15,7 +15,7 @@ namespace SpaceInvaders.Scenes.Expedition
 
         public struct ExpeditionLobbyScreenParams
         {
-            public bool HasActiveRun { get; set; }
+            public bool HasActiveExpedition { get; set; }
         }
 
         public struct ExpeditionLobbyScreenResult : IScreenResult

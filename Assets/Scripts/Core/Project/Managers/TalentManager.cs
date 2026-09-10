@@ -4,7 +4,7 @@ using Zenject;
 
 namespace SpaceInvaders.Project
 {
-    public interface ITalentManager : IModeScopedManager
+    public interface ITalentManager : IGameModeScopedManager
     {
         int GetTalentLevel(ShipUpgradableStatTypes type);
         int GetNextLevelCost(ShipUpgradableStatTypes type);

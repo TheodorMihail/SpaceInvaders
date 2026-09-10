@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using BaseArchitecture.Core;
 using SpaceInvaders.Project;
 using Zenject;
@@ -9,8 +8,7 @@ namespace SpaceInvaders.Scenes.Expedition
     {
         [Inject] private readonly IExpeditionRunManager _expeditionRunManager;
 
-        public IReadOnlyList<ExpeditionNodeEntry> Nodes => _expeditionRunManager.Nodes;
-        public int CurrentNodeId => _expeditionRunManager.CurrentNodeId;
-        public ExpeditionRunPhaseTypes RunPhase => _expeditionRunManager.RunPhase;
+        /// <summary>Never null here: the map is only reachable while an expedition is under way.</summary>
+        public IExpeditionState Expedition => _expeditionRunManager.CurrentExpedition;
     }
 }

@@ -12,7 +12,7 @@ namespace SpaceInvaders.Scenes.Expedition
         public override void Initialize()
         {
             base.Initialize();
-            _view.Initialize(_model.HasActiveRun);
+            _view.Initialize(_model.HasActiveExpedition);
             _view.OnContinueButtonClicked += HandleContinueButtonClicked;
             _view.OnNewRunButtonClicked += HandleNewRunButtonClicked;
             _view.OnBackButtonClicked += HandleBackButtonClicked;

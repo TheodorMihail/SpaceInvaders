@@ -6,7 +6,7 @@ namespace SpaceInvaders.Scenes.Expedition
 {
     public class ExpeditionSummaryScreenModel : Model, IModelWithParams<ExpeditionSummaryScreenParams>
     {
-        public ExpeditionRunResultTypes Result { get; set; } = ExpeditionRunResultTypes.None;
+        public ExpeditionRunResultTypes Result { get; set; } = ExpeditionRunResultTypes.Defeated;
         public int DepthReached { get; set; } = 0;
 
         public void InitializeWithParameters(ExpeditionSummaryScreenParams parameters)

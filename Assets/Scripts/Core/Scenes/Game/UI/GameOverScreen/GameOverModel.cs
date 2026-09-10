@@ -9,7 +9,7 @@ namespace SpaceInvaders.Scenes.Game
     {
         [Inject] private readonly ILevelSessionManager _levelSessionManager;
 
-        public GameOverOptionTypes Options { get; set; } = GameOverOptionTypes.None;
+        public GameEndOptionTypes Options { get; set; } = GameEndOptionTypes.None;
 
         public int TotalScore => _levelSessionManager.TotalScore;
 

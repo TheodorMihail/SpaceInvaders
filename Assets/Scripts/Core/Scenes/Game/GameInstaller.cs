@@ -58,7 +58,7 @@ namespace SpaceInvaders.Scenes.Game
             Container.BindInterfacesTo<GameplayState>()
                 .FromSubContainerResolve().ByInstaller<GameplayStateInstaller>().AsSingle();
 
-            Container.BindInterfacesTo<GameOverState>().AsSingle();
+            Container.BindInterfacesTo<GameEndState>().AsSingle();
             Container.BindInterfacesTo<GameStateMachine>().AsSingle();
         }
     }

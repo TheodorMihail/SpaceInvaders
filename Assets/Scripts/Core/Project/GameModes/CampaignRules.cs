@@ -7,7 +7,7 @@ namespace SpaceInvaders.Project
     /// The authored level list: talents and equipment on the ship, stars on completion, and the run's
     /// score banked as persistent currency.
     /// </summary>
-    public class CampaignModeService : IGameModeService
+    public class CampaignRules : IGameModeRules
     {
         [Inject] private readonly ILevelsRepository _levelsRepository;
         [Inject] private readonly ILevelProgressManager _levelProgressManager;
@@ -24,38 +24,48 @@ namespace SpaceInvaders.Project
             _equipmentManager.ApplyEquipmentBonuses(stats);
         }
 
-        /// <summary>Stars come from the damage taken against the level's authored threshold.</summary>
-        public void SaveLevelResult(GameSessionDTO session, ShipStats stats)
+        /// <summary>The score is permanent currency however the level ended, but only a cleared level
+        /// is rated.</summary>
+        public GameEndResolutionDTO ResolveGameEnd(GameSessionResultDTO result)
         {
-            if (stats == null || !_levelsRepository.TryGetLevelConfig(session.LevelNumber, out LevelConfigSO config))
+            _currencyManager.AddCurrency(result.Score);
+
+            if (result.Result == GameplayStateResultTypes.LevelFinished)
+            {
+                RecordStars(result);
+            }
+
+            return new GameEndResolutionDTO(GetGameOverOptions(result));
+        }
+
+        /// <summary>Stars come from the damage taken against the level's authored threshold.</summary>
+        private void RecordStars(GameSessionResultDTO result)
+        {
+            if (result.Stats == null
+                || !_levelsRepository.TryGetLevelConfig(result.Session.LevelNumber, out LevelConfigSO config))
             {
                 return;
             }
 
-            int stars = CalculateStars(stats.CumulativeDamageTaken, config.ThreeStarMaxDamage,
+            int stars = CalculateStars(result.Stats.CumulativeDamageTaken, config.ThreeStarMaxDamage,
                 _levelsRepository.GetTwoStarDamageMultiplier());
 
-            _levelProgressManager.RecordLevelResult(session.LevelNumber, stars);
-        }
-
-        public void SaveRunScore(GameSessionResultDTO result, int score)
-        {
-            _currencyManager.AddCurrency(score);
+            _levelProgressManager.RecordLevelResult(result.Session.LevelNumber, stars);
         }
 
         /// <summary>Next Level is only offered while there is a level left to advance to.</summary>
-        public GameOverOptionTypes GetGameOverOptions(GameSessionResultDTO result)
+        private GameEndOptionTypes GetGameOverOptions(GameSessionResultDTO result)
         {
             if (result.Result != GameplayStateResultTypes.LevelFinished)
             {
-                return GameOverOptionTypes.Restart | GameOverOptionTypes.MainMenu;
+                return GameEndOptionTypes.Restart | GameEndOptionTypes.MainMenu;
             }
 
-            GameOverOptionTypes options = GameOverOptionTypes.Retry | GameOverOptionTypes.MainMenu;
+            GameEndOptionTypes options = GameEndOptionTypes.Retry | GameEndOptionTypes.MainMenu;
 
             if (result.Session.LevelNumber < _levelProgressManager.MaxLevelNumber)
             {
-                options |= GameOverOptionTypes.NextLevel;
+                options |= GameEndOptionTypes.NextLevel;
             }
 
             return options;

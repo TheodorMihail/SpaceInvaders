@@ -67,8 +67,6 @@ namespace SpaceInvaders.Scenes.Game
     {
         [Inject] private readonly ILevelsRepository _levelsRepository;
         [Inject] private readonly IShipsRepository _shipsRepository;
-        [Inject] private readonly IPlayerManager _playerManager;
-        [Inject] private readonly IGameModeManager _gameModeManager;
         [Inject] private readonly IMessageBus _messageBus;
 
         [Inject] private readonly IEnemiesService _enemiesService;
@@ -123,7 +121,6 @@ namespace SpaceInvaders.Scenes.Game
         {
             _hazardsService.StopHazards();
             _enemiesService.GameEnd();
-            _scoreService.GameEnd(result);
             _impactFeedbackService.GameEnd();
             return UniTask.CompletedTask;
         }
@@ -149,7 +146,6 @@ namespace SpaceInvaders.Scenes.Game
                 // Nothing left to survive, so the level should not keep throwing hazards during the
                 // delay before the run actually ends.
                 _hazardsService.StopHazards();
-                _gameModeManager.SaveLevelResult(_session, _playerManager.PlayerStats);
                 _messageBus.Publish(new LevelCompletedMessage(CurrentLevelNumber));
                 return;
             }

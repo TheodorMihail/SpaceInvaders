@@ -70,13 +70,9 @@ namespace SpaceInvaders.Project
         public const int CurrentVersion = 0;
 
         public int Version { get; set; }
-        public string RunPhase;
-        public string RunResult;
-        public int Seed;
-        public int CurrentNodeId;
-        public float RemainingHealthRatio;
-        public int ShopRerollsUsed;
-        public List<ExpeditionNodeEntry> Nodes = new();
+
+        /// <summary>Null when no run is under way, so ending one drops every part of it together.</summary>
+        public ExpeditionRunInProgressEntry RunInProgress;
     }
 
     #endregion
@@ -114,6 +110,19 @@ namespace SpaceInvaders.Project
     {
         public string Slot;
         public string InstanceId;
+    }
+
+    /// <summary>A run under way. Everything here dies with the run, which is why it is one object.</summary>
+    public class ExpeditionRunInProgressEntry
+    {
+        public int Seed;
+        public int CurrentNodeId;
+
+        /// <summary>Still true on load means the app closed mid-level, which voids the run.</summary>
+        public bool IsLevelInProgress;
+        public float RemainingHealthRatio = 1f;
+        public int ShopRerollsUsed;
+        public List<ExpeditionNodeEntry> Nodes = new();
     }
 
     public class ExpeditionNodeEntry

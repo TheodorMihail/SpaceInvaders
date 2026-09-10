@@ -11,15 +11,13 @@ namespace SpaceInvaders.Scenes.Game
         void Initialize();
         void Dispose();
         void GameInitialize();
-        void GameEnd(GameSessionResultDTO result);
     }
 
-    /// <summary>Accumulates score from destroyed enemies and hands it to the mode to bank on game end.</summary>
+    /// <summary>Accumulates score from destroyed enemies. Where it goes is decided elsewhere.</summary>
     public class ScoreService : IScoreService
     {
         [Inject] private readonly IMessageBus _messageBus;
         [Inject] private readonly IShipsRepository _shipsRepository;
-        [Inject] private readonly IGameModeManager _gameModeManager;
 
         public int TotalScore { get; private set; }
 
@@ -37,12 +35,6 @@ namespace SpaceInvaders.Scenes.Game
         public void GameInitialize()
         {
             TotalScore = 0;
-        }
-
-        /// <summary>Where the score goes is the mode's decision, not this service's.</summary>
-        public void GameEnd(GameSessionResultDTO result)
-        {
-            _gameModeManager.SaveRunScore(result, TotalScore);
         }
 
         private void OnEnemyDestroyedCallback(EnemyDestroyedMessage message)

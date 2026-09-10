@@ -6,7 +6,7 @@ using Zenject;
 
 namespace SpaceInvaders.Project
 {
-    public interface IEquipmentManager : IModeScopedManager
+    public interface IEquipmentManager : IGameModeScopedManager
     {
         IReadOnlyList<EquipmentSlotConfigDTO> EquipmentSlotConfigs { get; }
 

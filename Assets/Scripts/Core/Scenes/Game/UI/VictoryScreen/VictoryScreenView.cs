@@ -26,12 +26,12 @@ namespace SpaceInvaders.Scenes.Game
         public event Action OnRetryButtonClicked;
         public event Action OnMainMenuButtonClicked;
 
-        public void Initialize(GameOverOptionTypes options, int starsEarned, int score,
+        public void Initialize(GameEndOptionTypes options, int starsEarned, int score,
             IEnumerable<(InventoryItemEntry entry, ItemConfigSO config, ItemRarityConfigSO rarity)> collectedItems)
         {
-            _nextLevelButton.gameObject.SetActive(options.HasFlag(GameOverOptionTypes.NextLevel));
-            _retryButton.gameObject.SetActive(options.HasFlag(GameOverOptionTypes.Retry));
-            _mainMenuButton.gameObject.SetActive(options.HasFlag(GameOverOptionTypes.MainMenu));
+            _nextLevelButton.gameObject.SetActive(options.HasFlag(GameEndOptionTypes.NextLevel));
+            _retryButton.gameObject.SetActive(options.HasFlag(GameEndOptionTypes.Retry));
+            _mainMenuButton.gameObject.SetActive(options.HasFlag(GameEndOptionTypes.MainMenu));
 
             for (int i = 0; i < _starIcons.Length; i++)
             {

@@ -14,7 +14,7 @@ namespace SpaceInvaders.Scenes.Game
 
         public struct GameOverScreenParams
         {
-            public GameOverOptionTypes Options { get; set; }
+            public GameEndOptionTypes Options { get; set; }
         }
 
         public struct GameOverScreenResult : IScreenResult

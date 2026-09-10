@@ -16,7 +16,7 @@ namespace SpaceInvaders.Scenes.Expedition
         public override void Initialize()
         {
             base.Initialize();
-            _view.Initialize(_model.Nodes);
+            _view.Initialize(_model.Expedition.Nodes);
             _view.OnNodeClicked += HandleNodeClicked;
             _view.OnBackButtonClicked += HandleBackButtonClicked;
         }
@@ -33,7 +33,7 @@ namespace SpaceInvaders.Scenes.Expedition
         {
             _expeditionRunManager.EnterNode(nodeId);
 
-            if (_model.RunPhase == ExpeditionRunPhaseTypes.InLevel)
+            if (_model.Expedition.IsLevelInProgress)
             {
                 CloseScreenWithResult(new ExpeditionMapScreen.ExpeditionMapScreenResult
                 {
@@ -42,7 +42,7 @@ namespace SpaceInvaders.Scenes.Expedition
                 return;
             }
 
-            _view.Refresh(_model.Nodes);
+            _view.Refresh(_model.Expedition.Nodes);
         }
 
         private void HandleBackButtonClicked()

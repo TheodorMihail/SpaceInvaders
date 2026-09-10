@@ -32,7 +32,7 @@ namespace SpaceInvaders.Project
         public static class Expedition
         {
             public const Key RerollMap = Key.F1;
-            public const Key AbandonRun = Key.F2;
+            public const Key AbandonExpedition = Key.F2;
         }
 
         /// <summary>A running level, so only reachable from the Game scene.</summary>
