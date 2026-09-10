@@ -71,6 +71,7 @@ namespace SpaceInvaders.Project
 
         public int Version { get; set; }
         public string RunPhase;
+        public string RunResult;
         public int Seed;
         public int CurrentNodeId;
         public float RemainingHealthRatio;

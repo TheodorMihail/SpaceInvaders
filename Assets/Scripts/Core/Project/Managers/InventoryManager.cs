@@ -1,9 +1,10 @@
 using System.Collections.Generic;
+using SpaceInvaders.Scenes.Game;
 using Zenject;
 
 namespace SpaceInvaders.Project
 {
-    public interface IInventoryManager : IInitializable
+    public interface IInventoryManager : IModeScopedManager
     {
         IReadOnlyList<InventoryItemEntry> Items { get; }
 
@@ -24,9 +25,14 @@ namespace SpaceInvaders.Project
 
         public IReadOnlyList<InventoryItemEntry> Items => _itemStorage.Items;
 
-        public void Initialize()
+        public void LoadForMode(GameModeTypes mode)
         {
-            _itemStorage.Initialize();
+            _itemStorage.LoadForMode(mode);
+        }
+
+        public void ClearLoadedData()
+        {
+            _itemStorage.ClearAll();
         }
 
         public bool ContainsItem(string instanceId)

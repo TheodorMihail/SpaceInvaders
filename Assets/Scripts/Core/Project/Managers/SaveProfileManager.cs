@@ -13,6 +13,15 @@ namespace SpaceInvaders.Project
         IPersistenceManager GetGeneralProfile();
     }
 
+    /// <summary>State that lives in the running mode's profile, reloaded on every mode change.</summary>
+    public interface IModeScopedManager
+    {
+        void LoadForMode(GameModeTypes mode);
+
+        /// <summary>Wipes the loaded mode's store, for a mode whose progression lasts one run.</summary>
+        void ClearLoadedData();
+    }
+
     /// <summary>
     /// One save file per game mode, so no two modes ever share stored state. Save keys are identical
     /// across profiles, since the file is what separates them, and a mode's whole persisted world can

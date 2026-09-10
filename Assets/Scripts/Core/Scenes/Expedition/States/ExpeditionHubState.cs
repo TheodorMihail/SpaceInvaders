@@ -16,23 +16,33 @@ namespace SpaceInvaders.Scenes.Expedition
 
         [Inject] private readonly IUIManager _uiManager;
         [Inject] private readonly IExpeditionRunManager _expeditionRunManager;
-        [Inject] private readonly IGameModeManager _gameModeManager;
         [Inject] private readonly IList<ISceneEnterListener> _sceneEnterListeners;
 
         public override void OnEnter(params object[] paramsList)
         {
             base.OnEnter();
 
-            // Before any screen reads progression, so it reads the Expedition profile rather than Campaign's.
-            _gameModeManager.InitializeGameMode(GameModeTypes.Expedition);
-
             TriggerSceneEnter().Forget();
-            ShowLobbyScreen();
+            ShowScreens();
         }
 
         private UniTask TriggerSceneEnter()
         {
             return UniTask.WhenAll(_sceneEnterListeners.Select(listener => listener.SceneEnter(SceneTypes.Expedition)));
+        }
+
+        /// <summary>A finished run is reported before the lobby, which is what drops it.</summary>
+        private async void ShowScreens()
+        {
+            if (_expeditionRunManager.RunPhase == ExpeditionRunPhaseTypes.Finished)
+            {
+                ExpeditionRunResultDTO runResult = _expeditionRunManager.ConsumeRunResult();
+
+                await _uiManager.ShowScreen<ExpeditionSummaryScreen, ExpeditionSummaryScreen.ExpeditionSummaryScreenParams>(
+                    new ExpeditionSummaryScreen.ExpeditionSummaryScreenParams { RunResult = runResult });
+            }
+
+            ShowLobbyScreen();
         }
 
         private async void ShowLobbyScreen()

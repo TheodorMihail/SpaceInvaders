@@ -26,6 +26,7 @@ namespace SpaceInvaders.Project
     public class GameModeManager : IGameModeManager
     {
         [Inject] private readonly IList<IGameModeService> _modeServices;
+        [Inject] private readonly IList<IModeScopedManager> _modeScopedManagers;
 
         public GameModeTypes CurrentMode { get; private set; }
 
@@ -47,6 +48,12 @@ namespace SpaceInvaders.Project
             if (!TryGetModeService(mode, out _activeModeService))
             {
                 this.LogError($"No game mode service is bound for {mode}.");
+            }
+
+            // Before anything reads them, so a hub screen never draws the previous mode's progression.
+            foreach (IModeScopedManager modeScopedManager in _modeScopedManagers)
+            {
+                modeScopedManager.LoadForMode(mode);
             }
         }
 

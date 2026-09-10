@@ -9,15 +9,12 @@ namespace SpaceInvaders.Project
     {
         IReadOnlyList<InventoryItemEntry> Items { get; }
 
-        void Initialize();
+        void LoadForMode(GameModeTypes mode);
         bool ContainsItem(string instanceId);
         InventoryItemEntry GetItem(string instanceId);
         void AddItems(IReadOnlyList<InventoryItemEntry> entries);
         void RemoveItem(string instanceId);
-
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
         void ClearAll();
-#endif
     }
 
     /// <summary>Holds the owned items and persists them.</summary>
@@ -30,9 +27,9 @@ namespace SpaceInvaders.Project
 
         public IReadOnlyList<InventoryItemEntry> Items => _data.Items;
 
-        public void Initialize()
+        public void LoadForMode(GameModeTypes mode)
         {
-            _persistenceManager = _saveProfileManager.GetProfile(GameModeTypes.Campaign);
+            _persistenceManager = _saveProfileManager.GetProfile(mode);
             _data = _persistenceManager.LoadVersioned<InventorySaveData>(InventorySaveData.SaveKey, InventorySaveData.CurrentVersion);
         }
 
@@ -74,13 +71,11 @@ namespace SpaceInvaders.Project
             SaveData();
         }
 
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
         public void ClearAll()
         {
             _data.Items.Clear();
             SaveData();
         }
-#endif
 
         private void SaveData()
         {

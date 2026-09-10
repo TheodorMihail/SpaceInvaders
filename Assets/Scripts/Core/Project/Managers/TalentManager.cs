@@ -4,7 +4,7 @@ using Zenject;
 
 namespace SpaceInvaders.Project
 {
-    public interface ITalentManager : IInitializable
+    public interface ITalentManager : IModeScopedManager
     {
         int GetTalentLevel(ShipUpgradableStatTypes type);
         int GetNextLevelCost(ShipUpgradableStatTypes type);
@@ -24,10 +24,16 @@ namespace SpaceInvaders.Project
 
         private TalentsSaveData _data;
 
-        public void Initialize()
+        public void LoadForMode(GameModeTypes mode)
         {
-            _persistenceManager = _saveProfileManager.GetProfile(GameModeTypes.Campaign);
+            _persistenceManager = _saveProfileManager.GetProfile(mode);
             _data = _persistenceManager.LoadVersioned<TalentsSaveData>(TalentsSaveData.SaveKey, TalentsSaveData.CurrentVersion);
+        }
+
+        public void ClearLoadedData()
+        {
+            _data.Talents.Clear();
+            SaveData();
         }
 
         public int GetTalentLevel(ShipUpgradableStatTypes type)

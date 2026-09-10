@@ -4,7 +4,7 @@ using Zenject;
 
 namespace SpaceInvaders.Project
 {
-    public interface ICurrencyManager : IInitializable
+    public interface ICurrencyManager : IModeScopedManager
     {
         int Currency { get; }
         void AddCurrency(int amount);
@@ -20,10 +20,16 @@ namespace SpaceInvaders.Project
 
         public int Currency => _data.Amount;
 
-        public void Initialize()
+        public void LoadForMode(GameModeTypes mode)
         {
-            _persistenceManager = _saveProfileManager.GetProfile(GameModeTypes.Campaign);
+            _persistenceManager = _saveProfileManager.GetProfile(mode);
             _data = _persistenceManager.LoadVersioned<CurrencySaveData>(CurrencySaveData.SaveKey, CurrencySaveData.CurrentVersion);
+        }
+
+        public void ClearLoadedData()
+        {
+            _data.Amount = 0;
+            SaveData();
         }
 
         public void AddCurrency(int amount)

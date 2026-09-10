@@ -17,6 +17,7 @@ namespace SpaceInvaders.Scenes.Game
 
         [Inject] private readonly IScenesManager _scenesManager;
         [Inject] private readonly IGameModeManager _gameModeManager;
+        [Inject] private readonly ILevelsRepository _levelsRepository;
 
         protected override GameStateTypes DefaultStateId => GameStateTypes.Playing;
 
@@ -29,7 +30,7 @@ namespace SpaceInvaders.Scenes.Game
         /// <summary>The launching scene decides the session, so the mode is never assumed here.</summary>
         public override void Initialize()
         {
-            _scenesManager.PendingSceneParams.TryGetParam(out _currentSession, new GameSessionDTO(GameModeTypes.Campaign, 1));
+            _scenesManager.PendingSceneParams.TryGetParam(out _currentSession, CreateCampaignSession(1));
             _gameModeManager.InitializeGameMode(_currentSession.Mode);
             SetState(DefaultStateId, _currentSession);
         }
@@ -63,7 +64,7 @@ namespace SpaceInvaders.Scenes.Game
                         GameOverStateResultTypes gameOverResult = (GameOverStateResultTypes)finishedState.paramsList[0];
                         switch (gameOverResult)
                         {
-                            case GameOverStateResultTypes.MainMenu:
+                            case GameOverStateResultTypes.ReturnToHub:
                                 _scenesManager.LoadScene(_gameModeManager.HubScene.ToString());
                                 break;
                             case GameOverStateResultTypes.Restart:
@@ -71,8 +72,9 @@ namespace SpaceInvaders.Scenes.Game
                                 break;
                             // Re-enters gameplay without reloading the scene, so nothing is disposed
                             // or re-initialized. Per-run state must be reset on game end.
+                            // Only Campaign offers Next Level, so advancing by number is safe here.
                             case GameOverStateResultTypes.NextLevel:
-                                _currentSession = new GameSessionDTO(_currentSession.Mode, _currentSession.LevelNumber + 1);
+                                _currentSession = CreateCampaignSession(_currentSession.LevelNumber + 1);
                                 SetState(GameStateTypes.Playing, _currentSession);
                                 break;
                         }
@@ -84,6 +86,12 @@ namespace SpaceInvaders.Scenes.Game
             {
                 this.LogError($"State transition failed from {finishedState.stateId}", ex);
             }
+        }
+
+        /// <summary>Used for the editor-entry default and for advancing a level, both Campaign-only.</summary>
+        private GameSessionDTO CreateCampaignSession(int levelNumber)
+        {
+            return new GameSessionDTO(GameModeTypes.Campaign, levelNumber, _levelsRepository.GetLevelId(levelNumber));
         }
     }
 }

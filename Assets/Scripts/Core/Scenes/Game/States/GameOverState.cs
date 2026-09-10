@@ -13,7 +13,9 @@ namespace SpaceInvaders.Scenes.Game
         public enum GameOverStateResultTypes
         {
             Restart,
-            MainMenu,
+
+            /// <summary>Leaving the run, which lands in whichever hub the mode owns.</summary>
+            ReturnToHub,
             NextLevel
         }
 
@@ -30,10 +32,16 @@ namespace SpaceInvaders.Scenes.Game
             ShowGameOver(sessionResult).Forget();
         }
 
-        /// <summary>Which buttons a result screen offers is the mode's decision.</summary>
+        /// <summary>The mode decides the buttons, and offering none means no screen at all.</summary>
         private async UniTask ShowGameOver(GameSessionResultDTO sessionResult)
         {
             GameOverOptionTypes options = _gameModeManager.GetGameOverOptions(sessionResult);
+
+            if (options == GameOverOptionTypes.None)
+            {
+                FinishState(GameOverStateResultTypes.ReturnToHub);
+                return;
+            }
 
             switch (sessionResult.Result)
             {
@@ -45,7 +53,7 @@ namespace SpaceInvaders.Scenes.Game
                     switch (gameOverResult.Result)
                     {
                         case GameOverScreen.ResultTypes.MainMenu:
-                            FinishState(GameOverStateResultTypes.MainMenu);
+                            FinishState(GameOverStateResultTypes.ReturnToHub);
                             break;
                         case GameOverScreen.ResultTypes.Restart:
                             FinishState(GameOverStateResultTypes.Restart);
@@ -61,7 +69,7 @@ namespace SpaceInvaders.Scenes.Game
                     switch (victoryResult.Result)
                     {
                         case VictoryScreen.ResultTypes.MainMenu:
-                            FinishState(GameOverStateResultTypes.MainMenu);
+                            FinishState(GameOverStateResultTypes.ReturnToHub);
                             break;
                         case VictoryScreen.ResultTypes.NextLevel:
                             FinishState(GameOverStateResultTypes.NextLevel);

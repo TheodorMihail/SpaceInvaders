@@ -36,7 +36,8 @@ namespace SpaceInvaders.Scenes.Game
 
             _messageBus.Subscribe<GamePausedMessage>(OnGamePaused);
 
-            paramsList.TryGetParam(out _session, new GameSessionDTO(GameModeTypes.Campaign, 1));
+            // The state machine always supplies one; the default only matters if that ever changes.
+            paramsList.TryGetParam(out _session);
             StartGameplay(_session).Forget();
         }
 

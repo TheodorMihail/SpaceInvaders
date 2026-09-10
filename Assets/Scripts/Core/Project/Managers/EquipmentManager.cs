@@ -6,7 +6,7 @@ using Zenject;
 
 namespace SpaceInvaders.Project
 {
-    public interface IEquipmentManager : IInitializable
+    public interface IEquipmentManager : IModeScopedManager
     {
         IReadOnlyList<EquipmentSlotConfigDTO> EquipmentSlotConfigs { get; }
 
@@ -32,10 +32,16 @@ namespace SpaceInvaders.Project
 
         public IReadOnlyList<EquipmentSlotConfigDTO> EquipmentSlotConfigs => _itemsRepository.GetAllEquipmentSlotConfigs();
 
-        public void Initialize()
+        public void LoadForMode(GameModeTypes mode)
         {
-            _persistenceManager = _saveProfileManager.GetProfile(GameModeTypes.Campaign);
+            _persistenceManager = _saveProfileManager.GetProfile(mode);
             _data = _persistenceManager.LoadVersioned<EquipmentSaveData>(EquipmentSaveData.SaveKey, EquipmentSaveData.CurrentVersion);
+        }
+
+        public void ClearLoadedData()
+        {
+            _data.Slots.Clear();
+            SaveData();
         }
 
         /// <summary>Removes the slot entry if the referenced item is no longer owned. Validated on

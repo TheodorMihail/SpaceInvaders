@@ -15,11 +15,20 @@ namespace SpaceInvaders.Scenes.Campaign
         }
 
         [Inject] private readonly IScenesManager _scenesManager;
+        [Inject] private readonly ILevelsRepository _levelsRepository;
+        [Inject] private readonly IGameModeManager _gameModeManager;
 
         protected override CampaignStateTypes DefaultStateId => CampaignStateTypes.Hub;
 
         public CampaignStateMachine(IList<IState<CampaignStateTypes>> campaignStates) : base(campaignStates)
         {
+        }
+
+        /// <summary>The mode is set before any screen opens, so progression reads this mode's profile.</summary>
+        public override void Initialize()
+        {
+            _gameModeManager.InitializeGameMode(GameModeTypes.Campaign);
+            base.Initialize();
         }
 
         /// <summary>This scene is what launches a Campaign run, so it is what builds the session.</summary>
@@ -33,7 +42,8 @@ namespace SpaceInvaders.Scenes.Campaign
 
                         if (finishedState.paramsList.TryGetParam<LevelSelectionScreen.LevelSelectionScreenResult>(out var levelResult))
                         {
-                            var session = new GameSessionDTO(GameModeTypes.Campaign, levelResult.LevelSelected);
+                            var session = new GameSessionDTO(GameModeTypes.Campaign, levelResult.LevelSelected,
+                                _levelsRepository.GetLevelId(levelResult.LevelSelected));
                             _scenesManager.LoadScene(SceneTypes.Game.ToString(), session);
                         }
                         else

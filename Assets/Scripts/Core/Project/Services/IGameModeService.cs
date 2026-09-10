@@ -5,7 +5,7 @@ namespace SpaceInvaders.Project
 {
     /// <summary>
     /// Which buttons the game over and victory screens offer. Flags, because a screen shows several at
-    /// once and a plain enum could only carry one.
+    /// once and a plain enum could only carry one. <see cref="None"/> means no screen at all.
     /// </summary>
     [Flags]
     public enum GameOverOptionTypes
