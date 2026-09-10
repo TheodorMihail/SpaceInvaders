@@ -44,6 +44,9 @@ namespace SpaceInvaders.Project
         /// <summary>Scene to return to when a run is quit or finished.</summary>
         SceneTypes HubScene { get; }
 
+        /// <summary>Which drop table a kill rolls against, so what drops is authored per mode.</summary>
+        DropTableTypes DropTableType { get; }
+
         void ApplyProgressionBonuses(ShipStats stats);
 
         /// <summary>The level ended. Everything it costs or earns is applied here, so nothing is left

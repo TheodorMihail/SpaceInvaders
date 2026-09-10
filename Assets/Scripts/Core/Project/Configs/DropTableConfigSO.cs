@@ -12,6 +12,13 @@ namespace SpaceInvaders.Project
         Item
     }
 
+    /// <summary>Which table a kill rolls against. A mode names one, so what drops is authored.</summary>
+    public enum DropTableTypes
+    {
+        Campaign,
+        Expedition
+    }
+
     /// <summary>Weight for one category in the enemy-kill drop roll, relative to the others. "None"
     /// is an entry like any other and controls how often a kill drops nothing.</summary>
     [Serializable]
@@ -34,15 +41,19 @@ namespace SpaceInvaders.Project
         }
     }
 
-    /// <summary>Single authority for "what, if anything, drops on an enemy kill" - exactly one
-    /// category wins the roll, so a kill can never drop both a powerup and an item.</summary>
-    [CreateAssetMenu(fileName = "DropTableConfig", menuName = "SpaceInvaders/Data Config/Drop Table Config")]
+    /// <summary>One authority for "what, if anything, drops on an enemy kill" - exactly one category
+    /// wins the roll, so a kill can never drop both a powerup and an item. A mode names the table it
+    /// rolls against, so what drops is authored rather than branched on.</summary>
+    [CreateAssetMenu(fileName = "DropTableConfig", menuName = "SpaceInvaders/Drops/Drop Table Config")]
     public class DropTableConfigSO : ScriptableObject, IRepositoryObject
     {
+        [Tooltip("Which table this is. Modes name the one they roll against.")]
+        [SerializeField] private DropTableTypes _tableType;
         [SerializeField] private List<DropCategoryWeightDTO> _categoryWeights;
 
+        public virtual DropTableTypes TableType => _tableType;
         public virtual IReadOnlyList<DropCategoryWeightDTO> CategoryWeights => _categoryWeights;
 
-        public string ObjectID => nameof(DropTableConfigSO);
+        public virtual string ObjectID => _tableType.ToString();
     }
 }

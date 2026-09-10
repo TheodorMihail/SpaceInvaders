@@ -16,6 +16,9 @@ namespace SpaceInvaders.Project
         public GameModeTypes Mode => GameModeTypes.Expedition;
         public SceneTypes HubScene => SceneTypes.Expedition;
 
+        /// <summary>Gear comes from the shop, so the table this names drops no items.</summary>
+        public DropTableTypes DropTableType => DropTableTypes.Expedition;
+
         /// <summary>Carried health is set after the bonuses, which decide the maximum.</summary>
         public void ApplyProgressionBonuses(ShipStats stats)
         {

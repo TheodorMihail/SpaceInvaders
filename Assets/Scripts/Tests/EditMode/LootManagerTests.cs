@@ -19,6 +19,7 @@ namespace SpaceInvaders.Tests
         private IItemsRepository _mockItemsRepository;
         private IPowerupsRepository _mockPowerupsRepository;
         private IDropsRepository _mockDropsRepository;
+        private IGameModeManager _mockGameModeManager;
         private IInventoryManager _mockInventoryManager;
         private ISpawnManager _mockSpawnManager;
         private ICameraManager _mockCameraManager;
@@ -52,6 +53,7 @@ namespace SpaceInvaders.Tests
             _mockPowerupsRepository.GetAllPowerupConfigs().Returns(_ => _powerupConfigs);
 
             _mockDropsRepository = Substitute.For<IDropsRepository>();
+            _mockGameModeManager = Substitute.For<IGameModeManager>();
 
             _mockInventoryManager = Substitute.For<IInventoryManager>();
             _mockSpawnManager = Substitute.For<ISpawnManager>();
@@ -61,6 +63,8 @@ namespace SpaceInvaders.Tests
             Container.Bind<IItemsRepository>().FromInstance(_mockItemsRepository);
             Container.Bind<IPowerupsRepository>().FromInstance(_mockPowerupsRepository);
             Container.Bind<IDropsRepository>().FromInstance(_mockDropsRepository);
+            // The roller asks the running mode which table to use.
+            Container.Bind<IGameModeManager>().FromInstance(_mockGameModeManager);
             Container.Bind<IInventoryManager>().FromInstance(_mockInventoryManager);
             Container.Bind<ISpawnManager>().FromInstance(_mockSpawnManager);
             // Required by the debug partial, which is compiled into the Editor build.
@@ -125,7 +129,7 @@ namespace SpaceInvaders.Tests
         /// <summary>Stubs the category roll so only the given category can ever win.</summary>
         private void GuaranteeDropCategory(DropCategoryTypes category)
         {
-            _mockDropsRepository.GetAllDropCategoryWeights().Returns(new List<DropCategoryWeightDTO>
+            _mockDropsRepository.GetDropCategoryWeights(Arg.Any<DropTableTypes>()).Returns(new List<DropCategoryWeightDTO>
             {
                 new(category, 1)
             });

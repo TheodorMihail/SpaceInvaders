@@ -29,11 +29,11 @@ namespace SpaceInvaders.Scenes.Game
         [Inject] private readonly IItemsRepository _itemsRepository;
         [Inject] private readonly IPowerupsRepository _powerupsRepository;
         [Inject] private readonly IDropsRepository _dropsRepository;
+        [Inject] private readonly IGameModeManager _gameModeManager;
 
         public DropCategoryTypes RollKillCategory()
         {
-            IReadOnlyList<DropCategoryWeightDTO> weights = _dropsRepository.GetAllDropCategoryWeights();
-            DropCategoryWeightDTO winner = GameUtils.RollWeighted(weights, weight => weight.Weight);
+            DropCategoryWeightDTO winner = GameUtils.RollWeighted(GetCategoryWeights(), weight => weight.Weight);
 
             return winner?.Category ?? DropCategoryTypes.None;
         }
@@ -43,7 +43,7 @@ namespace SpaceInvaders.Scenes.Game
         {
             var candidates = new List<DropCategoryWeightDTO>();
 
-            foreach (DropCategoryWeightDTO weight in _dropsRepository.GetAllDropCategoryWeights())
+            foreach (DropCategoryWeightDTO weight in GetCategoryWeights())
             {
                 if (weight.Category != DropCategoryTypes.None)
                 {
@@ -82,6 +82,12 @@ namespace SpaceInvaders.Scenes.Game
         public PowerupConfigSO RollPowerup()
         {
             return GameUtils.RollWeighted(_powerupsRepository.GetAllPowerupConfigs(), candidate => candidate.DropWeight);
+        }
+
+        /// <summary>The running mode names its table, so what drops is authored rather than branched on.</summary>
+        private IReadOnlyList<DropCategoryWeightDTO> GetCategoryWeights()
+        {
+            return _dropsRepository.GetDropCategoryWeights(_gameModeManager.DropTableType);
         }
 
         private ItemConfigSO RollItemOfRarity(ItemRarityTypes rarity)

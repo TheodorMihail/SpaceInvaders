@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using BaseArchitecture.Core;
 
@@ -5,20 +6,22 @@ namespace SpaceInvaders.Project
 {
     public interface IDropsRepository
     {
-        IReadOnlyList<DropCategoryWeightDTO> GetAllDropCategoryWeights();
+        IReadOnlyList<DropCategoryWeightDTO> GetDropCategoryWeights(DropTableTypes tableType);
     }
 
     public class DropsRepository : Repository, IDropsRepository
     {
-        public DropsRepository(DropTableConfigSO dropTableConfigSO)
+        public DropsRepository(DropsDataConfigSO dropsDataConfigSO)
         {
-            AddObject(dropTableConfigSO);
+            AddObjects(dropsDataConfigSO.DropTableConfigs);
         }
 
-        public IReadOnlyList<DropCategoryWeightDTO> GetAllDropCategoryWeights()
+        /// <summary>A table nobody authored drops nothing, which is the safe way to be wrong.</summary>
+        public IReadOnlyList<DropCategoryWeightDTO> GetDropCategoryWeights(DropTableTypes tableType)
         {
-            TryGet(nameof(DropTableConfigSO), out DropTableConfigSO config);
-            return config.CategoryWeights;
+            return TryGet(tableType.ToString(), out DropTableConfigSO config)
+                ? config.CategoryWeights
+                : Array.Empty<DropCategoryWeightDTO>();
         }
     }
 }

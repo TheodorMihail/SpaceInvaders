@@ -17,6 +17,7 @@ namespace SpaceInvaders.Project
 
         public GameModeTypes Mode => GameModeTypes.Campaign;
         public SceneTypes HubScene => SceneTypes.Campaign;
+        public DropTableTypes DropTableType => DropTableTypes.Campaign;
 
         public void ApplyProgressionBonuses(ShipStats stats)
         {

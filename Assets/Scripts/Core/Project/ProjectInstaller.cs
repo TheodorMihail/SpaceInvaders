@@ -49,7 +49,7 @@ namespace SpaceInvaders.Project
             Container.BindInterfacesTo<GameRepository>().AsSingle().WithArguments(_configsContainerSO.GameDataConfigSO);
             Container.BindInterfacesTo<LevelsRepository>().AsSingle().WithArguments(_configsContainerSO.LevelsDataConfigSO);
             Container.BindInterfacesTo<PowerupsRepository>().AsSingle().WithArguments(_configsContainerSO.PowerupsDataConfigSO);
-            Container.BindInterfacesTo<DropsRepository>().AsSingle().WithArguments(_configsContainerSO.DropTableConfigSO);
+            Container.BindInterfacesTo<DropsRepository>().AsSingle().WithArguments(_configsContainerSO.DropsDataConfigSO);
             Container.BindInterfacesTo<SoundsRepository>().AsSingle().WithArguments(_configsContainerSO.SoundsDataConfigSO);
             Container.BindInterfacesTo<TalentsRepository>().AsSingle().WithArguments(_configsContainerSO.TalentsDataConfigSO);
             Container.BindInterfacesTo<ItemsRepository>().AsSingle().WithArguments(_configsContainerSO.ItemsDataConfigSO);
