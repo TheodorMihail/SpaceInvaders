@@ -41,7 +41,7 @@ namespace SpaceInvaders.Scenes.Game
 
         private void OnLevelStarted(LevelStartedMessage message)
         {
-            EnqueueAnnouncement(message.LevelName);
+            EnqueueAnnouncement(_model.LevelTextFormat(message.LevelNumber));
         }
 
         private void OnWaveStarted(WaveStartedMessage message)

@@ -110,7 +110,7 @@ namespace SpaceInvaders.Scenes.Game
         {
             _session = session;
 
-            if (!_levelsRepository.TryGetLevelConfig(session.LevelNumber, out LevelConfigSO levelConfig))
+            if (!_levelsRepository.TryGetLevelConfigById(session.LevelId, out LevelConfigSO levelConfig))
             {
                 return UniTask.CompletedTask;
             }
@@ -138,7 +138,7 @@ namespace SpaceInvaders.Scenes.Game
             _currentLevelConfigSo = levelConfig;
             _currentWaveNumber = 0;
 
-            _messageBus.Publish(new LevelStartedMessage(CurrentLevelNumber, _currentLevelConfigSo.LevelName));
+            _messageBus.Publish(new LevelStartedMessage(CurrentLevelNumber));
             StartNextWave();
         }
 

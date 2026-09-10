@@ -30,7 +30,7 @@ namespace SpaceInvaders.Scenes.Game
             
             try
             {
-                await _view.StartCountdownAnimation(_model.CountdownSeconds, _model.CountdownEndDelayTimerSeconds);
+               // await _view.StartCountdownAnimation(_model.CountdownSeconds, _model.CountdownEndDelayTimerSeconds);
             }
             catch {}
 

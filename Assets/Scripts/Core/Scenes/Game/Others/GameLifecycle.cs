@@ -21,12 +21,18 @@ namespace SpaceInvaders.Scenes.Game
     public readonly struct GameSessionDTO
     {
         public GameModeTypes Mode { get; }
+
+        /// <summary>Campaign: the level. Expedition: the node's depth. Display and progress only.</summary>
         public int LevelNumber { get; }
 
-        public GameSessionDTO(GameModeTypes mode, int levelNumber)
+        /// <summary>Which level to load, whatever the mode used to choose it.</summary>
+        public string LevelId { get; }
+
+        public GameSessionDTO(GameModeTypes mode, int levelNumber, string levelId)
         {
             Mode = mode;
             LevelNumber = levelNumber;
+            LevelId = levelId;
         }
     }
 

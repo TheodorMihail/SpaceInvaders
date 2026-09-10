@@ -72,13 +72,12 @@ namespace SpaceInvaders.Scenes.Game
 
     public readonly struct LevelStartedMessage : IMessageObject
     {
+        /// <summary>What the run calls this level, never the level asset's own name.</summary>
         public int LevelNumber { get; }
-        public string LevelName { get; }
 
-        public LevelStartedMessage(int levelNumber, string levelName)
+        public LevelStartedMessage(int levelNumber)
         {
             LevelNumber = levelNumber;
-            LevelName = levelName;
         }
     }
 
