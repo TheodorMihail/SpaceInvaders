@@ -24,28 +24,51 @@ namespace SpaceInvaders.Project
         Visited
     }
 
-    /// <summary>Where a run is, which is what decides the state the Expedition scene opens in.</summary>
-    public enum ExpeditionRunPhaseTypes
+    public enum ExpeditionRunResultTypes
     {
-        None,
-        OnMap,
-        InLevel,
-        NodeCleared,
-        Finished
+        Defeated,
+        Completed
+    }
+
+    /// <summary>What a run reached, handed to the scene that reports it.</summary>
+    public readonly struct ExpeditionRunResultDTO
+    {
+        public ExpeditionRunResultTypes Result { get; }
+        public int DepthReached { get; }
+
+        public ExpeditionRunResultDTO(ExpeditionRunResultTypes result, int depthReached)
+        {
+            Result = result;
+            DepthReached = depthReached;
+        }
+    }
+
+    /// <summary>Everything that only means something while an expedition is under way, which is why it
+    /// is read through one place that is simply absent when none is.</summary>
+    public interface IExpeditionState
+    {
+        IReadOnlyList<ExpeditionNodeEntry> Nodes { get; }
+        float RemainingHealthRatio { get; }
+
+        /// <summary>A level is being played, so the expedition is not resumable from where it stands.</summary>
+        bool IsLevelInProgress { get; }
+        bool IsOnFinalLevel { get; }
+
+        /// <summary>A map pointing at a level that no longer exists cannot be walked to the end.</summary>
+        bool HasMissingLevels { get; }
     }
 
     public interface IExpeditionRunManager : IInitializable
     {
-        ExpeditionRunPhaseTypes RunPhase { get; }
-        IReadOnlyList<ExpeditionNodeEntry> Nodes { get; }
-        int CurrentNodeId { get; }
-        int CurrentDepth { get; }
-        bool HasActiveRun { get; }
+        /// <summary>Null when no expedition is under way.</summary>
+        IExpeditionState CurrentExpedition { get; }
 
-        void StartNewRun();
-        void AbandonRun();
-        bool IsNodeReachable(int nodeId);
+        void StartNewExpedition();
+        void AbandonExpedition();
         void EnterNode(int nodeId);
+        bool TryGetCurrentLevelSession(out GameSessionDTO session);
+        void CompleteCurrentLevel(GameSessionResultDTO result);
+        ExpeditionRunResultDTO FinishExpedition(ExpeditionRunResultTypes result);
     }
 
     /// <summary>
@@ -53,19 +76,30 @@ namespace SpaceInvaders.Project
     /// player earns is held by the usual progression managers against the Expedition profile, so this
     /// stores none of it.
     /// </summary>
-    public partial class ExpeditionRunManager : IExpeditionRunManager
+    public partial class ExpeditionRunManager : IExpeditionRunManager, IExpeditionState
     {
         [Inject] private readonly ISaveProfileManager _saveProfileManager;
         [Inject] private readonly IExpeditionMapService _mapService;
+        [Inject] private readonly IExpeditionRepository _expeditionRepository;
+        [Inject] private readonly ILevelsRepository _levelsRepository;
+        [Inject] private readonly ICurrencyManager _currencyManager;
+        [Inject] private readonly IList<IGameModeScopedManager> _modeScopedManagers;
+
+        private static readonly List<ExpeditionNodeEntry> EmptyNodes = new();
 
         private IPersistenceManager _persistenceManager;
         private ExpeditionRunSaveData _data;
 
-        public ExpeditionRunPhaseTypes RunPhase => GetRunPhase();
-        public IReadOnlyList<ExpeditionNodeEntry> Nodes => _data.Nodes;
-        public int CurrentNodeId => _data.CurrentNodeId;
-        public int CurrentDepth => GetCurrentDepth();
-        public bool HasActiveRun => RunPhase != ExpeditionRunPhaseTypes.None;
+        /// <summary>The manager itself reads the expedition, so what it hands out never goes stale.</summary>
+        public IExpeditionState CurrentExpedition => _data.RunInProgress == null ? null : this;
+
+        public IReadOnlyList<ExpeditionNodeEntry> Nodes => _data.RunInProgress?.Nodes ?? EmptyNodes;
+        public float RemainingHealthRatio => _data.RunInProgress?.RemainingHealthRatio ?? 1f;
+        public bool IsLevelInProgress => _data.RunInProgress != null && _data.RunInProgress.IsLevelInProgress;
+        public bool IsOnFinalLevel => IsNodeOfType(GetCurrentNode(), ExpeditionNodeTypes.MegaBoss);
+        public bool HasMissingLevels => GetHasMissingLevels();
+
+        private int CurrentNodeId => _data.RunInProgress?.CurrentNodeId ?? 0;
 
         public void Initialize()
         {
@@ -75,31 +109,31 @@ namespace SpaceInvaders.Project
         }
 
         /// <summary>Replaces whatever ran before, so the seed is the only thing the map depends on.</summary>
-        public void StartNewRun()
+        public void StartNewExpedition()
         {
-            ClearRunData();
+            ClearExpedition();
 
-            _data.Seed = Random.Range(int.MinValue, int.MaxValue);
-            _data.Nodes = _mapService.GenerateMap(_data.Seed);
-            _data.CurrentNodeId = GetStartNodeId();
-            _data.RunPhase = ExpeditionRunPhaseTypes.OnMap.ToString();
+            int seed = Random.Range(int.MinValue, int.MaxValue);
+            List<ExpeditionNodeEntry> nodes = _mapService.GenerateMap(seed);
+
+            _data.RunInProgress = new ExpeditionRunInProgressEntry
+            {
+                Seed = seed,
+                Nodes = nodes,
+                CurrentNodeId = nodes.Count == 0 ? 0 : nodes[0].Id
+            };
 
             RefreshNodeStates();
             SaveData();
         }
 
-        public void AbandonRun()
+        public void AbandonExpedition()
         {
-            ClearRunData();
+            ClearExpedition();
             SaveData();
         }
 
-        public bool IsNodeReachable(int nodeId)
-        {
-            ExpeditionNodeEntry current = GetNode(_data.CurrentNodeId);
-            return current != null && current.NextNodeIds.Contains(nodeId);
-        }
-
+        /// <summary>Only a node carrying a level moves the expedition into one.</summary>
         public void EnterNode(int nodeId)
         {
             if (!IsNodeReachable(nodeId))
@@ -109,39 +143,124 @@ namespace SpaceInvaders.Project
 
             ExpeditionNodeEntry node = GetNode(nodeId);
             node.State = ExpeditionNodeStateTypes.Visited.ToString();
-            _data.CurrentNodeId = nodeId;
+            _data.RunInProgress.CurrentNodeId = nodeId;
+            _data.RunInProgress.IsLevelInProgress = HasLevel(node);
 
             RefreshNodeStates();
             SaveData();
         }
 
-        private ExpeditionRunPhaseTypes GetRunPhase()
+        /// <summary>Depth stands in for the level number, so progress reads the same in both modes.</summary>
+        public bool TryGetCurrentLevelSession(out GameSessionDTO session)
         {
-            return System.Enum.TryParse(_data.RunPhase, out ExpeditionRunPhaseTypes phase)
-                ? phase
-                : ExpeditionRunPhaseTypes.None;
+            ExpeditionNodeEntry node = GetCurrentNode();
+            if (!HasLevel(node))
+            {
+                session = default;
+                return false;
+            }
+
+            session = new GameSessionDTO(GameModeTypes.Expedition, node.Depth, node.LevelId);
+            return true;
+        }
+
+        /// <summary>Everything a cleared level yields. Reached only by playing one out, so an
+        /// expedition that ends in defeat yields nothing.</summary>
+        public void CompleteCurrentLevel(GameSessionResultDTO result)
+        {
+            if (!IsLevelInProgress)
+            {
+                return;
+            }
+
+            StoreStats(result.Stats);
+            StoreScrap(result.Score);
+
+            _data.RunInProgress.IsLevelInProgress = false;
+            SaveData();
+        }
+
+        /// <summary>Recorded and dropped in one step, so nothing is owed to a screen the player may
+        /// never reach.</summary>
+        public ExpeditionRunResultDTO FinishExpedition(ExpeditionRunResultTypes result)
+        {
+            var expeditionResult = new ExpeditionRunResultDTO(result, GetCurrentDepth());
+
+            ClearExpedition();
+            SaveData();
+
+            return expeditionResult;
+        }
+
+        /// <summary>Health carries between nodes as a share, since the maximum changes with progression.</summary>
+        private void StoreStats(ShipStats stats)
+        {
+            if (stats == null || stats.CurrentMaxHealth <= 0)
+            {
+                return;
+            }
+
+            _data.RunInProgress.RemainingHealthRatio = stats.CurrentHealth / (float)stats.CurrentMaxHealth;
+        }
+
+        /// <summary>The run's spendable pool, which is the level's score at the authored rate.</summary>
+        private void StoreScrap(int score)
+        {
+            float scrapPerScore = _expeditionRepository.GetExpeditionDataConfig().ScrapPerScore;
+            _currencyManager.AddCurrency(Mathf.RoundToInt(score * scrapPerScore));
+        }
+
+        /// <summary>A silent check, since a level removed since the run was saved is not an error.</summary>
+        private bool GetHasMissingLevels()
+        {
+            foreach (ExpeditionNodeEntry node in Nodes)
+            {
+                if (HasLevel(node) && !_levelsRepository.ContainsLevelConfig(node.LevelId))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>Shops and events resolve on the map, so only a node carrying a level leaves the scene.</summary>
+        private static bool HasLevel(ExpeditionNodeEntry node)
+        {
+            return node != null && !string.IsNullOrEmpty(node.LevelId);
+        }
+
+        private static bool IsNodeOfType(ExpeditionNodeEntry node, ExpeditionNodeTypes nodeType)
+        {
+            return node != null && node.NodeType == nodeType.ToString();
         }
 
         private int GetCurrentDepth()
         {
-            return GetNode(_data.CurrentNodeId)?.Depth ?? 0;
+            return GetCurrentNode()?.Depth ?? 0;
+        }
+
+        private bool IsNodeReachable(int nodeId)
+        {
+            ExpeditionNodeEntry current = GetCurrentNode();
+            return current != null && current.NextNodeIds.Contains(nodeId);
+        }
+
+        private ExpeditionNodeEntry GetCurrentNode()
+        {
+            return GetNode(CurrentNodeId);
         }
 
         private ExpeditionNodeEntry GetNode(int nodeId)
         {
-            return _data.Nodes.Find(node => node.Id == nodeId);
-        }
-
-        private int GetStartNodeId()
-        {
-            return _data.Nodes.Count == 0 ? 0 : _data.Nodes[0].Id;
+            return _data.RunInProgress?.Nodes.Find(node => node.Id == nodeId);
         }
 
         /// <summary>Only what the current node links to can be picked next; visited nodes stay visited
         /// so the walked path keeps reading as one.</summary>
         private void RefreshNodeStates()
         {
-            foreach (ExpeditionNodeEntry node in _data.Nodes)
+            foreach (ExpeditionNodeEntry node in Nodes)
             {
                 if (node.State == ExpeditionNodeStateTypes.Visited.ToString())
                 {
@@ -156,14 +275,16 @@ namespace SpaceInvaders.Project
             }
         }
 
-        private void ClearRunData()
+        /// <summary>A run owns its whole profile, so its scrap, perks and gear go with it. Dropped as
+        /// one object, so a field added to a run can never be left behind for the next one.</summary>
+        private void ClearExpedition()
         {
-            _data.Nodes.Clear();
-            _data.Seed = 0;
-            _data.CurrentNodeId = 0;
-            _data.RemainingHealthRatio = 1f;
-            _data.ShopRerollsUsed = 0;
-            _data.RunPhase = ExpeditionRunPhaseTypes.None.ToString();
+            _data.RunInProgress = null;
+
+            foreach (IGameModeScopedManager modeScopedManager in _modeScopedManagers)
+            {
+                modeScopedManager.ClearLoadedData();
+            }
         }
 
         private void SaveData()
