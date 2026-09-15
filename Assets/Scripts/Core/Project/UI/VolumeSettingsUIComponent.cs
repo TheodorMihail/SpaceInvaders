@@ -6,7 +6,7 @@ namespace SpaceInvaders.Project
 {
     /// <summary>Music and SFX volume sliders, shared by every screen that exposes audio settings.
     /// Sliders are stepped rather than continuous, since each change is persisted.</summary>
-    public class VolumeSettingsComponent : MonoBehaviour
+    public class VolumeSettingsUIComponent : MonoBehaviour
     {
         [SerializeField] private Slider _musicSlider;
         [SerializeField] private Slider _sfxSlider;

@@ -13,7 +13,7 @@ namespace SpaceInvaders.Project
     /// Confirm tooltip shown near a clicked inventory item or ship slot. Uses a center pivot so the
     /// rect stays inside the parent canvas after clamping.
     /// </summary>
-    public class ItemTooltipComponent : MonoBehaviour
+    public class ItemTooltipUIComponent : MonoBehaviour
     {
         [Inject] private readonly IInventoryManager _inventoryManager;
         [Inject] private readonly IEquipmentManager _equipmentManager;

@@ -3,7 +3,7 @@ using SpaceInvaders.Scenes.Game;
 
 namespace SpaceInvaders.Project
 {
-    public class SoundButtonComponent : MessageButtonComponent<ButtonClickedMessage>
+    public class SoundButtonUIComponent : MessageButtonComponent<ButtonClickedMessage>
     {
     }
 }

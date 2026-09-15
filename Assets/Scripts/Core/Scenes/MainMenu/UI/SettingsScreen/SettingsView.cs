@@ -9,7 +9,7 @@ namespace SpaceInvaders.Scenes.MainMenu
     [AddressablePath("Screens/SettingsScreenView")]
     public class SettingsView : View
     {
-        [SerializeField] private VolumeSettingsComponent _volumeSettings;
+        [SerializeField] private VolumeSettingsUIComponent _volumeSettings;
         [SerializeField] private Button _backButton;
 
         public event Action OnBackClicked;

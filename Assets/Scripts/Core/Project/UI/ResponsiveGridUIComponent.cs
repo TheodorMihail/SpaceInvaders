@@ -10,7 +10,7 @@ namespace SpaceInvaders.Project
     /// </summary>
     [ExecuteAlways]
     [RequireComponent(typeof(GridLayoutGroup), typeof(RectTransform))]
-    public class ResponsiveGridComponent : MonoBehaviour
+    public class ResponsiveGridUIComponent : MonoBehaviour
     {
         [SerializeField] private GridLayoutGroup _grid;
 

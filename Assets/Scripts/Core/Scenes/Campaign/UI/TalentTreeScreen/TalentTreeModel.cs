@@ -1,6 +1,5 @@
 using BaseArchitecture.Core;
 using SpaceInvaders.Project;
-using SpaceInvaders.Scenes.Game;
 using Zenject;
 
 namespace SpaceInvaders.Scenes.Campaign
@@ -12,24 +11,24 @@ namespace SpaceInvaders.Scenes.Campaign
 
         public int Currency => _currencyManager.Currency;
 
-        public int GetTalentLevel(ShipUpgradableStatTypes type)
+        public int GetTalentLevel(string talentId)
         {
-            return _talentManager.GetTalentLevel(type);
+            return _talentManager.GetTalentLevel(talentId);
         }
 
-        public int GetNextLevelCost(ShipUpgradableStatTypes type)
+        public int GetNextLevelCost(string talentId)
         {
-            return _talentManager.GetNextLevelCost(type);
+            return _talentManager.GetNextLevelCost(talentId);
         }
 
-        public bool IsMaxLevel(ShipUpgradableStatTypes type)
+        public bool IsMaxLevel(string talentId)
         {
-            return _talentManager.IsMaxLevel(type);
+            return _talentManager.IsMaxLevel(talentId);
         }
 
-        public bool CanAfford(ShipUpgradableStatTypes type)
+        public bool CanAfford(string talentId)
         {
-            return _talentManager.CanAfford(type);
+            return _talentManager.CanAfford(talentId);
         }
     }
 }

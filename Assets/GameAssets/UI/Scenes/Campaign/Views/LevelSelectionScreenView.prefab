@@ -106,8 +106,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 149cedb61f2a6634c80bea8eaeec761f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _levelButtonPrefab: {fileID: 1889779454673483157, guid: fbef5a5c0f2f874439587b32d56b6077, type: 3}
-  _levelButtonsContainer: {fileID: 6495019720929794590}
+  _levelCardPrefab: {fileID: 1889779454673483157, guid: fbef5a5c0f2f874439587b32d56b6077, type: 3}
+  _levelCardsContainer: {fileID: 6495019720929794590}
   _backButton: {fileID: 2944456072842374676}
   _levelTypeIcons:
   - _levelType: 0

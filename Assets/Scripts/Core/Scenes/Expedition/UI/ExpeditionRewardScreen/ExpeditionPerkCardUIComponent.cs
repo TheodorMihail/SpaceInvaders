@@ -8,7 +8,7 @@ using UnityEngine.UI;
 namespace SpaceInvaders.Scenes.Expedition
 {
     /// <summary>One offered card. Owns its own visuals; the offer only hands it a perk.</summary>
-    public class ExpeditionPerkCardComponent : MonoBehaviour
+    public class ExpeditionPerkCardUIComponent : MonoBehaviour
     {
         [SerializeField] private Button _button;
         [SerializeField] private Image _rarityFrameImage;

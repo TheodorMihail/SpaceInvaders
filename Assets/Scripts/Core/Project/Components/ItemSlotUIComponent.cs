@@ -5,7 +5,7 @@ using UnityEngine.UI;
 namespace SpaceInvaders.Project
 {
     /// <summary>A container that holds one item or none - shared by ship slots and grid cells.</summary>
-    public class ItemSlotComponent : MonoBehaviour
+    public class ItemSlotUIComponent : MonoBehaviour
     {
         [Header("References")]
         [SerializeField] private Image _iconImage;

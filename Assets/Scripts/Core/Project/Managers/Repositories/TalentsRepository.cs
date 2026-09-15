@@ -7,7 +7,7 @@ namespace SpaceInvaders.Project
 {
     public interface ITalentsRepository
     {
-        bool TryGetTalentConfig(ShipUpgradableStatTypes talentType, out TalentConfigSO config);
+        bool TryGetTalentConfig(string talentId, out TalentConfigSO config);
         IReadOnlyList<TalentConfigSO> GetAllTalentConfigs();
     }
 
@@ -19,9 +19,9 @@ namespace SpaceInvaders.Project
             AddObject(talentsDataConfigSO);
         }
 
-        public bool TryGetTalentConfig(ShipUpgradableStatTypes talentType, out TalentConfigSO config)
+        public bool TryGetTalentConfig(string talentId, out TalentConfigSO config)
         {
-            return TryGet(talentType.ToString(), out config);
+            return TryGet(talentId, out config);
         }
 
         public IReadOnlyList<TalentConfigSO> GetAllTalentConfigs()

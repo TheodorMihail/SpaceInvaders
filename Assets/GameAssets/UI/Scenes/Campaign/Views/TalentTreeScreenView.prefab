@@ -335,8 +335,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f3d7e5ca63bcab48b920682c3c0388f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _talentButtonPrefab: {fileID: -2859175100912659994, guid: 62ff2a652e1779e4c9fd3311fe889da1, type: 3}
-  _talentButtonsContainer: {fileID: 2954468671237391688}
+  _talentCardPrefab: {fileID: -2859175100912659994, guid: 62ff2a652e1779e4c9fd3311fe889da1, type: 3}
+  _talentCardsContainer: {fileID: 2954468671237391688}
   _currency: {fileID: 741456426209883311}
   _backButton: {fileID: 7961658893097228791}
 --- !u!1 &3305585470787601429

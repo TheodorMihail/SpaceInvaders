@@ -13,7 +13,7 @@ namespace SpaceInvaders.Project
     /// </summary>
     [ExecuteAlways]
     [RequireComponent(typeof(RectTransform))]
-    public class ResponsiveLayoutGroupComponent : MonoBehaviour
+    public class ResponsiveLayoutGroupUIComponent : MonoBehaviour
     {
         /// <summary>One child's authored aspect ratio, stored separately from its driven size.</summary>
         [Serializable]

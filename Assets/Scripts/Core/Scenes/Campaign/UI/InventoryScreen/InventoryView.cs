@@ -12,17 +12,17 @@ namespace SpaceInvaders.Scenes.Campaign
     public class InventoryView : View<InventoryModel>
     {
         [Header("Ship Slots (fixed layout)")]
-        [SerializeField] private ItemSlotComponent _weaponSlot;
-        [SerializeField] private ItemSlotComponent _coreSlot;
-        [SerializeField] private ItemSlotComponent _wingLeftSlot;
-        [SerializeField] private ItemSlotComponent _wingRightSlot;
-        [SerializeField] private ItemSlotComponent _engineSlot;
+        [SerializeField] private ItemSlotUIComponent _weaponSlot;
+        [SerializeField] private ItemSlotUIComponent _coreSlot;
+        [SerializeField] private ItemSlotUIComponent _wingLeftSlot;
+        [SerializeField] private ItemSlotUIComponent _wingRightSlot;
+        [SerializeField] private ItemSlotUIComponent _engineSlot;
 
         [Header("Item Grid")]
         [SerializeField] private ItemsContainerUIComponent _itemsContainer;
 
         [Header("Tooltip")]
-        [SerializeField] private ItemTooltipComponent _tooltip;
+        [SerializeField] private ItemTooltipUIComponent _tooltip;
 
         [Header("Stats")]
         [SerializeField] private TextMeshProUGUI _statSheetText;
@@ -31,7 +31,7 @@ namespace SpaceInvaders.Scenes.Campaign
         [Header("Currency")]
         [SerializeField] private CurrencyUIComponent _currency;
 
-        private readonly Dictionary<EquipmentSlotTypes, List<ItemSlotComponent>> _equipmentItemsDic = new();
+        private readonly Dictionary<EquipmentSlotTypes, List<ItemSlotUIComponent>> _equipmentItemsDic = new();
 
         private string _lastSelectedInstanceId;
 
@@ -98,11 +98,11 @@ namespace SpaceInvaders.Scenes.Campaign
             RegisterEquipmentSlotComponent(EquipmentSlotTypes.Engine, _engineSlot);
         }
 
-        private void RegisterEquipmentSlotComponent(EquipmentSlotTypes slot, ItemSlotComponent component)
+        private void RegisterEquipmentSlotComponent(EquipmentSlotTypes slot, ItemSlotUIComponent component)
         {
-            if (!_equipmentItemsDic.TryGetValue(slot, out List<ItemSlotComponent> components))
+            if (!_equipmentItemsDic.TryGetValue(slot, out List<ItemSlotUIComponent> components))
             {
-                components = new List<ItemSlotComponent>();
+                components = new List<ItemSlotUIComponent>();
                 _equipmentItemsDic[slot] = components;
             }
 
@@ -134,7 +134,7 @@ namespace SpaceInvaders.Scenes.Campaign
             _itemsContainer.RemoveItem(instanceId);
         }
 
-        private void HandleEquipmentSlotClicked(EquipmentSlotTypes slot, ItemSlotComponent component)
+        private void HandleEquipmentSlotClicked(EquipmentSlotTypes slot, ItemSlotUIComponent component)
         {
             if(!_model.TryGetEquippedItemForEquipmentSlotType(slot, out InventoryItemEntry equipped))
             {
@@ -164,7 +164,7 @@ namespace SpaceInvaders.Scenes.Campaign
                 return;
             }
 
-            if (!_equipmentItemsDic.TryGetValue(slot.Value, out List<ItemSlotComponent> components))
+            if (!_equipmentItemsDic.TryGetValue(slot.Value, out List<ItemSlotUIComponent> components))
             {
                 return;
             }
@@ -173,14 +173,14 @@ namespace SpaceInvaders.Scenes.Campaign
             {
                 ItemRarityConfigSO rarity = _model.GetItemRarity(inventoryItem.config.Rarity);
 
-                foreach (ItemSlotComponent component in components)
+                foreach (ItemSlotUIComponent component in components)
                 {
                     component.SetItem(inventoryItem.config, rarity);
                 }
             }
             else
             {
-                foreach (ItemSlotComponent component in components)
+                foreach (ItemSlotUIComponent component in components)
                 {
                     component.RemoveItem();
                 }

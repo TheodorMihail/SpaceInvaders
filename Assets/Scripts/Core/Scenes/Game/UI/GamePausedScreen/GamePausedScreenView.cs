@@ -10,7 +10,7 @@ namespace SpaceInvaders.Scenes.Game
     [AddressablePath("Screens/GamePausedScreenView")]
     public class GamePausedScreenView : View
     {
-        [SerializeField] private VolumeSettingsComponent _volumeSettings;
+        [SerializeField] private VolumeSettingsUIComponent _volumeSettings;
         [SerializeField] private Button _resumeButton;
         [SerializeField] private Button _restartButton;
         [SerializeField] private Button _quitButton;

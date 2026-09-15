@@ -24,7 +24,9 @@ namespace SpaceInvaders.Project
     public class TalentsSaveData : IVersionedSaveData
     {
         public const string SaveKey = "TalentsProgress";
-        public const int CurrentVersion = 0;
+
+        /// <summary>1: talents became id-keyed, so entries keyed by stat match nothing.</summary>
+        public const int CurrentVersion = 1;
 
         public int Version { get; set; }
         public List<TalentSaveEntry> Talents = new();
@@ -88,7 +90,8 @@ namespace SpaceInvaders.Project
 
     public class TalentSaveEntry
     {
-        public string TalentType;
+        /// <summary>TalentConfigSO.ObjectID.</summary>
+        public string TalentId;
         public int Level;
     }
 

@@ -162,7 +162,7 @@ GameObject:
   - component: {fileID: 8671672043378364749}
   - component: {fileID: 1889779454673483157}
   m_Layer: 5
-  m_Name: GameLevelSlotButton
+  m_Name: GameLevelSlotCard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

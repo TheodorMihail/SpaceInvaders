@@ -30,11 +30,11 @@ namespace SpaceInvaders.Scenes.Campaign
             base.Dispose();
         }
 
-        private void OnTalentPurchaseClicked(ShipUpgradableStatTypes type)
+        private void OnTalentPurchaseClicked(string talentId)
         {
-            if (_talentManager.TryPurchaseLevel(type))
+            if (_talentManager.TryPurchaseLevel(talentId))
             {
-                _view.RefreshAllTalentButtons();
+                _view.RefreshAllTalentCards();
             }
         }
 

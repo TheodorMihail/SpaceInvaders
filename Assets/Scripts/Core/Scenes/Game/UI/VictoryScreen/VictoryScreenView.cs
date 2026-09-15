@@ -20,7 +20,7 @@ namespace SpaceInvaders.Scenes.Game
 
         [Header("Items Collected")]
         [SerializeField] private ItemsContainerUIComponent _itemsContainer;
-        [SerializeField] private ItemTooltipComponent _tooltip;
+        [SerializeField] private ItemTooltipUIComponent _tooltip;
 
         public event Action OnNextLevelButtonClicked;
         public event Action OnRetryButtonClicked;

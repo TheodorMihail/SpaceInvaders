@@ -6,11 +6,11 @@ namespace SpaceInvaders.Project
 {
     public interface ITalentManager : IGameModeScopedManager
     {
-        int GetTalentLevel(ShipUpgradableStatTypes type);
-        int GetNextLevelCost(ShipUpgradableStatTypes type);
-        bool IsMaxLevel(ShipUpgradableStatTypes type);
-        bool CanAfford(ShipUpgradableStatTypes type);
-        bool TryPurchaseLevel(ShipUpgradableStatTypes type);
+        int GetTalentLevel(string talentId);
+        int GetNextLevelCost(string talentId);
+        bool IsMaxLevel(string talentId);
+        bool CanAfford(string talentId);
+        bool TryPurchaseLevel(string talentId);
         void ApplyTalentBonuses(ShipStats stats);
     }
 
@@ -36,40 +36,40 @@ namespace SpaceInvaders.Project
             SaveData();
         }
 
-        public int GetTalentLevel(ShipUpgradableStatTypes type)
+        public int GetTalentLevel(string talentId)
         {
-            return GetTalent(type)?.Level ?? 0;
+            return GetTalent(talentId)?.Level ?? 0;
         }
 
-        public bool IsMaxLevel(ShipUpgradableStatTypes type)
+        public bool IsMaxLevel(string talentId)
         {
-            if (!_talentsRepository.TryGetTalentConfig(type, out TalentConfigSO config))
+            if (!_talentsRepository.TryGetTalentConfig(talentId, out TalentConfigSO config))
             {
                 return true;
             }
 
-            return GetTalentLevel(type) >= config.MaxLevel;
+            return GetTalentLevel(talentId) >= config.MaxLevel;
         }
 
-        public int GetNextLevelCost(ShipUpgradableStatTypes type)
+        public int GetNextLevelCost(string talentId)
         {
-            if (IsMaxLevel(type) || !_talentsRepository.TryGetTalentConfig(type, out TalentConfigSO config))
+            if (IsMaxLevel(talentId) || !_talentsRepository.TryGetTalentConfig(talentId, out TalentConfigSO config))
             {
                 return -1;
             }
 
-            return config.Levels[GetTalentLevel(type)].Cost;
+            return config.Levels[GetTalentLevel(talentId)].Cost;
         }
 
-        public bool CanAfford(ShipUpgradableStatTypes type)
+        public bool CanAfford(string talentId)
         {
-            int cost = GetNextLevelCost(type);
+            int cost = GetNextLevelCost(talentId);
             return cost >= 0 && _currencyManager.Currency >= cost;
         }
 
-        public bool TryPurchaseLevel(ShipUpgradableStatTypes type)
+        public bool TryPurchaseLevel(string talentId)
         {
-            int cost = GetNextLevelCost(type);
+            int cost = GetNextLevelCost(talentId);
             if (cost < 0)
             {
                 return false;
@@ -80,48 +80,41 @@ namespace SpaceInvaders.Project
                 return false;
             }
 
-            TalentSaveEntry entry = GetOrCreateTalentEntry(type);
+            TalentSaveEntry entry = GetOrCreateTalentEntry(talentId);
             entry.Level++;
             SaveData();
             return true;
         }
 
-        /// <summary>Applies the sum of the purchased level deltas for each talent, then refills
-        /// health since max health may have changed.</summary>
+        /// <summary>Applies every level bought, one at a time, then refills health since max health
+        /// may have changed.</summary>
         public void ApplyTalentBonuses(ShipStats stats)
         {
             foreach (TalentConfigSO config in _talentsRepository.GetAllTalentConfigs())
             {
-                int ownedLevel = GetTalentLevel(config.TalentType);
-                if (ownedLevel <= 0)
-                {
-                    continue;
-                }
+                int ownedLevel = GetTalentLevel(config.ObjectID);
 
-                float totalBonus = 0f;
-                for (int i = 0; i < ownedLevel; i++)
+                for (int i = 0; i < ownedLevel && i < config.MaxLevel; i++)
                 {
-                    totalBonus += config.Levels[i].BonusDelta;
+                    config.ApplyLevel(stats, i);
                 }
-
-                config.ApplyBonus(stats, totalBonus);
             }
 
             stats.RefillHealth();
             stats.RefillAmmo();
         }
 
-        private TalentSaveEntry GetTalent(ShipUpgradableStatTypes type)
+        private TalentSaveEntry GetTalent(string talentId)
         {
-            return _data.Talents.Find(t => t.TalentType == type.ToString());
+            return _data.Talents.Find(talent => talent.TalentId == talentId);
         }
 
-        private TalentSaveEntry GetOrCreateTalentEntry(ShipUpgradableStatTypes type)
+        private TalentSaveEntry GetOrCreateTalentEntry(string talentId)
         {
-            TalentSaveEntry entry = GetTalent(type);
+            TalentSaveEntry entry = GetTalent(talentId);
             if (entry == null)
             {
-                entry = new TalentSaveEntry { TalentType = type.ToString() };
+                entry = new TalentSaveEntry { TalentId = talentId };
                 _data.Talents.Add(entry);
             }
 

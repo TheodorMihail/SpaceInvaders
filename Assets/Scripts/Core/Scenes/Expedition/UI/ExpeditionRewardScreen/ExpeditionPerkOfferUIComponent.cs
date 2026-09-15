@@ -12,9 +12,9 @@ namespace SpaceInvaders.Scenes.Expedition
         [Inject] private readonly ICustomFactory _factory;
 
         [SerializeField] private RectTransform _container;
-        [SerializeField] private ExpeditionPerkCardComponent _cardPrefab;
+        [SerializeField] private ExpeditionPerkCardUIComponent _cardPrefab;
 
-        private readonly List<ExpeditionPerkCardComponent> _cards = new();
+        private readonly List<ExpeditionPerkCardUIComponent> _cards = new();
 
         public event Action<string> OnPerkClicked;
 
@@ -24,7 +24,7 @@ namespace SpaceInvaders.Scenes.Expedition
 
             foreach ((ExpeditionPerkConfigSO perk, ExpeditionPerkRarityConfigSO rarity) choice in choices)
             {
-                ExpeditionPerkCardComponent card = _factory.CreateFromPrefab(_cardPrefab, _container);
+                ExpeditionPerkCardUIComponent card = _factory.CreateFromPrefab(_cardPrefab, _container);
 
                 card.SetPerk(choice.perk, choice.rarity);
                 card.OnClicked += HandlePerkClicked;
@@ -40,7 +40,7 @@ namespace SpaceInvaders.Scenes.Expedition
 
         private void Clear()
         {
-            foreach (ExpeditionPerkCardComponent card in _cards)
+            foreach (ExpeditionPerkCardUIComponent card in _cards)
             {
                 card.OnClicked -= HandlePerkClicked;
                 Destroy(card.gameObject);

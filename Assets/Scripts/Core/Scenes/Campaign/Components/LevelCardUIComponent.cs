@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace SpaceInvaders.Scenes.Campaign
 {
-    public class LevelButtonComponent : MonoBehaviour
+    public class LevelCardUIComponent : MonoBehaviour
     {
         [SerializeField] private TextMeshProUGUI _levelNumberText;
         [SerializeField] private GameObject _levelLockedImage;
@@ -15,11 +15,11 @@ namespace SpaceInvaders.Scenes.Campaign
         [SerializeField] private Image _levelTypeIcon;
 
         private int _levelNumber;
-        public event Action<int> OnLevelButtonClicked;
+        public event Action<int> OnLevelCardClicked;
 
         private void Awake()
         {
-            _button.onClick.AddListener(() => OnLevelButtonClicked?.Invoke(_levelNumber));
+            _button.onClick.AddListener(() => OnLevelCardClicked?.Invoke(_levelNumber));
         }
 
         public void Setup(LevelConfigSO level, Sprite levelTypeIcon, bool isLocked, int starsEarned)

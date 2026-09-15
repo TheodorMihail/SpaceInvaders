@@ -16,13 +16,13 @@ namespace SpaceInvaders.Project
     {
         [Inject] private readonly ICustomFactory _factory;
 
-        [SerializeField] private ItemSlotComponent _itemCellPrefab;
+        [SerializeField] private ItemSlotUIComponent _itemCellPrefab;
         [SerializeField] private Transform _itemsContainer;
 
         [Tooltip("Shown only while nothing is in the container.")]
         [SerializeField] private TextMeshProUGUI _emptyText;
 
-        private readonly Dictionary<string, ItemSlotComponent> _cells = new();
+        private readonly Dictionary<string, ItemSlotUIComponent> _cells = new();
 
         public int ItemCount => _cells.Count;
 
@@ -31,7 +31,7 @@ namespace SpaceInvaders.Project
 
         public void Clear()
         {
-            foreach (ItemSlotComponent cell in _cells.Values)
+            foreach (ItemSlotUIComponent cell in _cells.Values)
             {
                 Destroy(cell.gameObject);
             }
@@ -49,7 +49,7 @@ namespace SpaceInvaders.Project
                 return;
             }
 
-            ItemSlotComponent cell = _factory.CreateFromPrefab(_itemCellPrefab, _itemsContainer);
+            ItemSlotUIComponent cell = _factory.CreateFromPrefab(_itemCellPrefab, _itemsContainer);
             cell.SetItem(config, rarity);
 
             string instanceId = entry.InstanceId;
@@ -61,7 +61,7 @@ namespace SpaceInvaders.Project
 
         public void RemoveItem(string instanceId)
         {
-            if (string.IsNullOrEmpty(instanceId) || !_cells.TryGetValue(instanceId, out ItemSlotComponent cell))
+            if (string.IsNullOrEmpty(instanceId) || !_cells.TryGetValue(instanceId, out ItemSlotUIComponent cell))
             {
                 return;
             }
@@ -74,7 +74,7 @@ namespace SpaceInvaders.Project
 
         public void SetEquipped(string instanceId, bool isEquipped)
         {
-            if (TryGetCell(instanceId, out ItemSlotComponent cell))
+            if (TryGetCell(instanceId, out ItemSlotUIComponent cell))
             {
                 cell.SetEquipped(isEquipped);
             }
@@ -82,13 +82,13 @@ namespace SpaceInvaders.Project
 
         public void SetSelected(string instanceId, bool isSelected)
         {
-            if (TryGetCell(instanceId, out ItemSlotComponent cell))
+            if (TryGetCell(instanceId, out ItemSlotUIComponent cell))
             {
                 cell.SetSelected(isSelected);
             }
         }
 
-        private bool TryGetCell(string instanceId, out ItemSlotComponent cell)
+        private bool TryGetCell(string instanceId, out ItemSlotUIComponent cell)
         {
             cell = null;
             return !string.IsNullOrEmpty(instanceId) && _cells.TryGetValue(instanceId, out cell);

@@ -13,8 +13,8 @@ namespace SpaceInvaders.Scenes.Campaign
     {
         [Inject] private readonly ICustomFactory _factory;
 
-        [SerializeField] private LevelButtonComponent _levelButtonPrefab;
-        [SerializeField] private Transform _levelButtonsContainer;
+        [SerializeField] private LevelCardUIComponent _levelCardPrefab;
+        [SerializeField] private Transform _levelCardsContainer;
         [SerializeField] private Button _backButton;
         [SerializeField] private List<LevelTypeIconDTO> _levelTypeIcons;
 
@@ -30,9 +30,9 @@ namespace SpaceInvaders.Scenes.Campaign
         {
             foreach(var level in levels)
             {
-                var button = _factory.CreateFromPrefab(_levelButtonPrefab, _levelButtonsContainer);
-                button.Setup(level, GetLevelTypeIcon(level.LevelType), !_model.IsLevelUnlocked(level.Index), _model.GetLevelStars(level.Index));
-                button.OnLevelButtonClicked += OnLevelSelectedClicked;
+                var card = _factory.CreateFromPrefab(_levelCardPrefab, _levelCardsContainer);
+                card.Setup(level, GetLevelTypeIcon(level.LevelType), !_model.IsLevelUnlocked(level.Index), _model.GetLevelStars(level.Index));
+                card.OnLevelCardClicked += OnLevelSelectedClicked;
             }
         }
 
@@ -49,7 +49,7 @@ namespace SpaceInvaders.Scenes.Campaign
             return null;
         }
 
-        /// <summary>Icon shown on a level button, picked by the level's type.</summary>
+        /// <summary>Icon shown on a level card, picked by the level's type.</summary>
         [Serializable]
         public struct LevelTypeIconDTO
         {

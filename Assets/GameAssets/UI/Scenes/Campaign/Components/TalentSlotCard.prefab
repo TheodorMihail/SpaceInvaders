@@ -86,7 +86,7 @@ GameObject:
   - component: {fileID: 8671672043378364749}
   - component: {fileID: -2859175100912659994}
   m_Layer: 5
-  m_Name: TalentSlotButton
+  m_Name: TalentSlotCard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
