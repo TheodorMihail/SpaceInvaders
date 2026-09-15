@@ -24,15 +24,18 @@ namespace SpaceInvaders.Scenes.Game
             LevelNumber = parameters.LevelNumber;
         }
 
+        /// <summary>Set before any powerup lands, since the ship can be authored or built with it.</summary>
+        public bool HasUnlimitedAmmo => _playerManager.PlayerStats?.HasUnlimitedAmmo ?? false;
+
         /// <summary>The HUD is created after the player spawns, and the bus has no replay, so the
-        /// starting ammo has to be read directly. False means the ammo display stays hidden.</summary>
+        /// starting ammo has to be read directly.</summary>
         public bool TryGetAmmo(out int currentAmmo, out int maxAmmo)
         {
             currentAmmo = 0;
             maxAmmo = 0;
 
             ShipStats stats = _playerManager.PlayerStats;
-            if (stats == null || stats.HasUnlimitedAmmo)
+            if (stats == null)
             {
                 return false;
             }

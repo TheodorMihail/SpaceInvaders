@@ -17,9 +17,11 @@ namespace SpaceInvaders.Scenes.Game
         [SerializeField] private TalentsDataConfigSO _talentsDataConfigSO;
         [SerializeField] private SoundsDataConfigSO _soundsDataConfigSO;
         [SerializeField] private ItemsDataConfigSO _itemsDataConfigSO;
-        [SerializeField] private DropsDataConfigSO _dropsDataConfigSO;
+        [SerializeField] private CampaignRunDataConfigSO _campaignRunDataConfigSO;
         [SerializeField] private HazardsDataConfigSO _hazardsDataConfigSO;
-        [SerializeField] private ExpeditionDataConfigSO _expeditionDataConfigSO;
+        [SerializeField] private ExpeditionMapDataConfigSO _expeditionMapDataConfigSO;
+        [SerializeField] private ExpeditionRunDataConfigSO _expeditionRunDataConfigSO;
+        [SerializeField] private ExpeditionPerksDataConfigSO _expeditionPerksDataConfigSO;
 
         public LevelsDataConfigSO LevelsDataConfigSO => _levelsDataConfigSO;
         public PlayerDataConfigSO PlayerDataConfigSO => _playerDataConfigSO;
@@ -30,8 +32,10 @@ namespace SpaceInvaders.Scenes.Game
         public TalentsDataConfigSO TalentsDataConfigSO => _talentsDataConfigSO;
         public SoundsDataConfigSO SoundsDataConfigSO => _soundsDataConfigSO;
         public ItemsDataConfigSO ItemsDataConfigSO => _itemsDataConfigSO;
-        public DropsDataConfigSO DropsDataConfigSO => _dropsDataConfigSO;
+        public CampaignRunDataConfigSO CampaignRunDataConfigSO => _campaignRunDataConfigSO;
         public HazardsDataConfigSO HazardsDataConfigSO => _hazardsDataConfigSO;
-        public ExpeditionDataConfigSO ExpeditionDataConfigSO => _expeditionDataConfigSO;
+        public ExpeditionMapDataConfigSO ExpeditionMapDataConfigSO => _expeditionMapDataConfigSO;
+        public ExpeditionRunDataConfigSO ExpeditionRunDataConfigSO => _expeditionRunDataConfigSO;
+        public ExpeditionPerksDataConfigSO ExpeditionPerksDataConfigSO => _expeditionPerksDataConfigSO;
     }
 }

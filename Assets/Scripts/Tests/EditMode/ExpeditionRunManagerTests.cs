@@ -26,10 +26,12 @@ namespace SpaceInvaders.Tests
         private ExpeditionRunManager _expeditionRunManager;
         private IPersistenceManager _mockPersistenceManager;
         private IExpeditionMapService _mockMapService;
+        private IExpeditionPerkDrawService _mockPerkDrawService;
         private ICurrencyManager _mockCurrencyManager;
         private ILevelsRepository _mockLevelsRepository;
         private IGameModeScopedManager _mockModeScopedManager;
-        private ExpeditionDataConfigSO _mockConfig;
+        private ExpeditionRunDataConfigSO _mockRunConfig;
+        private ExpeditionPerksDataConfigSO _mockPerksConfig;
 
         [SetUp]
         public override void Setup()
@@ -47,11 +49,17 @@ namespace SpaceInvaders.Tests
             _mockMapService = Substitute.For<IExpeditionMapService>();
             _mockMapService.GenerateMap(Arg.Any<int>()).Returns(_ => CreateMap());
 
-            _mockConfig = Substitute.For<ExpeditionDataConfigSO>();
-            _mockConfig.ScrapPerScore.Returns(ScrapPerScore);
+            _mockRunConfig = Substitute.For<ExpeditionRunDataConfigSO>();
+            _mockRunConfig.CurrencyPerScore.Returns(ScrapPerScore);
+
+            var mockGameModesRepository = Substitute.For<IGameModesRepository>();
+            mockGameModesRepository.GetRunDataConfig(GameModeTypes.Expedition).Returns(_mockRunConfig);
+            Container.Bind<IGameModesRepository>().FromInstance(mockGameModesRepository);
+
+            _mockPerksConfig = Substitute.For<ExpeditionPerksDataConfigSO>();
 
             var mockExpeditionRepository = Substitute.For<IExpeditionRepository>();
-            mockExpeditionRepository.GetExpeditionDataConfig().Returns(_mockConfig);
+            mockExpeditionRepository.GetPerksDataConfig().Returns(_mockPerksConfig);
 
             _mockCurrencyManager = Substitute.For<ICurrencyManager>();
 
@@ -60,8 +68,11 @@ namespace SpaceInvaders.Tests
 
             _mockModeScopedManager = Substitute.For<IGameModeScopedManager>();
 
+            _mockPerkDrawService = Substitute.For<IExpeditionPerkDrawService>();
+
             Container.Bind<ISaveProfileManager>().FromInstance(mockSaveProfileManager);
             Container.Bind<IExpeditionMapService>().FromInstance(_mockMapService);
+            Container.Bind<IExpeditionPerkDrawService>().FromInstance(_mockPerkDrawService);
             Container.Bind<IExpeditionRepository>().FromInstance(mockExpeditionRepository);
             Container.Bind<ICurrencyManager>().FromInstance(_mockCurrencyManager);
             Container.Bind<ILevelsRepository>().FromInstance(_mockLevelsRepository);
@@ -75,7 +86,8 @@ namespace SpaceInvaders.Tests
         [TearDown]
         public override void Teardown()
         {
-            Object.DestroyImmediate(_mockConfig);
+            Object.DestroyImmediate(_mockRunConfig);
+            Object.DestroyImmediate(_mockPerksConfig);
             base.Teardown();
         }
 

@@ -60,16 +60,16 @@ namespace SpaceInvaders.Scenes.Game
             _view.OnPauseButtonClicked -= OnPauseButtonClicked;
         }
 
-        /// <summary>Ships with unlimited ammo have nothing to show, so the display stays hidden.</summary>
+        /// <summary>Always shown. A ship that already has unlimited ammo reads as the infinity sign,
+        /// the same as one that picked the powerup up, rather than as a missing readout.</summary>
         private void SetupAmmo()
         {
-            bool hasAmmo = _model.TryGetAmmo(out int currentAmmo, out int maxAmmo);
-            _view.ShowAmmo(hasAmmo);
-
-            if (hasAmmo)
+            if (_model.TryGetAmmo(out int currentAmmo, out int maxAmmo))
             {
                 _view.UpdateAmmo(currentAmmo, maxAmmo);
             }
+
+            _view.SetUnlimitedAmmo(_model.HasUnlimitedAmmo);
         }
 
         private void OnPauseButtonClicked()
@@ -121,9 +121,11 @@ namespace SpaceInvaders.Scenes.Game
 
         private void OnPowerupExpiredCallback(PowerupExpiredMessage message)
         {
+            // Read back rather than switched off: the bonus is reverted before this lands, so a ship
+            // that has unlimited ammo of its own keeps showing it.
             if (message.Type == PowerupTypes.UnlimitedAmmo)
             {
-                _view.SetUnlimitedAmmo(false);
+                _view.SetUnlimitedAmmo(_model.HasUnlimitedAmmo);
             }
 
             _view.HidePowerupIndicator(message.Type);

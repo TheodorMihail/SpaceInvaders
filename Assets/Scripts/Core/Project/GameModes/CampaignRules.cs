@@ -1,4 +1,5 @@
 using SpaceInvaders.Scenes.Game;
+using UnityEngine;
 using Zenject;
 
 namespace SpaceInvaders.Project
@@ -10,6 +11,7 @@ namespace SpaceInvaders.Project
     public class CampaignRules : IGameModeRules
     {
         [Inject] private readonly ILevelsRepository _levelsRepository;
+        [Inject] private readonly IGameModesRepository _gameModesRepository;
         [Inject] private readonly ILevelProgressManager _levelProgressManager;
         [Inject] private readonly ITalentManager _talentManager;
         [Inject] private readonly IEquipmentManager _equipmentManager;
@@ -17,7 +19,7 @@ namespace SpaceInvaders.Project
 
         public GameModeTypes Mode => GameModeTypes.Campaign;
         public SceneTypes HubScene => SceneTypes.Campaign;
-        public DropTableTypes DropTableType => DropTableTypes.Campaign;
+        public DropTableConfigSO DropTable => _gameModesRepository.GetRunDataConfig(Mode)?.DropTable;
         public bool CanReplayLevel => true;
 
         public void ApplyProgressionBonuses(ShipStats stats)
@@ -26,30 +28,58 @@ namespace SpaceInvaders.Project
             _equipmentManager.ApplyEquipmentBonuses(stats);
         }
 
-        /// <summary>The score is permanent currency however the level ended, but only a cleared level
-        /// is rated.</summary>
+        /// <summary>The score is banked however the level ended, but only a cleared level is rated and
+        /// only a cleared boss pays its bonus.</summary>
         public GameEndResolutionDTO ResolveGameEnd(GameSessionResultDTO result)
         {
-            _currencyManager.AddCurrency(result.Score);
+            bool isCleared = result.Result == GameplayStateResultTypes.LevelFinished;
+            LevelConfigSO levelConfig = isCleared ? GetLevelConfig(result.Session.LevelNumber) : null;
 
-            if (result.Result == GameplayStateResultTypes.LevelFinished)
+            BankCurrency(result.Score, levelConfig != null && levelConfig.LevelType == LevelTypes.Boss);
+
+            if (isCleared && levelConfig != null)
             {
-                RecordStars(result);
+                RecordStars(result, levelConfig);
             }
 
             return new GameEndResolutionDTO(GetGameEndOptions(result));
         }
 
-        /// <summary>Stars come from the damage taken against the level's authored threshold.</summary>
-        private void RecordStars(GameSessionResultDTO result)
+        /// <summary>Looked up once per ending, since both the rating and the boss bonus read it.</summary>
+        private LevelConfigSO GetLevelConfig(int levelNumber)
         {
-            if (result.Stats == null
-                || !_levelsRepository.TryGetLevelConfig(result.Session.LevelNumber, out LevelConfigSO config))
+            _levelsRepository.TryGetLevelConfig(levelNumber, out LevelConfigSO config);
+            return config;
+        }
+
+        private void BankCurrency(int score, bool isBossLevel)
+        {
+            GameModeRunDataConfigSO runDataConfig = _gameModesRepository.GetRunDataConfig(Mode);
+
+            if (runDataConfig == null)
             {
                 return;
             }
 
-            int stars = CalculateStars(result.Stats.CumulativeDamageTaken, config.ThreeStarMaxDamage,
+            int currency = Mathf.RoundToInt(score * runDataConfig.CurrencyPerScore);
+
+            if (isBossLevel)
+            {
+                currency += runDataConfig.BossCurrencyBonus;
+            }
+
+            _currencyManager.AddCurrency(currency);
+        }
+
+        /// <summary>Stars come from the damage taken against the level's authored threshold.</summary>
+        private void RecordStars(GameSessionResultDTO result, LevelConfigSO levelConfig)
+        {
+            if (result.Stats == null)
+            {
+                return;
+            }
+
+            int stars = CalculateStars(result.Stats.CumulativeDamageTaken, levelConfig.ThreeStarMaxDamage,
                 _levelsRepository.GetTwoStarDamageMultiplier());
 
             _levelProgressManager.RecordLevelResult(result.Session.LevelNumber, stars);

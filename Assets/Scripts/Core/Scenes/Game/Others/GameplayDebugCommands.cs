@@ -20,6 +20,7 @@ namespace SpaceInvaders.Scenes.Game
         {
             return new[]
             {
+                new DebugCommandDTO(DebugKeys.Gameplay.FinishLevel, "Finish the level", _levelSessionManager.DebugFinishLevel),
                 new DebugCommandDTO(DebugKeys.Gameplay.DestroyAllEnemies, "Destroy all enemies", _levelSessionManager.DebugDestroyAllEnemies),
                 new DebugCommandDTO(DebugKeys.Gameplay.KillPlayer, "Kill player", _playerManager.DebugKillPlayer),
                 new DebugCommandDTO(DebugKeys.Gameplay.SpawnHazard, "Spawn a hazard", _levelSessionManager.DebugSpawnHazard),

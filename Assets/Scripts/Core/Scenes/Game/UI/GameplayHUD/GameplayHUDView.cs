@@ -54,16 +54,6 @@ namespace SpaceInvaders.Scenes.Game
             _waveUI.SetWave(waveNumber, totalWaves);
         }
 
-        public void ShowAmmo(bool show)
-        {
-            if (_ammoUI == null)
-            {
-                return;
-            }
-
-            _ammoUI.Show(show);
-        }
-
         public void UpdateAmmo(int currentAmmo, int maxAmmo)
         {
             if (_ammoUI == null)

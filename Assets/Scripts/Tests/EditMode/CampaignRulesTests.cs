@@ -2,6 +2,7 @@ using NSubstitute;
 using NUnit.Framework;
 using SpaceInvaders.Project;
 using SpaceInvaders.Scenes.Game;
+using UnityEngine;
 using Zenject;
 
 namespace SpaceInvaders.Tests
@@ -11,6 +12,7 @@ namespace SpaceInvaders.Tests
     {
         private const int ThreeStarMaxDamage = 10;
         private const float TwoStarDamageMultiplier = 3f;
+        private const int BossCurrencyBonus = 500;
 
         private static readonly GameSessionDTO _session = new(GameModeTypes.Campaign, 1, "Level 1");
 
@@ -20,6 +22,8 @@ namespace SpaceInvaders.Tests
         private ITalentManager _mockTalentManager;
         private IEquipmentManager _mockEquipmentManager;
         private ICurrencyManager _mockCurrencyManager;
+        private CampaignRunDataConfigSO _mockRunConfig;
+        private DropTableConfigSO _mockDropTable;
 
         [SetUp]
         public override void Setup()
@@ -35,6 +39,17 @@ namespace SpaceInvaders.Tests
             _mockLevelsRepository.GetTwoStarDamageMultiplier().Returns(TwoStarDamageMultiplier);
             _mockLevelProgressManager.MaxLevelNumber.Returns(3);
 
+            _mockDropTable = Substitute.For<DropTableConfigSO>();
+
+            _mockRunConfig = Substitute.For<CampaignRunDataConfigSO>();
+            _mockRunConfig.DropTable.Returns(_mockDropTable);
+            _mockRunConfig.CurrencyPerScore.Returns(1f);
+            _mockRunConfig.BossCurrencyBonus.Returns(BossCurrencyBonus);
+
+            var mockGameModesRepository = Substitute.For<IGameModesRepository>();
+            mockGameModesRepository.GetRunDataConfig(GameModeTypes.Campaign).Returns(_mockRunConfig);
+
+            Container.Bind<IGameModesRepository>().FromInstance(mockGameModesRepository);
             Container.Bind<ILevelsRepository>().FromInstance(_mockLevelsRepository);
             Container.Bind<ILevelProgressManager>().FromInstance(_mockLevelProgressManager);
             Container.Bind<ITalentManager>().FromInstance(_mockTalentManager);
@@ -42,6 +57,14 @@ namespace SpaceInvaders.Tests
             Container.Bind<ICurrencyManager>().FromInstance(_mockCurrencyManager);
 
             _campaignRules = Container.Instantiate<CampaignRules>();
+        }
+
+        [TearDown]
+        public override void Teardown()
+        {
+            Object.DestroyImmediate(_mockRunConfig);
+            Object.DestroyImmediate(_mockDropTable);
+            base.Teardown();
         }
 
         [Test]
@@ -58,9 +81,31 @@ namespace SpaceInvaders.Tests
         }
 
         [Test]
-        public void DropTableType_IsTheCampaignTable()
+        public void DropTable_ComesFromTheCampaignRunConfig()
         {
-            Assert.AreEqual(DropTableTypes.Campaign, _campaignRules.DropTableType);
+            Assert.AreSame(_mockDropTable, _campaignRules.DropTable);
+        }
+
+        /// <summary>Only a cleared boss pays the bonus, so dying on one earns the score alone.</summary>
+        [Test]
+        public void ResolveGameEnd_AfterClearingABossLevel_BanksTheBossBonusOnTop()
+        {
+            CreateMockLevelConfig(LevelTypes.Boss);
+
+            _campaignRules.ResolveGameEnd(CreateClearedResult(CreateStatsWithDamage(0)));
+
+            _mockCurrencyManager.Received(1).AddCurrency(BossCurrencyBonus);
+        }
+
+        [Test]
+        public void ResolveGameEnd_AfterDyingOnABossLevel_BanksNoBonus()
+        {
+            CreateMockLevelConfig(LevelTypes.Boss);
+            var result = new GameSessionResultDTO(_session, GameplayStateResultTypes.GameOver, 250);
+
+            _campaignRules.ResolveGameEnd(result);
+
+            _mockCurrencyManager.Received(1).AddCurrency(250);
         }
 
         [Test]
@@ -195,10 +240,11 @@ namespace SpaceInvaders.Tests
             return new GameSessionResultDTO(_session, GameplayStateResultTypes.LevelFinished, 0, stats);
         }
 
-        private void CreateMockLevelConfig()
+        private void CreateMockLevelConfig(LevelTypes levelType = LevelTypes.Normal)
         {
             var mockLevelConfig = Substitute.For<LevelConfigSO>();
             mockLevelConfig.ThreeStarMaxDamage.Returns(ThreeStarMaxDamage);
+            mockLevelConfig.LevelType.Returns(levelType);
 
             _mockLevelsRepository.TryGetLevelConfig(_session.LevelNumber, out LevelConfigSO _)
                 .Returns(call =>

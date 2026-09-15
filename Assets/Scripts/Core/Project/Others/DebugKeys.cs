@@ -38,10 +38,11 @@ namespace SpaceInvaders.Project
         /// <summary>A running level, so only reachable from the Game scene.</summary>
         public static class Gameplay
         {
-            public const Key DestroyAllEnemies = Key.F1;
-            public const Key KillPlayer = Key.F2;
-            public const Key SpawnHazard = Key.F3;
-            public const Key SpawnPowerup = Key.F4;
+            public const Key FinishLevel = Key.F1;
+            public const Key DestroyAllEnemies = Key.F2;
+            public const Key KillPlayer = Key.F3;
+            public const Key SpawnHazard = Key.F4;
+            public const Key SpawnPowerup = Key.F5;
         }
     }
 }

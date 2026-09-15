@@ -122,7 +122,17 @@ namespace SpaceInvaders.Project
         public bool IsLevelInProgress;
         public float RemainingHealthRatio = 1f;
         public int ShopRerollsUsed;
+
+        /// <summary>Draws still to be offered, so closing the app between two cards keeps the second.</summary>
+        public int PendingPerkRewards;
         public List<ExpeditionNodeEntry> Nodes = new();
+        public List<ExpeditionPerkEntry> Perks = new();
+    }
+
+    public class ExpeditionPerkEntry
+    {
+        /// <summary>ExpeditionPerkConfigSO.ObjectID. Listed once per pick, so duplicates stack.</summary>
+        public string PerkId;
     }
 
     public class ExpeditionNodeEntry

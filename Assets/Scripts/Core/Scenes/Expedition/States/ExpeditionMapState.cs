@@ -1,4 +1,5 @@
 using BaseArchitecture.Core;
+using Cysharp.Threading.Tasks;
 using SpaceInvaders.Project;
 using Zenject;
 using static SpaceInvaders.Scenes.Expedition.ExpeditionStateMachine;
@@ -14,6 +15,7 @@ namespace SpaceInvaders.Scenes.Expedition
         public override ExpeditionStateTypes Id => ExpeditionStateTypes.Map;
 
         [Inject] private readonly IUIManager _uiManager;
+        [Inject] private readonly IExpeditionRunManager _expeditionRunManager;
 
         public override void OnEnter(params object[] paramsList)
         {
@@ -26,8 +28,20 @@ namespace SpaceInvaders.Scenes.Expedition
         /// only leaving closes this.</summary>
         private async void ShowMapScreen()
         {
+            await ShowPendingRewards();
+
             var result = await _uiManager.ShowScreen<ExpeditionMapScreen, ExpeditionMapScreen.ExpeditionMapScreenResult>();
             FinishState(result);
+        }
+
+        /// <summary>Pending cards are offered one screen at a time before the map is shown, so a boss
+        /// reward cannot be walked past.</summary>
+        private async UniTask ShowPendingRewards()
+        {
+            while ((_expeditionRunManager.CurrentExpedition?.PendingPerkRewards ?? 0) > 0)
+            {
+                await _uiManager.ShowScreen<ExpeditionRewardScreen>();
+            }
         }
     }
 }

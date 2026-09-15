@@ -27,7 +27,7 @@ namespace SpaceInvaders.Tests
         private const int SeedSampleCount = 200;
 
         private IExpeditionMapService _mapService;
-        private ExpeditionDataConfigSO _mockConfig;
+        private ExpeditionMapDataConfigSO _mockConfig;
 
         [SetUp]
         public override void Setup()
@@ -37,7 +37,7 @@ namespace SpaceInvaders.Tests
             _mockConfig = CreateConfig(extraLinkChance: 0.5f);
 
             var mockRepository = Substitute.For<IExpeditionRepository>();
-            mockRepository.GetExpeditionDataConfig().Returns(_ => _mockConfig);
+            mockRepository.GetMapDataConfig().Returns(_ => _mockConfig);
 
             Container.Bind<IExpeditionRepository>().FromInstance(mockRepository);
             _mapService = Container.Instantiate<ExpeditionMapService>();
@@ -368,9 +368,9 @@ namespace SpaceInvaders.Tests
             }
         }
 
-        private static ExpeditionDataConfigSO CreateConfig(float extraLinkChance)
+        private static ExpeditionMapDataConfigSO CreateConfig(float extraLinkChance)
         {
-            var config = Substitute.For<ExpeditionDataConfigSO>();
+            var config = Substitute.For<ExpeditionMapDataConfigSO>();
 
             config.Depth.Returns(Depth);
             config.MinBranchWidth.Returns(MinBranchWidth);

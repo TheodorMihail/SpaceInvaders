@@ -31,11 +31,6 @@ namespace SpaceInvaders.Scenes.Game
             CancelReloadCountdown();
         }
 
-        public void Show(bool show)
-        {
-            gameObject.SetActive(show);
-        }
-
         public void UpdateAmmo(int currentAmmo, int maxAmmo)
         {
             _currentAmmo = currentAmmo;

@@ -9,7 +9,7 @@ namespace SpaceInvaders.Project
     {
         GameModeTypes CurrentMode { get; }
         SceneTypes HubScene { get; }
-        DropTableTypes DropTableType { get; }
+        DropTableConfigSO DropTable { get; }
         bool CanReplayLevel { get; }
 
         /// <summary>Called once on entering a mode's hub or the Game scene. The mode never changes
@@ -42,7 +42,7 @@ namespace SpaceInvaders.Project
         public GameModeTypes CurrentMode { get; private set; }
 
         public SceneTypes HubScene => _activeRules?.HubScene ?? SceneTypes.MainMenu;
-        public DropTableTypes DropTableType => _activeRules?.DropTableType ?? DropTableTypes.Campaign;
+        public DropTableConfigSO DropTable => _activeRules?.DropTable;
         public bool CanReplayLevel => _activeRules?.CanReplayLevel ?? true;
 
         /// <summary>Resolved once per mode change, so no call has to search the list.</summary>

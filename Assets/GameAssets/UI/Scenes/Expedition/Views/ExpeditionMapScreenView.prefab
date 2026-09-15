@@ -153,6 +153,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9998ca09ca3f40c47958470395e8a578, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _scrollRect: {fileID: 911906783028654568}
   _content: {fileID: 8636302301458357189}
   _nodePrefab: {fileID: 6115014680233217754, guid: 4f2667a3b5d47d2419b5799f532f9dba, type: 3}
   _pathPrefab: {fileID: 5471379208880381136, guid: dfeaba85787778745b53c67e7aad44db, type: 3}

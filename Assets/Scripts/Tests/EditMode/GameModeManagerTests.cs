@@ -111,22 +111,28 @@ namespace SpaceInvaders.Tests
 
         /// <summary>Every mode-specific read follows the mode, not just the ones with methods.</summary>
         [Test]
-        public void DropTableTypeAndCanReplayLevel_FollowTheModeThatWasInitialized()
+        public void DropTableAndCanReplayLevel_FollowTheModeThatWasInitialized()
         {
-            _mockCampaignRules.DropTableType.Returns(DropTableTypes.Campaign);
+            var campaignTable = Substitute.For<DropTableConfigSO>();
+            var expeditionTable = Substitute.For<DropTableConfigSO>();
+
+            _mockCampaignRules.DropTable.Returns(campaignTable);
             _mockCampaignRules.CanReplayLevel.Returns(true);
-            _mockExpeditionRules.DropTableType.Returns(DropTableTypes.Expedition);
+            _mockExpeditionRules.DropTable.Returns(expeditionTable);
             _mockExpeditionRules.CanReplayLevel.Returns(false);
 
             GameModeManager gameModeManager = CreateInitializedManagerWith(_mockCampaignRules, _mockExpeditionRules);
 
-            Assert.AreEqual(DropTableTypes.Campaign, gameModeManager.DropTableType);
+            Assert.AreSame(campaignTable, gameModeManager.DropTable);
             Assert.IsTrue(gameModeManager.CanReplayLevel);
 
             gameModeManager.InitializeGameMode(GameModeTypes.Expedition);
 
-            Assert.AreEqual(DropTableTypes.Expedition, gameModeManager.DropTableType);
+            Assert.AreSame(expeditionTable, gameModeManager.DropTable);
             Assert.IsFalse(gameModeManager.CanReplayLevel);
+
+            Object.DestroyImmediate(campaignTable);
+            Object.DestroyImmediate(expeditionTable);
         }
 
         [Test]

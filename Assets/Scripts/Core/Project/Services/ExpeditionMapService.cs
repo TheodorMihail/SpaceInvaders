@@ -23,7 +23,7 @@ namespace SpaceInvaders.Project
 
         public List<ExpeditionNodeEntry> GenerateMap(int seed)
         {
-            ExpeditionDataConfigSO config = _expeditionRepository.GetExpeditionDataConfig();
+            ExpeditionMapDataConfigSO config = _expeditionRepository.GetMapDataConfig();
             var random = new Random(seed);
             var rows = BuildRows(config, random);
 
@@ -40,7 +40,7 @@ namespace SpaceInvaders.Project
         }
 
         /// <summary>The start and mega boss rows hold one node; the rest are a random width.</summary>
-        private static List<List<ExpeditionNodeEntry>> BuildRows(ExpeditionDataConfigSO config, Random random)
+        private static List<List<ExpeditionNodeEntry>> BuildRows(ExpeditionMapDataConfigSO config, Random random)
         {
             var rows = new List<List<ExpeditionNodeEntry>>();
             int depth = System.Math.Max(config.Depth, 2);
@@ -83,7 +83,7 @@ namespace SpaceInvaders.Project
             return rows;
         }
 
-        private static ExpeditionNodeTypes GetNodeType(ExpeditionDataConfigSO config, int rowDepth, int depth,
+        private static ExpeditionNodeTypes GetNodeType(ExpeditionMapDataConfigSO config, int rowDepth, int depth,
             HashSet<ExpeditionNodeTypes> usedTypes, HashSet<ExpeditionNodeTypes> previousRowTypes, Random random)
         {
             if (rowDepth == 0)
@@ -106,7 +106,7 @@ namespace SpaceInvaders.Project
             return RollWeightedNodeType(config, rowDepth, depth, usedTypes, previousRowTypes, random);
         }
 
-        private static bool IsAuthoredBossDepth(ExpeditionDataConfigSO config, int rowDepth)
+        private static bool IsAuthoredBossDepth(ExpeditionMapDataConfigSO config, int rowDepth)
         {
             foreach (int bossDepth in config.BossDepths)
             {
@@ -121,7 +121,7 @@ namespace SpaceInvaders.Project
 
         /// <summary>Rolls among the types allowed here, so a weight can never place one where the rules
         /// forbid it. Normal is the fallback and is always allowed.</summary>
-        private static ExpeditionNodeTypes RollWeightedNodeType(ExpeditionDataConfigSO config, int rowDepth, int depth,
+        private static ExpeditionNodeTypes RollWeightedNodeType(ExpeditionMapDataConfigSO config, int rowDepth, int depth,
             HashSet<ExpeditionNodeTypes> usedTypes, HashSet<ExpeditionNodeTypes> previousRowTypes, Random random)
         {
             float total = 0f;
@@ -158,7 +158,7 @@ namespace SpaceInvaders.Project
             return ExpeditionNodeTypes.Normal;
         }
 
-        private static bool IsNodeTypeAllowed(ExpeditionDataConfigSO config, ExpeditionNodeTypes nodeType,
+        private static bool IsNodeTypeAllowed(ExpeditionMapDataConfigSO config, ExpeditionNodeTypes nodeType,
             int rowDepth, int depth, HashSet<ExpeditionNodeTypes> usedTypes,
             HashSet<ExpeditionNodeTypes> previousRowTypes)
         {
@@ -202,7 +202,7 @@ namespace SpaceInvaders.Project
 
         /// <summary>The mega boss closes the map, so its row counts as a boss row and nothing may sit
         /// a second boss against it.</summary>
-        private static bool IsBossAllowed(ExpeditionDataConfigSO config, int rowDepth, int depth,
+        private static bool IsBossAllowed(ExpeditionMapDataConfigSO config, int rowDepth, int depth,
             HashSet<ExpeditionNodeTypes> previousRowTypes)
         {
             return rowDepth >= config.MinBossDepth
@@ -220,7 +220,7 @@ namespace SpaceInvaders.Project
         /// lower down the row reaches higher up the next one, so every node owns a contiguous block of
         /// next-row columns and adjacent blocks may touch at one shared node but never overlap.
         /// </summary>
-        private static void LinkRows(ExpeditionDataConfigSO config, List<List<ExpeditionNodeEntry>> rows, Random random)
+        private static void LinkRows(ExpeditionMapDataConfigSO config, List<List<ExpeditionNodeEntry>> rows, Random random)
         {
             for (int rowIndex = 0; rowIndex < rows.Count - 1; rowIndex++)
             {
@@ -296,7 +296,7 @@ namespace SpaceInvaders.Project
         /// is what gives an edge node a real choice. Only ever one direction per boundary: doing both
         /// would make the blocks overlap, and overlapping blocks are what crossing paths look like.
         /// </summary>
-        private static void AddSharedBoundaries(ExpeditionDataConfigSO config, List<int>[] targetColumns, Random random)
+        private static void AddSharedBoundaries(ExpeditionMapDataConfigSO config, List<int>[] targetColumns, Random random)
         {
             for (int i = 0; i < targetColumns.Length - 1; i++)
             {
@@ -342,7 +342,7 @@ namespace SpaceInvaders.Project
         }
 
         /// <summary>Only nodes that are played carry a level, drawn from the pool for their type and depth.</summary>
-        private static void AssignLevels(ExpeditionDataConfigSO config, List<List<ExpeditionNodeEntry>> rows, Random random)
+        private static void AssignLevels(ExpeditionMapDataConfigSO config, List<List<ExpeditionNodeEntry>> rows, Random random)
         {
             foreach (List<ExpeditionNodeEntry> row in rows)
             {
@@ -353,7 +353,7 @@ namespace SpaceInvaders.Project
             }
         }
 
-        private static string GetLevelId(ExpeditionDataConfigSO config, ExpeditionNodeEntry node, Random random)
+        private static string GetLevelId(ExpeditionMapDataConfigSO config, ExpeditionNodeEntry node, Random random)
         {
             var candidates = new List<LevelConfigSO>();
 

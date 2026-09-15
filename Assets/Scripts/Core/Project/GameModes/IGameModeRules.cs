@@ -45,7 +45,7 @@ namespace SpaceInvaders.Project
         SceneTypes HubScene { get; }
 
         /// <summary>Which drop table a kill rolls against, so what drops is authored per mode.</summary>
-        DropTableTypes DropTableType { get; }
+        DropTableConfigSO DropTable { get; }
 
         /// <summary>Whether a level can be thrown away and played again, from the pause screen or a
         /// result screen. False where a level is one consumed step of a longer run.</summary>

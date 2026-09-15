@@ -16,7 +16,7 @@ namespace SpaceInvaders.Scenes.Expedition
         public override void Initialize()
         {
             base.Initialize();
-            _view.Initialize(_model.Expedition.Nodes);
+            _view.Initialize(_model.Expedition.Nodes, _model.Expedition.CurrentNodeId);
             _view.OnNodeClicked += HandleNodeClicked;
             _view.OnBackButtonClicked += HandleBackButtonClicked;
         }
@@ -42,7 +42,7 @@ namespace SpaceInvaders.Scenes.Expedition
                 return;
             }
 
-            _view.Refresh(_model.Expedition.Nodes);
+            _view.Refresh(_model.Expedition.Nodes, _model.Expedition.CurrentNodeId);
         }
 
         private void HandleBackButtonClicked()

@@ -24,7 +24,7 @@ namespace SpaceInvaders.Scenes.Game
             _inputManager.OnAnyKeyPress -= HandleGameStartTrigger;
         }
 
-        private async void HandleGameStartTrigger()
+        private void HandleGameStartTrigger()
         {
             _inputManager.OnAnyKeyPress -= HandleGameStartTrigger;
             

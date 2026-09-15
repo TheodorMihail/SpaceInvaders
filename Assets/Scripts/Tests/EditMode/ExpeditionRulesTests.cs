@@ -2,6 +2,7 @@ using NSubstitute;
 using NUnit.Framework;
 using SpaceInvaders.Project;
 using SpaceInvaders.Scenes.Game;
+using UnityEngine;
 using Zenject;
 
 namespace SpaceInvaders.Tests
@@ -16,8 +17,9 @@ namespace SpaceInvaders.Tests
         private ExpeditionRules _expeditionRules;
         private IExpeditionRunManager _mockExpeditionRunManager;
         private IExpeditionState _mockExpedition;
-        private ITalentManager _mockTalentManager;
         private IEquipmentManager _mockEquipmentManager;
+        private ExpeditionRunDataConfigSO _mockRunConfig;
+        private DropTableConfigSO _mockDropTable;
 
         [SetUp]
         public override void Setup()
@@ -27,14 +29,29 @@ namespace SpaceInvaders.Tests
             _mockExpedition = Substitute.For<IExpeditionState>();
             _mockExpeditionRunManager = Substitute.For<IExpeditionRunManager>();
             _mockExpeditionRunManager.CurrentExpedition.Returns(_mockExpedition);
-            _mockTalentManager = Substitute.For<ITalentManager>();
             _mockEquipmentManager = Substitute.For<IEquipmentManager>();
 
+            _mockDropTable = Substitute.For<DropTableConfigSO>();
+
+            _mockRunConfig = Substitute.For<ExpeditionRunDataConfigSO>();
+            _mockRunConfig.DropTable.Returns(_mockDropTable);
+
+            var mockGameModesRepository = Substitute.For<IGameModesRepository>();
+            mockGameModesRepository.GetRunDataConfig(GameModeTypes.Expedition).Returns(_mockRunConfig);
+
             Container.Bind<IExpeditionRunManager>().FromInstance(_mockExpeditionRunManager);
-            Container.Bind<ITalentManager>().FromInstance(_mockTalentManager);
+            Container.Bind<IGameModesRepository>().FromInstance(mockGameModesRepository);
             Container.Bind<IEquipmentManager>().FromInstance(_mockEquipmentManager);
 
             _expeditionRules = Container.Instantiate<ExpeditionRules>();
+        }
+
+        [TearDown]
+        public override void Teardown()
+        {
+            Object.DestroyImmediate(_mockRunConfig);
+            Object.DestroyImmediate(_mockDropTable);
+            base.Teardown();
         }
 
         [Test]
@@ -52,21 +69,21 @@ namespace SpaceInvaders.Tests
 
         /// <summary>Gear comes from the shop, so kills roll against a table of its own.</summary>
         [Test]
-        public void DropTableType_IsTheExpeditionTable()
+        public void DropTable_ComesFromTheExpeditionRunConfig()
         {
-            Assert.AreEqual(DropTableTypes.Expedition, _expeditionRules.DropTableType);
+            Assert.AreSame(_mockDropTable, _expeditionRules.DropTable);
         }
 
-        /// <summary>The same machinery as Campaign, only against the Expedition profile.</summary>
+        /// <summary>Perks stand in for Campaign's talents; the gear machinery is shared.</summary>
         [Test]
-        public void ApplyProgressionBonuses_AppliesTalentsEquipmentAndTheHealthCarried()
+        public void ApplyProgressionBonuses_AppliesPerksEquipmentAndTheHealthCarried()
         {
             _mockExpedition.RemainingHealthRatio.Returns(0.5f);
             var stats = new ShipStats(new ShipBaseStats());
 
             _expeditionRules.ApplyProgressionBonuses(stats);
 
-            _mockTalentManager.Received(1).ApplyTalentBonuses(stats);
+            _mockExpeditionRunManager.Received(1).ApplyPerkBonuses(stats);
             _mockEquipmentManager.Received(1).ApplyEquipmentBonuses(stats);
             Assert.AreEqual(stats.CurrentMaxHealth / 2, stats.CurrentHealth);
         }

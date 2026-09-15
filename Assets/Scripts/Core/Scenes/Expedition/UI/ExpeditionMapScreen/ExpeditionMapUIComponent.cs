@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using BaseArchitecture.Core;
 using SpaceInvaders.Project;
 using UnityEngine;
+using UnityEngine.UI;
 using Zenject;
 
 namespace SpaceInvaders.Scenes.Expedition
@@ -26,6 +27,7 @@ namespace SpaceInvaders.Scenes.Expedition
     {
         [Inject] private readonly ICustomFactory _factory;
 
+        [SerializeField] private ScrollRect _scrollRect;
         [SerializeField] private RectTransform _content;
         [SerializeField] private ExpeditionNodeUIComponent _nodePrefab;
         [SerializeField] private ExpeditionPathUIComponent _pathPrefab;
@@ -48,7 +50,7 @@ namespace SpaceInvaders.Scenes.Expedition
 
         public event Action<int> OnNodeClicked;
 
-        public void Build(IReadOnlyList<ExpeditionNodeEntry> nodes)
+        public void Build(IReadOnlyList<ExpeditionNodeEntry> nodes, int currentNodeId)
         {
             Clear();
 
@@ -63,11 +65,13 @@ namespace SpaceInvaders.Scenes.Expedition
             // Paths first, so a node is never drawn underneath a link.
             BuildPaths(nodes);
             BuildNodes(nodes);
+
+            ScrollToNode(currentNodeId);
         }
 
-        /// <summary>Updates the existing cells in place. Rebuilding would drop the scroll position, and
-        /// walking the map changes nothing about its shape.</summary>
-        public void Refresh(IReadOnlyList<ExpeditionNodeEntry> nodes)
+        /// <summary>Updates the existing cells in place. Rebuilding would drop the cells for no reason,
+        /// since walking the map changes nothing about its shape.</summary>
+        public void Refresh(IReadOnlyList<ExpeditionNodeEntry> nodes, int currentNodeId)
         {
             foreach (ExpeditionNodeEntry node in nodes)
             {
@@ -76,6 +80,34 @@ namespace SpaceInvaders.Scenes.Expedition
                     component.RefreshState(node);
                 }
             }
+
+            ScrollToNode(currentNodeId);
+        }
+
+        /// <summary>Centres the viewport on where the player stands, so a deep map opens where it is
+        /// being played rather than back at the start.</summary>
+        private void ScrollToNode(int nodeId)
+        {
+            if (_scrollRect == null || _scrollRect.viewport == null
+                || !_nodePositions.TryGetValue(nodeId, out Vector2 nodeLocalPosition))
+            {
+                return;
+            }
+
+            // The screen is laid out the frame it opens, so the rects have to be current before they
+            // are measured.
+            Canvas.ForceUpdateCanvases();
+
+            float viewportWidth = _scrollRect.viewport.rect.width;
+            float scrollableWidth = _content.rect.width - viewportWidth;
+
+            if (scrollableWidth <= 0f)
+            {
+                return;
+            }
+
+            float centeredX = nodeLocalPosition.x - viewportWidth * 0.5f;
+            _scrollRect.horizontalNormalizedPosition = Mathf.Clamp01(centeredX / scrollableWidth);
         }
 
         private void OnDestroy()

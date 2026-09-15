@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using BaseArchitecture.Core;
 using SpaceInvaders.Project;
@@ -28,8 +29,8 @@ namespace SpaceInvaders.Scenes.Game
     {
         [Inject] private readonly IItemsRepository _itemsRepository;
         [Inject] private readonly IPowerupsRepository _powerupsRepository;
-        [Inject] private readonly IDropsRepository _dropsRepository;
         [Inject] private readonly IGameModeManager _gameModeManager;
+        [Inject] private readonly IPlayerManager _playerManager;
 
         public DropCategoryTypes RollKillCategory()
         {
@@ -79,15 +80,38 @@ namespace SpaceInvaders.Scenes.Game
             return true;
         }
 
+        /// <summary>A powerup the ship would gain nothing from is left out of the roll, so unlimited
+        /// ammo never drops for a ship that already has it.</summary>
         public PowerupConfigSO RollPowerup()
         {
-            return GameUtils.RollWeighted(_powerupsRepository.GetAllPowerupConfigs(), candidate => candidate.DropWeight);
+            var candidates = new List<PowerupConfigSO>();
+
+            foreach (PowerupConfigSO config in _powerupsRepository.GetAllPowerupConfigs())
+            {
+                if (!IsRedundant(config))
+                {
+                    candidates.Add(config);
+                }
+            }
+
+            return GameUtils.RollWeighted(candidates, candidate => candidate.DropWeight);
         }
 
-        /// <summary>The running mode names its table, so what drops is authored rather than branched on.</summary>
+        private bool IsRedundant(PowerupConfigSO config)
+        {
+            return config.PowerupType == PowerupTypes.UnlimitedAmmo
+                && (_playerManager.PlayerStats?.HasUnlimitedAmmo ?? false);
+        }
+
+        /// <summary>The running mode points at its table, so what drops is authored rather than
+        /// branched on. A mode with no table authored drops nothing, which is the safe way to be wrong.</summary>
         private IReadOnlyList<DropCategoryWeightDTO> GetCategoryWeights()
         {
-            return _dropsRepository.GetDropCategoryWeights(_gameModeManager.DropTableType);
+            DropTableConfigSO dropTable = _gameModeManager.DropTable;
+
+            return dropTable == null
+                ? Array.Empty<DropCategoryWeightDTO>()
+                : dropTable.CategoryWeights;
         }
 
         private ItemConfigSO RollItemOfRarity(ItemRarityTypes rarity)

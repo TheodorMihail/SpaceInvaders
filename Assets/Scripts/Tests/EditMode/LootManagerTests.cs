@@ -18,7 +18,7 @@ namespace SpaceInvaders.Tests
         private LootManager _lootManager;
         private IItemsRepository _mockItemsRepository;
         private IPowerupsRepository _mockPowerupsRepository;
-        private IDropsRepository _mockDropsRepository;
+        private DropTableConfigSO _mockDropTable;
         private IGameModeManager _mockGameModeManager;
         private IInventoryManager _mockInventoryManager;
         private ISpawnManager _mockSpawnManager;
@@ -52,8 +52,9 @@ namespace SpaceInvaders.Tests
             _mockPowerupsRepository = Substitute.For<IPowerupsRepository>();
             _mockPowerupsRepository.GetAllPowerupConfigs().Returns(_ => _powerupConfigs);
 
-            _mockDropsRepository = Substitute.For<IDropsRepository>();
+            _mockDropTable = Substitute.For<DropTableConfigSO>();
             _mockGameModeManager = Substitute.For<IGameModeManager>();
+            _mockGameModeManager.DropTable.Returns(_mockDropTable);
 
             _mockInventoryManager = Substitute.For<IInventoryManager>();
             _mockSpawnManager = Substitute.For<ISpawnManager>();
@@ -62,9 +63,10 @@ namespace SpaceInvaders.Tests
 
             Container.Bind<IItemsRepository>().FromInstance(_mockItemsRepository);
             Container.Bind<IPowerupsRepository>().FromInstance(_mockPowerupsRepository);
-            Container.Bind<IDropsRepository>().FromInstance(_mockDropsRepository);
-            // The roller asks the running mode which table to use.
+            // The roller takes its table from the running mode.
             Container.Bind<IGameModeManager>().FromInstance(_mockGameModeManager);
+            // The roller skips a powerup the ship would gain nothing from, so it reads the ship.
+            Container.Bind<IPlayerManager>().FromInstance(Substitute.For<IPlayerManager>());
             Container.Bind<IInventoryManager>().FromInstance(_mockInventoryManager);
             Container.Bind<ISpawnManager>().FromInstance(_mockSpawnManager);
             // Required by the debug partial, which is compiled into the Editor build.
@@ -84,6 +86,7 @@ namespace SpaceInvaders.Tests
         {
             _lootManager.Dispose();
             _messageBus.Dispose();
+            Object.DestroyImmediate(_mockDropTable);
             base.Teardown();
         }
 
@@ -129,7 +132,7 @@ namespace SpaceInvaders.Tests
         /// <summary>Stubs the category roll so only the given category can ever win.</summary>
         private void GuaranteeDropCategory(DropCategoryTypes category)
         {
-            _mockDropsRepository.GetDropCategoryWeights(Arg.Any<DropTableTypes>()).Returns(new List<DropCategoryWeightDTO>
+            _mockDropTable.CategoryWeights.Returns(new List<DropCategoryWeightDTO>
             {
                 new(category, 1)
             });
