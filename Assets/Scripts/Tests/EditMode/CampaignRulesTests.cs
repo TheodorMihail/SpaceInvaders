@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using NSubstitute;
 using NUnit.Framework;
 using SpaceInvaders.Project;
@@ -22,8 +23,8 @@ namespace SpaceInvaders.Tests
         private ITalentManager _mockTalentManager;
         private IEquipmentManager _mockEquipmentManager;
         private ICurrencyManager _mockCurrencyManager;
-        private CampaignRunDataConfigSO _mockRunConfig;
-        private DropTableConfigSO _mockDropTable;
+        private CampaignDataConfigSO _mockRunConfig;
+        private readonly List<DropCategoryWeightDTO> _dropWeights = new() { new(DropCategoryTypes.Item, 5) };
 
         [SetUp]
         public override void Setup()
@@ -39,15 +40,14 @@ namespace SpaceInvaders.Tests
             _mockLevelsRepository.GetTwoStarDamageMultiplier().Returns(TwoStarDamageMultiplier);
             _mockLevelProgressManager.MaxLevelNumber.Returns(3);
 
-            _mockDropTable = Substitute.For<DropTableConfigSO>();
 
-            _mockRunConfig = Substitute.For<CampaignRunDataConfigSO>();
-            _mockRunConfig.DropTable.Returns(_mockDropTable);
+            _mockRunConfig = Substitute.For<CampaignDataConfigSO>();
+            _mockRunConfig.DropWeights.Returns(_dropWeights);
             _mockRunConfig.CurrencyPerScore.Returns(1f);
             _mockRunConfig.BossCurrencyBonus.Returns(BossCurrencyBonus);
 
             var mockGameModesRepository = Substitute.For<IGameModesRepository>();
-            mockGameModesRepository.GetRunDataConfig(GameModeTypes.Campaign).Returns(_mockRunConfig);
+            mockGameModesRepository.GetDataConfig(GameModeTypes.Campaign).Returns(_mockRunConfig);
 
             Container.Bind<IGameModesRepository>().FromInstance(mockGameModesRepository);
             Container.Bind<ILevelsRepository>().FromInstance(_mockLevelsRepository);
@@ -63,7 +63,6 @@ namespace SpaceInvaders.Tests
         public override void Teardown()
         {
             Object.DestroyImmediate(_mockRunConfig);
-            Object.DestroyImmediate(_mockDropTable);
             base.Teardown();
         }
 
@@ -81,9 +80,9 @@ namespace SpaceInvaders.Tests
         }
 
         [Test]
-        public void DropTable_ComesFromTheCampaignRunConfig()
+        public void DropWeights_ComeFromTheCampaignDataConfig()
         {
-            Assert.AreSame(_mockDropTable, _campaignRules.DropTable);
+            Assert.AreSame(_dropWeights, _campaignRules.DropWeights);
         }
 
         /// <summary>Only a cleared boss pays the bonus, so dying on one earns the score alone.</summary>

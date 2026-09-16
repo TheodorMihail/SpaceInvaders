@@ -11,6 +11,10 @@ namespace SpaceInvaders.Project
         bool IsMaxLevel(string talentId);
         bool CanAfford(string talentId);
         bool TryPurchaseLevel(string talentId);
+
+        /// <summary>Adds a level without payment. Refused at max, so a grant is never swallowed.</summary>
+        bool TryGrantLevel(string talentId);
+
         void ApplyTalentBonuses(ShipStats stats);
     }
 
@@ -80,14 +84,22 @@ namespace SpaceInvaders.Project
                 return false;
             }
 
-            TalentSaveEntry entry = GetOrCreateTalentEntry(talentId);
-            entry.Level++;
-            SaveData();
+            AddLevel(talentId);
             return true;
         }
 
-        /// <summary>Applies every level bought, one at a time, then refills health since max health
-        /// may have changed.</summary>
+        public bool TryGrantLevel(string talentId)
+        {
+            if (IsMaxLevel(talentId))
+            {
+                return false;
+            }
+
+            AddLevel(talentId);
+            return true;
+        }
+
+        /// <summary>Applies every level owned, then refills health since the maximum may have changed.</summary>
         public void ApplyTalentBonuses(ShipStats stats)
         {
             foreach (TalentConfigSO config in _talentsRepository.GetAllTalentConfigs())
@@ -102,6 +114,13 @@ namespace SpaceInvaders.Project
 
             stats.RefillHealth();
             stats.RefillAmmo();
+        }
+
+        private void AddLevel(string talentId)
+        {
+            TalentSaveEntry entry = GetOrCreateTalentEntry(talentId);
+            entry.Level++;
+            SaveData();
         }
 
         private TalentSaveEntry GetTalent(string talentId)

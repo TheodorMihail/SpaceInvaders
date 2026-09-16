@@ -63,7 +63,7 @@ namespace SpaceInvaders.Project
         bool IsOnFinalLevel { get; }
 
         /// <summary>Cards still to be offered, which the map cannot be walked on until they are.</summary>
-        int PendingPerkRewards { get; }
+        int PendingTalentRewards { get; }
 
         /// <summary>A map pointing at a level that no longer exists cannot be walked to the end.</summary>
         bool HasMissingLevels { get; }
@@ -82,22 +82,21 @@ namespace SpaceInvaders.Project
         ExpeditionRunResultDTO FinishExpedition(ExpeditionRunResultTypes result);
 
         /// <summary>One screen's worth of cards, drawn against the node just cleared.</summary>
-        IReadOnlyList<ExpeditionPerkConfigSO> DrawPerkChoices();
+        IReadOnlyList<TalentConfigSO> DrawTalentChoices();
 
-        void GrantPerk(string perkId);
-        void ApplyPerkBonuses(ShipStats stats);
+        void GrantTalent(string talentId);
     }
 
     /// <summary>
-    /// Owns the live run: its map, where the player stands, and how far they have got. Everything the
-    /// player earns is held by the usual progression managers against the Expedition profile, so this
-    /// stores none of it.
+    /// Owns the live run: its map, where the player stands, and how far they have got. What the player
+    /// earns is held by the progression managers against the Expedition profile, not here.
     /// </summary>
     public partial class ExpeditionRunManager : IExpeditionRunManager, IExpeditionState
     {
         [Inject] private readonly ISaveProfileManager _saveProfileManager;
         [Inject] private readonly IExpeditionMapService _mapService;
-        [Inject] private readonly IExpeditionPerkDrawService _perkDrawService;
+        [Inject] private readonly IExpeditionTalentDrawService _talentDrawService;
+        [Inject] private readonly ITalentManager _talentManager;
         [Inject] private readonly IExpeditionRepository _expeditionRepository;
         [Inject] private readonly IGameModesRepository _gameModesRepository;
         [Inject] private readonly ILevelsRepository _levelsRepository;
@@ -118,7 +117,7 @@ namespace SpaceInvaders.Project
         public bool IsLevelInProgress => _data.RunInProgress != null && _data.RunInProgress.IsLevelInProgress;
         public bool IsOnFinalLevel => IsNodeOfType(GetCurrentNode(), ExpeditionNodeTypes.MegaBoss);
         public bool HasMissingLevels => GetHasMissingLevels();
-        public int PendingPerkRewards => _data.RunInProgress?.PendingPerkRewards ?? 0;
+        public int PendingTalentRewards => _data.RunInProgress?.PendingTalentRewards ?? 0;
 
 
         public void Initialize()
@@ -126,8 +125,6 @@ namespace SpaceInvaders.Project
             _persistenceManager = _saveProfileManager.GetProfile(GameModeTypes.Expedition);
             _data = _persistenceManager.LoadVersioned<ExpeditionRunSaveData>(
                 ExpeditionRunSaveData.SaveKey, ExpeditionRunSaveData.CurrentVersion);
-
-            PrunePerks();
         }
 
         /// <summary>Replaces whatever ran before, so the seed is the only thing the map depends on.</summary>
@@ -197,7 +194,7 @@ namespace SpaceInvaders.Project
 
             StoreStats(result.Stats);
             StoreScrap(result.Score);
-            StorePerkRewards();
+            StoreTalentRewards();
 
             _data.RunInProgress.IsLevelInProgress = false;
             SaveData();
@@ -215,73 +212,26 @@ namespace SpaceInvaders.Project
             return expeditionResult;
         }
 
-        /// <summary>Drawn against the node just cleared, so what a boss offers follows from where the
-        /// player stands rather than from anything carried between screens.</summary>
-        public IReadOnlyList<ExpeditionPerkConfigSO> DrawPerkChoices()
+        /// <summary>Drawn against the node just cleared, so a boss offer follows from where the player
+        /// stands rather than from anything carried between screens.</summary>
+        public IReadOnlyList<TalentConfigSO> DrawTalentChoices()
         {
-            return _perkDrawService.DrawPerks(IsOnBossLevel(), GetOwnedPerkIds());
+            return _talentDrawService.DrawTalents(IsOnBossLevel());
         }
 
-        /// <summary>Spends one pending card. A repeat is kept rather than merged, since picking the
-        /// same perk twice stacks it, and a perk that cannot be resolved spends the card without
-        /// granting anything, so an offer with nothing to draw cannot leave one pending forever.</summary>
-        public void GrantPerk(string perkId)
+        /// <summary>Spends one pending card. A talent that cannot take a level spends it anyway, so an
+        /// offer with nothing to draw cannot leave one pending forever.</summary>
+        public void GrantTalent(string talentId)
         {
-            if (PendingPerkRewards <= 0)
+            if (PendingTalentRewards <= 0)
             {
                 return;
             }
 
-            _data.RunInProgress.PendingPerkRewards--;
-
-            if (_expeditionRepository.ContainsPerkConfig(perkId))
-            {
-                _data.RunInProgress.Perks.Add(new ExpeditionPerkEntry { PerkId = perkId });
-            }
+            _data.RunInProgress.PendingTalentRewards--;
+            _talentManager.TryGrantLevel(talentId);
 
             SaveData();
-        }
-
-        /// <summary>Applied to a ship that was just built, so no perk is ever taken back off one.</summary>
-        public void ApplyPerkBonuses(ShipStats stats)
-        {
-            if (_data.RunInProgress == null)
-            {
-                return;
-            }
-
-            foreach (ExpeditionPerkEntry perk in _data.RunInProgress.Perks)
-            {
-                if (_expeditionRepository.TryGetPerkConfig(perk.PerkId, out ExpeditionPerkConfigSO config))
-                {
-                    config.ApplyTo(stats);
-                }
-            }
-        }
-
-        /// <summary>What the draw needs to keep an unstackable perk from being offered twice.</summary>
-        private HashSet<string> GetOwnedPerkIds()
-        {
-            var ownedPerkIds = new HashSet<string>();
-
-            if (_data.RunInProgress == null)
-            {
-                return ownedPerkIds;
-            }
-
-            foreach (ExpeditionPerkEntry perk in _data.RunInProgress.Perks)
-            {
-                ownedPerkIds.Add(perk.PerkId);
-            }
-
-            return ownedPerkIds;
-        }
-
-        /// <summary>A perk deleted since the expedition was saved is dropped rather than reported: the
-        /// rest of the run is still playable without it.</summary>
-        private void PrunePerks()
-        {
-            _data.RunInProgress?.Perks.RemoveAll(perk => !_expeditionRepository.ContainsPerkConfig(perk.PerkId));
         }
 
         /// <summary>Health carries between nodes as a share, since the maximum changes with progression.</summary>
@@ -299,7 +249,7 @@ namespace SpaceInvaders.Project
         /// on top for a boss.</summary>
         private void StoreScrap(int score)
         {
-            GameModeRunDataConfigSO config = _gameModesRepository.GetRunDataConfig(GameModeTypes.Expedition);
+            GameModeDataConfigSO config = _gameModesRepository.GetDataConfig(GameModeTypes.Expedition);
 
             if (config == null)
             {
@@ -318,13 +268,13 @@ namespace SpaceInvaders.Project
 
         /// <summary>Left pending rather than granted, so the cards can be shown one screen at a time
         /// and still be there if the app closes between them.</summary>
-        private void StorePerkRewards()
+        private void StoreTalentRewards()
         {
-            ExpeditionPerksDataConfigSO config = _expeditionRepository.GetPerksDataConfig();
+            ExpeditionRewardsDataConfigSO config = _expeditionRepository.GetRewardsDataConfig();
 
-            _data.RunInProgress.PendingPerkRewards += IsOnBossLevel()
-                ? config.BossPerkRewardCount
-                : config.PerkRewardCount;
+            _data.RunInProgress.PendingTalentRewards += IsOnBossLevel()
+                ? config.BossTalentRewardCount
+                : config.TalentRewardCount;
         }
 
         /// <summary>The mega boss closes the expedition, so only a regular boss pays out as one.</summary>
@@ -398,7 +348,7 @@ namespace SpaceInvaders.Project
             }
         }
 
-        /// <summary>A run owns its whole profile, so its scrap, perks and gear go with it. Dropped as
+        /// <summary>A run owns its whole profile, so its scrap, talents and gear go with it. Dropped as
         /// one object, so a field added to a run can never be left behind for the next one.</summary>
         private void ClearExpedition()
         {

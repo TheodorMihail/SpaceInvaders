@@ -20,7 +20,7 @@ namespace SpaceInvaders.Scenes.Campaign
             base.Initialize();
             _view.OnTalentPurchaseClicked += OnTalentPurchaseClicked;
             _view.OnBackClicked += OnBackClicked;
-            _view.SetupTalents(_talentsRepository.GetAllTalentConfigs());
+            _view.SetupTalents(_talentsRepository.GetTalentPool(GameModeTypes.Campaign));
         }
 
         public override void Dispose()

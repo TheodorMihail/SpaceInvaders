@@ -17,6 +17,9 @@ namespace SpaceInvaders.Tests
         private const int LevelNodeId = 1;
         private const int ShopNodeId = 2;
         private const int MegaBossNodeId = 3;
+        private const int BossNodeId = 4;
+
+        private const string TalentId = "Damage";
 
         private const string LevelId = "Level 1";
         private const string MegaBossLevelId = "Level 2";
@@ -26,12 +29,13 @@ namespace SpaceInvaders.Tests
         private ExpeditionRunManager _expeditionRunManager;
         private IPersistenceManager _mockPersistenceManager;
         private IExpeditionMapService _mockMapService;
-        private IExpeditionPerkDrawService _mockPerkDrawService;
+        private IExpeditionTalentDrawService _mockTalentDrawService;
+        private ITalentManager _mockTalentManager;
         private ICurrencyManager _mockCurrencyManager;
         private ILevelsRepository _mockLevelsRepository;
         private IGameModeScopedManager _mockModeScopedManager;
-        private ExpeditionRunDataConfigSO _mockRunConfig;
-        private ExpeditionPerksDataConfigSO _mockPerksConfig;
+        private ExpeditionDataConfigSO _mockRunConfig;
+        private ExpeditionRewardsDataConfigSO _mockRewardsConfig;
 
         [SetUp]
         public override void Setup()
@@ -49,17 +53,17 @@ namespace SpaceInvaders.Tests
             _mockMapService = Substitute.For<IExpeditionMapService>();
             _mockMapService.GenerateMap(Arg.Any<int>()).Returns(_ => CreateMap());
 
-            _mockRunConfig = Substitute.For<ExpeditionRunDataConfigSO>();
+            _mockRunConfig = Substitute.For<ExpeditionDataConfigSO>();
             _mockRunConfig.CurrencyPerScore.Returns(ScrapPerScore);
 
             var mockGameModesRepository = Substitute.For<IGameModesRepository>();
-            mockGameModesRepository.GetRunDataConfig(GameModeTypes.Expedition).Returns(_mockRunConfig);
+            mockGameModesRepository.GetDataConfig(GameModeTypes.Expedition).Returns(_mockRunConfig);
             Container.Bind<IGameModesRepository>().FromInstance(mockGameModesRepository);
 
-            _mockPerksConfig = Substitute.For<ExpeditionPerksDataConfigSO>();
+            _mockRewardsConfig = Substitute.For<ExpeditionRewardsDataConfigSO>();
 
             var mockExpeditionRepository = Substitute.For<IExpeditionRepository>();
-            mockExpeditionRepository.GetPerksDataConfig().Returns(_mockPerksConfig);
+            mockExpeditionRepository.GetRewardsDataConfig().Returns(_mockRewardsConfig);
 
             _mockCurrencyManager = Substitute.For<ICurrencyManager>();
 
@@ -68,11 +72,13 @@ namespace SpaceInvaders.Tests
 
             _mockModeScopedManager = Substitute.For<IGameModeScopedManager>();
 
-            _mockPerkDrawService = Substitute.For<IExpeditionPerkDrawService>();
+            _mockTalentDrawService = Substitute.For<IExpeditionTalentDrawService>();
+            _mockTalentManager = Substitute.For<ITalentManager>();
+            Container.Bind<ITalentManager>().FromInstance(_mockTalentManager);
 
             Container.Bind<ISaveProfileManager>().FromInstance(mockSaveProfileManager);
             Container.Bind<IExpeditionMapService>().FromInstance(_mockMapService);
-            Container.Bind<IExpeditionPerkDrawService>().FromInstance(_mockPerkDrawService);
+            Container.Bind<IExpeditionTalentDrawService>().FromInstance(_mockTalentDrawService);
             Container.Bind<IExpeditionRepository>().FromInstance(mockExpeditionRepository);
             Container.Bind<ICurrencyManager>().FromInstance(_mockCurrencyManager);
             Container.Bind<ILevelsRepository>().FromInstance(_mockLevelsRepository);
@@ -87,7 +93,7 @@ namespace SpaceInvaders.Tests
         public override void Teardown()
         {
             Object.DestroyImmediate(_mockRunConfig);
-            Object.DestroyImmediate(_mockPerksConfig);
+            Object.DestroyImmediate(_mockRewardsConfig);
             base.Teardown();
         }
 
@@ -275,7 +281,7 @@ namespace SpaceInvaders.Tests
                     Id = StartNodeId, Depth = 0, Column = 0,
                     NodeType = ExpeditionNodeTypes.Start.ToString(),
                     LevelId = string.Empty,
-                    NextNodeIds = new List<int> { LevelNodeId, ShopNodeId }
+                    NextNodeIds = new List<int> { LevelNodeId, ShopNodeId, BossNodeId }
                 },
                 new()
                 {
@@ -293,12 +299,88 @@ namespace SpaceInvaders.Tests
                 },
                 new()
                 {
+                    Id = BossNodeId, Depth = 1, Column = 2,
+                    NodeType = ExpeditionNodeTypes.Boss.ToString(),
+                    LevelId = LevelId,
+                    NextNodeIds = new List<int> { MegaBossNodeId }
+                },
+                new()
+                {
                     Id = MegaBossNodeId, Depth = 2, Column = 0,
                     NodeType = ExpeditionNodeTypes.MegaBoss.ToString(),
                     LevelId = MegaBossLevelId,
                     NextNodeIds = new List<int>()
                 }
             };
+        }
+
+        /// <summary>Cards are owed by the run, not held by a screen, so closing the app between the
+        /// two a boss gives cannot eat the second.</summary>
+        [Test]
+        public void CompleteCurrentLevel_OnABoss_LeavesTheBossCountPending()
+        {
+            _mockRewardsConfig.TalentRewardCount.Returns(1);
+            _mockRewardsConfig.BossTalentRewardCount.Returns(2);
+
+            _expeditionRunManager.StartNewExpedition();
+            _expeditionRunManager.EnterNode(BossNodeId);
+            _expeditionRunManager.CompleteCurrentLevel(CreateResult(null));
+
+            Assert.AreEqual(2, _expeditionRunManager.CurrentExpedition.PendingTalentRewards);
+        }
+
+        [Test]
+        public void CompleteCurrentLevel_OnANormalLevel_LeavesTheNormalCountPending()
+        {
+            _mockRewardsConfig.TalentRewardCount.Returns(1);
+            _mockRewardsConfig.BossTalentRewardCount.Returns(2);
+
+            _expeditionRunManager.StartNewExpedition();
+            _expeditionRunManager.EnterNode(LevelNodeId);
+            _expeditionRunManager.CompleteCurrentLevel(CreateResult(null));
+
+            Assert.AreEqual(1, _expeditionRunManager.CurrentExpedition.PendingTalentRewards);
+        }
+
+        [Test]
+        public void GrantTalent_SpendsOnePendingCardAndAddsTheLevel()
+        {
+            _mockRewardsConfig.BossTalentRewardCount.Returns(2);
+
+            _expeditionRunManager.StartNewExpedition();
+            _expeditionRunManager.EnterNode(BossNodeId);
+            _expeditionRunManager.CompleteCurrentLevel(CreateResult(null));
+
+            _expeditionRunManager.GrantTalent(TalentId);
+
+            Assert.AreEqual(1, _expeditionRunManager.CurrentExpedition.PendingTalentRewards);
+            _mockTalentManager.Received(1).TryGrantLevel(TalentId);
+        }
+
+        /// <summary>The card is spent either way, so an offer with nothing to draw cannot leave one
+        /// pending forever.</summary>
+        [Test]
+        public void GrantTalent_WithNothingToGrant_StillSpendsTheCard()
+        {
+            _mockRewardsConfig.TalentRewardCount.Returns(1);
+
+            _expeditionRunManager.StartNewExpedition();
+            _expeditionRunManager.EnterNode(LevelNodeId);
+            _expeditionRunManager.CompleteCurrentLevel(CreateResult(null));
+
+            _expeditionRunManager.GrantTalent(null);
+
+            Assert.AreEqual(0, _expeditionRunManager.CurrentExpedition.PendingTalentRewards);
+        }
+
+        [Test]
+        public void GrantTalent_WithNothingPending_AddsNoLevel()
+        {
+            _expeditionRunManager.StartNewExpedition();
+
+            _expeditionRunManager.GrantTalent(TalentId);
+
+            _mockTalentManager.DidNotReceive().TryGrantLevel(Arg.Any<string>());
         }
 
         private static GameSessionResultDTO CreateResult(ShipStats stats, int score = 0)

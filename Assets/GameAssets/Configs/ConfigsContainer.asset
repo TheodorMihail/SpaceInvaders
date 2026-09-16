@@ -18,11 +18,9 @@ MonoBehaviour:
   _powerupsDataConfigSO: {fileID: 11400000, guid: 47bfc17fc4f333030c437cf1383a42ab, type: 2}
   _projectDataConfigSO: {fileID: 11400000, guid: cedfeb2e36062e944a54d57b5fa21f77, type: 2}
   _gameDataConfigSO: {fileID: 11400000, guid: f07291f22c2d401495693a574c819a24, type: 2}
-  _talentsDataConfigSO: {fileID: 11400000, guid: 0066424f87f16d148905cc1f76b9432c, type: 2}
+  _talentRaritiesDataConfigSO: {fileID: 11400000, guid: 0066424f87f16d148905cc1f76b9432c, type: 2}
   _soundsDataConfigSO: {fileID: 11400000, guid: f2aef56594a2c4b44b05dc74f26329f8, type: 2}
   _itemsDataConfigSO: {fileID: 11400000, guid: 56be236a491fb5a4d8fe7ff22880ad91, type: 2}
-  _campaignRunDataConfigSO: {fileID: 11400000, guid: 7c5974f2985a8c54891a8c58eddfd888, type: 2}
+  _campaignDataConfigSO: {fileID: 11400000, guid: 7c5974f2985a8c54891a8c58eddfd888, type: 2}
   _hazardsDataConfigSO: {fileID: 11400000, guid: 9ef5bce37546bcd4dad1f13838d56fd2, type: 2}
-  _expeditionMapDataConfigSO: {fileID: 11400000, guid: 0f56cd3e4f9145148a1efbf660a69d81, type: 2}
-  _expeditionRunDataConfigSO: {fileID: 11400000, guid: 266e059c80d20c441b5c909f90faa7c2, type: 2}
-  _expeditionPerksDataConfigSO: {fileID: 11400000, guid: f2c7412872e467d48a087cef83033e83, type: 2}
+  _expeditionDataConfigSO: {fileID: 11400000, guid: 266e059c80d20c441b5c909f90faa7c2, type: 2}

@@ -18,7 +18,6 @@ namespace SpaceInvaders.Tests
         private LootManager _lootManager;
         private IItemsRepository _mockItemsRepository;
         private IPowerupsRepository _mockPowerupsRepository;
-        private DropTableConfigSO _mockDropTable;
         private IGameModeManager _mockGameModeManager;
         private IInventoryManager _mockInventoryManager;
         private ISpawnManager _mockSpawnManager;
@@ -52,9 +51,7 @@ namespace SpaceInvaders.Tests
             _mockPowerupsRepository = Substitute.For<IPowerupsRepository>();
             _mockPowerupsRepository.GetAllPowerupConfigs().Returns(_ => _powerupConfigs);
 
-            _mockDropTable = Substitute.For<DropTableConfigSO>();
             _mockGameModeManager = Substitute.For<IGameModeManager>();
-            _mockGameModeManager.DropTable.Returns(_mockDropTable);
 
             _mockInventoryManager = Substitute.For<IInventoryManager>();
             _mockSpawnManager = Substitute.For<ISpawnManager>();
@@ -86,7 +83,6 @@ namespace SpaceInvaders.Tests
         {
             _lootManager.Dispose();
             _messageBus.Dispose();
-            Object.DestroyImmediate(_mockDropTable);
             base.Teardown();
         }
 
@@ -132,7 +128,7 @@ namespace SpaceInvaders.Tests
         /// <summary>Stubs the category roll so only the given category can ever win.</summary>
         private void GuaranteeDropCategory(DropCategoryTypes category)
         {
-            _mockDropTable.CategoryWeights.Returns(new List<DropCategoryWeightDTO>
+            _mockGameModeManager.DropWeights.Returns(new List<DropCategoryWeightDTO>
             {
                 new(category, 1)
             });

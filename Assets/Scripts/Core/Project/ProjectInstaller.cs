@@ -51,16 +51,17 @@ namespace SpaceInvaders.Project
             Container.BindInterfacesTo<PowerupsRepository>().AsSingle().WithArguments(_configsContainerSO.PowerupsDataConfigSO);
             Container.BindInterfacesTo<GameModesRepository>().AsSingle().WithArguments(new object[]
             {
-                _configsContainerSO.CampaignRunDataConfigSO, _configsContainerSO.ExpeditionRunDataConfigSO
+                _configsContainerSO.CampaignDataConfigSO, _configsContainerSO.ExpeditionDataConfigSO
             });
             Container.BindInterfacesTo<SoundsRepository>().AsSingle().WithArguments(_configsContainerSO.SoundsDataConfigSO);
-            Container.BindInterfacesTo<TalentsRepository>().AsSingle().WithArguments(_configsContainerSO.TalentsDataConfigSO);
+            Container.BindInterfacesTo<TalentsRepository>().AsSingle().WithArguments(new object[]
+            {
+                _configsContainerSO.CampaignDataConfigSO, _configsContainerSO.ExpeditionDataConfigSO,
+                _configsContainerSO.TalentRaritiesDataConfigSO
+            });
             Container.BindInterfacesTo<ItemsRepository>().AsSingle().WithArguments(_configsContainerSO.ItemsDataConfigSO);
             Container.BindInterfacesTo<HazardsRepository>().AsSingle().WithArguments(_configsContainerSO.HazardsDataConfigSO);
-            Container.BindInterfacesTo<ExpeditionRepository>().AsSingle().WithArguments(new object[]
-            {
-                _configsContainerSO.ExpeditionMapDataConfigSO, _configsContainerSO.ExpeditionPerksDataConfigSO
-            });
+            Container.BindInterfacesTo<ExpeditionRepository>().AsSingle().WithArguments(_configsContainerSO.ExpeditionDataConfigSO);
             Container.BindInterfacesTo<ShipsRepository>().AsSingle().WithArguments(new object[]
            {
                 _configsContainerSO.PlayerDataConfigSO, _configsContainerSO.EnemyDataConfigSO
@@ -107,7 +108,7 @@ namespace SpaceInvaders.Project
             // Concrete: the parent's subcontainer lookup asks for this type, not the interfaces.
             Container.Bind<ExpeditionRunManager>().AsSingle();
             Container.Bind<IExpeditionMapService>().To<ExpeditionMapService>().AsSingle();
-            Container.Bind<IExpeditionPerkDrawService>().To<ExpeditionPerkDrawService>().AsSingle();
+            Container.Bind<IExpeditionTalentDrawService>().To<ExpeditionTalentDrawService>().AsSingle();
         }
     }
 

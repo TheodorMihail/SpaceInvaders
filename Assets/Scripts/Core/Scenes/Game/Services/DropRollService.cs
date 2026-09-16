@@ -80,8 +80,7 @@ namespace SpaceInvaders.Scenes.Game
             return true;
         }
 
-        /// <summary>A powerup the ship would gain nothing from is left out of the roll, so unlimited
-        /// ammo never drops for a ship that already has it.</summary>
+        /// <summary>A powerup the ship would gain nothing from is left out of the roll.</summary>
         public PowerupConfigSO RollPowerup()
         {
             var candidates = new List<PowerupConfigSO>();
@@ -103,15 +102,11 @@ namespace SpaceInvaders.Scenes.Game
                 && (_playerManager.PlayerStats?.HasUnlimitedAmmo ?? false);
         }
 
-        /// <summary>The running mode points at its table, so what drops is authored rather than
-        /// branched on. A mode with no table authored drops nothing, which is the safe way to be wrong.</summary>
+        /// <summary>The running mode carries its own weights, so what drops is authored rather than
+        /// branched on. A mode that authored none drops nothing.</summary>
         private IReadOnlyList<DropCategoryWeightDTO> GetCategoryWeights()
         {
-            DropTableConfigSO dropTable = _gameModeManager.DropTable;
-
-            return dropTable == null
-                ? Array.Empty<DropCategoryWeightDTO>()
-                : dropTable.CategoryWeights;
+            return _gameModeManager.DropWeights ?? Array.Empty<DropCategoryWeightDTO>();
         }
 
         private ItemConfigSO RollItemOfRarity(ItemRarityTypes rarity)

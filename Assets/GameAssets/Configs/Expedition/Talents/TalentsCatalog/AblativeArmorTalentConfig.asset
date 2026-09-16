@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72428aea5974ab543a312b312090f474, type: 3}
+  m_Name: AblativeArmorTalentConfig
+  m_EditorClassIdentifier:
+  _talentId: AblativeArmor
+  _displayName: Ablative Armor
+  _description:
+  _rarity: 1
+  _icon: {fileID: 0}
+  _levels:
+  - _cost: 0
+    _modifiers:
+    - _statType: 0
+      _valueType: 0
+      _value: 0.3
+    - _statType: 8
+      _valueType: 0
+      _value: 0.2
+    _effect: 0
+    _extraProjectileCount: 0
+    _spreadAngleDegrees: 0
+  - _cost: 0
+    _modifiers:
+    - _statType: 0
+      _valueType: 0
+      _value: 0.3
+    - _statType: 8
+      _valueType: 0
+      _value: 0.2
+    _effect: 0
+    _extraProjectileCount: 0
+    _spreadAngleDegrees: 0

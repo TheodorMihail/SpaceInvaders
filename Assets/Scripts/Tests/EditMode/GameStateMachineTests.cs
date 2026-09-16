@@ -83,14 +83,21 @@ namespace SpaceInvaders.Tests
             _mockPlayingState.Received(1).OnUpdate();
         }
 
+        /// <summary>The result the level ended with rides the transition, so the screen reads what
+        /// happened rather than asking for it.</summary>
         [Test]
-        public void OnPlayingStateFinished_WithGameOver_TransitionsToGameEndState()
+        public void OnPlayingStateFinished_WithGameOver_TransitionsToGameEndStateWithTheResult()
         {
+            var sessionResult = new GameSessionResultDTO(
+                new GameSessionDTO(GameModeTypes.Campaign, 1, "Level 1"), GameplayStateResultTypes.GameOver);
+
             _gameStateMachine.Initialize();
 
-            _mockPlayingState.OnStateFinished += Raise.Event<Action<(GameStateTypes, object[])>>((GameStateTypes.Playing, new object[] { GameplayStateResultTypes.GameOver }));
+            _mockPlayingState.OnStateFinished += Raise.Event<Action<(GameStateTypes, object[])>>(
+                (GameStateTypes.Playing, new object[] { GameplayStateResultTypes.GameOver, sessionResult }));
 
-            _mockGameEndState.Received(1).OnEnter(Arg.Is<object[]>(args => args.Length > 0 && ((GameSessionResultDTO)args[0]).Result == GameplayStateResultTypes.GameOver));
+            _mockGameEndState.Received(1).OnEnter(Arg.Is<object[]>(
+                args => args.Length > 0 && ((GameSessionResultDTO)args[0]).Result == GameplayStateResultTypes.GameOver));
         }
 
         [Test]

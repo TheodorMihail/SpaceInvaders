@@ -27,6 +27,7 @@ namespace SpaceInvaders.Project
             var random = new Random(seed);
             var rows = BuildRows(config, random);
 
+            EnsureBossExists(config, rows, random);
             LinkRows(config, rows, random);
             AssignLevels(config, rows, random);
 
@@ -37,6 +38,67 @@ namespace SpaceInvaders.Project
             }
 
             return nodes;
+        }
+
+        /// <summary>
+        /// A map the rolls left without a boss would skip a whole kind of node and the rewards that
+        /// come with it, so one is planted in the back half. Only ever fires when nothing was authored
+        /// and nothing rolled, so a map that already has a boss is untouched.
+        /// </summary>
+        private static void EnsureBossExists(ExpeditionMapDataConfigSO config,
+            List<List<ExpeditionNodeEntry>> rows, Random random)
+        {
+            if (HasBoss(rows))
+            {
+                return;
+            }
+
+            List<int> candidateDepths = GetEligibleBossDepths(config, rows.Count);
+
+            if (candidateDepths.Count == 0)
+            {
+                return;
+            }
+
+            List<ExpeditionNodeEntry> row = rows[candidateDepths[random.Next(candidateDepths.Count)]];
+            row[random.Next(row.Count)].NodeType = ExpeditionNodeTypes.Boss.ToString();
+        }
+
+        private static bool HasBoss(List<List<ExpeditionNodeEntry>> rows)
+        {
+            foreach (List<ExpeditionNodeEntry> row in rows)
+            {
+                foreach (ExpeditionNodeEntry node in row)
+                {
+                    if (node.NodeType == ExpeditionNodeTypes.Boss.ToString())
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>Every depth a boss is allowed at, narrowed to the back half where there is one: a
+        /// boss late is a wall to climb, a boss early is just a hard second level.</summary>
+        private static List<int> GetEligibleBossDepths(ExpeditionMapDataConfigSO config, int depth)
+        {
+            var allowed = new List<int>();
+            var backHalf = new List<int>();
+
+            // The mega boss owns the last row and nothing may sit a second boss against it.
+            for (int rowDepth = config.MinBossDepth; rowDepth <= depth - 3; rowDepth++)
+            {
+                allowed.Add(rowDepth);
+
+                if (rowDepth >= depth / 2)
+                {
+                    backHalf.Add(rowDepth);
+                }
+            }
+
+            return backHalf.Count > 0 ? backHalf : allowed;
         }
 
         /// <summary>The start and mega boss rows hold one node; the rest are a random width.</summary>

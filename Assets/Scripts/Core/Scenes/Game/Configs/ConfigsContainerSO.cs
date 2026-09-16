@@ -1,5 +1,4 @@
 using SpaceInvaders.Project;
-using SpaceInvaders.Scenes.Expedition;
 using UnityEngine;
 
 namespace SpaceInvaders.Scenes.Game
@@ -7,35 +6,43 @@ namespace SpaceInvaders.Scenes.Game
     [CreateAssetMenu(fileName = "ConfigsContainer", menuName = "SpaceInvaders/Configs Container")]
     public class ConfigsContainerSO : ScriptableObject
     {
-        [Header("Configs")]
+        [Header("Project")]
+        [SerializeField] private ProjectDataConfigSO _projectDataConfigSO;
+        [SerializeField] private SoundsDataConfigSO _soundsDataConfigSO;
+
+        [Header("Game Modes")]
+        [SerializeField] private CampaignDataConfigSO _campaignDataConfigSO;
+        [SerializeField] private ExpeditionDataConfigSO _expeditionDataConfigSO;
+
+        [Header("Gameplay")]
+        [SerializeField] private GameDataConfigSO _gameDataConfigSO;
         [SerializeField] private LevelsDataConfigSO _levelsDataConfigSO;
+        [SerializeField] private PowerupsDataConfigSO _powerupsDataConfigSO;
+        [SerializeField] private HazardsDataConfigSO _hazardsDataConfigSO;
+
+        [Header("Ships")]
         [SerializeField] private PlayerDataConfigSO _playerDataConfigSO;
         [SerializeField] private EnemyDataConfigSO _enemyDataConfigSO;
-        [SerializeField] private PowerupsDataConfigSO _powerupsDataConfigSO;
-        [SerializeField] private ProjectDataConfigSO _projectDataConfigSO;
-        [SerializeField] private GameDataConfigSO _gameDataConfigSO;
-        [SerializeField] private TalentsDataConfigSO _talentsDataConfigSO;
-        [SerializeField] private SoundsDataConfigSO _soundsDataConfigSO;
-        [SerializeField] private ItemsDataConfigSO _itemsDataConfigSO;
-        [SerializeField] private CampaignRunDataConfigSO _campaignRunDataConfigSO;
-        [SerializeField] private HazardsDataConfigSO _hazardsDataConfigSO;
-        [SerializeField] private ExpeditionMapDataConfigSO _expeditionMapDataConfigSO;
-        [SerializeField] private ExpeditionRunDataConfigSO _expeditionRunDataConfigSO;
-        [SerializeField] private ExpeditionPerksDataConfigSO _expeditionPerksDataConfigSO;
 
+        [Header("Progression")]
+        [SerializeField] private ItemsDataConfigSO _itemsDataConfigSO;
+        [SerializeField] private TalentRaritiesDataConfigSO _talentRaritiesDataConfigSO;
+
+        public ProjectDataConfigSO ProjectDataConfigSO => _projectDataConfigSO;
+        public SoundsDataConfigSO SoundsDataConfigSO => _soundsDataConfigSO;
+
+        public CampaignDataConfigSO CampaignDataConfigSO => _campaignDataConfigSO;
+        public ExpeditionDataConfigSO ExpeditionDataConfigSO => _expeditionDataConfigSO;
+
+        public GameDataConfigSO GameDataConfigSO => _gameDataConfigSO;
         public LevelsDataConfigSO LevelsDataConfigSO => _levelsDataConfigSO;
+        public PowerupsDataConfigSO PowerupsDataConfigSO => _powerupsDataConfigSO;
+        public HazardsDataConfigSO HazardsDataConfigSO => _hazardsDataConfigSO;
+
         public PlayerDataConfigSO PlayerDataConfigSO => _playerDataConfigSO;
         public EnemyDataConfigSO EnemyDataConfigSO => _enemyDataConfigSO;
-        public PowerupsDataConfigSO PowerupsDataConfigSO => _powerupsDataConfigSO;
-        public ProjectDataConfigSO ProjectDataConfigSO => _projectDataConfigSO;
-        public GameDataConfigSO GameDataConfigSO => _gameDataConfigSO;
-        public TalentsDataConfigSO TalentsDataConfigSO => _talentsDataConfigSO;
-        public SoundsDataConfigSO SoundsDataConfigSO => _soundsDataConfigSO;
+
         public ItemsDataConfigSO ItemsDataConfigSO => _itemsDataConfigSO;
-        public CampaignRunDataConfigSO CampaignRunDataConfigSO => _campaignRunDataConfigSO;
-        public HazardsDataConfigSO HazardsDataConfigSO => _hazardsDataConfigSO;
-        public ExpeditionMapDataConfigSO ExpeditionMapDataConfigSO => _expeditionMapDataConfigSO;
-        public ExpeditionRunDataConfigSO ExpeditionRunDataConfigSO => _expeditionRunDataConfigSO;
-        public ExpeditionPerksDataConfigSO ExpeditionPerksDataConfigSO => _expeditionPerksDataConfigSO;
+        public TalentRaritiesDataConfigSO TalentRaritiesDataConfigSO => _talentRaritiesDataConfigSO;
     }
 }

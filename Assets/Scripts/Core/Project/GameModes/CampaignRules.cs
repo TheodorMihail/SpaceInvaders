@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using SpaceInvaders.Scenes.Game;
 using UnityEngine;
 using Zenject;
@@ -19,7 +20,7 @@ namespace SpaceInvaders.Project
 
         public GameModeTypes Mode => GameModeTypes.Campaign;
         public SceneTypes HubScene => SceneTypes.Campaign;
-        public DropTableConfigSO DropTable => _gameModesRepository.GetRunDataConfig(Mode)?.DropTable;
+        public IReadOnlyList<DropCategoryWeightDTO> DropWeights => _gameModesRepository.GetDataConfig(Mode)?.DropWeights;
         public bool CanReplayLevel => true;
 
         public void ApplyProgressionBonuses(ShipStats stats)
@@ -54,7 +55,7 @@ namespace SpaceInvaders.Project
 
         private void BankCurrency(int score, bool isBossLevel)
         {
-            GameModeRunDataConfigSO runDataConfig = _gameModesRepository.GetRunDataConfig(Mode);
+            GameModeDataConfigSO runDataConfig = _gameModesRepository.GetDataConfig(Mode);
 
             if (runDataConfig == null)
             {

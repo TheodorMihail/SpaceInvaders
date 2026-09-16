@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using BaseArchitecture.Core;
-using TMPro;
 using UnityEngine;
 
 namespace SpaceInvaders.Scenes.Expedition
@@ -9,29 +8,28 @@ namespace SpaceInvaders.Scenes.Expedition
     [AddressablePath("Screens/ExpeditionRewardScreenView")]
     public class ExpeditionRewardScreenView : View
     {
-        [SerializeField] private ExpeditionPerkOfferUIComponent _offer;
+        [SerializeField] private ExpeditionTalentOfferUIComponent _offer;
 
+        public event Action<string> OnTalentClicked;
 
-        public event Action<string> OnPerkClicked;
-
-        public void Initialize(IEnumerable<(ExpeditionPerkConfigSO perk, ExpeditionPerkRarityConfigSO rarity)> choices)
+        public void Initialize(IEnumerable<ExpeditionTalentOfferDTO> offers)
         {
-            _offer.Build(choices);
+            _offer.Build(offers);
         }
 
         private void Awake()
         {
-            _offer.OnPerkClicked += HandlePerkClicked;
+            _offer.OnTalentClicked += HandleTalentClicked;
         }
 
         private void OnDestroy()
         {
-            _offer.OnPerkClicked -= HandlePerkClicked;
+            _offer.OnTalentClicked -= HandleTalentClicked;
         }
 
-        private void HandlePerkClicked(string perkId)
+        private void HandleTalentClicked(string talentId)
         {
-            OnPerkClicked?.Invoke(perkId);
+            OnTalentClicked?.Invoke(talentId);
         }
     }
 }

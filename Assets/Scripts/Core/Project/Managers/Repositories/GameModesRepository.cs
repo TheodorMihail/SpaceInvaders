@@ -5,23 +5,23 @@ namespace SpaceInvaders.Project
 {
     public interface IGameModesRepository
     {
-        GameModeRunDataConfigSO GetRunDataConfig(GameModeTypes mode);
+        GameModeDataConfigSO GetDataConfig(GameModeTypes mode);
     }
 
     public class GameModesRepository : Repository, IGameModesRepository
     {
-        public GameModesRepository(CampaignRunDataConfigSO campaignRunDataConfigSO,
-            ExpeditionRunDataConfigSO expeditionRunDataConfigSO)
+        public GameModesRepository(CampaignDataConfigSO campaignDataConfigSO,
+            ExpeditionDataConfigSO expeditionDataConfigSO)
         {
             // Added as the base type: buckets key on the generic argument, so the concrete types
             // would otherwise land in buckets nothing reads.
-            AddObject<GameModeRunDataConfigSO>(campaignRunDataConfigSO);
-            AddObject<GameModeRunDataConfigSO>(expeditionRunDataConfigSO);
+            AddObject<GameModeDataConfigSO>(campaignDataConfigSO);
+            AddObject<GameModeDataConfigSO>(expeditionDataConfigSO);
         }
 
-        public GameModeRunDataConfigSO GetRunDataConfig(GameModeTypes mode)
+        public GameModeDataConfigSO GetDataConfig(GameModeTypes mode)
         {
-            TryGet(mode.ToString(), out GameModeRunDataConfigSO config);
+            TryGet(mode.ToString(), out GameModeDataConfigSO config);
             return config;
         }
     }

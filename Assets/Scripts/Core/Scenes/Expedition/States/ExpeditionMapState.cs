@@ -38,7 +38,7 @@ namespace SpaceInvaders.Scenes.Expedition
         /// reward cannot be walked past.</summary>
         private async UniTask ShowPendingRewards()
         {
-            while ((_expeditionRunManager.CurrentExpedition?.PendingPerkRewards ?? 0) > 0)
+            while ((_expeditionRunManager.CurrentExpedition?.PendingTalentRewards ?? 0) > 0)
             {
                 await _uiManager.ShowScreen<ExpeditionRewardScreen>();
             }

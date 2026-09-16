@@ -9,7 +9,7 @@ namespace SpaceInvaders.Project
     {
         GameModeTypes CurrentMode { get; }
         SceneTypes HubScene { get; }
-        DropTableConfigSO DropTable { get; }
+        IReadOnlyList<DropCategoryWeightDTO> DropWeights { get; }
         bool CanReplayLevel { get; }
 
         /// <summary>Called once on entering a mode's hub or the Game scene. The mode never changes
@@ -42,7 +42,7 @@ namespace SpaceInvaders.Project
         public GameModeTypes CurrentMode { get; private set; }
 
         public SceneTypes HubScene => _activeRules?.HubScene ?? SceneTypes.MainMenu;
-        public DropTableConfigSO DropTable => _activeRules?.DropTable;
+        public IReadOnlyList<DropCategoryWeightDTO> DropWeights => _activeRules?.DropWeights;
         public bool CanReplayLevel => _activeRules?.CanReplayLevel ?? true;
 
         /// <summary>Resolved once per mode change, so no call has to search the list.</summary>

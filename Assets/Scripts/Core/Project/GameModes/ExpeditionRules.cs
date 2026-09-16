@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using SpaceInvaders.Scenes.Game;
 using Zenject;
 
@@ -11,13 +12,14 @@ namespace SpaceInvaders.Project
     {
         [Inject] private readonly IExpeditionRunManager _expeditionRunManager;
         [Inject] private readonly IGameModesRepository _gameModesRepository;
+        [Inject] private readonly ITalentManager _talentManager;
         [Inject] private readonly IEquipmentManager _equipmentManager;
 
         public GameModeTypes Mode => GameModeTypes.Expedition;
         public SceneTypes HubScene => SceneTypes.Expedition;
 
-        /// <summary>Gear comes from the shop, so the table this points at drops no items.</summary>
-        public DropTableConfigSO DropTable => _gameModesRepository.GetRunDataConfig(Mode)?.DropTable;
+        /// <summary>Gear comes from the shop, so these weights drop no items.</summary>
+        public IReadOnlyList<DropCategoryWeightDTO> DropWeights => _gameModesRepository.GetDataConfig(Mode)?.DropWeights;
 
         /// <summary>A node is consumed the moment it is entered, so there is nothing to replay.</summary>
         public bool CanReplayLevel => false;
@@ -25,7 +27,7 @@ namespace SpaceInvaders.Project
         /// <summary>Carried health is set after the bonuses, which decide the maximum.</summary>
         public void ApplyProgressionBonuses(ShipStats stats)
         {
-            _expeditionRunManager.ApplyPerkBonuses(stats);
+            _talentManager.ApplyTalentBonuses(stats);
             _equipmentManager.ApplyEquipmentBonuses(stats);
 
             stats.SetHealthRatio(_expeditionRunManager.CurrentExpedition?.RemainingHealthRatio ?? 1f);

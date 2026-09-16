@@ -1,6 +1,6 @@
 using System.IO;
 using SpaceInvaders.Project;
-using SpaceInvaders.Scenes.Expedition;
+using SpaceInvaders.Scenes.Game;
 using UnityEditor;
 using UnityEngine;
 
@@ -22,10 +22,10 @@ namespace SpaceInvaders.Editor
             CreateConfig<SoundConfigSO>("SoundConfig");
         }
 
-        [MenuItem("Assets/Create/SpaceInvaders/Expedition/New Perk Config %#e")]
-        private static void CreateExpeditionPerkConfig()
+        [MenuItem("Assets/Create/SpaceInvaders/Talents/New Talent Config %#e")]
+        private static void CreateTalentConfig()
         {
-            CreateConfig<ExpeditionPerkConfigSO>("ExpeditionPerkConfig");
+            CreateConfig<TalentConfigSO>("TalentConfig");
         }
 
         private static void CreateConfig<T>(string fileName) where T : ScriptableObject

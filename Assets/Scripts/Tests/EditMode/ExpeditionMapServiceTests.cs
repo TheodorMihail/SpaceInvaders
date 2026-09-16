@@ -360,6 +360,59 @@ namespace SpaceInvaders.Tests
             });
         }
 
+        /// <summary>A run with no boss at all would skip a whole kind of node and the rewards behind
+        /// it, whatever the weights happened to roll.</summary>
+        [Test]
+        public void GenerateMap_AlwaysPlacesAtLeastOneBoss()
+        {
+            ForEachSampledMap(nodes =>
+            {
+                Assert.IsTrue(ContainsType(nodes, ExpeditionNodeTypes.Boss), "A map came out with no boss.");
+            });
+        }
+
+        /// <summary>A planted boss still obeys the rules a rolled one does, so it never lands on the
+        /// opening rows or against the mega boss.</summary>
+        [Test]
+        public void GenerateMap_WithNoBossWeightOrAuthoredDepth_PlantsOneInTheBackHalf()
+        {
+            _mockConfig.BossDepths.Returns(new List<int>());
+            _mockConfig.NodeTypeWeights.Returns(new List<ExpeditionNodeWeightDTO>
+            {
+                new(ExpeditionNodeTypes.Normal, 1)
+            });
+
+            ForEachSampledMap(nodes =>
+            {
+                List<ExpeditionNodeEntry> bosses = GetAllOfType(nodes, ExpeditionNodeTypes.Boss);
+
+                Assert.AreEqual(1, bosses.Count, "Exactly one boss should be planted.");
+                Assert.GreaterOrEqual(bosses[0].Depth, Depth / 2, "The planted boss should sit in the back half.");
+                Assert.LessOrEqual(bosses[0].Depth, Depth - 3, "The planted boss should leave the mega boss a gap.");
+            });
+        }
+
+        private static bool ContainsType(List<ExpeditionNodeEntry> nodes, ExpeditionNodeTypes nodeType)
+        {
+            return GetAllOfType(nodes, nodeType).Count > 0;
+        }
+
+        private static List<ExpeditionNodeEntry> GetAllOfType(List<ExpeditionNodeEntry> nodes,
+            ExpeditionNodeTypes nodeType)
+        {
+            var found = new List<ExpeditionNodeEntry>();
+
+            foreach (ExpeditionNodeEntry node in nodes)
+            {
+                if (node.NodeType == nodeType.ToString())
+                {
+                    found.Add(node);
+                }
+            }
+
+            return found;
+        }
+
         private void ForEachSampledMap(System.Action<List<ExpeditionNodeEntry>> assert)
         {
             for (int seed = 0; seed < SeedSampleCount; seed++)
