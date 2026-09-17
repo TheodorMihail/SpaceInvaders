@@ -72,7 +72,7 @@ MonoBehaviour:
   m_ChildAlignment: 1
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 200, y: 294.64276}
+  m_CellSize: {x: 206.24992, y: 294.64276}
   m_Spacing: {x: 30, y: 30}
   m_Constraint: 1
   m_ConstraintCount: 5
@@ -824,18 +824,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 25377915951081801}
     m_Modifications:
-    - target: {fileID: 3985431321630963903, guid: 385c2dbfe7d3af246bfc1a1eda6cfde9, type: 3}
-      propertyPath: m_AnchorMin.x
-      value: 0.08838698
-      objectReference: {fileID: 0}
-    - target: {fileID: 3985431321630963903, guid: 385c2dbfe7d3af246bfc1a1eda6cfde9, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: -0.0000019073486
-      objectReference: {fileID: 0}
-    - target: {fileID: 3985431321630963903, guid: 385c2dbfe7d3af246bfc1a1eda6cfde9, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 4182647969689596222, guid: 385c2dbfe7d3af246bfc1a1eda6cfde9, type: 3}
       propertyPath: m_Name
       value: CurrencyContainer
@@ -850,19 +838,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4642349108487919879, guid: 385c2dbfe7d3af246bfc1a1eda6cfde9, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0.7989967
+      value: 0.8018229
       objectReference: {fileID: 0}
     - target: {fileID: 4642349108487919879, guid: 385c2dbfe7d3af246bfc1a1eda6cfde9, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0.75600004
+      value: 0.75555557
       objectReference: {fileID: 0}
     - target: {fileID: 4642349108487919879, guid: 385c2dbfe7d3af246bfc1a1eda6cfde9, type: 3}
       propertyPath: m_AnchorMin.x
-      value: 0.6941286
+      value: 0.6716145
       objectReference: {fileID: 0}
     - target: {fileID: 4642349108487919879, guid: 385c2dbfe7d3af246bfc1a1eda6cfde9, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0.688
+      value: 0.68796295
       objectReference: {fileID: 0}
     - target: {fileID: 4642349108487919879, guid: 385c2dbfe7d3af246bfc1a1eda6cfde9, type: 3}
       propertyPath: m_SizeDelta.x

@@ -1,11 +1,10 @@
 using System.Collections.Generic;
 using System.Text;
 using BaseArchitecture.Core;
-using SpaceInvaders.Project;
 using SpaceInvaders.Scenes.Game;
 using Zenject;
 
-namespace SpaceInvaders.Scenes.Campaign
+namespace SpaceInvaders.Project
 {
     public class InventoryModel : Model
     {

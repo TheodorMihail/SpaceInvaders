@@ -16,8 +16,7 @@ namespace SpaceInvaders.Scenes.Expedition
 
         public int RepairCost => _expeditionRunManager.CurrentExpedition.RepairCost;
 
-        /// <summary>Nothing to buy at full health, which is what leaves the button reading as done
-        /// rather than as unaffordable.</summary>
+        /// <summary>Tells a whole ship from an unaffordable one, which the button reads differently.</summary>
         public bool NeedsRepair => RepairCost > 0;
 
         public bool CanAffordRepair => NeedsRepair && RepairCost <= Currency;

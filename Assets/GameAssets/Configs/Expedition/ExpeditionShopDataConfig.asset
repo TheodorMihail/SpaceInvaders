@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8f79d48b097843d8b35cbfaa05052260, type: 3}
   m_Name: ExpeditionShopDataConfig
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   _offerCount: 6
   _rarities:
   - _rarity: 0
@@ -22,5 +22,5 @@ MonoBehaviour:
     _stockWeight: 3
   - _rarity: 2
     _price: 700
-    _stockWeight: 2
+    _stockWeight: 1
   _scrapPerHealthPercent: 3

@@ -150,11 +150,8 @@ namespace SpaceInvaders.Scenes.Game
             }
         }
 
-        /// <summary>
-        /// Applied as the ship is registered, the one path both a wave and a reinforcement come
-        /// through, and before anything reads the stats. Health is refilled afterwards, since raising
-        /// the maximum leaves the current value behind. Stats are built per spawn, so nothing is reverted.
-        /// </summary>
+        /// <summary>Applied on registration, the one path a wave and a reinforcement share. Refilled
+        /// afterwards, since raising the maximum leaves the current value behind.</summary>
         private void ApplyDifficulty(IEnemySpaceship enemy)
         {
             if (_enemyStatBonus <= 0f || enemy.Stats == null)

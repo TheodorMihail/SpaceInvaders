@@ -25,8 +25,8 @@ namespace SpaceInvaders.Scenes.Expedition
         {
         }
 
-        /// <summary>Both what just happened and where it happened arrive as scene parameters, since
-        /// nothing is left on disk to tell an expedition being resumed from one being walked back into.</summary>
+        /// <summary>What just happened and where it came from both ride the transition, since nothing
+        /// on disk tells an expedition being resumed from one being walked back into.</summary>
         public override void Initialize()
         {
             // Before any screen reads progression, so it reads this mode's profile.

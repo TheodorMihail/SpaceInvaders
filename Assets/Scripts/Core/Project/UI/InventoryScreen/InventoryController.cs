@@ -1,9 +1,8 @@
 using BaseArchitecture.Core;
-using SpaceInvaders.Project;
 using UnityEngine;
 using Zenject;
 
-namespace SpaceInvaders.Scenes.Campaign
+namespace SpaceInvaders.Project
 {
     public class InventoryController : Controller<InventoryScreen, InventoryModel, InventoryView>
     {

@@ -43,6 +43,8 @@ namespace SpaceInvaders.Scenes.Expedition
             ShowLobbyScreen();
         }
 
+        /// <summary>Mutual recursion rather than a navigation stack, matching the menu and Campaign
+        /// hubs: only leaving the lobby finishes this.</summary>
         private async void ShowLobbyScreen()
         {
             var parameters = new ExpeditionLobbyScreen.ExpeditionLobbyScreenParams
@@ -50,15 +52,25 @@ namespace SpaceInvaders.Scenes.Expedition
                 HasActiveExpedition = _expeditionRunManager.CurrentExpedition != null
             };
 
-            var result = await _uiManager.ShowScreen<ExpeditionLobbyScreen, ExpeditionLobbyScreen.ExpeditionLobbyScreenParams, 
+            var result = await _uiManager.ShowScreen<ExpeditionLobbyScreen, ExpeditionLobbyScreen.ExpeditionLobbyScreenParams,
                     ExpeditionLobbyScreen.ExpeditionLobbyScreenResult>(parameters);
 
-            if (result.Result == ExpeditionLobbyScreen.ResultTypes.NewRun)
+            switch (result.Result)
             {
-                _expeditionRunManager.StartNewExpedition();
-            }
+                case ExpeditionLobbyScreen.ResultTypes.OpenInventory:
+                    await _uiManager.ShowScreen<InventoryScreen>();
+                    ShowLobbyScreen();
+                    break;
 
-            FinishState(result);
+                case ExpeditionLobbyScreen.ResultTypes.NewRun:
+                    _expeditionRunManager.StartNewExpedition();
+                    FinishState(result);
+                    break;
+
+                default:
+                    FinishState(result);
+                    break;
+            }
         }
     }
 }

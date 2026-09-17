@@ -15,6 +15,7 @@ namespace SpaceInvaders.Scenes.Expedition
             _view.Initialize(_model.HasActiveExpedition);
             _view.OnContinueButtonClicked += HandleContinueButtonClicked;
             _view.OnNewRunButtonClicked += HandleNewRunButtonClicked;
+            _view.OnInventoryButtonClicked += HandleInventoryButtonClicked;
             _view.OnBackButtonClicked += HandleBackButtonClicked;
         }
 
@@ -22,6 +23,7 @@ namespace SpaceInvaders.Scenes.Expedition
         {
             _view.OnContinueButtonClicked -= HandleContinueButtonClicked;
             _view.OnNewRunButtonClicked -= HandleNewRunButtonClicked;
+            _view.OnInventoryButtonClicked -= HandleInventoryButtonClicked;
             _view.OnBackButtonClicked -= HandleBackButtonClicked;
             base.Dispose();
         }
@@ -39,6 +41,14 @@ namespace SpaceInvaders.Scenes.Expedition
             CloseScreenWithResult(new ExpeditionLobbyScreen.ExpeditionLobbyScreenResult
             {
                 Result = ExpeditionLobbyScreen.ResultTypes.NewRun
+            });
+        }
+
+        private void HandleInventoryButtonClicked()
+        {
+            CloseScreenWithResult(new ExpeditionLobbyScreen.ExpeditionLobbyScreenResult
+            {
+                Result = ExpeditionLobbyScreen.ResultTypes.OpenInventory
             });
         }
 

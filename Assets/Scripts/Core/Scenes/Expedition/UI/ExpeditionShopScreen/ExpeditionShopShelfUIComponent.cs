@@ -44,8 +44,7 @@ namespace SpaceInvaders.Scenes.Expedition
             }
         }
 
-        /// <summary>Every cell is re-read after a purchase, since the balance gating them all has just
-        /// changed. A shelf holding none of them simply does nothing.</summary>
+        /// <summary>Re-read after a purchase, since the balance gating every cell has just changed.</summary>
         public void RefreshAffordability(Func<string, bool> isAffordable)
         {
             foreach (KeyValuePair<string, ExpeditionShopOfferUIComponent> cell in _cells)

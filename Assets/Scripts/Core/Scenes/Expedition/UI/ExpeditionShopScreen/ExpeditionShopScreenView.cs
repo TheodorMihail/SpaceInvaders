@@ -97,8 +97,7 @@ namespace SpaceInvaders.Scenes.Expedition
             RefreshAffordability();
         }
 
-        /// <summary>Spending on a repair is what the shelf is weighed against next, so the cards are
-        /// re-read alongside the button.</summary>
+        /// <summary>The shelf is re-read too, since a repair spends the balance it is weighed against.</summary>
         public void ApplyRepair()
         {
             _currency.UpdateCurrency(_model.Currency);
@@ -106,8 +105,8 @@ namespace SpaceInvaders.Scenes.Expedition
             RefreshAffordability();
         }
 
-        /// <summary>Dealt evenly in order, so a shelf count changed in the prefab needs nothing here
-        /// and a stock that does not divide evenly fills the earlier shelves first.</summary>
+        /// <summary>Dealt evenly in order, so how many shelves there are stays a layout choice. An
+        /// uneven stock fills the earlier ones first.</summary>
         private void BuildShelves()
         {
             var stock = new List<ExpeditionShopOfferDTO>(_model.GetOffers());
@@ -117,15 +116,15 @@ namespace SpaceInvaders.Scenes.Expedition
                 return;
             }
 
-            int perShelf = Mathf.CeilToInt(stock.Count / (float)_shelves.Count);
-            int dealt = 0;
+            int itemsPerShelf = Mathf.CeilToInt(stock.Count / (float)_shelves.Count);
+            int items = 0;
 
             foreach (ExpeditionShopShelfUIComponent shelf in _shelves)
             {
-                int count = Mathf.Min(perShelf, stock.Count - dealt);
+                int count = Mathf.Min(itemsPerShelf, stock.Count - items);
 
-                shelf.Build(stock.GetRange(dealt, count));
-                dealt += count;
+                shelf.Build(stock.GetRange(items, count));
+                items += count;
             }
         }
 
@@ -190,8 +189,6 @@ namespace SpaceInvaders.Scenes.Expedition
                 : _repairedString;
         }
 
-        /// <summary>Read-only throughout: what is worn and what is offered are both inspected here,
-        /// and the buy button is the only thing that changes either.</summary>
         private void HandleOfferSlotClicked(ItemSlotUIComponent slot, InventoryItemEntry item)
         {
             ShowTooltip(slot, item);
@@ -207,6 +204,8 @@ namespace SpaceInvaders.Scenes.Expedition
             ShowTooltip(component, equipped);
         }
 
+        /// <summary>Read-only for worn and offered alike: the buy button is the only thing here that
+        /// changes either.</summary>
         private void ShowTooltip(ItemSlotUIComponent slot, InventoryItemEntry item)
         {
             _tooltip.ShowReadOnly(slot.RectTransform, item);

@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
 using BaseArchitecture.Core;
-using SpaceInvaders.Project;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace SpaceInvaders.Scenes.Campaign
+namespace SpaceInvaders.Project
 {
     [AddressablePath("Screens/InventoryScreenView")]
     public class InventoryView : View<InventoryModel>

@@ -271,8 +271,8 @@ namespace SpaceInvaders.Project
             SaveData();
         }
 
-        /// <summary>Bought gear goes straight on the ship, since a run has nowhere else to put it.
-        /// Whatever it displaces stays owned rather than being lost.</summary>
+        /// <summary>Bought gear goes straight on the ship, since that is why it was bought. Whatever it
+        /// displaces stays owned, to be put back on from the lobby.</summary>
         public bool TryBuyShopOffer(string instanceId)
         {
             ExpeditionShopOfferEntry offer = GetOffer(instanceId);

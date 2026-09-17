@@ -10,9 +10,8 @@ using System.Collections.Generic;
 namespace SpaceInvaders.Project
 {
     /// <summary>
-    /// Confirm tooltip shown near a clicked item. The caller hands over the item, since an offer on a
-    /// shelf is not owned yet and could not be looked up. Uses a center pivot so the rect stays inside
-    /// the parent canvas after clamping.
+    /// Confirm tooltip shown near a clicked item. The caller hands the item over, since one on a shelf
+    /// is not owned yet and could not be looked up.
     /// </summary>
     public class ItemTooltipUIComponent : MonoBehaviour
     {

@@ -26,10 +26,8 @@ namespace SpaceInvaders.Scenes.Expedition
         }
     }
 
-    /// <summary>
-    /// One offered item: its price, the slot showing it, and the button that buys it. The slot is
-    /// clicked to inspect and the button to buy, so reading an item never risks spending on it.
-    /// </summary>
+    /// <summary>One offered item. The slot is clicked to inspect and the button to buy, so reading an
+    /// item never risks spending on it.</summary>
     public class ExpeditionShopOfferUIComponent : MonoBehaviour
     {
         [Header("References")]
@@ -50,8 +48,7 @@ namespace SpaceInvaders.Scenes.Expedition
         private InventoryItemEntry _item;
         private bool _isSold;
 
-        /// <summary>Carries the slot as well, since the tooltip opens against it and it is what shows
-        /// as selected while open.</summary>
+        /// <summary>Carries the slot, since the tooltip opens against it and marks it selected.</summary>
         public event Action<ItemSlotUIComponent, InventoryItemEntry> OnSlotClicked;
         public event Action<string> OnBuyClicked;
 
@@ -83,8 +80,8 @@ namespace SpaceInvaders.Scenes.Expedition
             _buyButtonText.text = isSold ? _soldString : _buyString;
         }
 
-        /// <summary>An item out of reach keeps its price and its look, so the balance reads as the
-        /// reason rather than the cell looking spent.</summary>
+        /// <summary>An item out of reach keeps its price, so the balance reads as the reason rather
+        /// than the cell looking spent.</summary>
         public void SetAffordable(bool isAffordable)
         {
             _buyButton.interactable = !_isSold && isAffordable;

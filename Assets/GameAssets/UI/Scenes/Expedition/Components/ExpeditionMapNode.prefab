@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5559556659340612223}
   - component: {fileID: 3509063372255892687}
   m_Layer: 5
-  m_Name: ExpeditionNode
+  m_Name: ExpeditionMapNode
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -10,6 +10,7 @@ namespace SpaceInvaders.Scenes.Expedition
         {
             Continue,
             NewRun,
+            OpenInventory,
             Back
         }
 
