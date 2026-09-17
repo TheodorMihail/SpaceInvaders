@@ -12,6 +12,7 @@ namespace SpaceInvaders.Tests
     public class ExpeditionRulesTests : ZenjectUnitTestFixture
     {
         private const int Score = 120;
+        private const float EnemyStatBonusPerDepth = 0.1f;
 
         private static readonly GameSessionDTO _session = new(GameModeTypes.Expedition, 1, "Level 1");
 
@@ -36,6 +37,7 @@ namespace SpaceInvaders.Tests
 
             _mockRunConfig = Substitute.For<ExpeditionDataConfigSO>();
             _mockRunConfig.DropWeights.Returns(_dropWeights);
+            _mockRunConfig.EnemyStatBonusPerDepth.Returns(EnemyStatBonusPerDepth);
 
             var mockGameModesRepository = Substitute.For<IGameModesRepository>();
             mockGameModesRepository.GetDataConfig(GameModeTypes.Expedition).Returns(_mockRunConfig);
@@ -134,6 +136,24 @@ namespace SpaceInvaders.Tests
 
             Assert.AreEqual(1, resolution.HubSceneParams.Length);
             Assert.AreEqual(expeditionResult, resolution.HubSceneParams[0]);
+        }
+
+        /// <summary>The baseline the levels were authored against, so the opening node plays as written.</summary>
+        [Test]
+        public void GetEnemyStatBonus_AtTheFirstDepth_IsNothing()
+        {
+            float bonus = _expeditionRules.GetEnemyStatBonus(new GameSessionDTO(GameModeTypes.Expedition, 1, "Level 1"));
+
+            Assert.AreEqual(0f, bonus);
+        }
+
+        /// <summary>Enemies keep up with what a run hands out, so the same level bites harder later.</summary>
+        [Test]
+        public void GetEnemyStatBonus_GrowsWithDepth()
+        {
+            float bonus = _expeditionRules.GetEnemyStatBonus(new GameSessionDTO(GameModeTypes.Expedition, 5, "Level 1"));
+
+            Assert.AreEqual(4 * EnemyStatBonusPerDepth, bonus, 0.0001f);
         }
 
         /// <summary>The one arrival that resumes on the map, so an expedition still under way is not

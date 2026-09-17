@@ -25,6 +25,10 @@ namespace SpaceInvaders.Tests
         private const string MegaBossLevelId = "Level 2";
 
         private const float ScrapPerScore = 2f;
+        private const float ScrapPerHealthPercent = 3f;
+
+        private const string OfferInstanceId = "offer-1";
+        private const int OfferPrice = 150;
 
         private ExpeditionRunManager _expeditionRunManager;
         private IPersistenceManager _mockPersistenceManager;
@@ -39,6 +43,7 @@ namespace SpaceInvaders.Tests
         private IGameModeScopedManager _mockModeScopedManager;
         private ExpeditionDataConfigSO _mockRunConfig;
         private ExpeditionRewardsDataConfigSO _mockRewardsConfig;
+        private ExpeditionShopDataConfigSO _mockShopConfig;
 
         [SetUp]
         public override void Setup()
@@ -65,10 +70,17 @@ namespace SpaceInvaders.Tests
 
             _mockRewardsConfig = Substitute.For<ExpeditionRewardsDataConfigSO>();
 
+            _mockShopConfig = Substitute.For<ExpeditionShopDataConfigSO>();
+            _mockShopConfig.ScrapPerHealthPercent.Returns(ScrapPerHealthPercent);
+
             var mockExpeditionRepository = Substitute.For<IExpeditionRepository>();
             mockExpeditionRepository.GetRewardsDataConfig().Returns(_mockRewardsConfig);
+            mockExpeditionRepository.GetShopDataConfig().Returns(_mockShopConfig);
 
             _mockCurrencyManager = Substitute.For<ICurrencyManager>();
+
+            // Affordable by default, so only the tests about running short have to say so.
+            _mockCurrencyManager.TrySpend(Arg.Any<int>()).Returns(true);
 
             _mockLevelsRepository = Substitute.For<ILevelsRepository>();
             _mockLevelsRepository.ContainsLevelConfig(Arg.Any<string>()).Returns(true);
@@ -106,6 +118,7 @@ namespace SpaceInvaders.Tests
         {
             Object.DestroyImmediate(_mockRunConfig);
             Object.DestroyImmediate(_mockRewardsConfig);
+            Object.DestroyImmediate(_mockShopConfig);
             base.Teardown();
         }
 
@@ -284,6 +297,163 @@ namespace SpaceInvaders.Tests
         }
 
         /// <summary>Start, one level node and one shop at depth 1, both leading to the mega boss.</summary>
+        /// <summary>Stocked on arrival rather than when the screen opens, so what was rolled survives
+        /// the app closing in front of it.</summary>
+        [Test]
+        public void EnterNode_WithAShopNode_StocksTheShelf()
+        {
+            _mockShopService.RollOffers().Returns(_ => CreateOffers());
+            _expeditionRunManager.StartNewExpedition();
+
+            _expeditionRunManager.EnterNode(ShopNodeId);
+
+            Assert.IsTrue(_expeditionRunManager.CurrentExpedition.HasOpenShop);
+            Assert.AreEqual(1, _expeditionRunManager.CurrentExpedition.ShopOffers.Count);
+        }
+
+        /// <summary>An unauthored catalogue reads as a node walked past rather than an empty screen.</summary>
+        [Test]
+        public void EnterNode_WithNothingToStock_LeavesNoShopOpen()
+        {
+            _expeditionRunManager.StartNewExpedition();
+
+            _expeditionRunManager.EnterNode(ShopNodeId);
+
+            Assert.IsFalse(_expeditionRunManager.CurrentExpedition.HasOpenShop);
+        }
+
+        [Test]
+        public void EnterNode_WithANodeThatIsNotAShop_LeavesNoShopOpen()
+        {
+            _mockShopService.RollOffers().Returns(_ => CreateOffers());
+            _expeditionRunManager.StartNewExpedition();
+
+            _expeditionRunManager.EnterNode(LevelNodeId);
+
+            Assert.IsFalse(_expeditionRunManager.CurrentExpedition.HasOpenShop);
+        }
+
+        /// <summary>Paid for, owned and worn in one step, since a run has no reason to buy gear it
+        /// leaves off the ship.</summary>
+        [Test]
+        public void TryBuyShopOffer_SpendsThenOwnsThenEquips()
+        {
+            _mockShopService.RollOffers().Returns(_ => CreateOffers());
+            _expeditionRunManager.StartNewExpedition();
+            _expeditionRunManager.EnterNode(ShopNodeId);
+
+            bool bought = _expeditionRunManager.TryBuyShopOffer(OfferInstanceId);
+
+            Assert.IsTrue(bought);
+            Assert.IsTrue(_expeditionRunManager.CurrentExpedition.ShopOffers[0].IsSold);
+            _mockCurrencyManager.Received(1).TrySpend(OfferPrice);
+            _mockInventoryManager.Received(1).AddItems(Arg.Any<IReadOnlyList<InventoryItemEntry>>());
+            _mockEquipmentManager.Received(1).Equip(OfferInstanceId);
+        }
+
+        [Test]
+        public void TryBuyShopOffer_WithoutTheScrap_ChangesNothing()
+        {
+            _mockShopService.RollOffers().Returns(_ => CreateOffers());
+            _mockCurrencyManager.TrySpend(Arg.Any<int>()).Returns(false);
+            _expeditionRunManager.StartNewExpedition();
+            _expeditionRunManager.EnterNode(ShopNodeId);
+
+            bool bought = _expeditionRunManager.TryBuyShopOffer(OfferInstanceId);
+
+            Assert.IsFalse(bought);
+            Assert.IsFalse(_expeditionRunManager.CurrentExpedition.ShopOffers[0].IsSold);
+            _mockEquipmentManager.DidNotReceive().Equip(Arg.Any<string>());
+        }
+
+        /// <summary>The same offer cannot be bought twice, however the screen got there.</summary>
+        [Test]
+        public void TryBuyShopOffer_AlreadySold_ChangesNothing()
+        {
+            _mockShopService.RollOffers().Returns(_ => CreateOffers());
+            _expeditionRunManager.StartNewExpedition();
+            _expeditionRunManager.EnterNode(ShopNodeId);
+            _expeditionRunManager.TryBuyShopOffer(OfferInstanceId);
+            _mockCurrencyManager.ClearReceivedCalls();
+
+            bool bought = _expeditionRunManager.TryBuyShopOffer(OfferInstanceId);
+
+            Assert.IsFalse(bought);
+            _mockCurrencyManager.DidNotReceive().TrySpend(Arg.Any<int>());
+        }
+
+        /// <summary>Dropped on the way out, so a node cannot be shopped a second time.</summary>
+        [Test]
+        public void CloseShop_DropsTheShelf()
+        {
+            _mockShopService.RollOffers().Returns(_ => CreateOffers());
+            _expeditionRunManager.StartNewExpedition();
+            _expeditionRunManager.EnterNode(ShopNodeId);
+
+            _expeditionRunManager.CloseShop();
+
+            Assert.IsFalse(_expeditionRunManager.CurrentExpedition.HasOpenShop);
+        }
+
+        [Test]
+        public void RepairCost_WithNothingMissing_IsNothing()
+        {
+            _expeditionRunManager.StartNewExpedition();
+
+            Assert.AreEqual(0, _expeditionRunManager.CurrentExpedition.RepairCost);
+        }
+
+        /// <summary>Priced off the share missing, so a full mend costs the same whatever the hull.</summary>
+        [Test]
+        public void RepairCost_PricesTheShareMissing()
+        {
+            _expeditionRunManager.StartNewExpedition();
+            _expeditionRunManager.EnterNode(LevelNodeId);
+            _expeditionRunManager.CompleteCurrentLevel(CreateResult(CreateStatsWithHalfHealth()));
+
+            Assert.AreEqual((int)(50 * ScrapPerHealthPercent), _expeditionRunManager.CurrentExpedition.RepairCost);
+        }
+
+        [Test]
+        public void TryRepair_SpendsAndRestoresToFull()
+        {
+            _expeditionRunManager.StartNewExpedition();
+            _expeditionRunManager.EnterNode(LevelNodeId);
+            _expeditionRunManager.CompleteCurrentLevel(CreateResult(CreateStatsWithHalfHealth()));
+
+            bool repaired = _expeditionRunManager.TryRepair();
+
+            Assert.IsTrue(repaired);
+            Assert.AreEqual(1f, _expeditionRunManager.CurrentExpedition.RemainingHealthRatio);
+            _mockCurrencyManager.Received(1).TrySpend((int)(50 * ScrapPerHealthPercent));
+        }
+
+        /// <summary>Nothing to mend means nothing to charge for.</summary>
+        [Test]
+        public void TryRepair_WithNothingMissing_ChangesNothing()
+        {
+            _expeditionRunManager.StartNewExpedition();
+
+            bool repaired = _expeditionRunManager.TryRepair();
+
+            Assert.IsFalse(repaired);
+            _mockCurrencyManager.DidNotReceive().TrySpend(Arg.Any<int>());
+        }
+
+        [Test]
+        public void TryRepair_WithoutTheScrap_LeavesTheHealthAlone()
+        {
+            _mockCurrencyManager.TrySpend(Arg.Any<int>()).Returns(false);
+            _expeditionRunManager.StartNewExpedition();
+            _expeditionRunManager.EnterNode(LevelNodeId);
+            _expeditionRunManager.CompleteCurrentLevel(CreateResult(CreateStatsWithHalfHealth()));
+
+            bool repaired = _expeditionRunManager.TryRepair();
+
+            Assert.IsFalse(repaired);
+            Assert.AreEqual(0.5f, _expeditionRunManager.CurrentExpedition.RemainingHealthRatio, 0.01f);
+        }
+
         private static List<ExpeditionNodeEntry> CreateMap()
         {
             return new List<ExpeditionNodeEntry>
@@ -393,6 +563,18 @@ namespace SpaceInvaders.Tests
             _expeditionRunManager.GrantTalent(TalentId);
 
             _mockTalentManager.DidNotReceive().TryGrantLevel(Arg.Any<string>());
+        }
+
+        private static List<ExpeditionShopOfferEntry> CreateOffers()
+        {
+            return new List<ExpeditionShopOfferEntry>
+            {
+                new()
+                {
+                    Item = new InventoryItemEntry { InstanceId = OfferInstanceId, ItemId = "Core" },
+                    Price = OfferPrice
+                }
+            };
         }
 
         private static GameSessionResultDTO CreateResult(ShipStats stats, int score = 0)

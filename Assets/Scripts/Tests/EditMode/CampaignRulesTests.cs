@@ -79,6 +79,14 @@ namespace SpaceInvaders.Tests
             Assert.IsTrue(_campaignRules.CanReplayLevel);
         }
 
+        /// <summary>A level plays exactly as hard as it was authored, however far down the list it sits.</summary>
+        [Test]
+        public void GetEnemyStatBonus_IsNothingAtEveryLevel()
+        {
+            Assert.AreEqual(0f, _campaignRules.GetEnemyStatBonus(new GameSessionDTO(GameModeTypes.Campaign, 1, "Level 1")));
+            Assert.AreEqual(0f, _campaignRules.GetEnemyStatBonus(new GameSessionDTO(GameModeTypes.Campaign, 9, "Level 9")));
+        }
+
         [Test]
         public void DropWeights_ComeFromTheCampaignDataConfig()
         {

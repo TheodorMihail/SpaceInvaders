@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using SpaceInvaders.Scenes.Game;
+using UnityEngine;
 
 namespace SpaceInvaders.Tests
 {
@@ -8,8 +9,9 @@ namespace SpaceInvaders.Tests
     {
         private const float FloatTolerance = 0.0001f;
 
-        /// <summary>Crit is switched off so a roll is deterministic and multipliers can be compared.</summary>
-        private static ShipStats CreateStatsWithoutCrit()
+        /// <summary>Crit cannot be authored away: every stat floors at a fraction of its base, so the
+        /// chance lands on that floor rather than on zero.</summary>
+        private static ShipStats CreateStatsWithMinimumCrit()
         {
             var stats = new ShipStats(new ShipBaseStats());
             stats.ApplyStatBonus(ShipUpgradableStatTypes.CritChance, -1f, ShipStatValueTypes.Flat);
@@ -17,22 +19,35 @@ namespace SpaceInvaders.Tests
             return stats;
         }
 
+        /// <summary>The roll is compared against however it landed, since a floored chance still fires
+        /// now and then and an assertion that assumed otherwise would only fail occasionally.</summary>
+        private static int ExpectedDamage(ShipStats stats, float damageMultiplier, bool isCritical)
+        {
+            float damage = stats.CurrentProjectileDamage * damageMultiplier;
+
+            return Mathf.RoundToInt(isCritical ? damage * stats.CurrentCritDamage : damage);
+        }
+
         [Test]
         public void FromStats_LeavesTheRollUnscaled()
         {
-            ShipStats stats = CreateStatsWithoutCrit();
+            ShipStats stats = CreateStatsWithMinimumCrit();
             AttackSourceDTO source = AttackSourceDTO.FromStats(stats);
 
-            Assert.AreEqual(stats.CurrentProjectileDamage, source.RollDamage(out _));
+            int damage = source.RollDamage(out bool isCritical);
+
+            Assert.AreEqual(ExpectedDamage(stats, 1f, isCritical), damage);
         }
 
         [Test]
         public void RollDamage_AppliesTheDamageMultiplier()
         {
-            ShipStats stats = CreateStatsWithoutCrit();
+            ShipStats stats = CreateStatsWithMinimumCrit();
             var source = new AttackSourceDTO(stats, 3f, 1f);
 
-            Assert.AreEqual(stats.CurrentProjectileDamage * 3, source.RollDamage(out _));
+            int damage = source.RollDamage(out bool isCritical);
+
+            Assert.AreEqual(ExpectedDamage(stats, 3f, isCritical), damage);
         }
 
         /// <summary>The stats are held live, so a buff landing after the shot was fired still counts.
@@ -40,7 +55,7 @@ namespace SpaceInvaders.Tests
         [Test]
         public void RollDamage_ReadsTheStatsAsTheyAreNow()
         {
-            ShipStats stats = CreateStatsWithoutCrit();
+            ShipStats stats = CreateStatsWithMinimumCrit();
             var source = new AttackSourceDTO(stats, 1f, 1f);
 
             int beforeBuff = source.RollDamage(out _);
@@ -52,7 +67,7 @@ namespace SpaceInvaders.Tests
         [Test]
         public void ProjectileSpeed_AppliesItsOwnMultiplier()
         {
-            ShipStats stats = CreateStatsWithoutCrit();
+            ShipStats stats = CreateStatsWithMinimumCrit();
             var source = new AttackSourceDTO(stats, 1f, 0.5f);
 
             Assert.AreEqual(stats.CurrentProjectileSpeed * 0.5f, source.ProjectileSpeed, FloatTolerance);

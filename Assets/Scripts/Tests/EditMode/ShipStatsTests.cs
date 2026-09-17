@@ -327,11 +327,13 @@ namespace SpaceInvaders.Tests
             Assert.AreEqual(2, raisedCount);
         }
 
+        /// <summary>Crit is pinned on rather than off, since a stat floors at a fraction of its base
+        /// and cannot be authored to never fire. Two rolls landing differently would fail at random.</summary>
         [Test]
         public void RollOutgoingDamage_WithDamageMultiplier_ScalesTheRoll()
         {
             ShipStats stats = CreateStats();
-            stats.ApplyStatBonus(ShipUpgradableStatTypes.CritChance, -1f, ShipStatValueTypes.Flat);
+            stats.ApplyStatBonus(ShipUpgradableStatTypes.CritChance, 1f, ShipStatValueTypes.Flat);
 
             int unscaled = stats.RollOutgoingDamage(out _);
             int doubled = stats.RollOutgoingDamage(2f, out _);
