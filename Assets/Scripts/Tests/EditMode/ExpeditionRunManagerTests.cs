@@ -30,7 +30,10 @@ namespace SpaceInvaders.Tests
         private IPersistenceManager _mockPersistenceManager;
         private IExpeditionMapService _mockMapService;
         private IExpeditionTalentDrawService _mockTalentDrawService;
+        private IExpeditionShopService _mockShopService;
         private ITalentManager _mockTalentManager;
+        private IInventoryManager _mockInventoryManager;
+        private IEquipmentManager _mockEquipmentManager;
         private ICurrencyManager _mockCurrencyManager;
         private ILevelsRepository _mockLevelsRepository;
         private IGameModeScopedManager _mockModeScopedManager;
@@ -73,12 +76,21 @@ namespace SpaceInvaders.Tests
             _mockModeScopedManager = Substitute.For<IGameModeScopedManager>();
 
             _mockTalentDrawService = Substitute.For<IExpeditionTalentDrawService>();
+            _mockShopService = Substitute.For<IExpeditionShopService>();
+            _mockShopService.RollOffers().Returns(_ => new List<ExpeditionShopOfferEntry>());
+
             _mockTalentManager = Substitute.For<ITalentManager>();
             Container.Bind<ITalentManager>().FromInstance(_mockTalentManager);
+
+            _mockInventoryManager = Substitute.For<IInventoryManager>();
+            _mockEquipmentManager = Substitute.For<IEquipmentManager>();
 
             Container.Bind<ISaveProfileManager>().FromInstance(mockSaveProfileManager);
             Container.Bind<IExpeditionMapService>().FromInstance(_mockMapService);
             Container.Bind<IExpeditionTalentDrawService>().FromInstance(_mockTalentDrawService);
+            Container.Bind<IExpeditionShopService>().FromInstance(_mockShopService);
+            Container.Bind<IInventoryManager>().FromInstance(_mockInventoryManager);
+            Container.Bind<IEquipmentManager>().FromInstance(_mockEquipmentManager);
             Container.Bind<IExpeditionRepository>().FromInstance(mockExpeditionRepository);
             Container.Bind<ICurrencyManager>().FromInstance(_mockCurrencyManager);
             Container.Bind<ILevelsRepository>().FromInstance(_mockLevelsRepository);

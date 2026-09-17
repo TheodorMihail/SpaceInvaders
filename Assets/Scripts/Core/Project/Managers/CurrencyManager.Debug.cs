@@ -13,9 +13,18 @@ namespace SpaceInvaders.Project
 
         public void DebugAddCurrency()
         {
-            int amount = _projectRepository.GetProjectDataConfig().DebugAddCurrencyAmount;
+            int amount = _projectRepository.GetDebugDataConfig().AddCurrencyAmount;
             AddCurrency(amount);
             this.LogWarning($"Debug: Added {amount} currency. New balance: {Currency}");
+        }
+
+        /// <summary>The same store under the Expedition profile, so the amount is the only thing that
+        /// makes this a separate cheat.</summary>
+        public void DebugAddScrap()
+        {
+            int amount = _projectRepository.GetDebugDataConfig().AddScrapAmount;
+            AddCurrency(amount);
+            this.LogWarning($"Debug: Added {amount} scrap. New balance: {Currency}");
         }
 
         public void DebugClearCurrency()

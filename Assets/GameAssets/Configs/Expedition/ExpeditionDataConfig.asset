@@ -22,3 +22,4 @@ MonoBehaviour:
   _bossCurrencyBonus: 0
   _mapData: {fileID: 11400000, guid: 0f56cd3e4f9145148a1efbf660a69d81, type: 2}
   _rewardsData: {fileID: 11400000, guid: f2c7412872e467d48a087cef83033e83, type: 2}
+  _shopData: {fileID: 11400000, guid: 3d8b1f6c04e74a2ea9c7b5d1e0f23947, type: 2}

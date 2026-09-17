@@ -45,7 +45,10 @@ namespace SpaceInvaders.Project
 
         private void RepositoriesInstall()
         {
-            Container.BindInterfacesTo<ProjectRepository>().AsSingle().WithArguments(_configsContainerSO.ProjectDataConfigSO);
+            Container.BindInterfacesTo<ProjectRepository>().AsSingle().WithArguments(new object[]
+            {
+                _configsContainerSO.ProjectDataConfigSO, _configsContainerSO.DebugDataConfigSO
+            });
             Container.BindInterfacesTo<GameRepository>().AsSingle().WithArguments(_configsContainerSO.GameDataConfigSO);
             Container.BindInterfacesTo<LevelsRepository>().AsSingle().WithArguments(_configsContainerSO.LevelsDataConfigSO);
             Container.BindInterfacesTo<PowerupsRepository>().AsSingle().WithArguments(_configsContainerSO.PowerupsDataConfigSO);
@@ -109,6 +112,7 @@ namespace SpaceInvaders.Project
             Container.Bind<ExpeditionRunManager>().AsSingle();
             Container.Bind<IExpeditionMapService>().To<ExpeditionMapService>().AsSingle();
             Container.Bind<IExpeditionTalentDrawService>().To<ExpeditionTalentDrawService>().AsSingle();
+            Container.Bind<IExpeditionShopService>().To<ExpeditionShopService>().AsSingle();
         }
     }
 

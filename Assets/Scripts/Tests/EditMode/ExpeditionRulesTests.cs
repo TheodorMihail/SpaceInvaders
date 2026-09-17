@@ -136,13 +136,16 @@ namespace SpaceInvaders.Tests
             Assert.AreEqual(expeditionResult, resolution.HubSceneParams[0]);
         }
 
+        /// <summary>The one arrival that resumes on the map, so an expedition still under way is not
+        /// dropped back at the lobby after every level.</summary>
         [Test]
-        public void ResolveGameEnd_AfterClearingALevel_HandsTheHubNothing()
+        public void ResolveGameEnd_AfterClearingALevel_SendsTheHubSceneToTheMap()
         {
             GameEndResolutionDTO resolution =
                 _expeditionRules.ResolveGameEnd(CreateResult(GameplayStateResultTypes.LevelFinished));
 
-            Assert.AreEqual(0, resolution.HubSceneParams.Length);
+            Assert.AreEqual(1, resolution.HubSceneParams.Length);
+            Assert.AreEqual(ExpeditionEntryTypes.Map, resolution.HubSceneParams[0]);
         }
 
         /// <summary>Quitting is not a defeat, but the node is spent, so the expedition ends and is

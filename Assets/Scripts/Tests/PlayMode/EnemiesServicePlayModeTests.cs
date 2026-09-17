@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using SpaceInvaders.Project;
 using SpaceInvaders.Scenes.Game;
 using System;
 using System.Collections;
@@ -14,6 +15,8 @@ namespace SpaceInvaders.Tests
     [TestFixture]
     public class EnemiesServicePlayModeTests : ZenjectUnitTestFixture
     {
+        private static readonly GameSessionDTO Session = new(GameModeTypes.Campaign, 1, "Level 1");
+
         private EnemiesService _enemiesService;
         private ISpawnManager _mockSpawnManager;
         private IMessageBus _messageBus;
@@ -47,6 +50,7 @@ namespace SpaceInvaders.Tests
 
             Container.Bind<ISpawnManager>().FromInstance(_mockSpawnManager);
             Container.Bind<IMessageBus>().FromInstance(_messageBus);
+            Container.Bind<IGameModeManager>().FromInstance(Substitute.For<IGameModeManager>());
 
             _enemiesService = Container.Instantiate<EnemiesService>();
         }
@@ -62,7 +66,7 @@ namespace SpaceInvaders.Tests
         [UnityTest]
         public IEnumerator OnGameInitialized_InitializesEnemiesList()
         {
-            _enemiesService.GameInitialize();
+            _enemiesService.GameInitialize(Session);
 
             Assert.AreEqual(0, _enemiesService.EnemiesAlive);
             yield return null;
@@ -74,7 +78,7 @@ namespace SpaceInvaders.Tests
             var enemyList = CreateMockEnemies(new List<EnemyTypes> { EnemyTypes.Enemy1, EnemyTypes.Enemy1 });
             _mockSpawnManager.SpawnEnemies(Arg.Any<WaveConfigDTO>()).Returns(UniTask.FromResult(enemyList));
 
-            _enemiesService.GameInitialize();
+            _enemiesService.GameInitialize(Session);
             yield return _enemiesService.SpawnEnemies(new WaveConfigDTO()).ToCoroutine();
 
             Assert.AreEqual(2, _enemiesService.EnemiesAlive);
@@ -87,7 +91,7 @@ namespace SpaceInvaders.Tests
             _mockSpawnManager.SpawnEnemies(Arg.Any<WaveConfigDTO>()).Returns(UniTask.FromResult(enemyList));
 
             var waveConfig = new WaveConfigDTO();
-            _enemiesService.GameInitialize();
+            _enemiesService.GameInitialize(Session);
             yield return _enemiesService.SpawnEnemies(waveConfig).ToCoroutine();
 
             enemyList[0].Received(1).PrepareEntry(Arg.Any<float>());
@@ -102,7 +106,7 @@ namespace SpaceInvaders.Tests
             var enemyList = CreateMockEnemies(new List<EnemyTypes> { EnemyTypes.Enemy1, EnemyTypes.Enemy1 });
             _mockSpawnManager.SpawnEnemies(Arg.Any<WaveConfigDTO>()).Returns(UniTask.FromResult(enemyList));
 
-            _enemiesService.GameInitialize();
+            _enemiesService.GameInitialize(Session);
             yield return _enemiesService.SpawnEnemies(new WaveConfigDTO()).ToCoroutine();
 
             enemyList[0].Received(1).OnDestroyed += Arg.Any<Action<IEnemySpaceship>>();
@@ -118,7 +122,7 @@ namespace SpaceInvaders.Tests
             EnemyTypes? destroyedEnemyType = null;
             _messageBus.Subscribe<EnemyDestroyedMessage>((message) => destroyedEnemyType = message.Type);
 
-            _enemiesService.GameInitialize();
+            _enemiesService.GameInitialize(Session);
             yield return _enemiesService.SpawnEnemies(new WaveConfigDTO()).ToCoroutine();
 
             enemyList[0].OnDestroyed += Raise.Event<Action<IEnemySpaceship>>(enemyList[0]);
@@ -132,7 +136,7 @@ namespace SpaceInvaders.Tests
             var enemyList = new List<IEnemySpaceship> { enemy1 };
             _mockSpawnManager.SpawnEnemies(Arg.Any<WaveConfigDTO>()).Returns(UniTask.FromResult(enemyList));
 
-            _enemiesService.GameInitialize();
+            _enemiesService.GameInitialize(Session);
             yield return _enemiesService.SpawnEnemies(new WaveConfigDTO()).ToCoroutine();
 
             enemy1.OnDestroyed += Raise.Event<Action<IEnemySpaceship>>(enemy1);
@@ -148,7 +152,7 @@ namespace SpaceInvaders.Tests
             var allEnemiesDestroyedPublished = false;
             _messageBus.Subscribe<AllEnemiesDestroyedMessage>((message) => allEnemiesDestroyedPublished = true);
 
-            _enemiesService.GameInitialize();
+            _enemiesService.GameInitialize(Session);
             yield return _enemiesService.SpawnEnemies(new WaveConfigDTO()).ToCoroutine();
 
             enemyList[0].OnDestroyed += Raise.Event<Action<IEnemySpaceship>>(enemyList[0]);
@@ -164,7 +168,7 @@ namespace SpaceInvaders.Tests
             var allEnemiesDestroyedPublished = false;
             _messageBus.Subscribe<AllEnemiesDestroyedMessage>((message) => allEnemiesDestroyedPublished = true);
 
-            _enemiesService.GameInitialize();
+            _enemiesService.GameInitialize(Session);
             yield return _enemiesService.SpawnEnemies(new WaveConfigDTO()).ToCoroutine();
 
             enemyList[0].OnDestroyed += Raise.Event<Action<IEnemySpaceship>>(enemyList[0]);
@@ -179,7 +183,7 @@ namespace SpaceInvaders.Tests
             var enemyList = new List<IEnemySpaceship> { enemy1, enemy2 };
             _mockSpawnManager.SpawnEnemies(Arg.Any<WaveConfigDTO>()).Returns(UniTask.FromResult(enemyList));
 
-            _enemiesService.GameInitialize();
+            _enemiesService.GameInitialize(Session);
             yield return _enemiesService.SpawnEnemies(new WaveConfigDTO()).ToCoroutine();
 
             _enemiesService.GameEnd();
@@ -195,7 +199,7 @@ namespace SpaceInvaders.Tests
             var enemyList = CreateMockEnemies(new List<EnemyTypes> { EnemyTypes.Enemy1 });
             _mockSpawnManager.SpawnEnemies(Arg.Any<WaveConfigDTO>()).Returns(UniTask.FromResult(enemyList));
 
-            _enemiesService.GameInitialize();
+            _enemiesService.GameInitialize(Session);
             _enemiesService.SpawnEnemies(new WaveConfigDTO()).Forget();
 
             _enemiesService.GameEnd();
@@ -214,7 +218,7 @@ namespace SpaceInvaders.Tests
             var enemyList = new List<IEnemySpaceship> { enemy1, enemy2 };
             _mockSpawnManager.SpawnEnemies(Arg.Any<WaveConfigDTO>()).Returns(UniTask.FromResult(enemyList));
 
-            _enemiesService.GameInitialize();
+            _enemiesService.GameInitialize(Session);
             yield return _enemiesService.SpawnEnemies(new WaveConfigDTO()).ToCoroutine();
 
             _enemiesService.GameEnd();

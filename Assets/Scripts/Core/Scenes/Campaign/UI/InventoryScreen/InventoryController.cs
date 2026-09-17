@@ -35,9 +35,9 @@ namespace SpaceInvaders.Scenes.Campaign
             base.Dispose();
         }
 
-        private void OnItemClicked(RectTransform anchor, string instanceId)
+        private void OnItemClicked(RectTransform anchor, InventoryItemEntry entry)
         {
-            _view.OpenTooltip(anchor, instanceId);
+            _view.OpenTooltip(anchor, entry);
         }
         
         private void OnItemEquipChanged(ItemEquipChangedMessage message)

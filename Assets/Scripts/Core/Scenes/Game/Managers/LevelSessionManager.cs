@@ -99,7 +99,7 @@ namespace SpaceInvaders.Scenes.Game
 
         public UniTask GameInitialize(GameSessionDTO session)
         {
-            _enemiesService.GameInitialize();
+            _enemiesService.GameInitialize(session);
             _scoreService.GameInitialize();
             return UniTask.CompletedTask;
         }

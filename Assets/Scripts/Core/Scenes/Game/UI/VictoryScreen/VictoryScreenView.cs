@@ -68,9 +68,9 @@ namespace SpaceInvaders.Scenes.Game
         }
 
         /// <summary>Read-only here: the run is over, so loot is shown rather than managed.</summary>
-        private void OnItemClicked(RectTransform anchor, string instanceId)
+        private void OnItemClicked(RectTransform anchor, InventoryItemEntry entry)
         {
-            _tooltip.ShowReadOnly(anchor, instanceId);
+            _tooltip.ShowReadOnly(anchor, entry);
         }
     }
 }

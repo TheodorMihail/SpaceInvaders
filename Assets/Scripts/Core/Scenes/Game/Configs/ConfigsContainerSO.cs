@@ -9,6 +9,7 @@ namespace SpaceInvaders.Scenes.Game
         [Header("Project")]
         [SerializeField] private ProjectDataConfigSO _projectDataConfigSO;
         [SerializeField] private SoundsDataConfigSO _soundsDataConfigSO;
+        [SerializeField] private DebugDataConfigSO _debugDataConfigSO;
 
         [Header("Game Modes")]
         [SerializeField] private CampaignDataConfigSO _campaignDataConfigSO;
@@ -30,6 +31,7 @@ namespace SpaceInvaders.Scenes.Game
 
         public ProjectDataConfigSO ProjectDataConfigSO => _projectDataConfigSO;
         public SoundsDataConfigSO SoundsDataConfigSO => _soundsDataConfigSO;
+        public DebugDataConfigSO DebugDataConfigSO => _debugDataConfigSO;
 
         public CampaignDataConfigSO CampaignDataConfigSO => _campaignDataConfigSO;
         public ExpeditionDataConfigSO ExpeditionDataConfigSO => _expeditionDataConfigSO;

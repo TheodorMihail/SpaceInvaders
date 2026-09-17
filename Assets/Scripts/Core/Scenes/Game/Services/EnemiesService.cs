@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using BaseArchitecture.Core;
 using Cysharp.Threading.Tasks;
+using SpaceInvaders.Project;
 using UnityEngine;
 using Zenject;
 
@@ -28,7 +29,10 @@ namespace SpaceInvaders.Scenes.Game
     {
         int EnemiesAlive { get; }
 
-        void GameInitialize();
+        /// <summary>Takes the session, since how hard the level's enemies are is decided by the run
+        /// that launched it rather than by the wave.</summary>
+        void GameInitialize(GameSessionDTO session);
+
         void GameEnd();
         UniTask SpawnEnemies(WaveConfigDTO wave);
 
@@ -42,6 +46,7 @@ namespace SpaceInvaders.Scenes.Game
     {
         [Inject] private readonly ISpawnManager _spawnManager;
         [Inject] private readonly IMessageBus _messageBus;
+        [Inject] private readonly IGameModeManager _gameModeManager;
 
         private List<IEnemySpaceship> _spawnedEnemies;
         private CancellationTokenSource _spawnCancellationTokenSource;
@@ -50,10 +55,16 @@ namespace SpaceInvaders.Scenes.Game
         /// otherwise a splitting enemy dying last would advance the level before its children exist.</summary>
         private int _pendingSpawnRequests;
 
+        /// <summary>How much every enemy this level is scaled by, fixed for its whole duration.</summary>
+        private float _enemyStatBonus;
+
         public int EnemiesAlive => _spawnedEnemies.Count;
 
-        public void GameInitialize()
+        public void GameInitialize(GameSessionDTO session)
         {
+            // Asked once per level rather than per ship, since the session cannot change within one.
+            _enemyStatBonus = _gameModeManager.GetEnemyStatBonus(session);
+
             // The next level re-initializes without disposing, so a previous run's source can still be here.
             CancelSpawning();
 
@@ -124,6 +135,8 @@ namespace SpaceInvaders.Scenes.Game
 
         private void RegisterEnemy(IEnemySpaceship enemy)
         {
+            ApplyDifficulty(enemy);
+
             _spawnedEnemies.Add(enemy);
             enemy.OnDestroyed += OnEnemyDestroyedCallback;
             enemy.OnShotFired += OnEnemyShotFiredCallback;
@@ -135,6 +148,23 @@ namespace SpaceInvaders.Scenes.Game
             {
                 enemy.OnHealthChanged += OnBossHealthChangedCallback;
             }
+        }
+
+        /// <summary>
+        /// Applied as the ship is registered, the one path both a wave and a reinforcement come
+        /// through, and before anything reads the stats. Health is refilled afterwards, since raising
+        /// the maximum leaves the current value behind. Stats are built per spawn, so nothing is reverted.
+        /// </summary>
+        private void ApplyDifficulty(IEnemySpaceship enemy)
+        {
+            if (_enemyStatBonus <= 0f || enemy.Stats == null)
+            {
+                return;
+            }
+
+            enemy.Stats.ApplyStatBonus(ShipUpgradableStatTypes.Health, _enemyStatBonus, ShipStatValueTypes.Percentage);
+            enemy.Stats.ApplyStatBonus(ShipUpgradableStatTypes.Damage, _enemyStatBonus, ShipStatValueTypes.Percentage);
+            enemy.Stats.RefillHealth();
         }
 
         /// <summary>Only a boss is announced on entering view; regular enemies arrive as a wave.</summary>

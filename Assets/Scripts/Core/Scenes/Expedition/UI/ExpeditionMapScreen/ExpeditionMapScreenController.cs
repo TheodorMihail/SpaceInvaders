@@ -28,12 +28,13 @@ namespace SpaceInvaders.Scenes.Expedition
             base.Dispose();
         }
 
-        /// <summary>Moving keeps the map open, and only a node carrying a level closes it.</summary>
+        /// <summary>Moving keeps the map open. A node with a screen of its own closes it instead, and
+        /// it reopens once that screen is done with.</summary>
         private void HandleNodeClicked(int nodeId)
         {
             _expeditionRunManager.EnterNode(nodeId);
 
-            if (_model.Expedition.IsLevelInProgress)
+            if (_model.Expedition.IsLevelInProgress || _model.Expedition.HasOpenShop)
             {
                 CloseScreenWithResult(new ExpeditionMapScreen.ExpeditionMapScreenResult
                 {

@@ -33,6 +33,7 @@ namespace SpaceInvaders.Project
         {
             public const Key RerollMap = Key.F1;
             public const Key AbandonExpedition = Key.F2;
+            public const Key AddScrap = Key.F3;
         }
 
         /// <summary>A running level, so only reachable from the Game scene.</summary>

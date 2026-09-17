@@ -13,13 +13,15 @@ namespace SpaceInvaders.Scenes.Expedition
     public class ExpeditionDebugCommands : IDebugCommandProvider
     {
         [Inject] private readonly ExpeditionRunManager _expeditionRunManager;
+        [Inject] private readonly CurrencyManager _currencyManager;
 
         public IReadOnlyList<DebugCommandDTO> GetDebugCommands()
         {
             return new[]
             {
                 new DebugCommandDTO(DebugKeys.Expedition.RerollMap, "Reroll the map", _expeditionRunManager.DebugRerollMap),
-                new DebugCommandDTO(DebugKeys.Expedition.AbandonExpedition, "Abandon the expedition", _expeditionRunManager.DebugAbandonExpedition)
+                new DebugCommandDTO(DebugKeys.Expedition.AbandonExpedition, "Abandon the expedition", _expeditionRunManager.DebugAbandonExpedition),
+                new DebugCommandDTO(DebugKeys.Expedition.AddScrap, "Add scrap", _currencyManager.DebugAddScrap)
             };
         }
     }

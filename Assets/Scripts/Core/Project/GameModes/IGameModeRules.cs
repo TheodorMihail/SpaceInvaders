@@ -54,6 +54,10 @@ namespace SpaceInvaders.Project
 
         void ApplyProgressionBonuses(ShipStats stats);
 
+        /// <summary>Percentage added to every enemy the level spawns. Zero where a level is authored to
+        /// be exactly as hard as it plays.</summary>
+        float GetEnemyStatBonus(GameSessionDTO session);
+
         /// <summary>The level ended. Everything it costs or earns is applied here, so nothing is left
         /// for a screen to apply later.</summary>
         GameEndResolutionDTO ResolveGameEnd(GameSessionResultDTO result);

@@ -10,8 +10,9 @@ using System.Collections.Generic;
 namespace SpaceInvaders.Project
 {
     /// <summary>
-    /// Confirm tooltip shown near a clicked inventory item or ship slot. Uses a center pivot so the
-    /// rect stays inside the parent canvas after clamping.
+    /// Confirm tooltip shown near a clicked item. The caller hands over the item, since an offer on a
+    /// shelf is not owned yet and could not be looked up. Uses a center pivot so the rect stays inside
+    /// the parent canvas after clamping.
     /// </summary>
     public class ItemTooltipUIComponent : MonoBehaviour
     {
@@ -23,6 +24,9 @@ namespace SpaceInvaders.Project
         [SerializeField] private RectTransform _rectTransform;
         [SerializeField] private TextMeshProUGUI _titleText;
         [SerializeField] private TextMeshProUGUI _rarityText;
+
+        [Tooltip("Which ship slot the item goes in.")]
+        [SerializeField] private TextMeshProUGUI _slotTypeText;
         [SerializeField] private TextMeshProUGUI _bodyText;
         [Tooltip("Equips or unequips depending on what the shown item currently is.")]
         [SerializeField] private Button _equipButton;
@@ -35,9 +39,13 @@ namespace SpaceInvaders.Project
         [SerializeField] private string _equipString = "EQUIP";
         [SerializeField] private string _unequipString = "UNEQUIP";
         [SerializeField] private string _sellButtonString = "Sell ({0})";
+        [SerializeField] private string _slotTypeString = "{0}";
 
         [Header("Placement")]
         [SerializeField] private Vector2 _localOffset = new Vector2(-50f, 0);
+
+        [Tooltip("Kept clear of the canvas edges, so a clamped tooltip never sits flush against them.")]
+        [SerializeField] private Vector2 _canvasPadding = new Vector2(12f, 12f);
 
         private RectTransform _parentRect;
         private Canvas _canvas;
@@ -61,16 +69,16 @@ namespace SpaceInvaders.Project
             }
         }
 
-        public void Show(RectTransform anchor, string instanceId)
+        public void Show(RectTransform anchor, InventoryItemEntry entry)
         {
-            ShowInternal(anchor, instanceId, showActions: true);
+            ShowInternal(anchor, entry, showActions: true);
         }
 
-        /// <summary>Info-only variant for non-interactive contexts (e.g. the Level Finished
-        /// screen) - shows name/rarity/affixes but never an Equip/Unequip button.</summary>
-        public void ShowReadOnly(RectTransform anchor, string instanceId)
+        /// <summary>Info-only: name, rarity and affixes, never an action. The only variant an item the
+        /// player does not own can be shown through.</summary>
+        public void ShowReadOnly(RectTransform anchor, InventoryItemEntry entry)
         {
-            ShowInternal(anchor, instanceId, showActions: false);
+            ShowInternal(anchor, entry, showActions: false);
         }
 
         public void Hide()
@@ -79,19 +87,22 @@ namespace SpaceInvaders.Project
             OnHide?.Invoke();
         }
 
-        private void ShowInternal(RectTransform anchor, string instanceId, bool showActions)
+        private void ShowInternal(RectTransform anchor, InventoryItemEntry entry, bool showActions)
         {
             Hide();
 
-            InventoryItemEntry entry = _inventoryManager.GetItem(instanceId);
             if (entry == null || !_itemsRepository.TryGetItemConfig(entry.ItemId, out ItemConfigSO config))
             {
                 return;
             }
 
+            string instanceId = entry.InstanceId;
+
             bool hasRarityConfig = _itemsRepository.TryGetItemRarityConfig(config.Rarity, out ItemRarityConfigSO rarityConfig);
             string rarityText = hasRarityConfig ? rarityConfig.DisplayName : config.Rarity.ToString();
             _rarityText.color = hasRarityConfig ? rarityConfig.DisplayColor : Color.white;
+
+            _slotTypeText.text = string.Format(_slotTypeString, GetSlotDisplayName(config.SlotType));
 
             if (showActions)
             {
@@ -159,9 +170,26 @@ namespace SpaceInvaders.Project
             _rarityText.text = rarityText;
             _bodyText.text = body;
 
-            Canvas.ForceUpdateCanvases();
+            // The rect is sized from its content, so it has to be rebuilt before it can be measured.
+            // Waiting for the normal layout pass would place this frame's tooltip on the last one's size.
+            LayoutRebuilder.ForceRebuildLayoutImmediate(_rectTransform);
 
             PositionNear(anchor);
+        }
+
+        /// <summary>Read off the equipment slot that accepts the item, so the tooltip and the ship slot
+        /// it belongs in are never labelled differently.</summary>
+        private string GetSlotDisplayName(ItemSlotTypes slotType)
+        {
+            foreach (EquipmentSlotConfigDTO slotConfig in _itemsRepository.GetAllEquipmentSlotConfigs())
+            {
+                if (slotConfig.AcceptedType == slotType)
+                {
+                    return slotConfig.DisplayName;
+                }
+            }
+
+            return slotType.ToString();
         }
 
         private string BuildAffixesText(InventoryItemEntry entry)
@@ -220,19 +248,26 @@ namespace SpaceInvaders.Project
             Vector2 canvasMin = ToParentLocalPoint(canvasCorners[0], eventCamera); // bottom-left
             Vector2 canvasMax = ToParentLocalPoint(canvasCorners[2], eventCamera); // top-right
 
-            // Center pivot (0.5, 0.5) means anchoredPosition is the rect's center, so half-size is
-            // exactly how far the rect extends on each side - any other pivot needs per-edge math.
-            Vector2 halfSize = _rectTransform.rect.size * 0.5f;
+            // anchoredPosition sits at the pivot, so the rect reaches pivot x size one way and the
+            // remainder the other. Assuming a centred pivot let a right-pivoted rect, which is placed
+            // by its right edge, hang a full width off the near side.
+            Vector2 size = _rectTransform.rect.size;
+            Vector2 pivot = _rectTransform.pivot;
 
-            float minX = canvasMin.x + halfSize.x;
-            float maxX = canvasMax.x - halfSize.x;
-            float minY = canvasMin.y + halfSize.y;
-            float maxY = canvasMax.y - halfSize.y;
+            float minX = canvasMin.x + _canvasPadding.x + pivot.x * size.x;
+            float maxX = canvasMax.x - _canvasPadding.x - (1f - pivot.x) * size.x;
+            float minY = canvasMin.y + _canvasPadding.y + pivot.y * size.y;
+            float maxY = canvasMax.y - _canvasPadding.y - (1f - pivot.y) * size.y;
 
-            float clampedX = minX <= maxX ? Mathf.Clamp(desiredAnchoredPosition.x, minX, maxX) : (minX + maxX) * 0.5f;
-            float clampedY = minY <= maxY ? Mathf.Clamp(desiredAnchoredPosition.y, minY, maxY) : (minY + maxY) * 0.5f;
+            return new Vector2(ClampToRange(desiredAnchoredPosition.x, minX, maxX),
+                ClampToRange(desiredAnchoredPosition.y, minY, maxY));
+        }
 
-            return new Vector2(clampedX, clampedY);
+        /// <summary>A rect too big for the canvas leaves no valid range, so it is centred rather than
+        /// pinned to whichever edge the clamp happened to reach first.</summary>
+        private static float ClampToRange(float value, float min, float max)
+        {
+            return min <= max ? Mathf.Clamp(value, min, max) : (min + max) * 0.5f;
         }
     }
 }

@@ -7,6 +7,7 @@ namespace SpaceInvaders.Project
     {
         ExpeditionMapDataConfigSO GetMapDataConfig();
         ExpeditionRewardsDataConfigSO GetRewardsDataConfig();
+        ExpeditionShopDataConfigSO GetShopDataConfig();
     }
 
     public class ExpeditionRepository : Repository, IExpeditionRepository
@@ -15,6 +16,7 @@ namespace SpaceInvaders.Project
         {
             AddObject(expeditionDataConfigSO.MapData);
             AddObject(expeditionDataConfigSO.RewardsData);
+            AddObject(expeditionDataConfigSO.ShopData);
         }
 
         public ExpeditionMapDataConfigSO GetMapDataConfig()
@@ -26,6 +28,12 @@ namespace SpaceInvaders.Project
         public ExpeditionRewardsDataConfigSO GetRewardsDataConfig()
         {
             TryGet(nameof(ExpeditionRewardsDataConfigSO), out ExpeditionRewardsDataConfigSO config);
+            return config;
+        }
+
+        public ExpeditionShopDataConfigSO GetShopDataConfig()
+        {
+            TryGet(nameof(ExpeditionShopDataConfigSO), out ExpeditionShopDataConfigSO config);
             return config;
         }
     }

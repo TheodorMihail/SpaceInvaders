@@ -29,6 +29,13 @@ namespace SpaceInvaders.Project
             _equipmentManager.ApplyEquipmentBonuses(stats);
         }
 
+        /// <summary>A level is authored to be exactly as hard as it plays, so difficulty comes from
+        /// which level was picked rather than from anything scaling underneath it.</summary>
+        public float GetEnemyStatBonus(GameSessionDTO session)
+        {
+            return 0f;
+        }
+
         /// <summary>The score is banked however the level ended, but only a cleared level is rated and
         /// only a cleared boss pays its bonus.</summary>
         public GameEndResolutionDTO ResolveGameEnd(GameSessionResultDTO result)

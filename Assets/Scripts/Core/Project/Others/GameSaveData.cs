@@ -124,12 +124,30 @@ namespace SpaceInvaders.Project
         /// <summary>Still true on load means the app closed mid-level, which voids the run.</summary>
         public bool IsLevelInProgress;
         public float RemainingHealthRatio = 1f;
-        public int ShopRerollsUsed;
 
         /// <summary>Draws still to be offered, so closing the app between two cards keeps the second.
         /// The talents themselves live in the talent store against the Expedition profile.</summary>
         public int PendingTalentRewards;
+
+        /// <summary>Stock waiting to be browsed, null once it has been. Held so what was rolled cannot
+        /// be rerolled by leaving and coming back.</summary>
+        public ExpeditionShopEntry Shop;
         public List<ExpeditionNodeEntry> Nodes = new();
+    }
+
+    /// <summary>One shop's stock, rolled when its node is stepped on.</summary>
+    public class ExpeditionShopEntry
+    {
+        public List<ExpeditionShopOfferEntry> Offers = new();
+    }
+
+    /// <summary>The item is rolled with the stock rather than at purchase, so what the card shows is
+    /// what is bought.</summary>
+    public class ExpeditionShopOfferEntry
+    {
+        public InventoryItemEntry Item;
+        public int Price;
+        public bool IsSold;
     }
 
     public class ExpeditionNodeEntry

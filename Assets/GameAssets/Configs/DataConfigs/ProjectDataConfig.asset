@@ -13,5 +13,4 @@ MonoBehaviour:
   m_Name: ProjectDataConfig
   m_EditorClassIdentifier: 
   _editorForceTouchPlatform: 0
-  _debugAddCurrencyAmount: 9999
   _maxFrameRate: 60

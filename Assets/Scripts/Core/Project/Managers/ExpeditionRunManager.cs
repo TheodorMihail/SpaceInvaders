@@ -34,6 +34,14 @@ namespace SpaceInvaders.Project
         Completed
     }
 
+    /// <summary>Where the Expedition scene opens. Arriving from outside the expedition always lands at
+    /// the hub, so the map is only resumed by something that was already walking it.</summary>
+    public enum ExpeditionEntryTypes
+    {
+        Hub,
+        Map
+    }
+
     /// <summary>What a run reached, handed to the scene that reports it.</summary>
     public readonly struct ExpeditionRunResultDTO
     {
@@ -65,6 +73,14 @@ namespace SpaceInvaders.Project
         /// <summary>Cards still to be offered, which the map cannot be walked on until they are.</summary>
         int PendingTalentRewards { get; }
 
+        /// <summary>Stock waiting to be browsed. Empty unless a shop is open.</summary>
+        IReadOnlyList<ExpeditionShopOfferEntry> ShopOffers { get; }
+
+        bool HasOpenShop { get; }
+
+        /// <summary>What restoring the carried health to full costs, and zero when nothing is missing.</summary>
+        int RepairCost { get; }
+
         /// <summary>A map pointing at a level that no longer exists cannot be walked to the end.</summary>
         bool HasMissingLevels { get; }
     }
@@ -85,6 +101,14 @@ namespace SpaceInvaders.Project
         IReadOnlyList<TalentConfigSO> DrawTalentChoices();
 
         void GrantTalent(string talentId);
+
+        /// <summary>False when the offer is gone or the scrap falls short.</summary>
+        bool TryBuyShopOffer(string instanceId);
+
+        /// <summary>False when the ship is already whole or the scrap falls short.</summary>
+        bool TryRepair();
+
+        void CloseShop();
     }
 
     /// <summary>
@@ -96,7 +120,10 @@ namespace SpaceInvaders.Project
         [Inject] private readonly ISaveProfileManager _saveProfileManager;
         [Inject] private readonly IExpeditionMapService _mapService;
         [Inject] private readonly IExpeditionTalentDrawService _talentDrawService;
+        [Inject] private readonly IExpeditionShopService _shopService;
         [Inject] private readonly ITalentManager _talentManager;
+        [Inject] private readonly IInventoryManager _inventoryManager;
+        [Inject] private readonly IEquipmentManager _equipmentManager;
         [Inject] private readonly IExpeditionRepository _expeditionRepository;
         [Inject] private readonly IGameModesRepository _gameModesRepository;
         [Inject] private readonly ILevelsRepository _levelsRepository;
@@ -104,6 +131,7 @@ namespace SpaceInvaders.Project
         [Inject] private readonly IList<IGameModeScopedManager> _modeScopedManagers;
 
         private static readonly List<ExpeditionNodeEntry> EmptyNodes = new();
+        private static readonly List<ExpeditionShopOfferEntry> EmptyOffers = new();
 
         private IPersistenceManager _persistenceManager;
         private ExpeditionRunSaveData _data;
@@ -118,6 +146,9 @@ namespace SpaceInvaders.Project
         public bool IsOnFinalLevel => IsNodeOfType(GetCurrentNode(), ExpeditionNodeTypes.MegaBoss);
         public bool HasMissingLevels => GetHasMissingLevels();
         public int PendingTalentRewards => _data.RunInProgress?.PendingTalentRewards ?? 0;
+        public IReadOnlyList<ExpeditionShopOfferEntry> ShopOffers => _data.RunInProgress?.Shop?.Offers ?? EmptyOffers;
+        public bool HasOpenShop => _data.RunInProgress?.Shop != null;
+        public int RepairCost => GetRepairCost();
 
 
         public void Initialize()
@@ -152,7 +183,8 @@ namespace SpaceInvaders.Project
             SaveData();
         }
 
-        /// <summary>Only a node carrying a level moves the expedition into one.</summary>
+        /// <summary>Only a node carrying a level moves the expedition into one. A shop is stocked here
+        /// rather than when its screen opens, so what it holds survives the app closing in front of it.</summary>
         public void EnterNode(int nodeId)
         {
             if (!IsNodeReachable(nodeId))
@@ -164,6 +196,11 @@ namespace SpaceInvaders.Project
             node.State = ExpeditionNodeStateTypes.Visited.ToString();
             _data.RunInProgress.CurrentNodeId = nodeId;
             _data.RunInProgress.IsLevelInProgress = HasLevel(node);
+
+            if (IsNodeOfType(node, ExpeditionNodeTypes.Shop))
+            {
+                StockShop();
+            }
 
             RefreshNodeStates();
             SaveData();
@@ -232,6 +269,84 @@ namespace SpaceInvaders.Project
             _talentManager.TryGrantLevel(talentId);
 
             SaveData();
+        }
+
+        /// <summary>Bought gear goes straight on the ship, since a run has nowhere else to put it.
+        /// Whatever it displaces stays owned rather than being lost.</summary>
+        public bool TryBuyShopOffer(string instanceId)
+        {
+            ExpeditionShopOfferEntry offer = GetOffer(instanceId);
+
+            if (offer == null || offer.IsSold || !_currencyManager.TrySpend(offer.Price))
+            {
+                return false;
+            }
+
+            offer.IsSold = true;
+            _inventoryManager.AddItems(new[] { offer.Item });
+            _equipmentManager.Equip(instanceId);
+
+            SaveData();
+            return true;
+        }
+
+        /// <summary>Restores the carried health outright, since it is priced by how much is missing
+        /// and a partial repair would only be a smaller one bought twice.</summary>
+        public bool TryRepair()
+        {
+            int cost = RepairCost;
+
+            if (cost <= 0 || !_currencyManager.TrySpend(cost))
+            {
+                return false;
+            }
+
+            _data.RunInProgress.RemainingHealthRatio = 1f;
+            SaveData();
+
+            return true;
+        }
+
+        /// <summary>Browsed once: the shelf is dropped on the way out so the node cannot be shopped
+        /// twice.</summary>
+        public void CloseShop()
+        {
+            if (_data.RunInProgress == null)
+            {
+                return;
+            }
+
+            _data.RunInProgress.Shop = null;
+            SaveData();
+        }
+
+        /// <summary>A shelf with nothing on it is left unopened, so an unauthored catalogue reads as a
+        /// node walked past rather than as an empty screen.</summary>
+        private void StockShop()
+        {
+            List<ExpeditionShopOfferEntry> offers = _shopService.RollOffers();
+
+            if (offers.Count > 0)
+            {
+                _data.RunInProgress.Shop = new ExpeditionShopEntry { Offers = offers };
+            }
+        }
+
+        /// <summary>Priced off the share that is missing rather than the hit points behind it, so a
+        /// full mend costs the same at every point in a run however the hull has grown.</summary>
+        private int GetRepairCost()
+        {
+            ExpeditionShopDataConfigSO config = _expeditionRepository.GetShopDataConfig();
+
+            if (config == null)
+            {
+                return 0;
+            }
+
+            // Whole percents, so the quote is stable and a ratio left a hair under one is not charged for.
+            int missingPercent = Mathf.RoundToInt((1f - RemainingHealthRatio) * 100f);
+
+            return Mathf.CeilToInt(missingPercent * config.ScrapPerHealthPercent);
         }
 
         /// <summary>Health carries between nodes as a share, since the maximum changes with progression.</summary>
@@ -327,6 +442,11 @@ namespace SpaceInvaders.Project
         private ExpeditionNodeEntry GetNode(int nodeId)
         {
             return _data.RunInProgress?.Nodes.Find(node => node.Id == nodeId);
+        }
+
+        private ExpeditionShopOfferEntry GetOffer(string instanceId)
+        {
+            return _data.RunInProgress?.Shop?.Offers.Find(offer => offer.Item?.InstanceId == instanceId);
         }
 
         /// <summary>Only what the current node links to can be picked next; visited nodes stay visited

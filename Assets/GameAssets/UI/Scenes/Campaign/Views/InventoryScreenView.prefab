@@ -1702,11 +1702,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6517985961360018461, guid: 7d12011cf65fb7c4fac67b2d8a4895b4, type: 3}
       propertyPath: m_CellSize.x
-      value: 265.05585
+      value: 130
       objectReference: {fileID: 0}
     - target: {fileID: 6517985961360018461, guid: 7d12011cf65fb7c4fac67b2d8a4895b4, type: 3}
       propertyPath: m_CellSize.y
-      value: 265.05585
+      value: 130
       objectReference: {fileID: 0}
     - target: {fileID: 8410528374792246455, guid: 7d12011cf65fb7c4fac67b2d8a4895b4, type: 3}
       propertyPath: m_SizeDelta.y
@@ -2243,7 +2243,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 676177996384889144, guid: c0a45687b8f44dd47bf3f6de6d466b86, type: 3}
       propertyPath: m_Name
-      value: Tooltip
+      value: TooltipWindow
       objectReference: {fileID: 0}
     - target: {fileID: 676177996384889144, guid: c0a45687b8f44dd47bf3f6de6d466b86, type: 3}
       propertyPath: m_IsActive

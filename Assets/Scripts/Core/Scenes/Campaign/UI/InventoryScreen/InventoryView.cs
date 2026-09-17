@@ -35,7 +35,7 @@ namespace SpaceInvaders.Scenes.Campaign
 
         private string _lastSelectedInstanceId;
 
-        public event Action<RectTransform, string> OnItemClicked;
+        public event Action<RectTransform, InventoryItemEntry> OnItemClicked;
         public event Action OnBackClicked;
 
         private void Awake()
@@ -59,11 +59,11 @@ namespace SpaceInvaders.Scenes.Campaign
             _tooltip.Hide();
         }
 
-        public void OpenTooltip(RectTransform anchor, string instanceId)
+        public void OpenTooltip(RectTransform anchor, InventoryItemEntry entry)
         {
-            _tooltip.Show(anchor, instanceId);
-            UpdateInventoryItemSelected(instanceId, true);
-            _lastSelectedInstanceId = instanceId;
+            _tooltip.Show(anchor, entry);
+            UpdateInventoryItemSelected(entry.InstanceId, true);
+            _lastSelectedInstanceId = entry.InstanceId;
         }
 
         public void RefreshStatsPanel(string stats)
@@ -141,12 +141,12 @@ namespace SpaceInvaders.Scenes.Campaign
                 return;
             }
 
-            OnItemClicked?.Invoke(component.RectTransform, equipped.InstanceId);
+            OnItemClicked?.Invoke(component.RectTransform, equipped);
         }
 
-        private void HandleItemClicked(RectTransform anchor, string instanceId)
+        private void HandleItemClicked(RectTransform anchor, InventoryItemEntry entry)
         {
-            OnItemClicked?.Invoke(anchor, instanceId);
+            OnItemClicked?.Invoke(anchor, entry);
         }
 
         private void UpdateItemToEquipmentSlots(string instanceId, bool isNowEquipped)

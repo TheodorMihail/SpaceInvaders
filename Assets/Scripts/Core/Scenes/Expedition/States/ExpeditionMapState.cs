@@ -24,24 +24,42 @@ namespace SpaceInvaders.Scenes.Expedition
             ShowMapScreen();
         }
 
-        /// <summary>The map stays open for the whole run: walking it is handled inside the screen, and
-        /// only leaving closes this.</summary>
+        /// <summary>Walking the map is handled inside its screen. A node that opens something of its
+        /// own closes the map, which reopens behind it, so only leaving finishes this.</summary>
         private async void ShowMapScreen()
         {
-            await ShowPendingRewards();
+            ExpeditionMapScreen.ExpeditionMapScreenResult result;
 
-            var result = await _uiManager.ShowScreen<ExpeditionMapScreen, ExpeditionMapScreen.ExpeditionMapScreenResult>();
+            do
+            {
+                await ShowNodeScreens();
+                result = await _uiManager.ShowScreen<ExpeditionMapScreen, ExpeditionMapScreen.ExpeditionMapScreenResult>();
+            }
+            while (HasNodeScreens());
+
             FinishState(result);
         }
 
-        /// <summary>Pending cards are offered one screen at a time before the map is shown, so a boss
-        /// reward cannot be walked past.</summary>
-        private async UniTask ShowPendingRewards()
+        /// <summary>Everything the node the player stands on still owes them, offered one screen at a
+        /// time so closing the app between two of them keeps the rest.</summary>
+        private async UniTask ShowNodeScreens()
         {
             while ((_expeditionRunManager.CurrentExpedition?.PendingTalentRewards ?? 0) > 0)
             {
                 await _uiManager.ShowScreen<ExpeditionRewardScreen>();
             }
+
+            if (_expeditionRunManager.CurrentExpedition?.HasOpenShop ?? false)
+            {
+                await _uiManager.ShowScreen<ExpeditionShopScreen>();
+            }
+        }
+
+        private bool HasNodeScreens()
+        {
+            IExpeditionState expedition = _expeditionRunManager.CurrentExpedition;
+
+            return expedition != null && (expedition.PendingTalentRewards > 0 || expedition.HasOpenShop);
         }
     }
 }

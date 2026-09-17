@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SpaceInvaders.Scenes.Game;
+using UnityEngine;
 using Zenject;
 
 namespace SpaceInvaders.Project
@@ -33,6 +34,21 @@ namespace SpaceInvaders.Project
             stats.SetHealthRatio(_expeditionRunManager.CurrentExpedition?.RemainingHealthRatio ?? 1f);
         }
 
+        /// <summary>Enemies grow with depth, so a run's own upgrades are kept up with rather than left
+        /// to outpace the levels. The first playable depth is unscaled, since that is the baseline the
+        /// levels were authored against.</summary>
+        public float GetEnemyStatBonus(GameSessionDTO session)
+        {
+            var config = _gameModesRepository.GetDataConfig(Mode) as ExpeditionDataConfigSO;
+
+            if (config == null)
+            {
+                return 0f;
+            }
+
+            return Mathf.Max(0, session.LevelNumber - 1) * config.EnemyStatBonusPerDepth;
+        }
+
         /// <summary>Only a level played out pays, and any other ending closes the expedition. No result
         /// screen either way: the map and the expedition summary report it instead.</summary>
         public GameEndResolutionDTO ResolveGameEnd(GameSessionResultDTO result)
@@ -58,7 +74,8 @@ namespace SpaceInvaders.Project
                     return EndExpedition(ExpeditionRunResultTypes.Abandoned);
             }
 
-            return new GameEndResolutionDTO(GameEndOptionTypes.None);
+            // The expedition carries on, which is the one arrival that resumes on the map.
+            return new GameEndResolutionDTO(GameEndOptionTypes.None, ExpeditionEntryTypes.Map);
         }
 
         /// <summary>The result rides the scene change, since nothing is left on disk to read it from.</summary>

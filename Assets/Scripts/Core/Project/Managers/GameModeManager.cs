@@ -17,6 +17,10 @@ namespace SpaceInvaders.Project
         void InitializeGameMode(GameModeTypes mode);
 
         void ApplyProgressionBonuses(ShipStats stats);
+
+        /// <summary>Percentage added to every enemy the level spawns.</summary>
+        float GetEnemyStatBonus(GameSessionDTO session);
+
         GameEndResolutionDTO ResolveGameEnd(GameSessionResultDTO result);
     }
 
@@ -73,6 +77,11 @@ namespace SpaceInvaders.Project
         public void ApplyProgressionBonuses(ShipStats stats)
         {
             _activeRules?.ApplyProgressionBonuses(stats);
+        }
+
+        public float GetEnemyStatBonus(GameSessionDTO session)
+        {
+            return _activeRules?.GetEnemyStatBonus(session) ?? 0f;
         }
 
         public GameEndResolutionDTO ResolveGameEnd(GameSessionResultDTO result)

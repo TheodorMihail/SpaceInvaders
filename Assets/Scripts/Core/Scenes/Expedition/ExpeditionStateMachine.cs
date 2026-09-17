@@ -25,8 +25,8 @@ namespace SpaceInvaders.Scenes.Expedition
         {
         }
 
-        /// <summary>A run that just ended arrives as a scene parameter, since nothing is left on disk
-        /// to read it from.</summary>
+        /// <summary>Both what just happened and where it happened arrive as scene parameters, since
+        /// nothing is left on disk to tell an expedition being resumed from one being walked back into.</summary>
         public override void Initialize()
         {
             // Before any screen reads progression, so it reads this mode's profile.
@@ -46,9 +46,18 @@ namespace SpaceInvaders.Scenes.Expedition
                 return;
             }
 
-            SetState(_expeditionRunManager.CurrentExpedition != null
+            SetState(GetEntryState());
+        }
+
+        /// <summary>The hub unless a level was just played out, so coming in from the menu always lands
+        /// there and an expedition is resumed deliberately rather than by arriving.</summary>
+        private ExpeditionStateTypes GetEntryState()
+        {
+            _scenesManager.PendingSceneParams.TryGetParam(out ExpeditionEntryTypes entry, ExpeditionEntryTypes.Hub);
+
+            return entry == ExpeditionEntryTypes.Map && _expeditionRunManager.CurrentExpedition != null
                 ? ExpeditionStateTypes.Map
-                : ExpeditionStateTypes.Hub);
+                : ExpeditionStateTypes.Hub;
         }
 
         protected override void OnStateFinished((ExpeditionStateTypes stateId, object[] paramsList) finishedState)

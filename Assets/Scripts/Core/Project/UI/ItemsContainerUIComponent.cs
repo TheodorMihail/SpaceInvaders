@@ -26,8 +26,9 @@ namespace SpaceInvaders.Project
 
         public int ItemCount => _cells.Count;
 
-        /// <summary>Carries the cell's rect as well, since a tooltip has to open against it.</summary>
-        public event Action<RectTransform, string> OnItemClicked;
+        /// <summary>Carries the cell's rect as well, since a tooltip has to open against it, and the
+        /// item itself, since a tooltip is handed what to show rather than looking it up.</summary>
+        public event Action<RectTransform, InventoryItemEntry> OnItemClicked;
 
         public void Clear()
         {
@@ -52,10 +53,9 @@ namespace SpaceInvaders.Project
             ItemSlotUIComponent cell = _factory.CreateFromPrefab(_itemCellPrefab, _itemsContainer);
             cell.SetItem(config, rarity);
 
-            string instanceId = entry.InstanceId;
-            cell.OnClicked += () => OnItemClicked?.Invoke(cell.RectTransform, instanceId);
+            cell.OnClicked += () => OnItemClicked?.Invoke(cell.RectTransform, entry);
 
-            _cells[instanceId] = cell;
+            _cells[entry.InstanceId] = cell;
             RefreshEmptyText();
         }
 
